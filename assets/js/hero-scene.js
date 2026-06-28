@@ -235,8 +235,13 @@ grid.position.y = -1.5;
 scene.add(grid);
 
 /* ── Intro → Hero ── */
+const INTRO_MS = 4500; // boot lines finish ~2s, logo hold, then auto-enter hero
+const introStart = performance.now();
+let introFinished = false;
+
 function finishIntro(instant = false) {
-  if (state.phase === "hero") return;
+  if (introFinished) return;
+  introFinished = true;
   state.phase = "hero";
   state.heroT = instant ? 1 : 0;
   introEl?.classList.add("is-done");
@@ -252,7 +257,10 @@ function finishIntro(instant = false) {
 }
 
 introSkip?.addEventListener("click", () => finishIntro(true));
-if (reducedMotion) finishIntro();
+if (reducedMotion) finishIntro(true);
+
+// Backup timer — rAF delta alone can stall if tab throttles
+setTimeout(() => finishIntro(false), INTRO_MS);
 
 window.addEventListener("pointermove", (e) => {
   mouse.tx = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -326,11 +334,12 @@ function animate() {
   const dt = clock.getDelta();
 
   if (state.phase === "intro") {
-    state.introT += dt;
-    const progress = Math.min(state.introT / 3.2, 1);
+    const elapsed = (performance.now() - introStart) / 1000;
+    state.introT = elapsed;
+    const progress = Math.min(elapsed / (INTRO_MS / 1000), 1);
     updateLogoIntro(t, progress);
     camera.position.z = THREE.MathUtils.lerp(5.4, 4.8, progress);
-    if (state.introT >= 3.4) finishIntro();
+    if (elapsed >= INTRO_MS / 1000) finishIntro(false);
   } else {
     state.heroT += dt;
     const reveal = Math.min(state.heroT / 1.1, 1);
