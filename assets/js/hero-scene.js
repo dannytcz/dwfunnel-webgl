@@ -95,11 +95,11 @@ cyborg.scale.setScalar(0.001);
 scene.add(cyborg);
 
 const skinMat = new THREE.MeshStandardMaterial({
-  color: 0x080c0a,
-  emissive: 0x0d2a14,
-  emissiveIntensity: 0.4,
+  color: 0x0a120e,
+  emissive: 0x1a4d28,
+  emissiveIntensity: 0.65,
   metalness: 0.85,
-  roughness: 0.35,
+  roughness: 0.3,
 });
 
 const glowMat = new THREE.MeshStandardMaterial({
@@ -235,10 +235,10 @@ grid.position.y = -1.5;
 scene.add(grid);
 
 /* ── Intro → Hero ── */
-function finishIntro() {
+function finishIntro(instant = false) {
   if (state.phase === "hero") return;
   state.phase = "hero";
-  state.heroT = 0;
+  state.heroT = instant ? 1 : 0;
   introEl?.classList.add("is-done");
   heroUi?.classList.remove("is-hidden");
   heroHud?.classList.remove("is-hidden");
@@ -248,9 +248,10 @@ function finishIntro() {
   logoParticles.visible = false;
   logoRing.visible = false;
   cyborg.visible = true;
+  if (instant) cyborg.scale.setScalar(1);
 }
 
-introSkip?.addEventListener("click", finishIntro);
+introSkip?.addEventListener("click", () => finishIntro(true));
 if (reducedMotion) finishIntro();
 
 window.addEventListener("pointermove", (e) => {
