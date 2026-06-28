@@ -5,6 +5,47 @@ Save output as `assets/images/cyborg-hero.webp` (2048px+ tall).
 
 ---
 
+## Variant B — pretty lady, full shoulders, ultra quality (recommended)
+
+Use this if you want a **more beautiful face**, **both shoulders clearly in frame**, and **maximum render quality**. Best match for the black-background reference you picked.
+
+```
+Hero subject: breathtakingly beautiful female cyborg, photorealistic, front-facing, centered. Head, neck, full shoulder line, and upper chest visible — both shoulders fully in frame, symmetrical power pose, arms cropped below deltoids. Age read late 20s. Elegant feminine features: high cheekbones, soft jawline, full lips with natural rose tint, flawless skin texture where human, not uncanny. Calm confident gaze directly into camera, subtle intelligent smile, approachable premium concierge energy.
+
+Cyborg design: obsidian matte-black armor panels #0A0F0C on neck and shoulders, segmented collarbone plates, thin luminous neon green #39FF14 circuit tracery running from temples down jaw, neck, and across both shoulder caps like living HUD veins. Glowing emerald green eyes, sharp catchlights, eyes clearly visible. Slim futuristic visor band on forehead — dark smoked glass, minimal green LED segments, luxury tech not military bulk. Hair slicked back or low tight bun, dark brunette with fine green highlight strands catching rim light. Small discrete ear-comms piece, no oversized headset.
+
+Environment: pure solid void background #030508 only, flat matte black edge to edge, zero gradient, zero bokeh, zero stars, zero room, zero floor, zero props. Subject isolated in digital void for web compositing.
+
+Lighting: Hollywood cinematic beauty lighting — soft key 45° upper left, gentle fill on face, green rim kicker on right cheek and right shoulder edge, controlled specular on armor panels and visor glass. Skin reads luminous not plastic. Subtle subsurface warmth on cheeks. Ultra high dynamic range, magazine cover quality.
+
+Camera: portrait orientation 2:3 vertical, 85mm portrait lens, eye-level straight-on, no dutch tilt, no wide-angle distortion. Framing: top of head with 12% headroom, bottom crop at mid-upper chest — full shoulders and collarbone armor included, face occupies upper 45% of frame. Tack sharp focus on eyes, shallow depth of field falloff on shoulder edges only.
+
+Quality: 8K ultra detailed, ray-traced render quality, micro-texture on armor, clean edges, professional color grade, subtle film grain 35mm, no compression artifacts, masterpiece commercial key art.
+
+Mood: luxury cyberpunk funnel hero, TechStack neon green on black, she is watching the visitor — intelligent, seductive but professional, high-ticket brand ambassador, not action hero, not horror, not anime.
+
+Composition: subject centered or slightly right of center. Leave left 35% relatively clean for website headline overlay. Safe zone center 80% for mobile.
+
+AVOID: male, masculine jaw, child, teen, cartoon, anime, pixar, chibi, horror, zombie, gore, exposed organs, messy wire spaghetti, torn flesh, busy background, grey studio, white background, blue purple pink neon, red eyes, heavy makeup clown, duck lips, text, logo, watermark, side profile, looking away, three-quarter turn, hands in frame, full body distant, lowres, blurry, jpeg blocks, deformed anatomy, extra fingers, cross-eyed, asymmetrical shoulders cut off, cropped at neck only.
+```
+
+### Variant B negative prompt
+
+```
+anime, cartoon, ugly, deformed, blurry, low quality, jpeg, watermark, text, logo, busy background, white background, bokeh, profile view, looking away, cropped shoulders, neck only, male, horror, gore, blue neon, purple neon, pink hair, military helmet, bulky goggles, hands visible, full body wide shot
+```
+
+### Export for Variant B
+
+| Spec | Value |
+|------|--------|
+| Aspect | **2:3 portrait** (e.g. 2048×3072 or 2160×3240) |
+| Must show | Both shoulders + upper chest strip |
+| Background | `#030508` flat black (or remove bg after) |
+| Save as | `assets/images/cyborg-hero.png` or `.webp` |
+
+---
+
 ## Master still prompt (copy-paste)
 
 ```
