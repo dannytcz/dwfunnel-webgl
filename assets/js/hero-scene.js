@@ -32,6 +32,7 @@ const state = {
   hoverCyborg: false,
   scroll: 0,
   mode: "procedural",
+  popIn: false,
 };
 
 const mouse = { x: 0, y: 0, tx: 0, ty: 0, ndc: new THREE.Vector2() };
@@ -336,7 +337,7 @@ function finishIntro(instant = false) {
   if (introFinished) return;
   introFinished = true;
   state.phase = "hero";
-  state.heroT = instant ? 1 : 0;
+  state.heroT = 1;
   introEl?.classList.add("is-done");
   heroUi?.classList.remove("is-hidden");
   heroHud?.classList.remove("is-hidden");
@@ -346,7 +347,13 @@ function finishIntro(instant = false) {
   logoParticles.visible = false;
   logoRing.visible = false;
   cyborg.visible = true;
-  if (instant) cyborg.scale.setScalar(1);
+  cyborg.scale.setScalar(1);
+  state.popIn = !instant;
+  if (instant) {
+    rig.scale.set(1, 1, 1);
+  } else {
+    rig.scale.setScalar(0.001);
+  }
   setupScrollHandoff();
 }
 
@@ -361,7 +368,8 @@ window.addEventListener("pointermove", (e) => {
 });
 
 function setupScrollHandoff() {
-  if (!window.gsap?.ScrollTrigger || reducedMotion) return;
+  if (!window.gsap?.ScrollTrigger || reducedMotion || scrollSetup) return;
+  scrollSetup = true;
   const { gsap, ScrollTrigger } = window;
   gsap.registerPlugin(ScrollTrigger);
 
@@ -398,11 +406,6 @@ function setupScrollHandoff() {
 }
 
 let scrollSetup = false;
-function setupScrollHandoffOnce() {
-  if (scrollSetup) return;
-  scrollSetup = true;
-  setupScrollHandoff();
-}
 
 /* ── Life: breath, blink, visor ── */
 function updateLife(t, dt) {
@@ -412,7 +415,9 @@ function updateLife(t, dt) {
   }
 
   life.breath = 1 + Math.sin(t * 1.15) * 0.014;
-  rig.scale.y = life.breath;
+  if (!state.popIn) {
+    rig.scale.set(1, life.breath, 1);
+  }
 
   if (t >= life.nextBlink && life.blink <= 0) life.blink = 1;
   if (life.blink > 0) {
@@ -472,6 +477,16 @@ function updateLook() {
   }
 }
 
+function updateEnterPop() {
+  if (!state.popIn) return;
+  const target = new THREE.Vector3(1, life.breath, 1);
+  rig.scale.lerp(target, 0.06);
+  if (rig.scale.x > 0.97) {
+    state.popIn = false;
+    rig.scale.copy(target);
+  }
+}
+
 function applyScrollLayout() {
   const s = state.scroll;
   const baseX = window.innerWidth >= 960 ? 0.55 : 0;
@@ -521,18 +536,15 @@ function animate() {
     camera.position.z = THREE.MathUtils.lerp(5.4, 4.8, Math.min(elapsed / (INTRO_MS / 1000), 1));
     if (elapsed >= INTRO_MS / 1000) finishIntro(false);
   } else {
-    if (!scrollSetup && window.gsap) setupScrollHandoffOnce();
-
-    state.heroT += dt;
-    const reveal = Math.min(state.heroT / 1.1, 1);
-    const baseScale = 0.001 + (1 - Math.pow(1 - reveal, 3)) * 0.999;
-    const scrollScale = 1 - state.scroll * 0.42;
-    const target = baseScale * scrollScale * (state.hoverCyborg ? 1.03 : 1);
-    cyborg.scale.setScalar(THREE.MathUtils.lerp(cyborg.scale.x, target, 0.1));
-
     updateLife(t, dt);
+    updateEnterPop();
     updateLook();
     applyScrollLayout();
+
+    const scrollScale = 1 - state.scroll * 0.42;
+    const hoverScale = state.hoverCyborg ? 1.03 : 1;
+    const target = scrollScale * hoverScale;
+    cyborg.scale.setScalar(THREE.MathUtils.lerp(cyborg.scale.x, target, 0.1));
 
     head.children.forEach((child) => {
       if (child.userData.spin) child.rotation.z += child.userData.spin * 0.012;
