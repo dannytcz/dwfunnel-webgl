@@ -374,3 +374,73 @@ html, body {
   .btn, .intro__line, .tech-logo { animation: none; opacity: 1; transform: none; }
   .hero-hud__dot { animation: none; }
 }
+
+/* ── Act 2+ sections ── */
+.section {
+  position: relative;
+  z-index: 2;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  padding: clamp(4rem, 10vh, 6rem) clamp(1.5rem, 4vw, 3rem);
+}
+
+.section__inner {
+  max-width: 52rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.section__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+}
+
+.section__lead {
+  color: var(--text-muted);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  max-width: 40ch;
+  margin-bottom: 2rem;
+}
+
+.problem-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .problem-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.problem-card {
+  padding: 1.25rem;
+  background: rgba(10, 15, 12, 0.85);
+  border: 1px solid rgba(57, 255, 20, 0.2);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  backdrop-filter: blur(8px);
+}
+
+.problem-card__num {
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  color: var(--neon);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.problem-card h3 {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  margin-bottom: 0.35rem;
+}
+
+.problem-card p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

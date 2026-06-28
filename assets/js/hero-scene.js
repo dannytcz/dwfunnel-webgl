@@ -3,27 +3,50 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 
+/** Drop cyborg-hero.webp/png here — see assets/images/README.md */
+const PORTRAIT_CFG = {
+  urls: ["assets/images/cyborg-hero.webp", "assets/images/cyborg-hero.png"],
+  planeHeight: 2.35,
+  /** Normalized offsets from portrait center — tweak when real art arrives */
+  eyes: {
+    left: new THREE.Vector3(-0.2, 0.1, 0.06),
+    right: new THREE.Vector3(0.2, 0.1, 0.06),
+  },
+  visor: { y: 0.18, width: 0.55, height: 0.07 },
+};
+
 const canvas = document.getElementById("hero-canvas");
 const introEl = document.getElementById("act0");
 const introSkip = document.getElementById("intro-skip");
 const heroUi = document.getElementById("act1");
 const heroHud = document.getElementById("hero-hud");
 const heroHint = document.getElementById("hero-hint");
+const heroCopy = document.querySelector("#act1 .hero-copy");
 const vignette = document.querySelector(".hero-vignette");
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const state = {
   phase: reducedMotion ? "hero" : "intro",
-  introT: 0,
   heroT: 0,
   hoverCyborg: false,
+  scroll: 0,
+  mode: "procedural",
 };
 
 const mouse = { x: 0, y: 0, tx: 0, ty: 0, ndc: new THREE.Vector2() };
-const lookTarget = new THREE.Vector3(0, 0.15, 4);
+const lookMouse = new THREE.Vector3(0, 0.1, 5);
+const lookSection2 = new THREE.Vector3(-1.8, 0.35, 4);
 const clock = new THREE.Clock();
 const raycaster = new THREE.Raycaster();
+
+const life = {
+  breath: 1,
+  blink: 0,
+  nextBlink: 3.5,
+  visorBase: 0.85,
+  visorGlitch: 0,
+};
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -51,13 +74,198 @@ scene.add(new THREE.AmbientLight(0x0a1a0f, 0.3));
 const key = new THREE.PointLight(0x39ff14, 14, 22);
 key.position.set(1.5, 1.2, 4);
 scene.add(key);
-const fill = new THREE.PointLight(0x00ffaa, 6, 18);
-fill.position.set(-2, 0.2, 2);
-scene.add(fill);
 
-/* ── Logo particles (Act 0) ── */
+/* ── Cyborg root ── */
+const cyborg = new THREE.Group();
+cyborg.visible = false;
+cyborg.scale.setScalar(0.001);
+scene.add(cyborg);
+
+const rig = new THREE.Group();
+cyborg.add(rig);
+
+const head = new THREE.Group();
+rig.add(head);
+
+let visorMesh = null;
+let eyeL = null;
+let eyeR = null;
+let portraitPlane = null;
+const proceduralParts = [];
+
+const cyborgHit = new THREE.Mesh(
+  new THREE.SphereGeometry(1.05, 16, 16),
+  new THREE.MeshBasicMaterial({ visible: false })
+);
+cyborg.add(cyborgHit);
+
+function makeEyeGlow(parent, scale = 1) {
+  const g = new THREE.Group();
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: 0x39ff14,
+    transparent: true,
+    opacity: 0.45,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const coreMat = new THREE.MeshBasicMaterial({
+    color: 0x39ff14,
+    blending: THREE.AdditiveBlending,
+  });
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(0.1 * scale, 16, 16), glowMat);
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.05 * scale, 12, 12), coreMat);
+  core.position.z = 0.035;
+  g.add(glow, core);
+  parent.add(g);
+  return { group: g, glow, core, glowMat, coreMat };
+}
+
+function buildProcedural() {
+  state.mode = "procedural";
+  const skinMat = new THREE.MeshStandardMaterial({
+    color: 0x0a120e,
+    emissive: 0x1a4d28,
+    emissiveIntensity: 0.65,
+    metalness: 0.85,
+    roughness: 0.3,
+  });
+  const glowMat = new THREE.MeshStandardMaterial({
+    color: 0x020403,
+    emissive: 0x39ff14,
+    emissiveIntensity: 1,
+    metalness: 1,
+    roughness: 0.1,
+  });
+  const wireMat = new THREE.MeshBasicMaterial({
+    color: 0x39ff14,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.22,
+  });
+
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(0.62, 32, 32), skinMat);
+  skull.scale.set(1, 1.08, 0.92);
+  head.add(skull);
+  proceduralParts.push(skull);
+
+  const wireSkull = new THREE.Mesh(new THREE.SphereGeometry(0.72, 16, 16), wireMat);
+  wireSkull.scale.copy(skull.scale);
+  head.add(wireSkull);
+  proceduralParts.push(wireSkull);
+
+  const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.14, 0.28), skinMat);
+  jaw.position.set(0, -0.38, 0.18);
+  head.add(jaw);
+  proceduralParts.push(jaw);
+
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.35, 16), skinMat);
+  neck.position.y = -0.72;
+  head.add(neck);
+  proceduralParts.push(neck);
+
+  const shoulders = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.22, 0.45), skinMat);
+  shoulders.position.y = -0.95;
+  head.add(shoulders);
+  proceduralParts.push(shoulders);
+
+  visorMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.72, 0.14, 0.08),
+    new THREE.MeshStandardMaterial({
+      color: 0x001a0a,
+      emissive: 0x39ff14,
+      emissiveIntensity: 0.85,
+      metalness: 0.9,
+      roughness: 0.05,
+    })
+  );
+  visorMesh.position.set(0, 0.08, 0.52);
+  head.add(visorMesh);
+
+  const eyeGroup = new THREE.Group();
+  eyeGroup.position.set(0, 0.05, 0.48);
+  head.add(eyeGroup);
+
+  const socketL = new THREE.Group();
+  socketL.position.set(-0.18, 0, 0);
+  const socketR = new THREE.Group();
+  socketR.position.set(0.18, 0, 0);
+  eyeGroup.add(socketL, socketR);
+
+  eyeL = makeEyeGlow(socketL);
+  eyeR = makeEyeGlow(socketR);
+  eyeL.socket = socketL;
+  eyeR.socket = socketR;
+
+  for (let i = 0; i < 3; i++) {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.88 + i * 0.14, 0.014, 8, 64),
+      glowMat.clone()
+    );
+    ring.rotation.x = Math.PI / 2 + i * 0.12;
+    ring.rotation.y = i * 0.35;
+    ring.userData.spin = 0.12 + i * 0.05;
+    head.add(ring);
+  }
+}
+
+function buildPortrait(texture) {
+  state.mode = "portrait";
+  while (head.children.length) head.remove(head.children[0]);
+  proceduralParts.length = 0;
+
+  const aspect = texture.image.width / texture.image.height;
+  const h = PORTRAIT_CFG.planeHeight;
+  const w = h * aspect;
+
+  portraitPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: false })
+  );
+  head.add(portraitPlane);
+
+  eyeL = makeEyeGlow(head, 1.15);
+  eyeR = makeEyeGlow(head, 1.15);
+  eyeL.group.position.copy(PORTRAIT_CFG.eyes.left);
+  eyeR.group.position.copy(PORTRAIT_CFG.eyes.right);
+  eyeL.socket = eyeL.group;
+  eyeR.socket = eyeR.group;
+
+  const v = PORTRAIT_CFG.visor;
+  visorMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(v.width, v.height),
+    new THREE.MeshBasicMaterial({
+      color: 0x39ff14,
+      transparent: true,
+      opacity: 0.12,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
+  );
+  visorMesh.position.set(0, v.y, 0.05);
+  head.add(visorMesh);
+}
+
+async function tryLoadPortrait() {
+  const loader = new THREE.TextureLoader();
+  for (const url of PORTRAIT_CFG.urls) {
+    try {
+      const tex = await loader.loadAsync(url);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      buildPortrait(tex);
+      return true;
+    } catch {
+      /* try next */
+    }
+  }
+  return false;
+}
+
+buildProcedural();
+tryLoadPortrait();
+
+/* ── Logo intro particles ── */
 const LOGO_N = 320;
-const logoGeo = new THREE.BufferGeometry();
+const logoTargets = new Float32Array(LOGO_N * 3);
 const logoStart = new Float32Array(LOGO_N * 3);
 const logoPos = new Float32Array(LOGO_N * 3);
 for (let i = 0; i < LOGO_N; i++) {
@@ -66,8 +274,12 @@ for (let i = 0; i < LOGO_N; i++) {
   logoStart[i * 3] = Math.cos(a) * r;
   logoStart[i * 3 + 1] = (Math.random() - 0.5) * 4;
   logoStart[i * 3 + 2] = (Math.random() - 0.5) * 3 - 2;
+  logoTargets[i * 3] = Math.sin(i * 0.7) * 0.9;
+  logoTargets[i * 3 + 1] = Math.cos(i * 0.5) * 0.35;
+  logoTargets[i * 3 + 2] = 0;
   logoPos.set(logoStart.subarray(i * 3, i * 3 + 3), i * 3);
 }
+const logoGeo = new THREE.BufferGeometry();
 logoGeo.setAttribute("position", new THREE.BufferAttribute(logoPos, 3));
 const logoParticles = new THREE.Points(
   logoGeo,
@@ -88,123 +300,6 @@ const logoRing = new THREE.Mesh(
 );
 scene.add(logoRing);
 
-/* ── Cyborg (Act 1) ── */
-const cyborg = new THREE.Group();
-cyborg.visible = false;
-cyborg.scale.setScalar(0.001);
-scene.add(cyborg);
-
-const skinMat = new THREE.MeshStandardMaterial({
-  color: 0x0a120e,
-  emissive: 0x1a4d28,
-  emissiveIntensity: 0.65,
-  metalness: 0.85,
-  roughness: 0.3,
-});
-
-const glowMat = new THREE.MeshStandardMaterial({
-  color: 0x020403,
-  emissive: 0x39ff14,
-  emissiveIntensity: 1,
-  metalness: 1,
-  roughness: 0.1,
-});
-
-const wireMat = new THREE.MeshBasicMaterial({
-  color: 0x39ff14,
-  wireframe: true,
-  transparent: true,
-  opacity: 0.22,
-});
-
-const head = new THREE.Group();
-cyborg.add(head);
-
-const skull = new THREE.Mesh(new THREE.SphereGeometry(0.62, 32, 32), skinMat);
-skull.scale.set(1, 1.08, 0.92);
-head.add(skull);
-
-const wireSkull = new THREE.Mesh(new THREE.SphereGeometry(0.72, 16, 16), wireMat);
-wireSkull.scale.copy(skull.scale);
-head.add(wireSkull);
-
-const jawMesh = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.14, 0.28), skinMat);
-jawMesh.position.set(0, -0.38, 0.18);
-head.add(jawMesh);
-
-const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.35, 16), skinMat);
-neck.position.y = -0.72;
-head.add(neck);
-
-const shoulders = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.22, 0.45), skinMat);
-shoulders.position.y = -0.95;
-head.add(shoulders);
-
-const visor = new THREE.Mesh(
-  new THREE.BoxGeometry(0.72, 0.14, 0.08),
-  new THREE.MeshStandardMaterial({
-    color: 0x001a0a,
-    emissive: 0x39ff14,
-    emissiveIntensity: state.hoverCyborg ? 2 : 0.9,
-    metalness: 0.9,
-    roughness: 0.05,
-  })
-);
-visor.position.set(0, 0.08, 0.52);
-head.add(visor);
-
-const eyeGroup = new THREE.Group();
-eyeGroup.position.set(0, 0.05, 0.48);
-head.add(eyeGroup);
-
-const eyeSocketL = new THREE.Group();
-eyeSocketL.position.set(-0.18, 0, 0);
-const eyeSocketR = new THREE.Group();
-eyeSocketR.position.set(0.18, 0, 0);
-eyeGroup.add(eyeSocketL, eyeSocketR);
-
-const eyeCoreMat = new THREE.MeshBasicMaterial({ color: 0x39ff14 });
-const eyeGlowMat = new THREE.MeshBasicMaterial({
-  color: 0x39ff14,
-  transparent: true,
-  opacity: 0.35,
-});
-
-function makeEye(parent) {
-  const glow = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 16), eyeGlowMat);
-  const core = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), eyeCoreMat);
-  core.position.z = 0.04;
-  parent.add(glow, core);
-  return { glow, core };
-}
-
-const eyeL = makeEye(eyeSocketL);
-const eyeR = makeEye(eyeSocketR);
-
-for (let i = 0; i < 3; i++) {
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(0.88 + i * 0.14, 0.014, 8, 64),
-    glowMat.clone()
-  );
-  ring.rotation.x = Math.PI / 2 + i * 0.12;
-  ring.rotation.y = i * 0.35;
-  ring.userData.spin = 0.12 + i * 0.05;
-  head.add(ring);
-}
-
-const headset = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.035, 8, 48, Math.PI), glowMat);
-headset.rotation.z = Math.PI;
-headset.position.set(0, 0.42, -0.05);
-head.add(headset);
-
-cyborg.position.set(0, -0.05, 0);
-
-const cyborgHit = new THREE.Mesh(
-  new THREE.SphereGeometry(1.05, 16, 16),
-  new THREE.MeshBasicMaterial({ visible: false })
-);
-cyborg.add(cyborgHit);
-
 /* ── Environment ── */
 const COUNT = reducedMotion ? 500 : 2200;
 const positions = new Float32Array(COUNT * 3);
@@ -213,10 +308,8 @@ for (let i = 0; i < COUNT; i++) {
   positions[i * 3 + 1] = (Math.random() - 0.5) * 18;
   positions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 5;
 }
-const particleGeo = new THREE.BufferGeometry();
-particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 const particles = new THREE.Points(
-  particleGeo,
+  new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(positions, 3)),
   new THREE.PointsMaterial({
     color: 0x39ff14,
     size: 0.028,
@@ -234,8 +327,8 @@ grid.material.transparent = true;
 grid.position.y = -1.5;
 scene.add(grid);
 
-/* ── Intro → Hero ── */
-const INTRO_MS = 4500; // boot lines finish ~2s, logo hold, then auto-enter hero
+/* ── Intro ── */
+const INTRO_MS = 4500;
 const introStart = performance.now();
 let introFinished = false;
 
@@ -254,12 +347,11 @@ function finishIntro(instant = false) {
   logoRing.visible = false;
   cyborg.visible = true;
   if (instant) cyborg.scale.setScalar(1);
+  setupScrollHandoff();
 }
 
 introSkip?.addEventListener("click", () => finishIntro(true));
 if (reducedMotion) finishIntro(true);
-
-// Backup timer — rAF delta alone can stall if tab throttles
 setTimeout(() => finishIntro(false), INTRO_MS);
 
 window.addEventListener("pointermove", (e) => {
@@ -267,6 +359,127 @@ window.addEventListener("pointermove", (e) => {
   mouse.ty = (e.clientY / window.innerHeight - 0.5) * 2;
   mouse.ndc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
 });
+
+function setupScrollHandoff() {
+  if (!window.gsap?.ScrollTrigger || reducedMotion) return;
+  const { gsap, ScrollTrigger } = window;
+  gsap.registerPlugin(ScrollTrigger);
+
+  ScrollTrigger.create({
+    trigger: "#act2",
+    start: "top 90%",
+    end: "top 35%",
+    scrub: 0.65,
+    onUpdate: (self) => {
+      state.scroll = self.progress;
+    },
+  });
+
+  if (heroCopy) {
+    gsap.to(heroCopy, {
+      opacity: 0,
+      y: -40,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#act2",
+        start: "top 85%",
+        end: "top 45%",
+        scrub: 0.5,
+      },
+    });
+  }
+
+  gsap.from("#act2 .section__inner > *", {
+    opacity: 0,
+    y: 48,
+    stagger: 0.08,
+    scrollTrigger: { trigger: "#act2", start: "top 75%" },
+  });
+}
+
+let scrollSetup = false;
+function setupScrollHandoffOnce() {
+  if (scrollSetup) return;
+  scrollSetup = true;
+  setupScrollHandoff();
+}
+
+/* ── Life: breath, blink, visor ── */
+function updateLife(t, dt) {
+  if (reducedMotion) {
+    life.breath = 1;
+    return;
+  }
+
+  life.breath = 1 + Math.sin(t * 1.15) * 0.014;
+  rig.scale.y = life.breath;
+
+  if (t >= life.nextBlink && life.blink <= 0) life.blink = 1;
+  if (life.blink > 0) {
+    life.blink -= dt / 0.14;
+    const shut = life.blink > 0 ? 1 - life.blink : 1;
+    const eyeOpen = Math.max(0.05, shut);
+    if (eyeL) {
+      eyeL.group.scale.y = eyeOpen;
+      eyeR.group.scale.y = eyeOpen;
+    }
+    if (life.blink <= 0) life.nextBlink = t + 2.5 + Math.random() * 3.5;
+  } else if (eyeL) {
+    eyeL.group.scale.y = THREE.MathUtils.lerp(eyeL.group.scale.y, 1, 0.2);
+    eyeR.group.scale.y = eyeL.group.scale.y;
+  }
+
+  if (Math.random() > 0.992) life.visorGlitch = 1;
+  life.visorGlitch = Math.max(0, life.visorGlitch - dt * 4);
+
+  if (visorMesh?.material) {
+    const m = visorMesh.material;
+    const pulse = 0.75 + Math.sin(t * 3.5) * 0.08;
+    const glitch = life.visorGlitch * 1.4;
+    const hover = state.hoverCyborg ? 0.5 : 0;
+    if (m.emissiveIntensity !== undefined) {
+      m.emissiveIntensity = pulse + glitch + hover;
+    } else {
+      m.opacity = 0.08 + pulse * 0.12 + glitch * 0.25 + hover * 0.1;
+    }
+  }
+}
+
+function updateLook() {
+  mouse.x += (mouse.tx - mouse.x) * 0.08;
+  mouse.y += (mouse.ty - mouse.y) * 0.08;
+
+  lookMouse.set(mouse.tx * 1.6, -mouse.ty * 1.1 + 0.15, 5);
+  const look = lookMouse.clone().lerp(lookSection2, state.scroll * 0.85);
+
+  if (eyeL?.socket) {
+    eyeL.socket.lookAt(look);
+    eyeR.socket.lookAt(look);
+  }
+
+  const yaw = mouse.tx * 0.38 * (1 - state.scroll * 0.6);
+  const pitch = -mouse.ty * 0.22 * (1 - state.scroll * 0.6);
+  head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, yaw, 0.07);
+  head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, pitch, 0.07);
+
+  raycaster.setFromCamera(mouse.ndc, camera);
+  state.hoverCyborg = raycaster.intersectObject(cyborgHit, true).length > 0;
+
+  if (eyeL && life.blink <= 0) {
+    const s = state.hoverCyborg ? 1.25 : 1;
+    eyeL.core.scale.setScalar(s);
+    eyeR.core.scale.setScalar(s);
+  }
+}
+
+function applyScrollLayout() {
+  const s = state.scroll;
+  const baseX = window.innerWidth >= 960 ? 0.55 : 0;
+  cyborg.position.x = baseX + s * 1.35;
+  cyborg.position.y = -0.05 + s * 0.35;
+  bloom.strength = THREE.MathUtils.lerp(0.9, 0.55, s);
+  particles.position.y = s * 0.8;
+}
 
 function resize() {
   const w = window.innerWidth;
@@ -276,8 +489,7 @@ function resize() {
   renderer.setSize(w, h, false);
   composer.setSize(w, h);
   bloom.resolution.set(w, h);
-  const offset = w >= 960 ? 0.55 : 0;
-  cyborg.position.x = offset;
+  applyScrollLayout();
 }
 
 window.addEventListener("resize", resize);
@@ -286,46 +498,16 @@ resize();
 function updateLogoIntro(t, progress) {
   logoParticles.visible = true;
   const attr = logoGeo.attributes.position;
+  const ease = 1 - Math.pow(1 - Math.min(progress * 1.2, 1), 3);
   for (let i = 0; i < LOGO_N; i++) {
-    const tx = (Math.random() - 0.5) * 0.15 + Math.sin(i * 0.7) * 0.9;
-    const ty = (Math.random() - 0.5) * 0.15 + Math.cos(i * 0.5) * 0.35;
-    const tz = (Math.random() - 0.5) * 0.1;
-    const ease = 1 - Math.pow(1 - Math.min(progress * 1.2, 1), 3);
-    attr.array[i * 3] = THREE.MathUtils.lerp(logoStart[i * 3], tx, ease);
-    attr.array[i * 3 + 1] = THREE.MathUtils.lerp(logoStart[i * 3 + 1], ty, ease);
-    attr.array[i * 3 + 2] = THREE.MathUtils.lerp(logoStart[i * 3 + 2], tz, ease);
+    attr.array[i * 3] = THREE.MathUtils.lerp(logoStart[i * 3], logoTargets[i * 3], ease);
+    attr.array[i * 3 + 1] = THREE.MathUtils.lerp(logoStart[i * 3 + 1], logoTargets[i * 3 + 1], ease);
+    attr.array[i * 3 + 2] = THREE.MathUtils.lerp(logoStart[i * 3 + 2], logoTargets[i * 3 + 2], ease);
   }
   attr.needsUpdate = true;
   logoRing.material.opacity = Math.min(progress * 1.5, 0.7);
   logoRing.rotation.z = t * 0.4;
   logoRing.scale.setScalar(0.8 + progress * 0.35);
-}
-
-function updateCyborgLook(dt) {
-  mouse.x += (mouse.tx - mouse.x) * 0.08;
-  mouse.y += (mouse.ty - mouse.y) * 0.08;
-
-  lookTarget.set(mouse.tx * 1.8, -mouse.ty * 1.2 + 0.2, 5);
-  eyeSocketL.lookAt(lookTarget);
-  eyeSocketR.lookAt(lookTarget);
-
-  const headYaw = mouse.tx * 0.42;
-  const headPitch = -mouse.ty * 0.28;
-  head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, headYaw, 0.07);
-  head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, headPitch, 0.07);
-
-  raycaster.setFromCamera(mouse.ndc, camera);
-  state.hoverCyborg = raycaster.intersectObject(cyborgHit, true).length > 0;
-
-  const visorMat = visor.material;
-  visorMat.emissiveIntensity = THREE.MathUtils.lerp(
-    visorMat.emissiveIntensity,
-    state.hoverCyborg ? 2.2 : 0.85,
-    0.1
-  );
-
-  eyeL.core.scale.setScalar(state.hoverCyborg ? 1.3 : 1);
-  eyeR.core.scale.copy(eyeL.core.scale);
 }
 
 function animate() {
@@ -335,31 +517,34 @@ function animate() {
 
   if (state.phase === "intro") {
     const elapsed = (performance.now() - introStart) / 1000;
-    state.introT = elapsed;
-    const progress = Math.min(elapsed / (INTRO_MS / 1000), 1);
-    updateLogoIntro(t, progress);
-    camera.position.z = THREE.MathUtils.lerp(5.4, 4.8, progress);
+    updateLogoIntro(t, Math.min(elapsed / (INTRO_MS / 1000), 1));
+    camera.position.z = THREE.MathUtils.lerp(5.4, 4.8, Math.min(elapsed / (INTRO_MS / 1000), 1));
     if (elapsed >= INTRO_MS / 1000) finishIntro(false);
   } else {
+    if (!scrollSetup && window.gsap) setupScrollHandoffOnce();
+
     state.heroT += dt;
     const reveal = Math.min(state.heroT / 1.1, 1);
-    const base = 0.001 + (1 - Math.pow(1 - reveal, 3)) * 0.999;
-    const targetScale = base * (state.hoverCyborg ? 1.04 : 1);
-    cyborg.scale.setScalar(THREE.MathUtils.lerp(cyborg.scale.x, targetScale, 0.12));
+    const baseScale = 0.001 + (1 - Math.pow(1 - reveal, 3)) * 0.999;
+    const scrollScale = 1 - state.scroll * 0.42;
+    const target = baseScale * scrollScale * (state.hoverCyborg ? 1.03 : 1);
+    cyborg.scale.setScalar(THREE.MathUtils.lerp(cyborg.scale.x, target, 0.1));
 
-    updateCyborgLook(dt);
+    updateLife(t, dt);
+    updateLook();
+    applyScrollLayout();
 
     head.children.forEach((child) => {
       if (child.userData.spin) child.rotation.z += child.userData.spin * 0.012;
     });
 
-    cyborg.position.y = -0.05 + Math.sin(t * 0.7) * 0.025;
+    rig.position.y = Math.sin(t * 0.7) * 0.02;
     particles.rotation.y = t * 0.01;
 
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 0.15, 0.05);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, mouse.y * 0.1, 0.05);
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 0.12 * (1 - state.scroll), 0.05);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, 0.05 + mouse.y * 0.08 * (1 - state.scroll), 0.05);
     camera.position.z = 5.1;
-    camera.lookAt(cyborg.position.x * 0.5, 0, 0);
+    camera.lookAt(cyborg.position.x * 0.4, cyborg.position.y * 0.3, 0);
   }
 
   composer.render();
