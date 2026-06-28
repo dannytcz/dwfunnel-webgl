@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#030508" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/hero.css" />
 </head>
 <body>
@@ -16,9 +16,32 @@
   <canvas id="hero-canvas" aria-hidden="true"></canvas>
   <div class="hero-vignette" aria-hidden="true"></div>
 
-  <p class="hero-hud">DW <span>FUNNEL</span> // SYS.ONLINE</p>
+  <!-- Act 0: boot intro -->
+  <div id="act0" class="intro" aria-live="polite">
+    <div class="intro__scanlines" aria-hidden="true"></div>
+    <div class="intro__boot">
+      <p class="intro__line">INITIALIZING CONVERSION ENGINE<span class="intro__cursor">_</span></p>
+      <p class="intro__line intro__line--delay1">LOADING FUNNEL MATRIX...</p>
+      <p class="intro__line intro__line--delay2">SYNCING CLIENT PIPELINE...</p>
+      <p class="intro__line intro__line--delay3">DW FUNNEL // ONLINE</p>
+    </div>
+    <div class="tech-logo" aria-label="DW Funnel">
+      <span class="tech-logo__dw">DW</span>
+      <span class="tech-logo__funnel">FUNNEL</span>
+      <span class="tech-logo__tag">CONVERSION.SYS</span>
+    </div>
+    <button type="button" class="intro__skip" id="intro-skip">Skip intro</button>
+  </div>
 
-  <section class="hero-ui" aria-label="Hero">
+  <!-- Act 1: hero -->
+  <header class="hero-hud is-hidden" id="hero-hud">
+    <a href="/" class="tech-logo tech-logo--compact" aria-label="DW Funnel home">
+      <span class="tech-logo__dw">DW</span><span class="tech-logo__funnel">FUNNEL</span>
+    </a>
+    <span class="hero-hud__status"><span class="hero-hud__dot"></span> SYS.ONLINE</span>
+  </header>
+
+  <section id="act1" class="hero-ui is-hidden" aria-label="Hero">
     <div class="hero-copy">
       <p class="eyebrow">Creator-Proven System</p>
       <h1>Your Offer Deserves a Page People Remember.</h1>
@@ -29,7 +52,7 @@
         <a href="#contact" class="btn btn--ghost">Book a discovery call</a>
       </div>
     </div>
-    <div class="hero-spacer" aria-hidden="true"></div>
+    <p class="hero-hint is-hidden" id="hero-hint">Move cursor — she tracks you</p>
   </section>
 
   <script type="importmap">
