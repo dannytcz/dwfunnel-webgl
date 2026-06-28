@@ -6,13 +6,13 @@ import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js"
 /** Drop cyborg-hero.webp/png here — see assets/images/README.md */
 const PORTRAIT_CFG = {
   urls: ["assets/images/cyborg-hero.webp", "assets/images/cyborg-hero.png"],
-  planeHeight: 2.35,
-  /** Normalized offsets from portrait center — tweak when real art arrives */
+  planeHeight: 2.55,
   eyes: {
-    left: new THREE.Vector3(-0.2, 0.1, 0.06),
-    right: new THREE.Vector3(0.2, 0.1, 0.06),
+    left: new THREE.Vector3(-0.21, 0.52, 0.04),
+    right: new THREE.Vector3(0.21, 0.52, 0.04),
   },
-  visor: { y: 0.18, width: 0.55, height: 0.07 },
+  visor: { y: 0.74, width: 0.46, height: 0.04 },
+  eyeOverlayScale: 0.45,
 };
 
 const canvas = document.getElementById("hero-canvas");
@@ -224,8 +224,8 @@ function buildPortrait(texture) {
   );
   head.add(portraitPlane);
 
-  eyeL = makeEyeGlow(head, 1.15);
-  eyeR = makeEyeGlow(head, 1.15);
+  eyeL = makeEyeGlow(head, PORTRAIT_CFG.eyeOverlayScale);
+  eyeR = makeEyeGlow(head, PORTRAIT_CFG.eyeOverlayScale);
   eyeL.group.position.copy(PORTRAIT_CFG.eyes.left);
   eyeR.group.position.copy(PORTRAIT_CFG.eyes.right);
   eyeL.socket = eyeL.group;
