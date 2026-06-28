@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DW Funnel | WebGL Hero</title>
+  <meta name="description" content="Your offer deserves a page people remember. DW Funnel builds conversion landing pages. Founded by Daphne Wong." />
+  <meta name="theme-color" content="#030508" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/hero.css" />
+</head>
+<body>
+
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-vignette" aria-hidden="true"></div>
+
+  <p class="hero-hud">DW <span>FUNNEL</span> // SYS.ONLINE</p>
+
+  <section class="hero-ui" aria-label="Hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Creator-Proven System</p>
+      <h1>Your Offer Deserves a Page People Remember.</h1>
+      <p class="lead">I build the page. You get the clients. Founded by Daphne Wong.</p>
+      <p class="lead">Trusted by 270+ business owners who wanted their first 10 clients without the template look.</p>
+      <div class="hero-cta">
+        <a href="#work-with-us" class="btn btn--primary">Work With Us</a>
+        <a href="#contact" class="btn btn--ghost">Book a discovery call</a>
+      </div>
+    </div>
+    <div class="hero-spacer" aria-hidden="true"></div>
+  </section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="assets/js/hero-scene.js"></script>
+</body>
+</html>
