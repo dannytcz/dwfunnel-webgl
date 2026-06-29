@@ -112,13 +112,32 @@ html, body {
   background: var(--bg);
 }
 
+.hero-scrub__media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-scrub__idle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+
 #scrub-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  will-change: transform;
+  z-index: 1;
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 .hero-scrub__stars {

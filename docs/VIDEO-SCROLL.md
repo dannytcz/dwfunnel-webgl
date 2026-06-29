@@ -11,9 +11,13 @@ python scripts/dev-server.py
 
 Frames load from `assets/js/cdn-manifest.js` → `DWF_CDN.acts.act0` (~146 orbital hero frames on GHL CDN).
 
-## Replace with your own “super rich” clip
+## Replace with your own clips
 
-1. **Generate video** (Seedance / Kling / Runway / etc.) — prompt for **camera movement into the scene**:
+### Idle loop (background)
+`assets/videos/hero-idle.mp4` — subtle character motion at rest. See `assets/videos/README.md`.
+
+### Scroll dive (on scroll)
+1. **Generate video** (Seedance / Kling / Runway / etc.) — camera **flies into the scene**:
    - orbital wide → dolly through neon corridor → push into subject
    - 4–6 seconds, 24fps, 1280×720 minimum (1920×1080 preferred)
 

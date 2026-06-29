@@ -594,6 +594,11 @@ window.DWF_CDN = {
       "https://assets.cdn.filesafe.space/99ZMycIuwWq7t0SrUNWY/media/7aa5bf0b-37af-46b2-a24f-a19a94d66a12.webp"
     ]
   },
+  "heroIdle": {
+    "url": "assets/videos/hero-idle.mp4",
+    "webpLoop": { "start": 0, "end": 28, "fps": 10 },
+    "note": "Short looping clip (3–6s) — subtle character motion. Falls back to act0 WebP loop if missing."
+  },
   "flywheel": [
     {
       "stage": "stage01",

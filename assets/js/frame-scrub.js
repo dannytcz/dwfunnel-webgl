@@ -78,7 +78,7 @@ export class FrameScrubber {
     this.current = index;
   }
 
-  bindParallax() {
+  bindParallax(idleLayer = null) {
     if (this.reducedMotion) return;
     window.addEventListener("pointermove", (e) => {
       const rect = this.container.getBoundingClientRect();
@@ -88,6 +88,7 @@ export class FrameScrubber {
       const cx = this.mouse.x * this.parallaxCanvas * 28;
       const cy = this.mouse.y * this.parallaxCanvas * 18;
       this.canvas.style.transform = `translate(${cx}px, ${cy}px) scale(1.03)`;
+      idleLayer?.applyParallax(this.mouse.x, this.mouse.y);
       if (this.starsLayer) {
         const sx = this.mouse.x * 0.12 * 36;
         const sy = this.mouse.y * 0.12 * 24;
@@ -102,17 +103,20 @@ export class FrameScrubber {
   }
 }
 
-/** Map raw scroll progress → frame index with hold + dive acceleration. */
+/** Map raw scroll progress → frame index (after idle→scrub crossfade). */
 export function mapScrollToFrame(progress, frameCount, opts = {}) {
-  const holdStart = opts.holdStart ?? 0.06;
+  const blendEnd = opts.blendEnd ?? 0.16;
+  const holdStart = opts.holdStart ?? 0.04;
   const holdEnd = opts.holdEnd ?? 0.94;
   const n = Math.max(1, frameCount);
 
-  if (progress <= holdStart) return 0;
-  if (progress >= holdEnd) return n - 1;
+  if (progress <= blendEnd) return 0;
 
-  const t = (progress - holdStart) / (holdEnd - holdStart);
-  // Slow open → fast middle (flying in) → ease out at end
+  const diveP = (progress - blendEnd) / (1 - blendEnd);
+  if (diveP <= holdStart) return 0;
+  if (diveP >= holdEnd) return n - 1;
+
+  const t = (diveP - holdStart) / (holdEnd - holdStart);
   const eased = t < 0.5
     ? 4 * t * t * t
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -120,13 +124,28 @@ export function mapScrollToFrame(progress, frameCount, opts = {}) {
   return Math.min(n - 1, Math.floor(eased * (n - 1)));
 }
 
-/** Extra canvas motion layered on baked frames. */
-export function scrollFx(progress) {
+/** Scroll motion + idle/scrub crossfade. */
+export function scrollFx(progress, opts = {}) {
+  const blendEnd = opts.blendEnd ?? 0.16;
   const p = Math.max(0, Math.min(1, progress));
+
+  let scrubOpacity = 0;
+  let videoOpacity = 1;
+  if (p > 0) {
+    const blendT = Math.min(1, p / blendEnd);
+    scrubOpacity = blendT * blendT * (3 - 2 * blendT);
+    videoOpacity = 1 - scrubOpacity;
+  }
+
+  const diveP = p <= blendEnd ? 0 : (p - blendEnd) / (1 - blendEnd);
+
   return {
-    scale: 1 + p * 0.22,
-    offsetY: p * -36,
-    offsetX: p * 12,
+    scrubOpacity,
+    videoOpacity,
+    diveProgress: diveP,
+    scale: 1 + diveP * 0.22,
+    offsetY: diveP * -36,
+    offsetX: diveP * 12,
     vignette: 0.35 + p * 0.55,
     copyOpacity: p < 0.08 ? 1 : Math.max(0, 1 - (p - 0.08) / 0.38),
     copyY: p * -80,
