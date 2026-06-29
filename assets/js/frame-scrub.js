@@ -19,23 +19,30 @@ export class FrameScrubber {
     this.reducedMotion = opts.reducedMotion ?? false;
   }
 
-  load(onProgress) {
+  load(onProgress, opts = {}) {
+    const minReady = opts.minReady ?? 0;
     return new Promise((resolve) => {
       if (!this.urls.length) {
         resolve();
         return;
       }
       let done = 0;
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        resolve();
+      };
       this.urls.forEach((url, i) => {
         const img = new Image();
-        img.crossOrigin = "anonymous";
+        if (/^https?:\/\//.test(url)) img.crossOrigin = "anonymous";
         img.decoding = "async";
         const finish = () => {
           this.frames[i] = img;
           done++;
           this.loaded = done;
           onProgress?.(done / this.urls.length);
-          if (done === this.urls.length) resolve();
+          if (done >= minReady || done === this.urls.length) settle();
         };
         img.onload = finish;
         img.onerror = finish;
