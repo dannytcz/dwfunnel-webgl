@@ -250,21 +250,89 @@ export function createCyborgBust() {
 }
 
 /**
- * Optional GLB bust — drop file at assets/models/cyborg-bust.glb
+ * Re-skin any GLB with DW Funnel cyber chrome + neon traces.
  */
-export async function loadCyborgGlb(url) {
+export function applyCyberMaterials(root, envMap = null) {
+  root.traverse((child) => {
+    if (!child.isMesh) return;
+    child.castShadow = true;
+    child.receiveShadow = true;
+
+    const mats = Array.isArray(child.material) ? child.material : [child.material];
+    mats.forEach((m) => m?.dispose?.());
+
+    const cyber = new THREE.MeshPhysicalMaterial({
+      color: 0x0a100e,
+      metalness: 0.88,
+      roughness: 0.26,
+      clearcoat: 0.75,
+      clearcoatRoughness: 0.12,
+      emissive: 0x39ff14,
+      emissiveIntensity: 0.14,
+      envMap,
+      envMapIntensity: 1.5,
+    });
+    child.material = cyber;
+  });
+}
+
+function findHeadBone(root) {
+  let head = null;
+  let neck = null;
+  root.traverse((o) => {
+    if (!o.isBone) return;
+    const n = o.name.toLowerCase();
+    if (!head && (n.includes("head") || n.endsWith("head"))) head = o;
+    if (!neck && n.includes("neck")) neck = o;
+  });
+  return head || neck;
+}
+
+/** Scale + position GLB for bust hero framing (head + shoulders in view). */
+export function stageGlbBust(model, opts = {}) {
+  const targetH = opts.targetHeight ?? 2.35;
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const scale = targetH / size.y;
+  model.scale.setScalar(scale);
+
+  box.setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.x = -center.x;
+  model.position.z = -center.z;
+  model.position.y = -box.min.y - targetH * 0.38;
+
+  return { scale, headBone: findHeadBone(model) };
+}
+
+/**
+ * Load GLB, apply cyber materials, frame as bust.
+ * @returns {{ root, headBone, mixer, clips, visor: null, eyeL: null, eyeR: null }}
+ */
+export async function loadCyborgGlb(url, envMap = null) {
   const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
   const gltf = await new GLTFLoader().loadAsync(url);
-  const model = gltf.scene;
-  model.traverse((o) => {
-    if (o.isMesh) {
-      o.castShadow = true;
-      o.receiveShadow = true;
-      if (o.material?.isMeshStandardMaterial) {
-        o.material.envMapIntensity = 1.2;
-        o.material.metalness = Math.max(o.material.metalness ?? 0, 0.7);
-      }
-    }
-  });
-  return model;
+  const root = gltf.scene;
+
+  applyCyberMaterials(root, envMap);
+  const { headBone } = stageGlbBust(root);
+
+  let mixer = null;
+  if (gltf.animations?.length) {
+    mixer = new THREE.AnimationMixer(root);
+    const clip = gltf.animations.find((c) => /idle|breath|stand/i.test(c.name)) || gltf.animations[0];
+    const action = mixer.clipAction(clip);
+    action.play();
+    action.setEffectiveTimeScale(0.35);
+  }
+
+  return {
+    root,
+    headBone,
+    mixer,
+    clips: gltf.animations,
+    visor: null,
+    eyeL: null,
+    eyeR: null,
+  };
 }

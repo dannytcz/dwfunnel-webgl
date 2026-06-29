@@ -1,18 +1,17 @@
-# 3D cyborg model (optional upgrade)
+# Download hero GLB (run once)
 
-Drop a `.glb` bust here to replace the built-in procedural mesh.
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/download-hero-glb.ps1
+```
 
-| File | Notes |
-|------|--------|
-| `cyborg-bust.glb` | Female android / sci-fi bust, front-facing |
+Default model: **Michelle.glb** from [Three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf) — skinned female mesh, CC-friendly demo asset.
 
-Set `HERO_MODE = "glb"` in `assets/js/hero-scene.js`.
+Saved as `assets/models/cyborg-bust.glb`. Scene applies dark metal + neon-green emissive override at runtime.
 
-**Where to get models:**
-- [Sketchfab](https://sketchfab.com) — filter CC / downloadable
-- [Poly Pizza](https://poly.pizza) — free low-poly
-- Commission on Fiverr / Spline export
+## Swap model
 
-**Ideal spec:** bust only (head + shoulders), ~50k–200k tris, PBR materials, no animation required.
+Replace `cyborg-bust.glb` with any bust/character GLB, or edit `GLB_URLS` in `hero-scene.js`.
 
-If the file is missing, the scene falls back to the built-in `mesh3d` bust.
+## Attribution
+
+- **Michelle.glb** — Three.js / Mixamo sample (demo use via three.js repo)

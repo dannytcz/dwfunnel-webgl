@@ -20,9 +20,12 @@ Set `HERO_MODE` in `assets/js/hero-scene.js`:
 
 | Mode | What you get |
 |------|----------------|
-| **`mesh3d`** (default) | Real Three.js geometry — lathe head, shoulder plates, tube circuits, PBR + env reflections |
-| `glb` | External `assets/models/cyborg-bust.glb` — best for photoreal |
-| `portrait` | 2.5D AI still + depth parallax (legacy — feels flat) |
+| **`auto`** (default) | Real **GLB** mesh → fallback built-in 3D bust |
+| `glb` | GLB only (`assets/models/cyborg-bust.glb`) |
+| `mesh3d` | Built-in Three.js geometry bust |
+| `portrait` | 2.5D AI still (legacy) |
+
+Download GLB: `powershell -File scripts/download-hero-glb.ps1`
 
 Hard refresh after changes. Skip intro to see the bust immediately.
 
