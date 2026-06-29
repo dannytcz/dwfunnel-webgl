@@ -6,7 +6,9 @@
   --accent-dim: rgba(94, 234, 212, 0.55);
   --text: #ecfdf5;
   --text-muted: rgba(236, 253, 245, 0.72);
-  --font: "DM Sans", system-ui, sans-serif;
+  --font-display: "Shizuru", "Yu Mincho", "Hiragino Mincho ProN", "Songti SC", serif;
+  --font-body: "Cormorant Garamond", "EB Garamond", "Georgia", "Yu Mincho", serif;
+  --font: var(--font-body);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,9 +17,11 @@ html, body {
   min-height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font);
+  font-family: var(--font-body);
+  font-feature-settings: "ss01", "liga", "kern";
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ── Preloader ── */
@@ -28,7 +32,7 @@ html, body {
   display: grid;
   place-items: center;
   background: var(--bg);
-  transition: opacity 0.5s ease, visibility 0.5s;
+  transition: opacity 0.45s ease, visibility 0.45s;
 }
 
 .cinema-loader.is-done {
@@ -43,16 +47,17 @@ html, body {
 }
 
 .cinema-loader__brand {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   color: var(--accent);
   margin-bottom: 0.75rem;
 }
 
 .cinema-loader__sub {
-  font-size: 0.8125rem;
+  font-size: 0.95rem;
+  font-style: italic;
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
@@ -73,8 +78,9 @@ html, body {
 
 .cinema-loader__pct {
   margin-top: 0.5rem;
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  font-style: italic;
+  letter-spacing: 0.08em;
   color: var(--accent-dim);
 }
 
@@ -94,21 +100,24 @@ html, body {
 
 .cinema-header a {
   pointer-events: auto;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   text-decoration: none;
   color: var(--text);
 }
 
 .cinema-header__cta {
   pointer-events: auto;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
   text-decoration: none;
   color: var(--accent);
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.15rem;
   border: 1px solid rgba(94, 234, 212, 0.35);
   border-radius: 999px;
   backdrop-filter: blur(8px);
@@ -147,8 +156,8 @@ html, body {
   pointer-events: none;
   background: linear-gradient(
     to right,
-    rgba(6, 16, 24, 0.82) 0%,
-    rgba(6, 16, 24, 0.45) 38%,
+    rgba(6, 16, 24, 0.78) 0%,
+    rgba(6, 16, 24, 0.42) 38%,
     transparent 62%
   );
 }
@@ -165,12 +174,20 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  z-index: 0;
   transition: opacity 0.35s ease;
 }
 
 .cinema__idle.is-hidden {
   opacity: 0;
+}
+
+.cinema__stars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.85;
 }
 
 .cinema__canvas {
@@ -219,39 +236,62 @@ html, body {
   }
 }
 
-.cinema-copy--hero {
-  opacity: 1;
-  visibility: visible;
-}
-
-.cinema-copy--mid {
+.cinema-copy--hero,
+.cinema-copy--mid,
+.cinema-copy--underworld {
   opacity: 0;
   visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s, transform 0.35s ease;
 }
 
 .cinema-copy__eyebrow {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.22em;
+  text-transform: none;
   color: var(--accent);
-  margin-bottom: 0.875rem;
+  margin-bottom: 1.1rem;
 }
 
-.cinema-copy h1,
+.cinema-copy h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw + 0.4rem, 5.25rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-feature-settings: "palt";
+  margin-bottom: 1.25rem;
+  color: var(--text);
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
+  max-width: 18ch;
+}
+
 .cinema-copy h2 {
-  font-size: clamp(1.75rem, 4.2vw, 2.625rem);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 3.4vw + 0.5rem, 3.25rem);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  font-style: italic;
+  margin-bottom: 1.1rem;
+  color: var(--text);
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
+  max-width: 22ch;
 }
 
 .cinema-copy p {
-  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
-  line-height: 1.6;
+  font-size: clamp(1.0625rem, 0.6vw + 0.95rem, 1.25rem);
+  line-height: 1.55;
   color: var(--text-muted);
-  max-width: 34ch;
+  max-width: 36ch;
+  font-weight: 400;
+}
+
+.cinema-copy__lede {
+  font-style: italic;
+  color: rgba(236, 253, 245, 0.82);
 }
 
 .cinema-copy p + p {
@@ -262,7 +302,7 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   pointer-events: auto;
 }
 
@@ -270,9 +310,11 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.875rem 1.375rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  padding: 0.95rem 1.6rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-style: italic;
   letter-spacing: 0.04em;
   text-decoration: none;
   border-radius: 999px;
@@ -303,13 +345,14 @@ html, body {
 
 .cinema-hint {
   margin-top: 1.75rem;
-  font-size: 0.6875rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: italic;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--accent-dim);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .cinema-hint__chev {
@@ -344,15 +387,19 @@ html, body {
 }
 
 .cinema-section h2 {
-  font-size: clamp(1.75rem, 4vw, 2.375rem);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: clamp(2.2rem, 4vw, 3.1rem);
+  font-weight: 500;
+  font-style: italic;
   line-height: 1.12;
-  margin-bottom: 0.75rem;
+  letter-spacing: -0.005em;
+  margin-bottom: 0.85rem;
+  max-width: 22ch;
 }
 
 .cinema-section__lead {
   color: var(--text-muted);
-  font-size: 1.0625rem;
+  font-size: 1.15rem;
   line-height: 1.55;
   max-width: 42ch;
   margin-bottom: 2rem;
@@ -375,24 +422,28 @@ html, body {
 }
 
 .cinema-card__num {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.16em;
   color: var(--accent);
   display: block;
   margin-bottom: 0.5rem;
 }
 
 .cinema-card h3 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  margin-bottom: 0.35rem;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-bottom: 0.45rem;
 }
 
 .cinema-card p {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 @media (prefers-reduced-motion: reduce) {

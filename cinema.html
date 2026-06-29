@@ -8,8 +8,8 @@
   <meta name="theme-color" content="#061018" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Shizuru&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=2" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -44,25 +44,33 @@
         <div class="cinema__vignette" id="cinema-vignette" aria-hidden="true"></div>
       </div>
 
-      <div id="hero-copy-block" class="cinema-copy cinema-copy--hero">
-        <p class="cinema-copy__eyebrow">Creator-proven system</p>
+      <div id="hero-copy-block" class="cinema-copy cinema-copy--hero" data-station="hero">
+        <p class="cinema-copy__eyebrow">A scroll, not a template</p>
         <h1>Your Offer Deserves a Page People Remember.</h1>
-        <p>I build the page. You get the clients. Founded by Daphne Wong.</p>
-        <p>Trusted by 270+ business owners who wanted their first 10 clients without the template look.</p>
+        <p class="cinema-copy__lede">A hand-built cinematic hero for founders tired of looking like everyone else.</p>
         <div class="cinema-copy__actions">
           <a href="#contact" class="cinema-btn cinema-btn--primary">Work With Us</a>
           <a href="#problem" class="cinema-btn cinema-btn--ghost">See why pages fail</a>
         </div>
         <p class="cinema-hint" id="scroll-hint">
           <span class="cinema-hint__chev" aria-hidden="true">↓</span>
-          <span id="scroll-hint-text">Scroll to begin</span>
+          <span id="scroll-hint-text">Scroll to descend</span>
         </p>
       </div>
 
-      <div id="act1-copy-block" class="cinema-copy cinema-copy--mid" aria-hidden="true">
-        <p class="cinema-copy__eyebrow">The journey</p>
-        <h2>Every scroll reveals the next chapter.</h2>
-        <p>From the shrine above the clouds, through the portal, into what your offer really solves.</p>
+      <div id="passage-copy-block" class="cinema-copy cinema-copy--mid" aria-hidden="true" data-station="passage">
+        <p class="cinema-copy__eyebrow">The Threshold</p>
+        <h2>From the shrine above the clouds, into the part most pages skip.</h2>
+        <p>Every offer has a moment where trust is won. Yours deserves a threshold, not a transition.</p>
+      </div>
+
+      <div id="underworld-copy-block" class="cinema-copy cinema-copy--underworld" aria-hidden="true" data-station="underworld">
+        <p class="cinema-copy__eyebrow">The Reward</p>
+        <h2>Where the page stops looking like a page.</h2>
+        <p>The difference between a template and a memory is a director's hand, not a section count.</p>
+        <div class="cinema-copy__actions">
+          <a href="#contact" class="cinema-btn cinema-btn--primary">Book a call</a>
+        </div>
       </div>
     </section>
   </div>
@@ -95,6 +103,6 @@
   <script src="assets/js/cdn-manifest.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=3"></script>
+  <script type="module" src="assets/js/cinema-scroll.js?v=4"></script>
 </body>
 </html>

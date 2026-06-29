@@ -1,8 +1,15 @@
 import { FrameScrubber } from "./frame-scrub.js";
+import { StarField } from "./stars.js";
 
-const PIN_VH = 400;
+const PIN_VH = 600;
 const MIN_READY = 36;
 const ACT_KEYS = ["act0", "act1", "act2"];
+
+const STATIONS = {
+  hero:      { start: 0.00, peak: 0.22, end: 0.34 },
+  passage:   { start: 0.38, peak: 0.54, end: 0.68 },
+  underworld:{ start: 0.72, peak: 0.88, end: 1.00 },
+};
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -17,10 +24,10 @@ const vignette = document.getElementById("cinema-vignette");
 const scrollHint = document.getElementById("scroll-hint");
 const scrollHintText = document.getElementById("scroll-hint-text");
 const heroCopy = document.getElementById("hero-copy-block");
-const midCopy = document.getElementById("act1-copy-block");
+const passageCopy = document.getElementById("passage-copy-block");
+const underworldCopy = document.getElementById("underworld-copy-block");
 const problemSection = document.getElementById("problem");
 
-/** One continuous film: B→A (act0) → A→C (act1) → C→D (act2) = 662 frames */
 function buildFilmUrls() {
   const acts = window.DWF_CDN?.acts ?? {};
   const local =
@@ -47,45 +54,53 @@ function setProgress(value) {
   if (pct) pct.textContent = `${n}%`;
 }
 
-function easeFilm(t) {
-  const x = Math.max(0, Math.min(1, t));
-  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+function stationOpacity(station, p) {
+  const { start, end } = STATIONS[station];
+  const fadeIn = 0.06;
+  const fadeOut = 0.08;
+  if (p <= start - fadeIn) return 0;
+  if (p >= end + fadeOut) return 0;
+  if (p < start) return Math.max(0, (p - (start - fadeIn)) / fadeIn);
+  if (p > end) return Math.max(0, 1 - (p - end) / fadeOut);
+  return 1;
 }
 
-function frameFromProgress(p, count) {
-  const n = Math.max(1, count);
-  return Math.min(n - 1, Math.floor(easeFilm(p) * (n - 1)));
-}
-
-function setCopy(el, visible, opacity = 1, y = 0) {
+function setCopy(el, opacity) {
   if (!el) return;
-  el.style.opacity = visible ? String(opacity) : "0";
-  el.style.visibility = visible && opacity > 0.02 ? "visible" : "hidden";
-  el.style.transform = `translateY(${y}px)`;
+  const visible = opacity > 0.02;
+  el.style.opacity = String(opacity);
+  el.style.visibility = visible ? "visible" : "hidden";
+  el.style.transform = `translateY(${(1 - opacity) * 18}px)`;
 }
 
 function applyCopyForProgress(p) {
-  const heroOpacity = p < 0.14 ? 1 : Math.max(0, 1 - (p - 0.14) / 0.22);
-  const heroY = p * -48;
-  setCopy(heroCopy, true, heroOpacity, heroY);
+  const heroOp = stationOpacity("hero", p);
+  const passOp = stationOpacity("passage", p);
+  const undOp  = stationOpacity("underworld", p);
 
-  let midOpacity = 0;
-  if (p > 0.32 && p < 0.58) midOpacity = 1;
-  else if (p >= 0.26 && p <= 0.32) midOpacity = (p - 0.26) / 0.06;
-  else if (p >= 0.58 && p <= 0.66) midOpacity = 1 - (p - 0.58) / 0.08;
-  setCopy(midCopy, midOpacity > 0.02, midOpacity, (1 - p) * 16);
+  const yHero = p * -28;
+  setCopy(heroCopy, heroOp);
+  if (heroCopy) heroCopy.style.transform = `translateY(${yHero}px)`;
+
+  setCopy(passageCopy, passOp);
+  setCopy(underworldCopy, undOp);
 
   if (scrollHint) {
-    scrollHint.style.opacity = p < 0.04 ? "1" : String(Math.max(0, 1 - (p - 0.04) / 0.08));
+    scrollHint.style.opacity = heroOp > 0.1 ? "1" : "0";
   }
 
   if (problemSection) {
-    const contentP = Math.max(0, Math.min(1, (p - 0.82) / 0.18));
+    const contentP = Math.max(0, Math.min(1, (p - 0.92) / 0.08));
     problemSection.style.opacity = String(contentP);
     problemSection.style.pointerEvents = contentP > 0.5 ? "auto" : "none";
   }
 
-  if (vignette) vignette.style.opacity = String(0.35 + p * 0.4);
+  if (vignette) {
+    const stars = document.querySelector(".cinema__stars");
+    const v = 0.32 + p * 0.42;
+    vignette.style.opacity = String(v);
+    if (stars) stars.style.opacity = String(0.55 + p * 0.4);
+  }
 }
 
 function showIdle() {
@@ -99,8 +114,22 @@ function showFilm() {
   if (canvas) canvas.classList.add("is-active");
 }
 
+function frameForProgress(p, count) {
+  const n = Math.max(1, count);
+  const x = Math.max(0, Math.min(1, p));
+  const eased = x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  return Math.min(n - 1, Math.floor(eased * (n - 1)));
+}
+
 async function init() {
   document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+
+  const stage = cinema?.querySelector(".cinema__stage");
+  let stars = null;
+  if (stage) {
+    stars = new StarField(stage, { reducedMotion });
+    stars.start();
+  }
 
   const filmUrls = buildFilmUrls();
   if (!filmUrls.length) {
@@ -116,8 +145,10 @@ async function init() {
   await scrubber.load((p) => setProgress(p), { minReady: MIN_READY });
 
   scrubber.resize();
+
+  setProgress(1);
   loader?.classList.add("is-done");
-  if (scrollHintText) scrollHintText.textContent = "Scroll to begin";
+  if (scrollHintText) scrollHintText.textContent = "Scroll to descend";
   applyCopyForProgress(0);
 
   if (problemSection) {
@@ -141,7 +172,7 @@ async function init() {
   ScrollTrigger.create({
     trigger: cinemaPin || cinema,
     start: "top top",
-    end: reducedMotion ? "+=160%" : `+=${PIN_VH}%`,
+    end: reducedMotion ? "+=220%" : `+=${PIN_VH}%`,
     pin: true,
     pinSpacing: true,
     anticipatePin: 1,
@@ -150,15 +181,30 @@ async function init() {
     onUpdate: (self) => {
       const p = self.progress;
 
-      if (p <= 0.001) {
+      if (p <= 0.002) {
         showIdle();
         return;
       }
 
       showFilm();
-      const idx = frameFromProgress(p, filmUrls.length);
-      const scale = 1 + p * 0.1;
-      const offsetY = -p * 20;
+      const idx = frameForProgress(p, filmUrls.length);
+
+      let scale = 1;
+      let offsetY = 0;
+      if (p < 0.40) {
+        const t = p / 0.40;
+        scale = 1 + t * 0.04;
+        offsetY = -t * 8;
+      } else if (p < 0.70) {
+        const t = (p - 0.40) / 0.30;
+        scale = 1.04 + t * 0.04;
+        offsetY = -8 - t * 14;
+      } else {
+        const t = (p - 0.70) / 0.30;
+        scale = 1.08 + t * 0.10;
+        offsetY = -22 - t * 12;
+      }
+
       scrubber.draw(idx, { scale, offsetY });
       applyCopyForProgress(p);
     },
