@@ -2,17 +2,21 @@ import * as THREE from "three";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import {
+  createDepthParallaxMesh,
+  depthFromColor,
+  loadTexture,
+} from "./depth-parallax.js";
 
 /** Drop cyborg-hero.webp/png here — see assets/images/README.md */
 const PORTRAIT_CFG = {
   urls: ["assets/images/cyborg-hero.webp", "assets/images/cyborg-hero.png"],
+  depthUrls: ["assets/images/cyborg-hero-depth.webp", "assets/images/cyborg-hero-depth.png"],
   planeHeight: 2.55,
-  eyes: {
-    left: new THREE.Vector3(-0.21, 0.52, 0.04),
-    right: new THREE.Vector3(0.21, 0.52, 0.04),
-  },
-  visor: { y: 0.74, width: 0.46, height: 0.04 },
-  eyeOverlayScale: 0.45,
+  segments: 96,
+  displacement: 0.38,
+  parallax: 0.032,
+  rimStrength: 0.6,
 };
 
 const canvas = document.getElementById("hero-canvas");
@@ -92,6 +96,7 @@ let visorMesh = null;
 let eyeL = null;
 let eyeR = null;
 let portraitPlane = null;
+let depthParallax = null;
 const proceduralParts = [];
 
 const cyborgHit = new THREE.Mesh(
@@ -209,50 +214,47 @@ function buildProcedural() {
   }
 }
 
-function buildPortrait(texture) {
+async function buildDepthPortrait(colorTex, depthTex) {
   state.mode = "portrait";
   while (head.children.length) head.remove(head.children[0]);
   proceduralParts.length = 0;
+  depthParallax?.dispose();
+  depthParallax = null;
+  eyeL = null;
+  eyeR = null;
+  visorMesh = null;
 
-  const aspect = texture.image.width / texture.image.height;
-  const h = PORTRAIT_CFG.planeHeight;
-  const w = h * aspect;
+  depthParallax = createDepthParallaxMesh({
+    colorMap: colorTex,
+    depthMap: depthTex,
+    planeHeight: PORTRAIT_CFG.planeHeight,
+    segments: PORTRAIT_CFG.segments,
+    displacement: PORTRAIT_CFG.displacement,
+    parallax: PORTRAIT_CFG.parallax,
+    rimStrength: PORTRAIT_CFG.rimStrength,
+  });
 
-  portraitPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(w, h),
-    new THREE.MeshBasicMaterial({ map: texture, transparent: false })
-  );
+  portraitPlane = depthParallax.mesh;
   head.add(portraitPlane);
+}
 
-  eyeL = makeEyeGlow(head, PORTRAIT_CFG.eyeOverlayScale);
-  eyeR = makeEyeGlow(head, PORTRAIT_CFG.eyeOverlayScale);
-  eyeL.group.position.copy(PORTRAIT_CFG.eyes.left);
-  eyeR.group.position.copy(PORTRAIT_CFG.eyes.right);
-  eyeL.socket = eyeL.group;
-  eyeR.socket = eyeR.group;
-
-  const v = PORTRAIT_CFG.visor;
-  visorMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(v.width, v.height),
-    new THREE.MeshBasicMaterial({
-      color: 0x39ff14,
-      transparent: true,
-      opacity: 0.12,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    })
-  );
-  visorMesh.position.set(0, v.y, 0.05);
-  head.add(visorMesh);
+async function tryLoadDepthMap(image) {
+  for (const url of PORTRAIT_CFG.depthUrls) {
+    try {
+      return await loadTexture(url, THREE.NoColorSpace);
+    } catch {
+      /* try next */
+    }
+  }
+  return depthFromColor(image);
 }
 
 async function tryLoadPortrait() {
-  const loader = new THREE.TextureLoader();
   for (const url of PORTRAIT_CFG.urls) {
     try {
-      const tex = await loader.loadAsync(url);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      buildPortrait(tex);
+      const colorTex = await loadTexture(url);
+      const depthTex = await tryLoadDepthMap(colorTex.image);
+      await buildDepthPortrait(colorTex, depthTex);
       return true;
     } catch {
       /* try next */
@@ -448,6 +450,12 @@ function updateLife(t, dt) {
       m.opacity = 0.08 + pulse * 0.12 + glitch * 0.25 + hover * 0.1;
     }
   }
+
+  if (depthParallax?.uniforms) {
+    depthParallax.uniforms.uBreath.value = life.breath;
+    const hoverRim = state.hoverCyborg ? 0.22 : 0;
+    depthParallax.uniforms.uRimStrength.value = PORTRAIT_CFG.rimStrength + hoverRim;
+  }
 }
 
 function updateLook() {
@@ -462,10 +470,16 @@ function updateLook() {
     eyeR.socket.lookAt(look);
   }
 
-  const yaw = mouse.tx * 0.38 * (1 - state.scroll * 0.6);
-  const pitch = -mouse.ty * 0.22 * (1 - state.scroll * 0.6);
+  const scrollDamp = 1 - state.scroll * 0.6;
+  const yaw = mouse.tx * 0.38 * scrollDamp;
+  const pitch = -mouse.ty * 0.22 * scrollDamp;
   head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, yaw, 0.07);
   head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, pitch, 0.07);
+
+  if (depthParallax?.uniforms) {
+    depthParallax.uniforms.uMouse.value.set(mouse.tx * 0.018, mouse.ty * 0.012);
+    depthParallax.uniforms.uTilt.value.set(yaw * 0.15, pitch * 0.15);
+  }
 
   raycaster.setFromCamera(mouse.ndc, camera);
   state.hoverCyborg = raycaster.intersectObject(cyborgHit, true).length > 0;

@@ -42,10 +42,11 @@ Layer 3 — Scroll       GSAP: scale, slide, camera, fade into section 2 (always
 
 You do **not** render the whole page to video. One small loop on a plane.
 
-### Option C — Depth parallax (2.5D)
+### Option C — Depth parallax (2.5D) ✅ **implemented**
 
-1. One still + AI **depth map** (same prompt, or MiDaS on the still).
-2. Shader shifts layers on mouse/scroll.
+1. One still + optional **depth map** (`cyborg-hero-depth.webp`).
+2. `depth-parallax.js` shader: vertex displacement, mouse UV parallax, rim glow, void cutout.
+3. If no depth file, auto-generated from color in browser (or `python scripts/generate-depth-map.py`).
 
 Still no full character video required.
 
