@@ -239,8 +239,6 @@ export function createCyborgBust() {
   return { root, head, eyeL, eyeR, visor, circuits, shoulderL, shoulderR };
 }
 
-const NEON = 0x39ff14;
-
 /** Build emissive map: only bright/green pixels emit — no full-body wash. */
 export function buildEmissiveMapFromTexture(map) {
   const img = map.image;
@@ -265,10 +263,14 @@ export function buildEmissiveMapFromTexture(map) {
     const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
     let e = 0;
-    if (greenLead > 18 && g > 60) {
-      e = Math.min(1, (greenLead / 100) * (g / 220));
-    } else if (lum > 0.72 && g >= r * 0.9) {
-      e = Math.min(1, (lum - 0.65) * 2.2);
+    if (greenLead > 10 && g > 40 && g > r * 1.08 && g > b * 1.08) {
+      e = Math.min(1, (greenLead / 70) * Math.pow(g / 255, 0.75));
+    }
+    if (g > 90 && greenLead > 22) {
+      e = Math.max(e, Math.min(1, greenLead / 55));
+    }
+    if (lum > 0.78 && g >= r && greenLead > 8) {
+      e = Math.max(e, Math.min(1, (lum - 0.55) * 1.8));
     }
 
     const v = (e * 255) | 0;
@@ -282,9 +284,21 @@ export function buildEmissiveMapFromTexture(map) {
   return tex;
 }
 
+function fixTextureColorSpace(root) {
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of mats) {
+      if (m?.map) m.map.colorSpace = THREE.SRGBColorSpace;
+      if (m?.emissiveMap) m.emissiveMap.colorSpace = THREE.NoColorSpace;
+    }
+  });
+}
+
+const EMIT_INTENSITY = 3.1;
+
 /**
  * Native glow: emissive only where texture (or GLB) already has light.
- * No overlay spheres, no full-mesh green wash.
  */
 export function applyNativeGlowMaterials(root, envMap = null) {
   root.traverse((child) => {
@@ -304,40 +318,44 @@ export function applyNativeGlowMaterials(root, envMap = null) {
       }
 
       if (old.emissiveMap || old.emissive?.getHex?.() > 0x080808) {
-        old.metalness = Math.max(old.metalness ?? 0, 0.75);
-        old.roughness = Math.min(old.roughness ?? 1, 0.35);
+        old.metalness = Math.max(old.metalness ?? 0, 0.82);
+        old.roughness = Math.min(old.roughness ?? 1, 0.32);
         old.envMap = envMap;
-        old.envMapIntensity = 1.15;
+        old.envMapIntensity = 1.2;
         old.emissive = old.emissive ?? new THREE.Color(NEON);
-        old.emissiveIntensity = Math.max(old.emissiveIntensity ?? 0, 1.4);
+        old.emissiveIntensity = Math.max(old.emissiveIntensity ?? 0, EMIT_INTENSITY);
         old.userData.baseEmit = old.emissiveIntensity;
+        if (old.map) old.color = new THREE.Color(0x666666);
         return old;
       }
 
       const map = old.map;
       if (!map) {
-        old.metalness = 0.88;
-        old.roughness = 0.3;
+        old.metalness = 0.9;
+        old.roughness = 0.28;
         old.envMap = envMap;
-        old.envMapIntensity = 1.1;
+        old.envMapIntensity = 1.15;
         old.emissive = new THREE.Color(0x000000);
         old.emissiveIntensity = 0;
         return old;
       }
 
       const emissiveMap = buildEmissiveMapFromTexture(map);
-      return new THREE.MeshPhysicalMaterial({
+      const mat = new THREE.MeshPhysicalMaterial({
         map,
         emissiveMap,
         emissive: new THREE.Color(NEON),
-        emissiveIntensity: 2.0,
-        metalness: 0.85,
-        roughness: 0.34,
-        clearcoat: 0.45,
+        emissiveIntensity: EMIT_INTENSITY,
+        color: new THREE.Color(0x5a5a5a),
+        metalness: 0.9,
+        roughness: 0.3,
+        clearcoat: 0.55,
+        clearcoatRoughness: 0.18,
         envMap,
-        envMapIntensity: 0.95,
-        userData: { baseEmit: 2.0 },
+        envMapIntensity: 1.05,
       });
+      mat.userData.baseEmit = EMIT_INTENSITY;
+      return mat;
     };
 
     if (Array.isArray(child.material)) {
@@ -362,19 +380,37 @@ function findHeadBone(root) {
 
 /** Scale + position GLB for bust hero framing (head + shoulders in view). */
 export function stageGlbBust(model, opts = {}) {
-  const targetH = opts.targetHeight ?? 2.35;
-  const box = new THREE.Box3().setFromObject(model);
-  const size = box.getSize(new THREE.Vector3());
-  const scale = targetH / size.y;
+  const targetH = opts.targetHeight ?? 2.55;
+  const offsetX = opts.offsetX ?? 0.42;
+
+  model.rotation.set(0, 0, 0);
+  model.updateMatrixWorld(true);
+
+  const box0 = new THREE.Box3().setFromObject(model);
+  const size0 = box0.getSize(new THREE.Vector3());
+  const scale = targetH / Math.max(size0.y, 0.001);
   model.scale.setScalar(scale);
 
-  box.setFromObject(model);
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model);
   const center = box.getCenter(new THREE.Vector3());
-  model.position.x = -center.x;
-  model.position.z = -center.z;
-  model.position.y = -box.min.y - targetH * 0.38;
 
-  return { scale, headBone: findHeadBone(model) };
+  model.position.x = -center.x + offsetX;
+  model.position.z = -center.z;
+  model.position.y = -box.min.y - targetH * 0.4;
+
+  model.updateMatrixWorld(true);
+  const finalBox = new THREE.Box3().setFromObject(model);
+  const finalCenter = finalBox.getCenter(new THREE.Vector3());
+  const finalSize = finalBox.getSize(new THREE.Vector3());
+
+  return {
+    scale,
+    headBone: findHeadBone(model),
+    bbox: finalBox,
+    center: finalCenter,
+    size: finalSize,
+  };
 }
 
 /**
@@ -386,8 +422,9 @@ export async function loadCyborgGlb(url, envMap = null) {
   const gltf = await new GLTFLoader().loadAsync(url);
   const root = gltf.scene;
 
+  fixTextureColorSpace(root);
   applyNativeGlowMaterials(root, envMap);
-  const { headBone } = stageGlbBust(root);
+  const staged = stageGlbBust(root, { targetHeight: 2.55, offsetX: 0.42 });
 
   let mixer = null;
   if (gltf.animations?.length) {
@@ -400,9 +437,12 @@ export async function loadCyborgGlb(url, envMap = null) {
 
   return {
     root,
-    headBone,
+    headBone: staged.headBone,
     mixer,
     clips: gltf.animations,
+    bbox: staged.bbox,
+    center: staged.center,
+    size: staged.size,
     visor: null,
     eyeL: null,
     eyeR: null,

@@ -12,12 +12,9 @@ import {
 
 /** glb = real skinned mesh (default) | mesh3d | portrait (legacy flat image) */
 const HERO_MODE = "glb";
-const BUILD_TAG = "native-glow-v3";
+const BUILD_TAG = "cyberpunk-v4";
 
-const GLB_URLS = [
-  "assets/models/cyborg-bust.glb",
-  "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Michelle.glb",
-];
+const GLB_URLS = ["assets/models/cyborg-bust.glb"];
 
 const PORTRAIT_CFG = {
   urls: ["assets/images/cyborg-hero.webp", "assets/images/cyborg-hero.png"],
@@ -65,7 +62,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x030508, 1);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.3;
+renderer.toneMappingExposure = 1.22;
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x030508, 0.028);
@@ -79,7 +76,7 @@ camera.position.set(0, 0.12, 4.9);
 
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.0, 0.55, 0.42);
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.22, 0.48, 0.36);
 composer.addPass(bloom);
 
 scene.add(new THREE.AmbientLight(0x0a1a0f, 0.4));
@@ -97,9 +94,13 @@ const rim = new THREE.DirectionalLight(0x39ff14, 2.8);
 rim.position.set(-2, 2, -2);
 scene.add(rim);
 
-const eyeLight = new THREE.PointLight(0x39ff14, 6, 10);
-eyeLight.position.set(0, 0.5, 1.8);
+const eyeLight = new THREE.PointLight(0x39ff14, 4.5, 12);
+eyeLight.position.set(0.42, 0.85, 1.6);
 scene.add(eyeLight);
+
+const faceFill = new THREE.PointLight(0xaaccff, 0.35, 8);
+faceFill.position.set(0.8, 0.6, 2.2);
+scene.add(faceFill);
 
 const cyborg = new THREE.Group();
 cyborg.visible = false;
@@ -157,6 +158,24 @@ async function buildGlb(glbData) {
   headBone = glbData.headBone;
   glbMixer = glbData.mixer;
   head.add(glbRoot);
+  setupGlbPresentation(glbData);
+}
+
+function setupGlbPresentation(data) {
+  if (!data?.size || !data?.center) return;
+  const { center, size } = data;
+  const headY = center.y + size.y * 0.08;
+  const headZ = center.z + size.z * 0.28;
+
+  eyeLight.position.set(center.x, headY, headZ);
+  eyeLight.intensity = 4.2;
+  eyeLight.distance = Math.max(size.x, size.y) * 2.8;
+
+  faceFill.position.set(center.x + size.x * 0.15, headY - size.y * 0.05, headZ + 0.6);
+
+  const hitR = Math.max(size.x, size.y) * 0.42;
+  cyborgHit.scale.setScalar(hitR);
+  cyborgHit.position.set(center.x, headY - size.y * 0.02, center.z);
 }
 
 async function buildDepthPortrait(colorTex, depthTex) {
@@ -412,11 +431,12 @@ function updateLife(t, dt) {
 
   if (glbRoot) {
     glbRoot.traverse((o) => {
-      const m = o.material;
-      if (!m?.emissiveMap && !m?.emissiveIntensity) return;
-      if (m.emissiveIntensity !== undefined && m.emissiveIntensity > 0) {
-        const pulse = 0.04 * Math.sin(t * 2.2);
-        m.emissiveIntensity = (m.userData.baseEmit ?? 1.8) + pulse + (state.hoverCyborg ? 0.25 : 0);
+      const mats = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
+      for (const m of mats) {
+        if (!m?.emissiveMap && !(m.emissiveIntensity > 0)) continue;
+        const pulse = 0.06 * Math.sin(t * 2.2);
+        const base = m.userData?.baseEmit ?? m.emissiveIntensity ?? 2;
+        m.emissiveIntensity = base + pulse + (state.hoverCyborg ? 0.35 : 0);
       }
     });
   }
@@ -491,10 +511,10 @@ function updateEnterPop() {
 
 function applyScrollLayout() {
   const s = state.scroll;
-  const baseX = window.innerWidth >= 960 ? 0.55 : 0;
+  const baseX = window.innerWidth >= 960 ? 0.62 : 0.08;
   cyborg.position.x = baseX + s * 1.35;
-  cyborg.position.y = -0.05 + s * 0.35;
-  bloom.strength = THREE.MathUtils.lerp(0.85, 0.45, s);
+  cyborg.position.y = -0.02 + s * 0.35;
+  bloom.strength = THREE.MathUtils.lerp(1.15, 0.5, s);
 }
 
 function resize() {

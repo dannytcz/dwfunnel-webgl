@@ -1,17 +1,25 @@
-# Download hero GLB (run once)
+# Hero GLB
+
+Active file: **`cyborg-bust.glb`** (Tripo image→3D export — cyberpunk female bust).
+
+## Install from Tripo export
+
+Place your export at `assets/cyberpunk female 3d model.glb`, then:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install-cyberpunk-glb.ps1
+```
+
+## Fallback download (Three.js demo)
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/download-hero-glb.ps1
 ```
 
-Default model: **Michelle.glb** from [Three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf) — skinned female mesh, CC-friendly demo asset.
+Michelle.glb from [Three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf) — placeholder only.
 
-Saved as `assets/models/cyborg-bust.glb`. Scene applies dark metal + neon-green emissive override at runtime.
+Runtime applies dark metal albedo + **native emissive** from green/bright texture pixels + bloom (no overlay patches).
 
 ## Swap model
 
-Replace `cyborg-bust.glb` with any bust/character GLB, or edit `GLB_URLS` in `hero-scene.js`.
-
-## Attribution
-
-- **Michelle.glb** — Three.js / Mixamo sample (demo use via three.js repo)
+Replace `cyborg-bust.glb` or edit `GLB_URLS` in `hero-scene.js`.
