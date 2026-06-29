@@ -1,32 +1,45 @@
 import { FrameScrubber } from "./frame-scrub.js";
 import { StarField } from "./stars.js";
 
-const PIN_VH = 600;
 const MIN_READY = 36;
 const ACT_KEYS = ["act0", "act1", "act2"];
 
-const STATIONS = {
-  hero:      { start: 0.00, peak: 0.22, end: 0.34 },
-  passage:   { start: 0.38, peak: 0.54, end: 0.68 },
-  underworld:{ start: 0.72, peak: 0.88, end: 1.00 },
-};
+const STATIONS = [
+  { id: "hero",       copyId: "hero-copy-block",      startFrame: 0,   heroFrame: 100, endFrame: 200 },
+  { id: "passage",    copyId: "passage-copy-block",   startFrame: 200, heroFrame: 300, endFrame: 420 },
+  { id: "underworld", copyId: "underworld-copy-block",startFrame: 420, heroFrame: 540, endFrame: 661 },
+];
+
+const SWOOSH_MS = 2000;
+const WHEEL_THRESHOLD = 8;
+const TOUCH_THRESHOLD = 30;
+const DEBOUNCE_MS = 350;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const loader = document.getElementById("loader");
 const fill = loader?.querySelector(".cinema-loader__fill");
 const pct = loader?.querySelector(".cinema-loader__pct");
-const cinemaPin = document.getElementById("cinema-pin");
 const cinema = document.getElementById("cinema");
 const canvas = document.getElementById("scrub-canvas");
 const idleImg = document.getElementById("cinema-idle");
 const vignette = document.getElementById("cinema-vignette");
+const flash = document.getElementById("cinema-flash");
 const scrollHint = document.getElementById("scroll-hint");
 const scrollHintText = document.getElementById("scroll-hint-text");
-const heroCopy = document.getElementById("hero-copy-block");
-const passageCopy = document.getElementById("passage-copy-block");
-const underworldCopy = document.getElementById("underworld-copy-block");
+const stationDots = Array.from(document.querySelectorAll(".cinema-stations__dot"));
+const modeToggle = document.getElementById("cinema-mode-toggle");
+const enterBtn = document.getElementById("cinema-enter");
+const starsLayer = () => document.querySelector(".cinema__stars");
 const problemSection = document.getElementById("problem");
+
+const state = {
+  current: 0,
+  playing: false,
+  freeScroll: true,
+  lastAdvanceAt: 0,
+  activeTween: null,
+};
 
 function buildFilmUrls() {
   const acts = window.DWF_CDN?.acts ?? {};
@@ -54,59 +67,40 @@ function setProgress(value) {
   if (pct) pct.textContent = `${n}%`;
 }
 
-function stationOpacity(station, p) {
-  const { start, end } = STATIONS[station];
-  const fadeIn = 0.06;
-  const fadeOut = 0.08;
-  if (p <= start - fadeIn) return 0;
-  if (p >= end + fadeOut) return 0;
-  if (p < start) return Math.max(0, (p - (start - fadeIn)) / fadeIn);
-  if (p > end) return Math.max(0, 1 - (p - end) / fadeOut);
-  return 1;
-}
-
-function setCopy(el, opacity) {
-  if (!el) return;
-  const visible = opacity > 0.02;
-  el.style.opacity = String(opacity);
-  el.style.visibility = visible ? "visible" : "hidden";
-  el.style.transform = `translateY(${(1 - opacity) * 18}px)`;
-}
-
-function applyCopyForProgress(p) {
-  const heroOp = stationOpacity("hero", p);
-  const passOp = stationOpacity("passage", p);
-  const undOp  = stationOpacity("underworld", p);
-
-  const yHero = p * -28;
-  setCopy(heroCopy, heroOp);
-  if (heroCopy) heroCopy.style.transform = `translateY(${yHero}px)`;
-
-  setCopy(passageCopy, passOp);
-  setCopy(underworldCopy, undOp);
-
+function applyStationCopy(idx) {
+  STATIONS.forEach((s, i) => {
+    const el = document.getElementById(s.copyId);
+    if (!el) return;
+    const on = i === idx;
+    el.style.opacity = on ? "1" : "0";
+    el.style.visibility = on ? "visible" : "hidden";
+    el.style.transform = on ? "translateY(0)" : "translateY(18px)";
+    el.setAttribute("aria-hidden", on ? "false" : "true");
+  });
   if (scrollHint) {
-    scrollHint.style.opacity = heroOp > 0.1 ? "1" : "0";
+    scrollHint.style.opacity = idx === 0 ? "1" : "0";
   }
-
-  if (problemSection) {
-    const contentP = Math.max(0, Math.min(1, (p - 0.92) / 0.08));
-    problemSection.style.opacity = String(contentP);
-    problemSection.style.pointerEvents = contentP > 0.5 ? "auto" : "none";
+  if (scrollHintText) {
+    if (idx === 0) scrollHintText.textContent = "Click anywhere to descend";
+    else if (idx === STATIONS.length - 1) scrollHintText.textContent = "Final scene";
+    else scrollHintText.textContent = "Click to continue";
   }
-
   if (vignette) {
-    const stars = document.querySelector(".cinema__stars");
-    const v = 0.32 + p * 0.42;
-    vignette.style.opacity = String(v);
-    if (stars) stars.style.opacity = String(0.55 + p * 0.4);
+    const base = 0.32 + idx * 0.12;
+    vignette.style.opacity = String(base);
   }
+}
+
+function updateStationDots() {
+  stationDots.forEach((dot, i) => {
+    dot.classList.toggle("is-active", i === state.current);
+  });
 }
 
 function showIdle() {
   if (idleImg) idleImg.classList.remove("is-hidden");
   if (canvas) canvas.classList.remove("is-active");
-  applyCopyForProgress(0);
+  if (cinema) cinema.classList.remove("is-playing");
 }
 
 function showFilm() {
@@ -114,11 +108,177 @@ function showFilm() {
   if (canvas) canvas.classList.add("is-active");
 }
 
-function frameForProgress(p, count) {
-  const n = Math.max(1, count);
-  const x = Math.max(0, Math.min(1, p));
-  const eased = x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-  return Math.min(n - 1, Math.floor(eased * (n - 1)));
+function drawStation(id, fx = {}) {
+  if (!window.__scrubber) return;
+  window.__scrubber.draw(id, fx);
+}
+
+function easeInOutQuad(t) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+function swooshTo(target) {
+  if (state.activeTween) state.activeTween.kill();
+  const from = STATIONS[state.current].heroFrame;
+  const to = STATIONS[target].heroFrame;
+  state.playing = true;
+  if (cinema) cinema.classList.add("is-playing");
+
+  const tween = { t: 0 };
+  const dur = reducedMotion ? 0.01 : SWOOSH_MS / 1000;
+
+  state.activeTween = gsap.to(tween, {
+    t: 1,
+    duration: dur,
+    ease: "power2.inOut",
+    onUpdate: () => {
+      const t = tween.t;
+      const e = easeInOutQuad(t);
+      const idx = Math.round(from + (to - from) * e);
+      const scale = 1.02 + t * 0.06;
+      const offsetY = -t * 18;
+      drawStation(idx, { scale, offsetY });
+      if (flash) {
+        const a = t < 0.5 ? t * 2 * 0.55 : (1 - t) * 2 * 0.55;
+        flash.style.opacity = String(a);
+      }
+      const sl = starsLayer();
+      if (sl) sl.style.opacity = String(0.55 + t * 0.4);
+    },
+    onComplete: () => {
+      state.current = target;
+      state.playing = false;
+      state.activeTween = null;
+      if (cinema) cinema.classList.remove("is-playing");
+      drawStation(to, { scale: 1.08, offsetY: -18 });
+      if (flash) flash.style.opacity = "0";
+      const sl = starsLayer();
+      if (sl) sl.style.opacity = String(0.55 + state.current * 0.2);
+      applyStationCopy(state.current);
+      updateStationDots();
+    },
+  });
+}
+
+function advance(dir) {
+  if (state.playing) return;
+  const now = performance.now();
+  if (now - state.lastAdvanceAt < DEBOUNCE_MS) return;
+  const next = state.current + dir;
+  if (next < 0 || next >= STATIONS.length) {
+    if (next >= STATIONS.length && dir > 0) {
+      enterProblem();
+    }
+    return;
+  }
+  state.lastAdvanceAt = now;
+  showFilm();
+  swooshTo(next);
+}
+
+function jumpTo(target) {
+  if (state.playing) return;
+  if (target < 0 || target >= STATIONS.length) return;
+  if (target === state.current) return;
+  state.lastAdvanceAt = performance.now();
+  showFilm();
+  swooshTo(target);
+}
+
+function enterProblem() {
+  if (!window.gsap) return;
+  if (state.activeTween) state.activeTween.kill();
+  state.playing = false;
+  const sl = starsLayer();
+  if (sl) sl.style.opacity = "0";
+  if (flash) flash.style.opacity = "0";
+  cinema?.classList.add("is-leaving");
+  gsap.to(window, { duration: 1.4, ease: "power2.inOut", scrollTo: { y: "#problem", autoKill: false } });
+}
+
+function isInteractiveTarget(t) {
+  return !!(t && t.closest && t.closest("a, button, .cinema-btn, .cinema-stations__dot, .cinema-mode-toggle"));
+}
+
+function isWheelBlockedTarget(t) {
+  if (!t || !t.closest) return false;
+  // Block wheel-advance only when the user is actively interacting with controls
+  // (the station dots, the mode toggle, the CTA buttons). Plain buttons inside
+  // the cinema copy are not blocking — wheel still advances.
+  return !!(t.closest(".cinema-stations__dot, .cinema-mode-toggle, .cinema-copy__actions"));
+}
+
+function bindInputs() {
+  document.addEventListener("click", (e) => {
+    if (isInteractiveTarget(e.target)) return;
+    advance(+1);
+  });
+
+  window.addEventListener(
+    "wheel",
+    (e) => {
+      if (isWheelBlockedTarget(e.target)) return;
+      if (Math.abs(e.deltaY) < WHEEL_THRESHOLD) return;
+      e.preventDefault();
+      if (state.playing) return;
+      if (!state.freeScroll) return;
+      advance(e.deltaY > 0 ? +1 : -1);
+    },
+    { passive: false }
+  );
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown" || e.key === " " || e.key === "Enter" || e.key === "PageDown") {
+      e.preventDefault();
+      advance(+1);
+    } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+      e.preventDefault();
+      advance(-1);
+    } else if (e.key === "Home") {
+      jumpTo(0);
+    } else if (e.key === "End") {
+      jumpTo(STATIONS.length - 1);
+    }
+  });
+
+  let touchStartY = null;
+  window.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener("touchend", (e) => {
+    if (touchStartY == null) return;
+    const endY = e.changedTouches[0]?.clientY ?? touchStartY;
+    const delta = touchStartY - endY;
+    touchStartY = null;
+    if (Math.abs(delta) < TOUCH_THRESHOLD) return;
+    if (state.playing) return;
+    if (!state.freeScroll) return;
+    advance(delta > 0 ? +1 : -1);
+  }, { passive: true });
+
+  stationDots.forEach((dot, i) => {
+    dot.addEventListener("click", (e) => {
+      e.stopPropagation();
+      jumpTo(i);
+    });
+  });
+
+  if (modeToggle) {
+    modeToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      state.freeScroll = !state.freeScroll;
+      modeToggle.setAttribute("aria-pressed", String(state.freeScroll));
+      const label = modeToggle.querySelector(".cinema-mode-toggle__label");
+      if (label) label.textContent = state.freeScroll ? "Free scroll" : "Click only";
+    });
+  }
+
+  if (enterBtn) {
+    enterBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      enterProblem();
+    });
+  }
 }
 
 async function init() {
@@ -142,75 +302,29 @@ async function init() {
   if (scrollHintText) scrollHintText.textContent = "Loading…";
 
   const scrubber = new FrameScrubber(cinema, canvas, filmUrls, { reducedMotion });
+  window.__scrubber = scrubber;
   await scrubber.load((p) => setProgress(p), { minReady: MIN_READY });
 
   scrubber.resize();
 
   setProgress(1);
   loader?.classList.add("is-done");
-  if (scrollHintText) scrollHintText.textContent = "Scroll to descend";
-  applyCopyForProgress(0);
-
-  if (problemSection) {
-    problemSection.style.opacity = "0";
-    problemSection.style.pointerEvents = "none";
-  }
+  applyStationCopy(0);
+  updateStationDots();
+  if (starsLayer()) starsLayer().style.opacity = "0.55";
 
   window.addEventListener("resize", () => {
     document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
     scrubber.resize();
   });
 
-  if (!window.gsap || !window.ScrollTrigger) {
-    console.error("cinema: GSAP or ScrollTrigger failed to load");
+  if (!window.gsap) {
+    console.error("cinema: GSAP failed to load");
     return;
   }
+  gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
 
-  const { gsap, ScrollTrigger } = window;
-  gsap.registerPlugin(ScrollTrigger);
-
-  ScrollTrigger.create({
-    trigger: cinemaPin || cinema,
-    start: "top top",
-    end: reducedMotion ? "+=220%" : `+=${PIN_VH}%`,
-    pin: true,
-    pinSpacing: true,
-    anticipatePin: 1,
-    scrub: reducedMotion ? false : 0.35,
-    invalidateOnRefresh: true,
-    onUpdate: (self) => {
-      const p = self.progress;
-
-      if (p <= 0.002) {
-        showIdle();
-        return;
-      }
-
-      showFilm();
-      const idx = frameForProgress(p, filmUrls.length);
-
-      let scale = 1;
-      let offsetY = 0;
-      if (p < 0.40) {
-        const t = p / 0.40;
-        scale = 1 + t * 0.04;
-        offsetY = -t * 8;
-      } else if (p < 0.70) {
-        const t = (p - 0.40) / 0.30;
-        scale = 1.04 + t * 0.04;
-        offsetY = -8 - t * 14;
-      } else {
-        const t = (p - 0.70) / 0.30;
-        scale = 1.08 + t * 0.10;
-        offsetY = -22 - t * 12;
-      }
-
-      scrubber.draw(idx, { scale, offsetY });
-      applyCopyForProgress(p);
-    },
-  });
-
-  ScrollTrigger.refresh();
+  bindInputs();
 }
 
 init().catch((err) => {

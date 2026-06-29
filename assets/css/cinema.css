@@ -130,6 +130,44 @@ html, body {
   background: rgba(6, 16, 24, 0.65);
 }
 
+.cinema-mode-toggle {
+  pointer-events: auto;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  background: rgba(6, 16, 24, 0.45);
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem 0.45rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.cinema-mode-toggle__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-dim);
+}
+
+.cinema-mode-toggle[aria-pressed="false"] .cinema-mode-toggle__dot {
+  background: rgba(236, 253, 245, 0.25);
+  box-shadow: none;
+}
+
+.cinema-mode-toggle:hover {
+  color: var(--text);
+  border-color: rgba(94, 234, 212, 0.4);
+}
+
 /* ── Pinned cinema ── */
 .cinema-pin {
   position: relative;
@@ -140,7 +178,10 @@ html, body {
   height: 100dvh;
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
+  cursor: pointer;
 }
+
+.cinema.is-playing { cursor: progress; }
 
 .cinema__stage {
   position: absolute;
@@ -215,6 +256,22 @@ html, body {
     radial-gradient(ellipse 80% 70% at 50% 50%, transparent 20%, rgba(6, 16, 24, 0.75) 100%),
     linear-gradient(to top, rgba(6, 16, 24, 0.5) 0%, transparent 35%);
   transition: opacity 0.1s linear;
+}
+
+.cinema__flash {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(94, 234, 212, 0.55) 0%,
+    rgba(20, 184, 166, 0.25) 35%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  transition: opacity 0.2s ease;
 }
 
 /* ── Copy overlays ── */
@@ -448,4 +505,73 @@ html, body {
 
 @media (prefers-reduced-motion: reduce) {
   .cinema-hint__chev { animation: none; }
+}
+
+/* ── Station dot nav ── */
+.cinema-stations {
+  position: fixed;
+  top: 50%;
+  right: clamp(0.75rem, 2.2vw, 1.5rem);
+  transform: translateY(-50%);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  pointer-events: auto;
+}
+
+.cinema-stations__dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  color: rgba(236, 253, 245, 0.45);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-style: italic;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.cinema-stations__dot span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: rgba(94, 234, 212, 0.3);
+  border: 1px solid rgba(94, 234, 212, 0.5);
+  box-shadow: 0 0 0 4px transparent;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  order: 2;
+}
+
+.cinema-stations__dot em {
+  font-style: italic;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.cinema-stations__dot:hover em,
+.cinema-stations__dot.is-active em {
+  opacity: 0.85;
+  transform: translateX(0);
+}
+
+.cinema-stations__dot:hover span {
+  background: var(--accent);
+}
+
+.cinema-stations__dot.is-active span {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.18);
+  transform: scale(1.15);
+}
+
+.cinema-stations__dot.is-active {
+  color: var(--accent);
 }

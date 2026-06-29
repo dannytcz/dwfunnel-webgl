@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Shizuru&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=2" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=3" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -25,6 +25,10 @@
 
   <header class="cinema-header">
     <a href="/">DW Funnel</a>
+    <button id="cinema-mode-toggle" class="cinema-mode-toggle" type="button" aria-pressed="true">
+      <span class="cinema-mode-toggle__dot" aria-hidden="true"></span>
+      <span class="cinema-mode-toggle__label">Free scroll</span>
+    </button>
     <a class="cinema-header__cta" href="#contact">Book a call</a>
   </header>
 
@@ -42,6 +46,7 @@
           <canvas id="scrub-canvas" class="cinema__canvas" aria-hidden="true"></canvas>
         </div>
         <div class="cinema__vignette" id="cinema-vignette" aria-hidden="true"></div>
+        <div class="cinema__flash" id="cinema-flash" aria-hidden="true"></div>
       </div>
 
       <div id="hero-copy-block" class="cinema-copy cinema-copy--hero" data-station="hero">
@@ -54,7 +59,7 @@
         </div>
         <p class="cinema-hint" id="scroll-hint">
           <span class="cinema-hint__chev" aria-hidden="true">↓</span>
-          <span id="scroll-hint-text">Scroll to descend</span>
+          <span id="scroll-hint-text">Click anywhere to descend</span>
         </p>
       </div>
 
@@ -70,9 +75,16 @@
         <p>The difference between a template and a memory is a director's hand, not a section count.</p>
         <div class="cinema-copy__actions">
           <a href="#contact" class="cinema-btn cinema-btn--primary">Book a call</a>
+          <button id="cinema-enter" class="cinema-btn cinema-btn--ghost" type="button">Continue reading</button>
         </div>
       </div>
     </section>
+
+    <nav class="cinema-stations" aria-label="Stations">
+      <button data-station="0" class="cinema-stations__dot" aria-label="Hero"><span></span><em>Hero</em></button>
+      <button data-station="1" class="cinema-stations__dot" aria-label="Passage"><span></span><em>Passage</em></button>
+      <button data-station="2" class="cinema-stations__dot" aria-label="Underworld"><span></span><em>Underworld</em></button>
+    </nav>
   </div>
 
   <section id="problem" class="cinema-section" aria-label="Problem">
@@ -103,6 +115,7 @@
   <script src="assets/js/cdn-manifest.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+  <script type="module" src="assets/js/cinema-scroll.js?v=5"></script>
 </body>
 </html>
