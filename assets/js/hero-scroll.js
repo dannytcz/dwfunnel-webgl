@@ -121,43 +121,48 @@ async function init() {
     reducedMotion,
   });
 
-  let loadP = 0;
-  await Promise.all([
-    cache.loadAct("act0", act0, (p) => {
-      loadP = p * 0.88;
-      setPreloadProgress(loadP);
-    }),
-    idle.load((p) => {
-      setPreloadProgress(loadP + p * 0.12);
-    }),
-  ]);
+  const revealHero = () => {
+    cache.resizeAll();
+    bindParallax(idle);
+    preloader?.classList.add("is-done");
+    heroHud?.classList.remove("is-hidden");
+    setBuild(`anime cinema · ${idle.mode} idle · ${totalPinLength()}`);
+    if (idle.mode === "video") setCanvasMode(idle, 0);
+    else if (idle.mode === "still") {
+      canvas.style.opacity = "1";
+      if (idleVideo) idleVideo.style.opacity = "0";
+    }
+    idle.start();
+    if (act2Section) {
+      act2Section.style.opacity = "0";
+      act2Section.style.pointerEvents = "none";
+    }
+  };
 
-  cache.resizeAll();
-  bindParallax(idle);
-
-  preloader?.classList.add("is-done");
-  heroHud?.classList.remove("is-hidden");
-  setBuild(`anime cinema · ${idle.mode} idle · ${totalPinLength()}`);
-
-  if (idle.mode === "video") setCanvasMode(idle, 0);
-  else if (idle.mode === "still") {
-    canvas.style.opacity = "1";
-    if (idleVideo) idleVideo.style.opacity = "0";
-  }
-  idle.start();
-
-  if (act2Section) {
-    act2Section.style.opacity = "0";
-    act2Section.style.pointerEvents = "none";
+  if (idleMode === "still") {
+    await idle.load((p) => setPreloadProgress(p * 0.35));
+    revealHero();
+    cache.loadAct("act0", act0, (p) => setPreloadProgress(0.35 + p * 0.65)).catch(() => {});
+    prefetchActs(cache, ["act1", "act2"]).catch(() => {});
+  } else {
+    let loadP = 0;
+    await Promise.all([
+      cache.loadAct("act0", act0, (p) => {
+        loadP = p * 0.88;
+        setPreloadProgress(loadP);
+      }),
+      idle.load((p) => {
+        setPreloadProgress(loadP + p * 0.12);
+      }),
+    ]);
+    revealHero();
+    prefetchActs(cache, ["act1", "act2"]).catch(() => {});
   }
 
   window.addEventListener("resize", () => {
     document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
     cache.resizeAll();
   });
-
-  // Lazy-load act1 + act2 while user is in entry
-  prefetchActs(cache, ["act1", "act2"]).catch(() => {});
 
   if (!window.gsap?.ScrollTrigger) return;
 
