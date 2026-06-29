@@ -1,0 +1,17 @@
+{
+  "master": "assets\\videos\\cinema-anime-master.mp4",
+  "fps": 30,
+  "v2TrimSec": 2.0,
+  "sources": {
+    "v1": "d318325d-1545-4908-8556-f58ccf7a672f-2026-06-29.mp4",
+    "v2": "2cc90d7c-1e53-49cb-83d8-77598a2b9e14.mp4",
+    "v3": "978947f3-9cbd-4a78-9e03-035862dda833.mp4"
+  },
+  "frameCounts": {
+    "act0": 240,
+    "act1": 181,
+    "act2": 241
+  },
+  "totalFrames": 662,
+  "durationSec": 22.07
+}

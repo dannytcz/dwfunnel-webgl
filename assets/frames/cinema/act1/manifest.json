@@ -1,0 +1,732 @@
+{
+  "act": "act1",
+  "source": "02-a-to-c-trimmed.mp4",
+  "fps": 30,
+  "frameCount": 181,
+  "frames": [
+    {
+      "file": "frame_00001.webp",
+      "url": "assets/frames/cinema/act1/frame_00001.webp"
+    },
+    {
+      "file": "frame_00002.webp",
+      "url": "assets/frames/cinema/act1/frame_00002.webp"
+    },
+    {
+      "file": "frame_00003.webp",
+      "url": "assets/frames/cinema/act1/frame_00003.webp"
+    },
+    {
+      "file": "frame_00004.webp",
+      "url": "assets/frames/cinema/act1/frame_00004.webp"
+    },
+    {
+      "file": "frame_00005.webp",
+      "url": "assets/frames/cinema/act1/frame_00005.webp"
+    },
+    {
+      "file": "frame_00006.webp",
+      "url": "assets/frames/cinema/act1/frame_00006.webp"
+    },
+    {
+      "file": "frame_00007.webp",
+      "url": "assets/frames/cinema/act1/frame_00007.webp"
+    },
+    {
+      "file": "frame_00008.webp",
+      "url": "assets/frames/cinema/act1/frame_00008.webp"
+    },
+    {
+      "file": "frame_00009.webp",
+      "url": "assets/frames/cinema/act1/frame_00009.webp"
+    },
+    {
+      "file": "frame_00010.webp",
+      "url": "assets/frames/cinema/act1/frame_00010.webp"
+    },
+    {
+      "file": "frame_00011.webp",
+      "url": "assets/frames/cinema/act1/frame_00011.webp"
+    },
+    {
+      "file": "frame_00012.webp",
+      "url": "assets/frames/cinema/act1/frame_00012.webp"
+    },
+    {
+      "file": "frame_00013.webp",
+      "url": "assets/frames/cinema/act1/frame_00013.webp"
+    },
+    {
+      "file": "frame_00014.webp",
+      "url": "assets/frames/cinema/act1/frame_00014.webp"
+    },
+    {
+      "file": "frame_00015.webp",
+      "url": "assets/frames/cinema/act1/frame_00015.webp"
+    },
+    {
+      "file": "frame_00016.webp",
+      "url": "assets/frames/cinema/act1/frame_00016.webp"
+    },
+    {
+      "file": "frame_00017.webp",
+      "url": "assets/frames/cinema/act1/frame_00017.webp"
+    },
+    {
+      "file": "frame_00018.webp",
+      "url": "assets/frames/cinema/act1/frame_00018.webp"
+    },
+    {
+      "file": "frame_00019.webp",
+      "url": "assets/frames/cinema/act1/frame_00019.webp"
+    },
+    {
+      "file": "frame_00020.webp",
+      "url": "assets/frames/cinema/act1/frame_00020.webp"
+    },
+    {
+      "file": "frame_00021.webp",
+      "url": "assets/frames/cinema/act1/frame_00021.webp"
+    },
+    {
+      "file": "frame_00022.webp",
+      "url": "assets/frames/cinema/act1/frame_00022.webp"
+    },
+    {
+      "file": "frame_00023.webp",
+      "url": "assets/frames/cinema/act1/frame_00023.webp"
+    },
+    {
+      "file": "frame_00024.webp",
+      "url": "assets/frames/cinema/act1/frame_00024.webp"
+    },
+    {
+      "file": "frame_00025.webp",
+      "url": "assets/frames/cinema/act1/frame_00025.webp"
+    },
+    {
+      "file": "frame_00026.webp",
+      "url": "assets/frames/cinema/act1/frame_00026.webp"
+    },
+    {
+      "file": "frame_00027.webp",
+      "url": "assets/frames/cinema/act1/frame_00027.webp"
+    },
+    {
+      "file": "frame_00028.webp",
+      "url": "assets/frames/cinema/act1/frame_00028.webp"
+    },
+    {
+      "file": "frame_00029.webp",
+      "url": "assets/frames/cinema/act1/frame_00029.webp"
+    },
+    {
+      "file": "frame_00030.webp",
+      "url": "assets/frames/cinema/act1/frame_00030.webp"
+    },
+    {
+      "file": "frame_00031.webp",
+      "url": "assets/frames/cinema/act1/frame_00031.webp"
+    },
+    {
+      "file": "frame_00032.webp",
+      "url": "assets/frames/cinema/act1/frame_00032.webp"
+    },
+    {
+      "file": "frame_00033.webp",
+      "url": "assets/frames/cinema/act1/frame_00033.webp"
+    },
+    {
+      "file": "frame_00034.webp",
+      "url": "assets/frames/cinema/act1/frame_00034.webp"
+    },
+    {
+      "file": "frame_00035.webp",
+      "url": "assets/frames/cinema/act1/frame_00035.webp"
+    },
+    {
+      "file": "frame_00036.webp",
+      "url": "assets/frames/cinema/act1/frame_00036.webp"
+    },
+    {
+      "file": "frame_00037.webp",
+      "url": "assets/frames/cinema/act1/frame_00037.webp"
+    },
+    {
+      "file": "frame_00038.webp",
+      "url": "assets/frames/cinema/act1/frame_00038.webp"
+    },
+    {
+      "file": "frame_00039.webp",
+      "url": "assets/frames/cinema/act1/frame_00039.webp"
+    },
+    {
+      "file": "frame_00040.webp",
+      "url": "assets/frames/cinema/act1/frame_00040.webp"
+    },
+    {
+      "file": "frame_00041.webp",
+      "url": "assets/frames/cinema/act1/frame_00041.webp"
+    },
+    {
+      "file": "frame_00042.webp",
+      "url": "assets/frames/cinema/act1/frame_00042.webp"
+    },
+    {
+      "file": "frame_00043.webp",
+      "url": "assets/frames/cinema/act1/frame_00043.webp"
+    },
+    {
+      "file": "frame_00044.webp",
+      "url": "assets/frames/cinema/act1/frame_00044.webp"
+    },
+    {
+      "file": "frame_00045.webp",
+      "url": "assets/frames/cinema/act1/frame_00045.webp"
+    },
+    {
+      "file": "frame_00046.webp",
+      "url": "assets/frames/cinema/act1/frame_00046.webp"
+    },
+    {
+      "file": "frame_00047.webp",
+      "url": "assets/frames/cinema/act1/frame_00047.webp"
+    },
+    {
+      "file": "frame_00048.webp",
+      "url": "assets/frames/cinema/act1/frame_00048.webp"
+    },
+    {
+      "file": "frame_00049.webp",
+      "url": "assets/frames/cinema/act1/frame_00049.webp"
+    },
+    {
+      "file": "frame_00050.webp",
+      "url": "assets/frames/cinema/act1/frame_00050.webp"
+    },
+    {
+      "file": "frame_00051.webp",
+      "url": "assets/frames/cinema/act1/frame_00051.webp"
+    },
+    {
+      "file": "frame_00052.webp",
+      "url": "assets/frames/cinema/act1/frame_00052.webp"
+    },
+    {
+      "file": "frame_00053.webp",
+      "url": "assets/frames/cinema/act1/frame_00053.webp"
+    },
+    {
+      "file": "frame_00054.webp",
+      "url": "assets/frames/cinema/act1/frame_00054.webp"
+    },
+    {
+      "file": "frame_00055.webp",
+      "url": "assets/frames/cinema/act1/frame_00055.webp"
+    },
+    {
+      "file": "frame_00056.webp",
+      "url": "assets/frames/cinema/act1/frame_00056.webp"
+    },
+    {
+      "file": "frame_00057.webp",
+      "url": "assets/frames/cinema/act1/frame_00057.webp"
+    },
+    {
+      "file": "frame_00058.webp",
+      "url": "assets/frames/cinema/act1/frame_00058.webp"
+    },
+    {
+      "file": "frame_00059.webp",
+      "url": "assets/frames/cinema/act1/frame_00059.webp"
+    },
+    {
+      "file": "frame_00060.webp",
+      "url": "assets/frames/cinema/act1/frame_00060.webp"
+    },
+    {
+      "file": "frame_00061.webp",
+      "url": "assets/frames/cinema/act1/frame_00061.webp"
+    },
+    {
+      "file": "frame_00062.webp",
+      "url": "assets/frames/cinema/act1/frame_00062.webp"
+    },
+    {
+      "file": "frame_00063.webp",
+      "url": "assets/frames/cinema/act1/frame_00063.webp"
+    },
+    {
+      "file": "frame_00064.webp",
+      "url": "assets/frames/cinema/act1/frame_00064.webp"
+    },
+    {
+      "file": "frame_00065.webp",
+      "url": "assets/frames/cinema/act1/frame_00065.webp"
+    },
+    {
+      "file": "frame_00066.webp",
+      "url": "assets/frames/cinema/act1/frame_00066.webp"
+    },
+    {
+      "file": "frame_00067.webp",
+      "url": "assets/frames/cinema/act1/frame_00067.webp"
+    },
+    {
+      "file": "frame_00068.webp",
+      "url": "assets/frames/cinema/act1/frame_00068.webp"
+    },
+    {
+      "file": "frame_00069.webp",
+      "url": "assets/frames/cinema/act1/frame_00069.webp"
+    },
+    {
+      "file": "frame_00070.webp",
+      "url": "assets/frames/cinema/act1/frame_00070.webp"
+    },
+    {
+      "file": "frame_00071.webp",
+      "url": "assets/frames/cinema/act1/frame_00071.webp"
+    },
+    {
+      "file": "frame_00072.webp",
+      "url": "assets/frames/cinema/act1/frame_00072.webp"
+    },
+    {
+      "file": "frame_00073.webp",
+      "url": "assets/frames/cinema/act1/frame_00073.webp"
+    },
+    {
+      "file": "frame_00074.webp",
+      "url": "assets/frames/cinema/act1/frame_00074.webp"
+    },
+    {
+      "file": "frame_00075.webp",
+      "url": "assets/frames/cinema/act1/frame_00075.webp"
+    },
+    {
+      "file": "frame_00076.webp",
+      "url": "assets/frames/cinema/act1/frame_00076.webp"
+    },
+    {
+      "file": "frame_00077.webp",
+      "url": "assets/frames/cinema/act1/frame_00077.webp"
+    },
+    {
+      "file": "frame_00078.webp",
+      "url": "assets/frames/cinema/act1/frame_00078.webp"
+    },
+    {
+      "file": "frame_00079.webp",
+      "url": "assets/frames/cinema/act1/frame_00079.webp"
+    },
+    {
+      "file": "frame_00080.webp",
+      "url": "assets/frames/cinema/act1/frame_00080.webp"
+    },
+    {
+      "file": "frame_00081.webp",
+      "url": "assets/frames/cinema/act1/frame_00081.webp"
+    },
+    {
+      "file": "frame_00082.webp",
+      "url": "assets/frames/cinema/act1/frame_00082.webp"
+    },
+    {
+      "file": "frame_00083.webp",
+      "url": "assets/frames/cinema/act1/frame_00083.webp"
+    },
+    {
+      "file": "frame_00084.webp",
+      "url": "assets/frames/cinema/act1/frame_00084.webp"
+    },
+    {
+      "file": "frame_00085.webp",
+      "url": "assets/frames/cinema/act1/frame_00085.webp"
+    },
+    {
+      "file": "frame_00086.webp",
+      "url": "assets/frames/cinema/act1/frame_00086.webp"
+    },
+    {
+      "file": "frame_00087.webp",
+      "url": "assets/frames/cinema/act1/frame_00087.webp"
+    },
+    {
+      "file": "frame_00088.webp",
+      "url": "assets/frames/cinema/act1/frame_00088.webp"
+    },
+    {
+      "file": "frame_00089.webp",
+      "url": "assets/frames/cinema/act1/frame_00089.webp"
+    },
+    {
+      "file": "frame_00090.webp",
+      "url": "assets/frames/cinema/act1/frame_00090.webp"
+    },
+    {
+      "file": "frame_00091.webp",
+      "url": "assets/frames/cinema/act1/frame_00091.webp"
+    },
+    {
+      "file": "frame_00092.webp",
+      "url": "assets/frames/cinema/act1/frame_00092.webp"
+    },
+    {
+      "file": "frame_00093.webp",
+      "url": "assets/frames/cinema/act1/frame_00093.webp"
+    },
+    {
+      "file": "frame_00094.webp",
+      "url": "assets/frames/cinema/act1/frame_00094.webp"
+    },
+    {
+      "file": "frame_00095.webp",
+      "url": "assets/frames/cinema/act1/frame_00095.webp"
+    },
+    {
+      "file": "frame_00096.webp",
+      "url": "assets/frames/cinema/act1/frame_00096.webp"
+    },
+    {
+      "file": "frame_00097.webp",
+      "url": "assets/frames/cinema/act1/frame_00097.webp"
+    },
+    {
+      "file": "frame_00098.webp",
+      "url": "assets/frames/cinema/act1/frame_00098.webp"
+    },
+    {
+      "file": "frame_00099.webp",
+      "url": "assets/frames/cinema/act1/frame_00099.webp"
+    },
+    {
+      "file": "frame_00100.webp",
+      "url": "assets/frames/cinema/act1/frame_00100.webp"
+    },
+    {
+      "file": "frame_00101.webp",
+      "url": "assets/frames/cinema/act1/frame_00101.webp"
+    },
+    {
+      "file": "frame_00102.webp",
+      "url": "assets/frames/cinema/act1/frame_00102.webp"
+    },
+    {
+      "file": "frame_00103.webp",
+      "url": "assets/frames/cinema/act1/frame_00103.webp"
+    },
+    {
+      "file": "frame_00104.webp",
+      "url": "assets/frames/cinema/act1/frame_00104.webp"
+    },
+    {
+      "file": "frame_00105.webp",
+      "url": "assets/frames/cinema/act1/frame_00105.webp"
+    },
+    {
+      "file": "frame_00106.webp",
+      "url": "assets/frames/cinema/act1/frame_00106.webp"
+    },
+    {
+      "file": "frame_00107.webp",
+      "url": "assets/frames/cinema/act1/frame_00107.webp"
+    },
+    {
+      "file": "frame_00108.webp",
+      "url": "assets/frames/cinema/act1/frame_00108.webp"
+    },
+    {
+      "file": "frame_00109.webp",
+      "url": "assets/frames/cinema/act1/frame_00109.webp"
+    },
+    {
+      "file": "frame_00110.webp",
+      "url": "assets/frames/cinema/act1/frame_00110.webp"
+    },
+    {
+      "file": "frame_00111.webp",
+      "url": "assets/frames/cinema/act1/frame_00111.webp"
+    },
+    {
+      "file": "frame_00112.webp",
+      "url": "assets/frames/cinema/act1/frame_00112.webp"
+    },
+    {
+      "file": "frame_00113.webp",
+      "url": "assets/frames/cinema/act1/frame_00113.webp"
+    },
+    {
+      "file": "frame_00114.webp",
+      "url": "assets/frames/cinema/act1/frame_00114.webp"
+    },
+    {
+      "file": "frame_00115.webp",
+      "url": "assets/frames/cinema/act1/frame_00115.webp"
+    },
+    {
+      "file": "frame_00116.webp",
+      "url": "assets/frames/cinema/act1/frame_00116.webp"
+    },
+    {
+      "file": "frame_00117.webp",
+      "url": "assets/frames/cinema/act1/frame_00117.webp"
+    },
+    {
+      "file": "frame_00118.webp",
+      "url": "assets/frames/cinema/act1/frame_00118.webp"
+    },
+    {
+      "file": "frame_00119.webp",
+      "url": "assets/frames/cinema/act1/frame_00119.webp"
+    },
+    {
+      "file": "frame_00120.webp",
+      "url": "assets/frames/cinema/act1/frame_00120.webp"
+    },
+    {
+      "file": "frame_00121.webp",
+      "url": "assets/frames/cinema/act1/frame_00121.webp"
+    },
+    {
+      "file": "frame_00122.webp",
+      "url": "assets/frames/cinema/act1/frame_00122.webp"
+    },
+    {
+      "file": "frame_00123.webp",
+      "url": "assets/frames/cinema/act1/frame_00123.webp"
+    },
+    {
+      "file": "frame_00124.webp",
+      "url": "assets/frames/cinema/act1/frame_00124.webp"
+    },
+    {
+      "file": "frame_00125.webp",
+      "url": "assets/frames/cinema/act1/frame_00125.webp"
+    },
+    {
+      "file": "frame_00126.webp",
+      "url": "assets/frames/cinema/act1/frame_00126.webp"
+    },
+    {
+      "file": "frame_00127.webp",
+      "url": "assets/frames/cinema/act1/frame_00127.webp"
+    },
+    {
+      "file": "frame_00128.webp",
+      "url": "assets/frames/cinema/act1/frame_00128.webp"
+    },
+    {
+      "file": "frame_00129.webp",
+      "url": "assets/frames/cinema/act1/frame_00129.webp"
+    },
+    {
+      "file": "frame_00130.webp",
+      "url": "assets/frames/cinema/act1/frame_00130.webp"
+    },
+    {
+      "file": "frame_00131.webp",
+      "url": "assets/frames/cinema/act1/frame_00131.webp"
+    },
+    {
+      "file": "frame_00132.webp",
+      "url": "assets/frames/cinema/act1/frame_00132.webp"
+    },
+    {
+      "file": "frame_00133.webp",
+      "url": "assets/frames/cinema/act1/frame_00133.webp"
+    },
+    {
+      "file": "frame_00134.webp",
+      "url": "assets/frames/cinema/act1/frame_00134.webp"
+    },
+    {
+      "file": "frame_00135.webp",
+      "url": "assets/frames/cinema/act1/frame_00135.webp"
+    },
+    {
+      "file": "frame_00136.webp",
+      "url": "assets/frames/cinema/act1/frame_00136.webp"
+    },
+    {
+      "file": "frame_00137.webp",
+      "url": "assets/frames/cinema/act1/frame_00137.webp"
+    },
+    {
+      "file": "frame_00138.webp",
+      "url": "assets/frames/cinema/act1/frame_00138.webp"
+    },
+    {
+      "file": "frame_00139.webp",
+      "url": "assets/frames/cinema/act1/frame_00139.webp"
+    },
+    {
+      "file": "frame_00140.webp",
+      "url": "assets/frames/cinema/act1/frame_00140.webp"
+    },
+    {
+      "file": "frame_00141.webp",
+      "url": "assets/frames/cinema/act1/frame_00141.webp"
+    },
+    {
+      "file": "frame_00142.webp",
+      "url": "assets/frames/cinema/act1/frame_00142.webp"
+    },
+    {
+      "file": "frame_00143.webp",
+      "url": "assets/frames/cinema/act1/frame_00143.webp"
+    },
+    {
+      "file": "frame_00144.webp",
+      "url": "assets/frames/cinema/act1/frame_00144.webp"
+    },
+    {
+      "file": "frame_00145.webp",
+      "url": "assets/frames/cinema/act1/frame_00145.webp"
+    },
+    {
+      "file": "frame_00146.webp",
+      "url": "assets/frames/cinema/act1/frame_00146.webp"
+    },
+    {
+      "file": "frame_00147.webp",
+      "url": "assets/frames/cinema/act1/frame_00147.webp"
+    },
+    {
+      "file": "frame_00148.webp",
+      "url": "assets/frames/cinema/act1/frame_00148.webp"
+    },
+    {
+      "file": "frame_00149.webp",
+      "url": "assets/frames/cinema/act1/frame_00149.webp"
+    },
+    {
+      "file": "frame_00150.webp",
+      "url": "assets/frames/cinema/act1/frame_00150.webp"
+    },
+    {
+      "file": "frame_00151.webp",
+      "url": "assets/frames/cinema/act1/frame_00151.webp"
+    },
+    {
+      "file": "frame_00152.webp",
+      "url": "assets/frames/cinema/act1/frame_00152.webp"
+    },
+    {
+      "file": "frame_00153.webp",
+      "url": "assets/frames/cinema/act1/frame_00153.webp"
+    },
+    {
+      "file": "frame_00154.webp",
+      "url": "assets/frames/cinema/act1/frame_00154.webp"
+    },
+    {
+      "file": "frame_00155.webp",
+      "url": "assets/frames/cinema/act1/frame_00155.webp"
+    },
+    {
+      "file": "frame_00156.webp",
+      "url": "assets/frames/cinema/act1/frame_00156.webp"
+    },
+    {
+      "file": "frame_00157.webp",
+      "url": "assets/frames/cinema/act1/frame_00157.webp"
+    },
+    {
+      "file": "frame_00158.webp",
+      "url": "assets/frames/cinema/act1/frame_00158.webp"
+    },
+    {
+      "file": "frame_00159.webp",
+      "url": "assets/frames/cinema/act1/frame_00159.webp"
+    },
+    {
+      "file": "frame_00160.webp",
+      "url": "assets/frames/cinema/act1/frame_00160.webp"
+    },
+    {
+      "file": "frame_00161.webp",
+      "url": "assets/frames/cinema/act1/frame_00161.webp"
+    },
+    {
+      "file": "frame_00162.webp",
+      "url": "assets/frames/cinema/act1/frame_00162.webp"
+    },
+    {
+      "file": "frame_00163.webp",
+      "url": "assets/frames/cinema/act1/frame_00163.webp"
+    },
+    {
+      "file": "frame_00164.webp",
+      "url": "assets/frames/cinema/act1/frame_00164.webp"
+    },
+    {
+      "file": "frame_00165.webp",
+      "url": "assets/frames/cinema/act1/frame_00165.webp"
+    },
+    {
+      "file": "frame_00166.webp",
+      "url": "assets/frames/cinema/act1/frame_00166.webp"
+    },
+    {
+      "file": "frame_00167.webp",
+      "url": "assets/frames/cinema/act1/frame_00167.webp"
+    },
+    {
+      "file": "frame_00168.webp",
+      "url": "assets/frames/cinema/act1/frame_00168.webp"
+    },
+    {
+      "file": "frame_00169.webp",
+      "url": "assets/frames/cinema/act1/frame_00169.webp"
+    },
+    {
+      "file": "frame_00170.webp",
+      "url": "assets/frames/cinema/act1/frame_00170.webp"
+    },
+    {
+      "file": "frame_00171.webp",
+      "url": "assets/frames/cinema/act1/frame_00171.webp"
+    },
+    {
+      "file": "frame_00172.webp",
+      "url": "assets/frames/cinema/act1/frame_00172.webp"
+    },
+    {
+      "file": "frame_00173.webp",
+      "url": "assets/frames/cinema/act1/frame_00173.webp"
+    },
+    {
+      "file": "frame_00174.webp",
+      "url": "assets/frames/cinema/act1/frame_00174.webp"
+    },
+    {
+      "file": "frame_00175.webp",
+      "url": "assets/frames/cinema/act1/frame_00175.webp"
+    },
+    {
+      "file": "frame_00176.webp",
+      "url": "assets/frames/cinema/act1/frame_00176.webp"
+    },
+    {
+      "file": "frame_00177.webp",
+      "url": "assets/frames/cinema/act1/frame_00177.webp"
+    },
+    {
+      "file": "frame_00178.webp",
+      "url": "assets/frames/cinema/act1/frame_00178.webp"
+    },
+    {
+      "file": "frame_00179.webp",
+      "url": "assets/frames/cinema/act1/frame_00179.webp"
+    },
+    {
+      "file": "frame_00180.webp",
+      "url": "assets/frames/cinema/act1/frame_00180.webp"
+    },
+    {
+      "file": "frame_00181.webp",
+      "url": "assets/frames/cinema/act1/frame_00181.webp"
+    }
+  ]
+}

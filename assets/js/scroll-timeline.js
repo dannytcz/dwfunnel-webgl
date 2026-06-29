@@ -35,7 +35,7 @@ export const CINEMA_SEGMENTS = [
     share: 0.3,
     ease: "burst",
     useHandoff: false,
-    rangeEnd: 72,
+    rangeEnd: null,
     fx: { scaleMax: 0.28, driftY: -48 },
     copy: null,
     contentReveal: "#act2",

@@ -8,7 +8,7 @@ import {
 } from "./scroll-timeline.js";
 import { ActFrameCache, IdleLayer } from "./idle-layer.js";
 
-const BUILD_TAG = "cinema-v1";
+const BUILD_TAG = "cinema-anime-v1";
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -29,6 +29,7 @@ const act2Section = document.getElementById("act2");
 const CDN = window.DWF_CDN;
 const idleCfg = CDN?.heroIdle ?? {};
 const webpLoop = idleCfg.webpLoop ?? { start: 0, end: 139, fps: 12 };
+const idleMode = idleCfg.mode ?? "webp";
 
 /** Frame captured when user leaves idle — scroll continues from here, not frame 0. */
 const handoff = { frame: null, engaged: false };
@@ -113,7 +114,9 @@ async function init() {
     videoEl: idleVideo,
     cache,
     cdnKey: "act0",
-    videoUrl: idleCfg.url || null,
+    videoUrl: idleMode === "video" ? (idleCfg.url || null) : null,
+    stillUrl: idleCfg.still || null,
+    mode: idleMode,
     loop: webpLoop,
     reducedMotion,
   });
@@ -134,9 +137,13 @@ async function init() {
 
   preloader?.classList.add("is-done");
   heroHud?.classList.remove("is-hidden");
-  setBuild(`cinema timeline · idle loop ${webpLoop.start}–${webpLoop.end}`);
+  setBuild(`anime cinema · ${idle.mode} idle · ${totalPinLength()}`);
 
   if (idle.mode === "video") setCanvasMode(idle, 0);
+  else if (idle.mode === "still") {
+    canvas.style.opacity = "1";
+    if (idleVideo) idleVideo.style.opacity = "0";
+  }
   idle.start();
 
   if (act2Section) {
@@ -203,7 +210,7 @@ async function init() {
       const fx = segmentFx(segment, local, globalP);
       const ui = segmentUi(segment, local, globalP);
 
-      const blend = Math.min(1, globalP / 0.08);
+      const blend = idle.mode === "still" ? 1 : Math.min(1, globalP / 0.08);
       const scrubOpacity = idle.mode === "video" ? blend : 1;
       idle.setVideoOpacity(1 - scrubOpacity);
       setCanvasMode(idle, scrubOpacity);

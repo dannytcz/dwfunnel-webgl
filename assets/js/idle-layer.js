@@ -30,6 +30,25 @@ export class ActFrameCache {
     this.cache.get(cdnKey)?.draw(index, fx);
   }
 
+  drawStill(img) {
+    const w = this.container.clientWidth;
+    const h = this.container.clientHeight;
+    if (!w || !h || !img?.naturalWidth) return;
+    const ctx = this.canvas.getContext("2d", { alpha: false });
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = w * dpr;
+    this.canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const baseScale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+    const dw = img.naturalWidth * baseScale;
+    const dh = img.naturalHeight * baseScale;
+    const dx = (w - dw) / 2;
+    const dy = (h - dh) / 2;
+    ctx.fillStyle = "#030508";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
   resizeAll() {
     for (const s of this.cache.values()) s.resize();
   }
@@ -42,15 +61,35 @@ export class IdleLayer {
     this.cdnKey = opts.cdnKey ?? "act0";
     this.loop = opts.loop ?? { start: 0, end: 40, fps: 10 };
     this.reducedMotion = opts.reducedMotion ?? false;
-    this.mode = "webp";
+    this.stillUrl = opts.stillUrl ?? null;
+    this.mode = opts.mode === "still" ? "still" : "webp";
     this.active = false;
     this.t = 0;
-    this.currentFrame = this.loop.start;
+    this.currentFrame = 0;
     this._raf = 0;
     this.videoUrl = opts.videoUrl ?? null;
+    this._stillImg = null;
   }
 
   load(onProgress) {
+    if (this.mode === "still" && this.stillUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.onload = () => {
+          this._stillImg = img;
+          this.mode = "still";
+          onProgress?.(1);
+          resolve("still");
+        };
+        img.onerror = () => {
+          this.mode = "webp";
+          onProgress?.(1);
+          resolve("webp");
+        };
+        img.src = this.stillUrl;
+      });
+    }
     if (this.videoEl && this.videoUrl) {
       return new Promise((resolve) => {
         const v = this.videoEl;
@@ -74,16 +113,21 @@ export class IdleLayer {
   }
 
   getCurrentFrame() {
-    return this.currentFrame;
+    return this.mode === "still" ? 0 : this.currentFrame;
   }
 
   start() {
     if (this.reducedMotion) {
-      this.currentFrame = this.loop.start;
-      this.cache.draw(this.cdnKey, this.currentFrame, { scale: 1.02 });
+      this.currentFrame = this.mode === "still" ? 0 : this.loop.start;
+      if (this.mode === "still") this._drawStill();
+      else this.cache.draw(this.cdnKey, this.currentFrame, { scale: 1.02 });
       return;
     }
     this.active = true;
+    if (this.mode === "still") {
+      this._drawStill();
+      return;
+    }
     if (this.mode === "video" && this.videoEl) {
       this.videoEl.style.opacity = "1";
       this.videoEl.play().catch(() => {
@@ -147,6 +191,18 @@ export class IdleLayer {
 
   /** Sync loop position when using video (for handoff). */
   syncFrameFromVideo() {
+    if (this.mode === "still") {
+      this.currentFrame = 0;
+      return;
+    }
     if (this.mode === "video") this.currentFrame = this._frameFromVideoTime();
+  }
+
+  _drawStill() {
+    if (this._stillImg?.naturalWidth) {
+      this.cache.drawStill(this._stillImg);
+      return;
+    }
+    this.cache.draw(this.cdnKey, 0, { scale: 1 });
   }
 }
