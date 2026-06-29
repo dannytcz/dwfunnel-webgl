@@ -17,5 +17,5 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"DW Funnel dev server → http://localhost:{PORT}")
+        print(f"DW Funnel dev server at http://localhost:{PORT}")
         httpd.serve_forever()
