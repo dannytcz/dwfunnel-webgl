@@ -130,25 +130,23 @@ async function init() {
     scrubber.resize();
   });
 
-  if (!window.gsap?.ScrollTrigger) return;
+  if (!window.gsap || !window.ScrollTrigger) {
+    console.error("cinema: GSAP or ScrollTrigger failed to load");
+    return;
+  }
 
   const { gsap, ScrollTrigger } = window;
   gsap.registerPlugin(ScrollTrigger);
-
-  if (!reducedMotion && typeof Lenis !== "undefined") {
-    const lenis = new Lenis({ duration: 0.9, smoothWheel: true, touchMultiplier: 1.2 });
-    lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
-    gsap.ticker.lagSmoothing(0);
-  }
 
   ScrollTrigger.create({
     trigger: cinemaPin || cinema,
     start: "top top",
     end: reducedMotion ? "+=160%" : `+=${PIN_VH}%`,
     pin: true,
+    pinSpacing: true,
     anticipatePin: 1,
-    scrub: reducedMotion ? false : 0.45,
+    scrub: reducedMotion ? false : 0.35,
+    invalidateOnRefresh: true,
     onUpdate: (self) => {
       const p = self.progress;
 
@@ -165,6 +163,11 @@ async function init() {
       applyCopyForProgress(p);
     },
   });
+
+  ScrollTrigger.refresh();
 }
 
-init();
+init().catch((err) => {
+  console.error("cinema init failed", err);
+  loader?.classList.add("is-done");
+});
