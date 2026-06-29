@@ -12,7 +12,7 @@ import {
 
 /** glb = real skinned mesh (default) | mesh3d | portrait (legacy flat image) */
 const HERO_MODE = "glb";
-const BUILD_TAG = "cyberpunk-v4";
+const BUILD_TAG = "cyberpunk-v5";
 
 const GLB_URLS = ["assets/models/cyborg-bust.glb"];
 

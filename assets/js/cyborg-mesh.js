@@ -381,9 +381,11 @@ function findHeadBone(root) {
 /** Scale + position GLB for bust hero framing (head + shoulders in view). */
 export function stageGlbBust(model, opts = {}) {
   const targetH = opts.targetHeight ?? 2.55;
-  const offsetX = opts.offsetX ?? 0.42;
+  const offsetX = opts.offsetX ?? 0.38;
+  // Tripo exports often face +X; rotate to face the camera (-Z).
+  const faceYaw = opts.faceYaw ?? -Math.PI / 2;
 
-  model.rotation.set(0, 0, 0);
+  model.rotation.set(0, faceYaw, 0);
   model.updateMatrixWorld(true);
 
   const box0 = new THREE.Box3().setFromObject(model);
@@ -424,7 +426,7 @@ export async function loadCyborgGlb(url, envMap = null) {
 
   fixTextureColorSpace(root);
   applyNativeGlowMaterials(root, envMap);
-  const staged = stageGlbBust(root, { targetHeight: 2.55, offsetX: 0.42 });
+  const staged = stageGlbBust(root, { targetHeight: 2.55, offsetX: 0.38, faceYaw: -Math.PI / 2 });
 
   let mixer = null;
   if (gltf.animations?.length) {
