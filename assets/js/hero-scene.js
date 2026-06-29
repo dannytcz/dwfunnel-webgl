@@ -12,7 +12,7 @@ import {
 
 /** glb = real skinned mesh (default) | mesh3d | portrait (legacy flat image) */
 const HERO_MODE = "glb";
-const BUILD_TAG = "glb-v2";
+const BUILD_TAG = "native-glow-v3";
 
 const GLB_URLS = [
   "assets/models/cyborg-bust.glb",
@@ -79,7 +79,7 @@ camera.position.set(0, 0.12, 4.9);
 
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.85, 0.5, 0.2);
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.0, 0.55, 0.42);
 composer.addPass(bloom);
 
 scene.add(new THREE.AmbientLight(0x0a1a0f, 0.4));
@@ -412,8 +412,11 @@ function updateLife(t, dt) {
 
   if (glbRoot) {
     glbRoot.traverse((o) => {
-      if (o.isMesh && o.material?.emissiveIntensity !== undefined) {
-        o.material.emissiveIntensity = 0.12 + Math.sin(t * 2.2) * 0.04 + (state.hoverCyborg ? 0.12 : 0);
+      const m = o.material;
+      if (!m?.emissiveMap && !m?.emissiveIntensity) return;
+      if (m.emissiveIntensity !== undefined && m.emissiveIntensity > 0) {
+        const pulse = 0.04 * Math.sin(t * 2.2);
+        m.emissiveIntensity = (m.userData.baseEmit ?? 1.8) + pulse + (state.hoverCyborg ? 0.25 : 0);
       }
     });
   }

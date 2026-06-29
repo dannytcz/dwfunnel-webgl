@@ -132,9 +132,17 @@ void main() {
   float voidDist = distance(col.rgb, uVoidColor);
   if (voidDist < uVoidThreshold && depth < 0.04) discard;
 
-  float fresnel = pow(1.0 - max(dot(normalize(vNormalW), normalize(vViewDir)), 0.0), 2.4);
-  float rim = fresnel * uRimStrength * (0.35 + depth * 0.65);
-  vec3 lit = col.rgb + uRimColor * rim;
+  /* Native glow: only pixels that are already green/bright in the texture */
+  float greenLead = col.g - max(col.r, col.b);
+  float lum = dot(col.rgb, vec3(0.299, 0.587, 0.114));
+  float emit = 0.0;
+  if (greenLead > 0.08 && col.g > 0.25) {
+    emit = min(1.0, greenLead * 2.8 * col.g);
+  } else if (lum > 0.55 && col.g >= col.r) {
+    emit = min(1.0, (lum - 0.45) * 1.6);
+  }
+  vec3 neon = vec3(0.224, 1.0, 0.078);
+  vec3 lit = col.rgb + neon * emit * 1.35;
 
   float edge = smoothstep(0.02, 0.12, depth);
   gl_FragColor = vec4(lit, col.a * edge);
