@@ -10,8 +10,9 @@ import {
   loadTexture,
 } from "./depth-parallax.js";
 
-/** auto = GLB → mesh3d fallback | glb | mesh3d | portrait */
-const HERO_MODE = "auto";
+/** glb = real skinned mesh (default) | mesh3d | portrait (legacy flat image) */
+const HERO_MODE = "glb";
+const BUILD_TAG = "glb-v2";
 
 const GLB_URLS = [
   "assets/models/cyborg-bust.glb",
@@ -212,22 +213,36 @@ async function tryLoadGlb() {
   return false;
 }
 
+function setBuildLabel(text) {
+  const el = document.getElementById("hero-build");
+  if (el) el.textContent = `Build: ${BUILD_TAG} — ${text}`;
+}
+
 async function initHero() {
+  setBuildLabel("loading hero…");
+
   if (HERO_MODE === "portrait") {
-    if (await tryLoadPortrait()) return;
-    buildMesh3d();
-    return;
-  }
-  if (HERO_MODE === "glb" || HERO_MODE === "auto") {
-    if (await tryLoadGlb()) return;
-    if (HERO_MODE === "glb") {
-      buildMesh3d();
+    if (await tryLoadPortrait()) {
+      setBuildLabel("mode: portrait (2D image)");
       return;
     }
-  }
-  if (HERO_MODE === "mesh3d" || HERO_MODE === "auto") {
     buildMesh3d();
+    setBuildLabel("mode: mesh3d (fallback)");
+    return;
   }
+
+  if (HERO_MODE === "glb") {
+    if (await tryLoadGlb()) {
+      setBuildLabel("mode: glb (real 3D mesh)");
+      return;
+    }
+    buildMesh3d();
+    setBuildLabel("mode: mesh3d (GLB failed)");
+    return;
+  }
+
+  buildMesh3d();
+  setBuildLabel("mode: mesh3d");
 }
 
 initHero();

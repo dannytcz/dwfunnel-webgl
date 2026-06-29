@@ -8,11 +8,11 @@ Hero-first rebuild. **Neon cyber visual** + **DW Funnel copy** from the archived
 
 ## Run locally
 ```bash
-python -m http.server 8766
+python scripts/dev-server.py
 ```
 Open http://localhost:8766
 
-**Requires a local server** — ES modules + Three.js import map won't load from `file://`.
+**Hard refresh:** `Ctrl+Shift+R` — check top-right badge says `Build: glb-v2 — mode: glb (real 3D mesh)`.
 
 ## Hero modes
 
