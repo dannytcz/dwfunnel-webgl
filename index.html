@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DW Funnel | Scroll Hero</title>
+  <title>DW Funnel | Scroll Cinema</title>
   <meta name="description" content="Your offer deserves a page people remember. DW Funnel builds conversion landing pages. Founded by Daphne Wong." />
   <meta name="theme-color" content="#030508" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/hero.css?v=scroll-video-v2" />
+  <link rel="stylesheet" href="assets/css/hero.css?v=cinema-v1" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -23,7 +23,8 @@
     </div>
   </div>
 
-  <p id="hero-build" class="hero-build" aria-live="polite">Build: scroll-video-v2 — loading…</p>
+  <p id="hero-build" class="hero-build" aria-live="polite">Build: cinema-v1 — loading…</p>
+  <p class="cinema-act-label" data-cinema-label aria-hidden="true">Act 0 — Entry</p>
 
   <header class="hero-hud is-hidden" id="hero-hud">
     <a href="/" class="tech-logo tech-logo--compact" aria-label="DW Funnel home">
@@ -32,35 +33,46 @@
     <span class="hero-hud__status"><span class="hero-hud__dot"></span> SYS.ONLINE</span>
   </header>
 
-  <section id="hero-scrub" class="hero-scrub" aria-label="Hero">
-    <div class="hero-scrub__stage">
-      <div class="hero-scrub__media">
-        <video id="idle-video" class="hero-scrub__idle" muted loop playsinline aria-hidden="true"></video>
-        <canvas id="scrub-canvas" aria-hidden="true"></canvas>
+  <!-- Pinned scroll cinema: act0 entry → act1 drift → act2 bridge → content -->
+  <div id="cinema-pin" class="cinema-pin">
+    <section id="hero-scrub" class="hero-scrub" aria-label="Cinematic hero">
+      <div class="hero-scrub__stage">
+        <div class="hero-scrub__media">
+          <video id="idle-video" class="hero-scrub__idle" muted loop playsinline aria-hidden="true"></video>
+          <canvas id="scrub-canvas" aria-hidden="true"></canvas>
+        </div>
+        <div class="hero-scrub__stars" id="scrub-stars" aria-hidden="true"></div>
+        <div class="hero-scrub__vignette" id="scrub-vignette" aria-hidden="true"></div>
       </div>
-      <div class="hero-scrub__stars" id="scrub-stars" aria-hidden="true"></div>
-      <div class="hero-scrub__vignette" id="scrub-vignette" aria-hidden="true"></div>
-    </div>
 
-    <div class="hero-ui">
-      <div class="hero-copy">
-        <p class="eyebrow">Creator-Proven System</p>
-        <h1>Your Offer Deserves a Page People Remember.</h1>
-        <p class="lead">I build the page. You get the clients. Founded by Daphne Wong.</p>
-        <p class="lead">Trusted by 270+ business owners who wanted their first 10 clients without the template look.</p>
-        <div class="hero-cta">
-          <a href="#work-with-us" class="btn btn--primary">Work With Us</a>
-          <a href="#contact" class="btn btn--ghost">Book a discovery call</a>
+      <div class="cinema-copy-stack">
+        <div id="hero-copy-block" class="hero-ui cinema-copy">
+          <div class="hero-copy">
+            <p class="eyebrow">Creator-Proven System</p>
+            <h1>Your Offer Deserves a Page People Remember.</h1>
+            <p class="lead">I build the page. You get the clients. Founded by Daphne Wong.</p>
+            <p class="lead">Trusted by 270+ business owners who wanted their first 10 clients without the template look.</p>
+            <div class="hero-cta">
+              <a href="#work-with-us" class="btn btn--primary">Work With Us</a>
+              <a href="#contact" class="btn btn--ghost">Book a discovery call</a>
+            </div>
+          </div>
+          <p class="hero-scroll-hint" id="scroll-hint">
+            <span class="hero-scroll-hint__chev" aria-hidden="true">↓</span>
+            Scroll to enter the scene
+          </p>
+        </div>
+
+        <div id="act1-copy-block" class="cinema-copy cinema-copy--act1" aria-hidden="true">
+          <p class="eyebrow">The journey</p>
+          <h2 class="cinema-copy__title">Scroll Is The Story</h2>
+          <p class="lead">Each act is a beat — entry, drift, then the handoff into what comes next.</p>
         </div>
       </div>
-      <p class="hero-scroll-hint" id="scroll-hint">
-        <span class="hero-scroll-hint__chev" aria-hidden="true">↓</span>
-        Scroll to enter the scene
-      </p>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <section id="act2" class="section" aria-label="Problem">
+  <section id="act2" class="section section--cinema-reveal" aria-label="Problem">
     <div class="section__inner">
       <p class="eyebrow">The problem</p>
       <h2 class="section__title">Why Most Pages Fail</h2>
@@ -89,6 +101,6 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/hero-scroll.js?v=scroll-video-v2"></script>
+  <script type="module" src="assets/js/hero-scroll.js?v=cinema-v1"></script>
 </body>
 </html>

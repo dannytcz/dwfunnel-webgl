@@ -1,65 +1,86 @@
 /**
- * Idle background — looping MP4 or cycling WebP frames with subtle drift.
+ * Per-act frame cache + idle loop with handoff frame tracking.
  */
 
+export class ActFrameCache {
+  constructor(container, canvas, opts = {}) {
+    this.container = container;
+    this.canvas = canvas;
+    this.reducedMotion = opts.reducedMotion ?? false;
+    this.cache = new Map();
+  }
+
+  async loadAct(cdnKey, urls, onProgress) {
+    if (this.cache.has(cdnKey)) return this.cache.get(cdnKey);
+    const { FrameScrubber } = await import("./frame-scrub.js");
+    const scrubber = new FrameScrubber(this.container, this.canvas, urls, {
+      reducedMotion: this.reducedMotion,
+      parallaxCanvas: 0,
+    });
+    await scrubber.load(onProgress);
+    this.cache.set(cdnKey, scrubber);
+    return scrubber;
+  }
+
+  getAct(cdnKey) {
+    return this.cache.get(cdnKey) ?? null;
+  }
+
+  draw(cdnKey, index, fx = {}) {
+    this.cache.get(cdnKey)?.draw(index, fx);
+  }
+
+  resizeAll() {
+    for (const s of this.cache.values()) s.resize();
+  }
+}
+
 export class IdleLayer {
-  /**
-   * @param {{
-   *   videoEl: HTMLVideoElement | null,
-   *   scrubber: import('./frame-scrub.js').FrameScrubber,
-   *   videoUrl?: string | null,
-   *   loop?: { start: number; end: number; fps: number },
-   *   reducedMotion?: boolean,
-   * }} opts
-   */
   constructor(opts) {
     this.videoEl = opts.videoEl;
-    this.scrubber = opts.scrubber;
-    this.loop = opts.loop ?? { start: 0, end: 28, fps: 10 };
+    this.cache = opts.cache;
+    this.cdnKey = opts.cdnKey ?? "act0";
+    this.loop = opts.loop ?? { start: 0, end: 40, fps: 10 };
     this.reducedMotion = opts.reducedMotion ?? false;
-    this.mode = "none"; // "video" | "webp" | "none"
+    this.mode = "webp";
     this.active = false;
     this.t = 0;
+    this.currentFrame = this.loop.start;
     this._raf = 0;
-    this._videoOk = false;
     this.videoUrl = opts.videoUrl ?? null;
   }
 
   load(onProgress) {
-    const tasks = [];
-
     if (this.videoEl && this.videoUrl) {
-      tasks.push(
-        new Promise((resolve) => {
-          const v = this.videoEl;
-          const done = (ok) => {
-            this._videoOk = ok;
-            onProgress?.(1);
-            resolve(ok);
-          };
-          v.muted = true;
-          v.loop = true;
-          v.playsInline = true;
-          v.preload = "auto";
-          v.src = this.videoUrl;
-          v.oncanplaythrough = () => done(true);
-          v.onerror = () => done(false);
-          setTimeout(() => done(v.readyState >= 2), 10000);
-        })
-      );
-    } else {
-      onProgress?.(1);
+      return new Promise((resolve) => {
+        const v = this.videoEl;
+        const done = (ok) => {
+          this.mode = ok ? "video" : "webp";
+          onProgress?.(1);
+          resolve(this.mode);
+        };
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.preload = "auto";
+        v.src = this.videoUrl;
+        v.oncanplaythrough = () => done(true);
+        v.onerror = () => done(false);
+        setTimeout(() => done(v.readyState >= 2), 10000);
+      });
     }
+    onProgress?.(1);
+    return Promise.resolve("webp");
+  }
 
-    return Promise.all(tasks).then((results) => {
-      this.mode = results[0] ? "video" : "webp";
-      return this.mode;
-    });
+  getCurrentFrame() {
+    return this.currentFrame;
   }
 
   start() {
     if (this.reducedMotion) {
-      this.scrubber.draw(this.loop.start, { scale: 1.02 });
+      this.currentFrame = this.loop.start;
+      this.cache.draw(this.cdnKey, this.currentFrame, { scale: 1.02 });
       return;
     }
     this.active = true;
@@ -91,13 +112,18 @@ export class IdleLayer {
   }
 
   applyParallax(x, y, amount = 0.045) {
+    if (this.mode !== "video" || !this.videoEl) return;
     const cx = x * amount * 26;
     const cy = y * amount * 16;
-    const breath = this.mode === "video" ? 1.03 : 1;
-    const transform = `translate(${cx}px, ${cy}px) scale(${breath})`;
-    if (this.videoEl && this.mode === "video") {
-      this.videoEl.style.transform = transform;
-    }
+    this.videoEl.style.transform = `translate(${cx}px, ${cy}px) scale(1.03)`;
+  }
+
+  _frameFromVideoTime() {
+    const v = this.videoEl;
+    if (!v?.duration) return this.loop.start;
+    const span = this.loop.end - this.loop.start + 1;
+    const ratio = (v.currentTime % v.duration) / v.duration;
+    return this.loop.start + Math.floor(ratio * span) % span;
   }
 
   _startWebpLoop() {
@@ -110,11 +136,17 @@ export class IdleLayer {
       this.t += dt;
       const span = this.loop.end - this.loop.start + 1;
       const idx = this.loop.start + Math.floor(this.t * this.loop.fps) % span;
-      const breath = 1 + Math.sin(this.t * 0.85) * 0.014;
-      const driftY = Math.sin(this.t * 0.55) * 5;
-      this.scrubber.draw(idx, { scale: breath, offsetY: driftY });
+      this.currentFrame = idx;
+      const breath = 1 + Math.sin(this.t * 0.85) * 0.012;
+      const driftY = Math.sin(this.t * 0.55) * 4;
+      this.cache.draw(this.cdnKey, idx, { scale: breath, offsetY: driftY });
       this._raf = requestAnimationFrame(tick);
     };
     this._raf = requestAnimationFrame(tick);
+  }
+
+  /** Sync loop position when using video (for handoff). */
+  syncFrameFromVideo() {
+    if (this.mode === "video") this.currentFrame = this._frameFromVideoTime();
   }
 }

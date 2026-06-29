@@ -596,8 +596,8 @@ window.DWF_CDN = {
   },
   "heroIdle": {
     "url": "assets/videos/hero-idle.mp4",
-    "webpLoop": { "start": 0, "end": 28, "fps": 10 },
-    "note": "Short looping clip (3–6s) — subtle character motion. Falls back to act0 WebP loop if missing."
+    "webpLoop": { "start": 0, "end": 139, "fps": 12 },
+    "note": "Idle loops act0 frames 0–139. Scroll handoff continues from current frame — not frame 0."
   },
   "flywheel": [
     {
