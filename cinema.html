@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=9" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=10" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -24,15 +24,14 @@
     </div>
   </div>
 
-  <!-- Header — wordmark, free-scroll toggle, primary CTA -->
+  <!-- Header — refined corner ornaments: wordmark + Book A Call only -->
   <header class="cinema-header">
     <a href="/" class="cinema-header__brand">DW Funnel</a>
-    <button id="cinema-mode-toggle" class="cinema-mode-toggle" type="button" aria-pressed="true">
-      <span class="cinema-mode-toggle__dot" aria-hidden="true"></span>
-      <span class="cinema-mode-toggle__label">Free scroll</span>
-    </button>
     <a class="cinema-header__cta" href="#contact">Book a call</a>
   </header>
+
+  <!-- Cinematic progress: 0 -> 1/3 after intro -> 2/3 after passage -> 1 after underworld -->
+  <div class="cinema-progress" aria-hidden="true"><span class="cinema-progress__fill"></span></div>
 
   <!-- =======================================================
        CINEMATIC — Hero / Passage / Underworld
@@ -62,6 +61,7 @@
            Visible offer, first impression.
            Full-width, no horizontal padding, headline + lede + 2 CTAs. -->
       <div id="hero-copy-block" class="cinema-copy cinema-copy--hero" data-station="hero">
+        <span class="cinema-copy__rule" aria-hidden="true"></span>
         <p class="cinema-copy__eyebrow">Landing Pages · Funnels · Follow-Up</p>
         <h1>A Page People Remember.<br/>A Funnel That Follows Up.</h1>
         <p class="cinema-copy__lede">Cinematic landing pages, conversion flows, and follow-up systems, built for business owners who want enquiries, not another pretty template.</p>
@@ -69,10 +69,6 @@
           <a href="#contact" class="cinema-btn cinema-btn--primary">Map My Funnel</a>
           <a href="#problem" class="cinema-btn cinema-btn--ghost">See Why Pages Fail</a>
         </div>
-        <p class="cinema-hint" id="scroll-hint">
-          <span class="cinema-hint__chev" aria-hidden="true">↓</span>
-          <span id="scroll-hint-text">Scroll Or Press ↓ To Descend</span>
-        </p>
       </div>
 
       <!-- ── STATION 2 — PASSAGE ── -->
@@ -124,11 +120,16 @@
       </div>
     </section>
 
-    <!-- Vertical station nav: 3 dots, click to jump with same swoosh -->
+    <!-- Vertical station nav: 3 dots + scene index indicator -->
     <nav class="cinema-stations" aria-label="Stations">
       <button data-station="0" class="cinema-stations__dot" aria-label="Hero"><span></span><em>Hero</em></button>
       <button data-station="1" class="cinema-stations__dot" aria-label="Passage"><span></span><em>Passage</em></button>
       <button data-station="2" class="cinema-stations__dot" aria-label="Underworld"><span></span><em>Underworld</em></button>
+      <div class="cinema-stations__index" aria-hidden="true">
+        <span class="cinema-stations__current">01</span>
+        <span class="cinema-stations__sep">/</span>
+        <span class="cinema-stations__total">03</span>
+      </div>
     </nav>
   </div>
 
@@ -180,6 +181,6 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=9"></script>
+  <script type="module" src="assets/js/cinema-scroll.js?v=10"></script>
 </body>
 </html>

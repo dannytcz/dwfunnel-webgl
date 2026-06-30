@@ -21,7 +21,18 @@ const hero = {
   lede: await getText("#hero-copy-block .cinema-copy__lede"),
   primaryCta: await getText("#hero-copy-block .cinema-btn--primary"),
   secondaryCta: await getText("#hero-copy-block .cinema-btn--ghost"),
-  hintText: await getText("#scroll-hint-text"),
+  rulePresent: await page.evaluate(() => !!document.querySelector("#hero-copy-block .cinema-copy__rule")),
+  scrollHintPresent: await page.evaluate(() => !!document.getElementById("scroll-hint")),
+  modeTogglePresent: await page.evaluate(() => !!document.getElementById("cinema-mode-toggle")),
+  progressFillX: await page.evaluate(() => {
+    const f = document.querySelector(".cinema-progress__fill");
+    if (!f) return 0;
+    const t = getComputedStyle(f).transform;
+    if (t === "none") return 0;
+    const m = t.match(/matrix\(([-\d.]+),/);
+    return m ? parseFloat(m[1]) : 0;
+  }),
+  pageBodyText: await getText("body"),
 };
 
 // Advance via ArrowDown (click-to-descend removed)
@@ -77,7 +88,11 @@ const checks = {
   heroEyebrow: /Landing Pages.*Funnels.*Follow-Up/i.test(hero.eyebrow || ""),
   heroPrimary: hero.primaryCta === "Map My Funnel",
   heroSecondary: /See Why Pages Fail/i.test(hero.secondaryCta || ""),
-  heroHintNoClick: !/click anywhere/i.test(hero.hintText || ""),
+  heroRulePresent: hero.rulePresent === true,
+  noScrollHint: hero.scrollHintPresent === false,
+  noModeToggle: hero.modeTogglePresent === false,
+  noFreeScrollText: !/free scroll/i.test(hero.pageBodyText || ""),
+  progressFillStarted: hero.progressFillX > 0.02,
   passageHas: /Attention Is Only The Entrance\./.test(passage.eyebrow || "") && /First Booked Call/i.test(passage.h2 || ""),
   passageBeats: passage.beats.length === 3 && /See/.test(passage.beats[0].text) && /Trust/.test(passage.beats[1].text) && /Decide/.test(passage.beats[2].text),
   underworldEyebrow: /The Machine/i.test(underworld.eyebrow || ""),

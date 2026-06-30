@@ -11,6 +11,7 @@ page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.t
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
 await page.waitForSelector("#loader.is-done", { timeout: 120000 });
 await page.evaluate(() => document.fonts.ready);
+await page.waitForTimeout(5400); // loader 2s + intro 4s + hero fade-in 0.9s + buffer
 
 // Wait until fonts actually resolve
 const fontsReady = await page.evaluate(async () => {
@@ -63,6 +64,19 @@ const heroBlock = await page.evaluate(() => {
   return { cx: Math.round(r.left + r.width / 2), width: Math.round(r.width) };
 });
 
+const progressAndScrim = await page.evaluate(() => {
+  const stage = document.querySelector(".cinema__stage");
+  const fill = document.querySelector(".cinema-progress__fill");
+  const scrim = stage ? parseFloat(getComputedStyle(stage).getPropertyValue("--scrim-opacity") || "0") : 0;
+  const fillT = fill ? getComputedStyle(fill).transform : "none";
+  let scale = 0;
+  if (fillT && fillT !== "none") {
+    const m = fillT.match(/matrix\(([-\d.]+),/);
+    if (m) scale = parseFloat(m[1]);
+  }
+  return { scrim, progressScale: scale };
+});
+
 const checks = {
   noErrors: errs.length === 0,
   cinzelLoaded: fontsReady.Cinzel === true,
@@ -72,7 +86,7 @@ const checks = {
   h1TitleCase: snap.h1.textTransform === "none" && /A Page People Remember/.test(snap.h1.text || ""),
   h1Oversize: parseFloat(snap.h1.fontSize) >= 50,
   h2NotItalic: snap.h2passage.fontStyle === "normal",
-  pNotItalic: snap.heroP?.fontStyle === "normal",
+  ledeNotItalic: snap.heroLede?.fontStyle === "italic", // the lede IS italic — guard it explicitly
   btnNotItalic: snap.heroButton?.fontStyle === "normal",
   eyebrowItalic: snap.heroEyebrow?.fontStyle === "italic",
   cardH3NotItalic: snap.cardH3?.fontStyle === "normal",
@@ -80,6 +94,8 @@ const checks = {
   stationDotCinzel: /Cinzel/i.test(snap.stationDot?.fontFamily || ""),
   heroBlockCentered: Math.abs(heroBlock.cx - 640) < 16,
   noShizuruLeak: !/Shizuru|Cormorant/i.test(JSON.stringify(snap)),
+  heroScrimPresent: progressAndScrim.scrim > 0.25,
+  heroProgressStarted: progressAndScrim.progressScale > 0.02,
 };
 
 console.log("\n--- TYPOGRAPHY UAT ---");

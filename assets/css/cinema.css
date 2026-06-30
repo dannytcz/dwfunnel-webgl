@@ -100,9 +100,9 @@ html, body {
 .cinema-header a {
   pointer-events: auto;
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-decoration: none;
   color: var(--text);
 }
@@ -110,13 +110,13 @@ html, body {
 .cinema-header__cta {
   pointer-events: auto;
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  text-transform: none;
   text-decoration: none;
   color: var(--accent);
-  padding: 0.55rem 1.15rem;
+  padding: 0.5rem 1.1rem;
   border: 1px solid rgba(94, 234, 212, 0.35);
   border-radius: 999px;
   backdrop-filter: blur(8px);
@@ -129,42 +129,11 @@ html, body {
   background: rgba(6, 16, 24, 0.65);
 }
 
-.cinema-mode-toggle {
-  pointer-events: auto;
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  background: rgba(6, 16, 24, 0.45);
-  border: 1px solid rgba(94, 234, 212, 0.18);
+.cinema-header__cta:focus-visible,
+.cinema-btn:focus-visible {
+  outline: 2px solid rgba(94, 234, 212, 0.7);
+  outline-offset: 3px;
   border-radius: 999px;
-  padding: 0.55rem 0.9rem 0.55rem 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
-}
-
-.cinema-mode-toggle__dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent-dim);
-}
-
-.cinema-mode-toggle[aria-pressed="false"] .cinema-mode-toggle__dot {
-  background: rgba(236, 253, 245, 0.25);
-  box-shadow: none;
-}
-
-.cinema-mode-toggle:hover {
-  color: var(--text);
-  border-color: rgba(94, 234, 212, 0.4);
 }
 
 /* ── Pinned cinema ── */
@@ -199,17 +168,28 @@ html, body {
     radial-gradient(ellipse 90% 70% at 50% 50%, transparent 30%, rgba(6, 16, 24, 0.4) 100%);
 }
 
-/* Per-station dark scrim: passage gets a heavier wash so type is readable
-   over the bright portal transition frames. */
-.cinema[data-station-active="passage"] .cinema__stage::before {
-  background:
-    linear-gradient(to bottom, rgba(6, 16, 24, 0.85) 0%, rgba(6, 16, 24, 0.55) 40%, rgba(6, 16, 24, 0.7) 70%, rgba(6, 16, 24, 0.92) 100%),
-    radial-gradient(ellipse 80% 70% at 50% 55%, transparent 25%, rgba(6, 16, 24, 0.55) 100%);
+/* Faded dark scrim. Bound to --scrim-opacity from JS so it always rides the
+   same opacity transition as the copy fade. Resting value depends on which
+   station's copy is on screen (hero=0.35, passage=1, underworld=0.55). */
+.cinema__stage {
+  --scrim-opacity: 0;
 }
-.cinema[data-station-active="underworld"] .cinema__stage::before {
+.cinema__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: var(--scrim-opacity);
+  transition: opacity 0.45s ease;
   background:
-    linear-gradient(to bottom, rgba(6, 16, 24, 0.7) 0%, transparent 50%, rgba(6, 16, 24, 0.92) 100%),
-    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 20%, rgba(6, 16, 24, 0.55) 100%);
+    linear-gradient(to bottom,
+      rgba(6, 16, 24, 0.78) 0%,
+      rgba(6, 16, 24, 0.45) 35%,
+      rgba(6, 16, 24, 0.55) 70%,
+      rgba(6, 16, 24, 0.92) 100%),
+    radial-gradient(ellipse 80% 70% at 50% 55%,
+      transparent 25%, rgba(6, 16, 24, 0.55) 100%);
 }
 
 .cinema__media {
@@ -368,7 +348,7 @@ html, body {
 
 .cinema-copy p {
   font-family: var(--font-body);
-  font-size: clamp(1.15rem, 0.7vw + 0.95rem, 1.55rem);
+  font-size: clamp(1.05rem, 0.7vw + 0.85rem, 1.35rem);
   line-height: 1.5;
   color: var(--text-muted);
   max-width: 42ch;
@@ -377,9 +357,15 @@ html, body {
   margin: 0;
 }
 
-.cinema-copy__lede {
+.cinema-copy--hero p {
+  max-width: 36ch;
+}
+
+/* Higher specificity than .cinema-copy p so the lede's italic + brighter
+   color survive the default `font-style: normal` rule. */
+.cinema-copy .cinema-copy__lede {
   font-style: italic;
-  color: rgba(236, 253, 245, 0.82);
+  color: rgba(236, 253, 245, 0.92);
 }
 
 .cinema-copy p + p {
@@ -492,31 +478,13 @@ html, body {
   border-color: rgba(236, 253, 245, 0.5);
 }
 
-.cinema-hint {
-  margin-top: 1.25rem;
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--accent-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.cinema-hint__chev {
-  animation: hintBounce 1.8s ease-in-out infinite;
-}
-
-.cinema-hint.is-waiting {
-  color: rgba(236, 253, 245, 0.45);
-}
-
-@keyframes hintBounce {
-  0%, 100% { transform: translateY(0); opacity: 0.55; }
-  50% { transform: translateY(5px); opacity: 1; }
+/* ── Hero divider rule above the eyebrow ── */
+.cinema-copy__rule {
+  display: block;
+  width: clamp(3rem, 5vw, 5rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(94, 234, 212, 0.55), transparent);
+  margin: 0 auto 1.4rem;
 }
 
 /* ── Below pin ── */
@@ -777,4 +745,52 @@ html, body {
 
 .cinema-stations__dot.is-active {
   color: var(--accent);
+}
+
+/* ── Station index indicator (01 / 03) ── */
+.cinema-stations__index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(94, 234, 212, 0.18);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-variant: small-caps;
+  letter-spacing: 0.22em;
+  color: rgba(236, 253, 245, 0.45);
+}
+
+.cinema-stations__current {
+  color: var(--accent);
+  transition: color 0.35s ease;
+}
+
+.cinema-stations__sep {
+  opacity: 0.45;
+}
+
+/* ── Cinematic progress bar ── */
+.cinema-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 6;
+  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+.cinema-progress__fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 4s cubic-bezier(0.65, 0, 0.35, 1);
+  background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+  box-shadow: 0 0 12px var(--accent-dim);
 }

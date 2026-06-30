@@ -23,14 +23,15 @@ const loader = document.getElementById("loader");
 const fill = loader?.querySelector(".cinema-loader__fill");
 const pct = loader?.querySelector(".cinema-loader__pct");
 const cinema = document.getElementById("cinema");
+const stage = cinema?.querySelector(".cinema__stage");
 const canvas = document.getElementById("scrub-canvas");
 const idleImg = document.getElementById("cinema-idle");
 const vignette = document.getElementById("cinema-vignette");
 const flash = document.getElementById("cinema-flash");
-const scrollHint = document.getElementById("scroll-hint");
-const scrollHintText = document.getElementById("scroll-hint-text");
 const stationDots = Array.from(document.querySelectorAll(".cinema-stations__dot"));
-const modeToggle = document.getElementById("cinema-mode-toggle");
+const stationIndexEl = document.querySelector(".cinema-stations__current");
+const stationTotalEl = document.querySelector(".cinema-stations__total");
+const progressFill = document.querySelector(".cinema-progress__fill");
 const enterBtn = document.getElementById("cinema-enter");
 const starsLayer = () => document.querySelector(".cinema__stars");
 const problemSection = document.getElementById("problem");
@@ -38,10 +39,31 @@ const problemSection = document.getElementById("problem");
 const state = {
   current: 0,
   playing: false,
-  freeScroll: true,
   lastAdvanceAt: 0,
   activeTween: null,
 };
+
+// Resting scrim opacity per station. Drives .cinema__stage::after opacity
+// so the dark overlay always rides the same transition as the copy fade.
+const STATION_SCRIM = [0.35, 1.0, 0.55];
+
+function setScrim(targetOpacity, durationS = 0.45) {
+  if (!stage) return;
+  stage.style.setProperty("--scrim-opacity", String(targetOpacity));
+  // The ::after already has `transition: opacity 0.45s ease`, so changing the
+  // custom property triggers a smooth tween. durationS is informational for
+  // coordination with copy fades.
+}
+
+function setProgressFill(ratio) {
+  if (!progressFill) return;
+  progressFill.style.transform = `scaleX(${ratio})`;
+}
+
+function updateStationIndex() {
+  if (stationIndexEl) stationIndexEl.textContent = String(state.current + 1).padStart(2, "0");
+  if (stationTotalEl) stationTotalEl.textContent = String(STATIONS.length).padStart(2, "0");
+}
 
 function buildFilmUrls() {
   const acts = window.DWF_CDN?.acts ?? {};
@@ -74,10 +96,12 @@ function applyStationCopy(idx) {
     const el = document.getElementById(s.copyId);
     if (!el) return;
     const on = i === idx;
-    el.style.opacity = on ? "1" : "0";
-    el.style.visibility = on ? "visible" : "hidden";
-    el.style.transform = on ? "translateY(0)" : "translateY(18px)";
-    el.setAttribute("aria-hidden", on ? "false" : "true");
+    if (on) {
+      el.style.visibility = "visible";
+      el.setAttribute("aria-hidden", "false");
+    } else {
+      el.setAttribute("aria-hidden", "true");
+    }
   });
 
   // Underworld rows stagger in only when we land on the underworld.
@@ -87,19 +111,6 @@ function applyStationCopy(idx) {
     systemRows.forEach((row, i) => {
       window.setTimeout(() => row.classList.add("is-revealed"), 350 + i * 220);
     });
-  }
-
-  if (scrollHint) {
-    scrollHint.style.opacity = idx === 0 ? "1" : "0";
-  }
-  if (scrollHintText) {
-    if (idx === 0) scrollHintText.textContent = "Scroll Or Press ↓ To Descend";
-    else if (idx === STATIONS.length - 1) scrollHintText.textContent = "Final Scene";
-    else scrollHintText.textContent = "Scroll To Continue";
-  }
-  if (vignette) {
-    const base = 0.32 + idx * 0.12;
-    vignette.style.opacity = String(base);
   }
 }
 
@@ -111,6 +122,7 @@ function updateStationDots() {
     const id = STATIONS[state.current]?.id;
     cinema.setAttribute("data-station-active", id || "");
   }
+  updateStationIndex();
 }
 
 function showIdle() {
@@ -136,21 +148,61 @@ function easeInOutQuad(t) {
 function fadeOutCopy(idx, durationS = 0.45) {
   const el = document.getElementById(STATIONS[idx].copyId);
   if (!el) return Promise.resolve();
+  // Stagger child reveals so the lede fades after the H1, actions after lede.
+  const eyebrow = el.querySelector(".cinema-copy__eyebrow");
+  const rule = el.querySelector(".cinema-copy__rule");
+  const h1 = el.querySelector("h1, h2");
+  const lede = el.querySelector(".cinema-copy__lede");
+  const actions = el.querySelector(".cinema-copy__actions");
+  // On fade-out we collapse everything together; child transitions are reset
+  // by fadeInCopy.
   el.style.transition = `opacity ${durationS}s ease, transform ${durationS}s ease`;
   el.style.opacity = "0";
   el.style.transform = "translateY(-12px)";
+  [eyebrow, rule, h1, lede, actions].forEach((c) => {
+    if (!c) return;
+    c.style.transition = "none";
+    c.style.opacity = "";
+    c.style.transform = "";
+  });
+  // Scrim ramps up to its peak during the fade-out window.
+  setScrim(1.0, durationS);
   return new Promise((r) => setTimeout(r, durationS * 1000));
 }
 
-function fadeInCopy(idx, durationS = 0.6) {
+function fadeInCopy(idx, durationS = 0.65) {
   return new Promise((resolve) => {
     applyStationCopy(idx);
     const el = document.getElementById(STATIONS[idx].copyId);
     if (!el) return resolve();
-    el.style.transition = `opacity ${durationS}s ease, transform ${durationS}s ease`;
+    const eyebrow = el.querySelector(".cinema-copy__eyebrow");
+    const rule = el.querySelector(".cinema-copy__rule");
+    const h1 = el.querySelector("h1, h2");
+    const lede = el.querySelector(".cinema-copy__lede");
+    const actions = el.querySelector(".cinema-copy__actions");
+
+    // Stage the copy: eyebrow + rule + h1 first, lede delayed 250ms, actions
+    // delayed 450ms. Container opacity drives the scrim down to its resting
+    // value in parallel.
+    const block = durationS;
+    const fade = (node, delayS) => {
+      if (!node) return;
+      node.style.transition = `opacity ${block}s ease ${delayS}s, transform ${block}s ease ${delayS}s`;
+      node.style.opacity = "1";
+      node.style.transform = "translateY(0)";
+    };
+    [eyebrow, rule, h1].forEach((n) => fade(n, 0));
+    fade(lede, 0.25);
+    fade(actions, 0.45);
+
+    el.style.transition = `opacity ${block}s ease, transform ${block}s ease`;
     el.style.opacity = "1";
     el.style.transform = "translateY(0)";
-    setTimeout(resolve, durationS * 1000);
+
+    // Scrim eases down to this station's resting value while copy fades in.
+    setScrim(STATION_SCRIM[idx] ?? 0.35, block);
+
+    setTimeout(resolve, block * 1000);
   });
 }
 
@@ -165,7 +217,8 @@ function swooshTo(target) {
   const dur = reducedMotion ? 0.01 : SWOOSH_MS / 1000;
 
   // Fade the outgoing copy OUT before the camera moves. The incoming copy
-  // fades IN only after the swoosh lands (handled by onComplete).
+  // fades IN only after the swoosh lands (handled by onComplete). The scrim
+  // rides both transitions, so it never appears abruptly.
   fadeOutCopy(state.current, 0.45);
 
   state.activeTween = gsap.to(tween, {
@@ -198,6 +251,8 @@ function swooshTo(target) {
       updateStationDots();
       // Fade in the destination copy only after the camera lands.
       fadeInCopy(state.current, 0.65);
+      // Progress bar advances to the next station (1/3 -> 2/3 -> 1).
+      setProgressFill((state.current + 1) / STATIONS.length);
     },
   });
 }
@@ -224,13 +279,15 @@ function jumpTo(target) {
   if (target === state.current) return;
   state.lastAdvanceAt = performance.now();
   showFilm();
-  // Immediately hide the outgoing copy (no slow fade — it's a jump).
+  // Immediately hide the outgoing copy (no slow fade — it's a jump) and ramp
+  // the scrim up so the destination's fade-in can ride it back down.
   const cur = document.getElementById(STATIONS[state.current].copyId);
   if (cur) {
     cur.style.transition = "none";
     cur.style.opacity = "0";
     cur.style.visibility = "hidden";
   }
+  setScrim(1.0, 0);
   swooshTo(target);
 }
 
@@ -246,15 +303,14 @@ function enterProblem() {
 }
 
 function isInteractiveTarget(t) {
-  return !!(t && t.closest && t.closest("a, button, .cinema-btn, .cinema-stations__dot, .cinema-mode-toggle"));
+  return !!(t && t.closest && t.closest("a, button, .cinema-btn, .cinema-stations__dot"));
 }
 
 function isWheelBlockedTarget(t) {
   if (!t || !t.closest) return false;
-  // Block wheel-advance only when the user is actively interacting with controls
-  // (the station dots, the mode toggle, the CTA buttons). Plain buttons inside
-  // the cinema copy are not blocking — wheel still advances.
-  return !!(t.closest(".cinema-stations__dot, .cinema-mode-toggle, .cinema-copy__actions"));
+  // Block wheel-advance only when the user is actively interacting with the
+  // station dots or the inline CTAs. Plain copy / canvas area still advances.
+  return !!(t.closest(".cinema-stations__dot, .cinema-copy__actions"));
 }
 
 function bindInputs() {
@@ -265,7 +321,6 @@ function bindInputs() {
       if (Math.abs(e.deltaY) < WHEEL_THRESHOLD) return;
       e.preventDefault();
       if (state.playing) return;
-      if (!state.freeScroll) return;
       advance(e.deltaY > 0 ? +1 : -1);
     },
     { passive: false }
@@ -296,7 +351,6 @@ function bindInputs() {
     touchStartY = null;
     if (Math.abs(delta) < TOUCH_THRESHOLD) return;
     if (state.playing) return;
-    if (!state.freeScroll) return;
     advance(delta > 0 ? +1 : -1);
   }, { passive: true });
 
@@ -306,16 +360,6 @@ function bindInputs() {
       jumpTo(i);
     });
   });
-
-  if (modeToggle) {
-    modeToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      state.freeScroll = !state.freeScroll;
-      modeToggle.setAttribute("aria-pressed", String(state.freeScroll));
-      const label = modeToggle.querySelector(".cinema-mode-toggle__label");
-      if (label) label.textContent = state.freeScroll ? "Free scroll" : "Click only";
-    });
-  }
 
   if (enterBtn) {
     enterBtn.addEventListener("click", (e) => {
@@ -328,7 +372,6 @@ function bindInputs() {
 async function init() {
   document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
 
-  const stage = cinema?.querySelector(".cinema__stage");
   let stars = null;
   if (stage) {
     stars = new StarField(stage, { reducedMotion });
@@ -337,13 +380,11 @@ async function init() {
 
   const filmUrls = buildFilmUrls();
   if (!filmUrls.length) {
-    if (scrollHintText) scrollHintText.textContent = "Frame manifest missing";
     loader?.classList.add("is-done");
     return;
   }
 
   showIdle();
-  if (scrollHintText) scrollHintText.textContent = "Loading…";
 
   const scrubber = new FrameScrubber(cinema, canvas, filmUrls, { reducedMotion });
   window.__scrubber = scrubber;
@@ -359,17 +400,24 @@ async function init() {
 
   setProgress(1);
   loader?.classList.add("is-done");
-  // Hide the hero copy initially; the intro reverse plays without any copy on
-  // screen. The fade-in happens once the intro lands (handled by the intro
-  // onComplete below).
-  STATIONS.forEach((s, i) => {
+  // Hide all station copy initially; intro plays without any copy on screen.
+  STATIONS.forEach((s) => {
     const el = document.getElementById(s.copyId);
     if (!el) return;
     el.style.transition = "none";
     el.style.opacity = "0";
     el.style.visibility = "hidden";
     el.setAttribute("aria-hidden", "true");
+    const kids = el.querySelectorAll(".cinema-copy__eyebrow, .cinema-copy__rule, h1, h2, .cinema-copy__lede, .cinema-copy__actions");
+    kids.forEach((k) => {
+      k.style.transition = "none";
+      k.style.opacity = "0";
+      k.style.transform = "translateY(8px)";
+    });
   });
+  // Start scrim at 0 (no overlay during the intro) and progress at 0.
+  setScrim(0, 0);
+  setProgressFill(0);
   updateStationDots();
   if (starsLayer()) starsLayer().style.opacity = "0.55";
 
@@ -432,6 +480,8 @@ function playIntroReverse(scrubber) {
       // Hero copy elegantly fades in only after the camera has finished its
       // reverse-from-the-sky swoosh.
       fadeInCopy(0, 0.9);
+      // Progress bar fills to 1/3 of the journey.
+      setProgressFill(1 / STATIONS.length);
     },
   });
 }
