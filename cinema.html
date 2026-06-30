@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DW Funnel — Your Offer Deserves a Page People Remember</title>
-  <meta name="description" content="Conversion landing pages by Daphne Wong. Scroll-driven cinematic hero for brands that refuse the template look." />
+  <title>DW Funnel — A page people remember. A funnel that follows up.</title>
+  <meta name="description" content="DW Funnel builds cinematic landing pages, conversion flows, and follow-up systems for business owners who want enquiries — not another pretty template." />
   <meta name="theme-color" content="#061018" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Shizuru&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=3" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=4" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
 
+  <!-- Preloader — quick fade once 36 frames are ready -->
   <div id="loader" class="cinema-loader" aria-live="polite">
     <div class="cinema-loader__inner">
       <p class="cinema-loader__brand">DW Funnel</p>
@@ -23,8 +24,9 @@
     </div>
   </div>
 
+  <!-- Header — wordmark, free-scroll toggle, primary CTA -->
   <header class="cinema-header">
-    <a href="/">DW Funnel</a>
+    <a href="/" class="cinema-header__brand">DW Funnel</a>
     <button id="cinema-mode-toggle" class="cinema-mode-toggle" type="button" aria-pressed="true">
       <span class="cinema-mode-toggle__dot" aria-hidden="true"></span>
       <span class="cinema-mode-toggle__label">Free scroll</span>
@@ -32,8 +34,15 @@
     <a class="cinema-header__cta" href="#contact">Book a call</a>
   </header>
 
+  <!-- =======================================================
+       CINEMATIC — Hero / Passage / Underworld
+       Locked. User controls pace, not the camera.
+       Click anywhere (or wheel-down / Down arrow) to advance.
+       ======================================================= -->
   <div id="cinema-pin" class="cinema-pin">
-    <section id="cinema" class="cinema" aria-label="Hero">
+    <section id="cinema" class="cinema" aria-label="Cinematic sequence">
+
+      <!-- Visual stage: idle still, film canvas, vignette, swoosh flash -->
       <div class="cinema__stage">
         <div class="cinema__media">
           <img
@@ -49,13 +58,16 @@
         <div class="cinema__flash" id="cinema-flash" aria-hidden="true"></div>
       </div>
 
+      <!-- ── STATION 1 — HERO ──
+           Visible offer, first impression.
+           Copy on the left, max 600px, headline + sub + 2 CTAs. -->
       <div id="hero-copy-block" class="cinema-copy cinema-copy--hero" data-station="hero">
-        <p class="cinema-copy__eyebrow">A scroll, not a template</p>
-        <h1>Your Offer Deserves a Page People Remember.</h1>
-        <p class="cinema-copy__lede">A hand-built cinematic hero for founders tired of looking like everyone else.</p>
+        <p class="cinema-copy__eyebrow">DW Funnel — by Daphne Wong</p>
+        <h1>A page people remember.<br/>A funnel that follows up.</h1>
+        <p class="cinema-copy__lede">We build cinematic landing pages, conversion flows, and follow-up systems for business owners who want enquiries — not another pretty template.</p>
         <div class="cinema-copy__actions">
-          <a href="#contact" class="cinema-btn cinema-btn--primary">Work With Us</a>
-          <a href="#problem" class="cinema-btn cinema-btn--ghost">See why pages fail</a>
+          <a href="#contact" class="cinema-btn cinema-btn--primary">Map My Funnel</a>
+          <a href="#problem" class="cinema-btn cinema-btn--ghost">See Why Pages Fail</a>
         </div>
         <p class="cinema-hint" id="scroll-hint">
           <span class="cinema-hint__chev" aria-hidden="true">↓</span>
@@ -63,23 +75,48 @@
         </p>
       </div>
 
+      <!-- ── STATION 2 — PASSAGE ──
+           A brief cinematic beat during the swoosh.
+           1 strong line + 1 supporting line, fades quickly. -->
       <div id="passage-copy-block" class="cinema-copy cinema-copy--mid" aria-hidden="true" data-station="passage">
-        <p class="cinema-copy__eyebrow">The Threshold</p>
-        <h2>From the shrine above the clouds, into the part most pages skip.</h2>
-        <p>Every offer has a moment where trust is won. Yours deserves a threshold, not a transition.</p>
+        <p class="cinema-copy__eyebrow">Attention is only the entrance.</p>
+        <h2>Most pages stop at looking good. Yours should guide the visitor from curiosity to action.</h2>
       </div>
 
+      <!-- ── STATION 3 — UNDERWORLD ──
+           The hidden conversion machine.
+           Headline first, then 3 system cards stagger in. -->
       <div id="underworld-copy-block" class="cinema-copy cinema-copy--underworld" aria-hidden="true" data-station="underworld">
-        <p class="cinema-copy__eyebrow">The Reward</p>
-        <h2>Where the page stops looking like a page.</h2>
-        <p>The difference between a template and a memory is a director's hand, not a section count.</p>
-        <div class="cinema-copy__actions">
-          <a href="#contact" class="cinema-btn cinema-btn--primary">Book a call</a>
+        <p class="cinema-copy__eyebrow">The Underworld</p>
+        <h2>Under the beauty is the machine.</h2>
+        <p class="cinema-copy__lede">Offer clarity, trust signals, booking flow, and follow-up automation — built as one system so leads do not disappear after the first click.</p>
+
+        <div class="cinema-system" id="cinema-system">
+          <article class="cinema-system__card" data-card="1">
+            <span class="cinema-system__num">01</span>
+            <h3>Landing Page</h3>
+            <p>A premium first impression that makes your offer instantly clear.</p>
+          </article>
+          <article class="cinema-system__card" data-card="2">
+            <span class="cinema-system__num">02</span>
+            <h3>Funnel Logic</h3>
+            <p>The right proof, objections, and CTA sequence placed before the visitor drops off.</p>
+          </article>
+          <article class="cinema-system__card" data-card="3">
+            <span class="cinema-system__num">03</span>
+            <h3>Follow-Up</h3>
+            <p>Automated reminders and replies that keep warm leads moving toward booking.</p>
+          </article>
+        </div>
+
+        <div class="cinema-copy__actions cinema-copy__actions--underworld">
+          <a href="#contact" class="cinema-btn cinema-btn--primary">Map My Funnel</a>
           <button id="cinema-enter" class="cinema-btn cinema-btn--ghost" type="button">Continue reading</button>
         </div>
       </div>
     </section>
 
+    <!-- Vertical station nav: 3 dots, click to jump with same swoosh -->
     <nav class="cinema-stations" aria-label="Stations">
       <button data-station="0" class="cinema-stations__dot" aria-label="Hero"><span></span><em>Hero</em></button>
       <button data-station="1" class="cinema-stations__dot" aria-label="Passage"><span></span><em>Passage</em></button>
@@ -87,27 +124,34 @@
     </nav>
   </div>
 
+  <!-- =======================================================
+       PROBLEM SECTION — appears after the cinematic completes
+       ======================================================= -->
   <section id="problem" class="cinema-section" aria-label="Problem">
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">The problem</p>
-      <h2>Why Most Pages Fail</h2>
-      <p class="cinema-section__lead">Three looked fine. One actually converted. Here is the difference.</p>
+      <h2>Why beautiful pages still fail.</h2>
+      <p class="cinema-section__lead">Because attention is not the same as conversion. A visitor needs clarity, proof, timing, and follow-up before they become a lead.</p>
       <div class="cinema-cards">
         <article class="cinema-card">
           <span class="cinema-card__num">01</span>
-          <h3>Template trap</h3>
-          <p>Looks generic. Trust drops before they read a word.</p>
+          <h3>Template Trap</h3>
+          <p>Looks polished, but says the same thing as everyone else.</p>
         </article>
         <article class="cinema-card">
           <span class="cinema-card__num">02</span>
-          <h3>Broken follow-up</h3>
-          <p>Traffic hits the page. Nothing wired behind the button.</p>
+          <h3>Weak Journey</h3>
+          <p>The page does not guide the visitor from interest to decision.</p>
         </article>
         <article class="cinema-card">
           <span class="cinema-card__num">03</span>
-          <h3>No proof at the right moment</h3>
-          <p>Skepticism peaks where your page stays silent.</p>
+          <h3>Lost Leads</h3>
+          <p>People click, hesitate, leave — and nobody follows up.</p>
         </article>
+      </div>
+      <div class="cinema-section__bridge">
+        <p>Want your page to do more than look good?</p>
+        <a href="#contact" class="cinema-btn cinema-btn--primary">Map My Funnel</a>
       </div>
     </div>
   </section>
@@ -116,6 +160,6 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=5"></script>
+  <script type="module" src="assets/js/cinema-scroll.js?v=6"></script>
 </body>
 </html>

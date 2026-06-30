@@ -77,6 +77,16 @@ function applyStationCopy(idx) {
     el.style.transform = on ? "translateY(0)" : "translateY(18px)";
     el.setAttribute("aria-hidden", on ? "false" : "true");
   });
+
+  // System cards stagger in only when we land on the underworld.
+  const systemCards = document.querySelectorAll(".cinema-system__card");
+  systemCards.forEach((c) => c.classList.remove("is-revealed"));
+  if (idx === 2) {
+    systemCards.forEach((card, i) => {
+      window.setTimeout(() => card.classList.add("is-revealed"), 350 + i * 180);
+    });
+  }
+
   if (scrollHint) {
     scrollHint.style.opacity = idx === 0 ? "1" : "0";
   }

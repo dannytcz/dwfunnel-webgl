@@ -287,6 +287,70 @@ html, body {
   max-width: 36rem;
 }
 
+/* Hero is the offer — left side, generous breathing room */
+.cinema-copy--hero {
+  max-width: 36rem;
+  left: 0;
+  right: auto;
+  width: 100%;
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 960px) {
+  .cinema-copy--hero {
+    max-width: 37.5rem;
+  }
+}
+
+/* Subtle gradient behind left copy for readability — invisible when not needed */
+.cinema-copy--hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  right: -10vw;
+  background: linear-gradient(
+    to right,
+    rgba(6, 16, 24, 0.7) 0%,
+    rgba(6, 16, 24, 0.45) 45%,
+    rgba(6, 16, 24, 0.15) 75%,
+    transparent 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Passage — single beat, lower-left, brief */
+.cinema-copy--mid {
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+  justify-content: flex-end;
+  padding-bottom: 22vh;
+}
+
+/* Underworld — left/center-left, system cards below */
+.cinema-copy--underworld {
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+  justify-content: flex-end;
+  padding-bottom: clamp(2.5rem, 7vh, 4rem);
+}
+
+.cinema-copy--underworld::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  right: -5vw;
+  background: linear-gradient(
+    to right,
+    rgba(6, 16, 24, 0.85) 0%,
+    rgba(6, 16, 24, 0.55) 50%,
+    transparent 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
 @media (min-width: 960px) {
   .cinema-copy {
     justify-content: center;
@@ -314,15 +378,15 @@ html, body {
 
 .cinema-copy h1 {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 6vw + 0.4rem, 5.25rem);
+  font-size: clamp(2.2rem, 4.2vw + 0.6rem, 4rem);
   font-weight: 400;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.01em;
   font-feature-settings: "palt";
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.35rem;
   color: var(--text);
   text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
-  max-width: 18ch;
+  max-width: 16ch;
 }
 
 .cinema-copy h2 {
@@ -503,8 +567,106 @@ html, body {
   line-height: 1.55;
 }
 
+.cinema-section__bridge {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(94, 234, 212, 0.12);
+}
+
+.cinema-section__bridge p {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ── System cards inside Underworld (cinematic) ── */
+.cinema-system {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  pointer-events: auto;
+  max-width: 38rem;
+}
+
+@media (min-width: 720px) {
+  .cinema-system {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+  }
+}
+
+.cinema-system__card {
+  position: relative;
+  padding: 1.1rem 1.1rem 1.25rem;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 26, 34, 0.78) 0%,
+    rgba(6, 16, 24, 0.88) 100%
+  );
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.25s, box-shadow 0.25s;
+}
+
+.cinema-system__card.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cinema-system__card:hover {
+  border-color: rgba(94, 234, 212, 0.5);
+  box-shadow: 0 12px 40px rgba(45, 212, 191, 0.18);
+}
+
+.cinema-system__num {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 0.55rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  border-radius: 999px;
+}
+
+.cinema-system__card h3 {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 0.45rem;
+  letter-spacing: -0.005em;
+}
+
+.cinema-system__card p {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 28ch;
+}
+
+.cinema-copy__actions--underworld {
+  margin-top: 1.5rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cinema-hint__chev { animation: none; }
+  .cinema-system__card { transition: opacity 0.2s ease; }
 }
 
 /* ── Station dot nav ── */
