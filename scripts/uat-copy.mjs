@@ -10,7 +10,7 @@ page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.t
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
 await page.waitForSelector("#loader.is-done", { timeout: 120000 });
-await page.waitForTimeout(4500); // loader 2s + intro reverse 4s + buffer
+await page.waitForTimeout(5400); // loader 2s + intro 4s + hero fade-in 0.9s + buffer
 
 const getText = (sel) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim() ?? null, sel);
 
@@ -26,7 +26,7 @@ const hero = {
 
 // Advance via ArrowDown (click-to-descend removed)
 await page.keyboard.press("ArrowDown");
-await page.waitForTimeout(4200); // swoosh 4s + buffer
+await page.waitForTimeout(5000); // swoosh 4s + passage fade-in 0.65s + buffer
 
 const passage = {
   eyebrow: await getText("#passage-copy-block .cinema-copy__eyebrow"),
@@ -39,13 +39,13 @@ const passage = {
 
 // Advance to Underworld
 await page.keyboard.press("ArrowDown");
-await page.waitForTimeout(5000); // swoosh 4s + card stagger 0.7s + transition 0.45s
+await page.waitForTimeout(5800); // swoosh 4s + fade 0.65s + row stagger (3 * 220ms) + row transition 0.55s
 
 const underworld = {
   eyebrow: await getText("#underworld-copy-block .cinema-copy__eyebrow"),
   h2: await getText("#underworld-copy-block h2"),
   lede: await getText("#underworld-copy-block .cinema-copy__lede"),
-  cards: await page.evaluate(() => Array.from(document.querySelectorAll(".cinema-system__card")).map((c) => ({
+  cards: await page.evaluate(() => Array.from(document.querySelectorAll(".cinema-system__row")).map((c) => ({
     num: c.querySelector(".cinema-system__num")?.textContent?.trim(),
     h3: c.querySelector("h3")?.textContent?.trim(),
     p: c.querySelector("p")?.textContent?.trim(),
@@ -73,19 +73,20 @@ console.log(JSON.stringify({ errs, hero, passage, underworld, problem }, null, 2
 
 const checks = {
   noErrors: errs.length === 0,
-  heroH1: /A page people remember\./.test(hero.h1 || "") && /A funnel that follows up\./.test(hero.h1 || ""),
-  heroEyebrow: /Landing pages.*Funnels.*Follow-up/i.test(hero.eyebrow || ""),
+  heroH1: /A Page People Remember\./.test(hero.h1 || "") && /A Funnel That Follows Up\./.test(hero.h1 || ""),
+  heroEyebrow: /Landing Pages.*Funnels.*Follow-Up/i.test(hero.eyebrow || ""),
   heroPrimary: hero.primaryCta === "Map My Funnel",
   heroSecondary: /See Why Pages Fail/i.test(hero.secondaryCta || ""),
   heroHintNoClick: !/click anywhere/i.test(hero.hintText || ""),
-  passageHas: /Attention is only the entrance/.test(passage.eyebrow || "") && /first booked call/i.test(passage.h2 || ""),
+  passageHas: /Attention Is Only The Entrance\./.test(passage.eyebrow || "") && /First Booked Call/i.test(passage.h2 || ""),
   passageBeats: passage.beats.length === 3 && /See/.test(passage.beats[0].text) && /Trust/.test(passage.beats[1].text) && /Decide/.test(passage.beats[2].text),
   underworldEyebrow: /The Machine/i.test(underworld.eyebrow || ""),
-  underworldH2: /Under the beauty is the machine/.test(underworld.h2 || ""),
-  underworldCards: underworld.cards.length === 3 && underworld.cards.every((c) => c.revealed) && /Landing Page/.test(underworld.cards[0].h3) && /Funnel Logic/.test(underworld.cards[1].h3) && /Follow-Up/.test(underworld.cards[2].h3),
-  problemH2: /Why beautiful pages still fail/.test(problem.h2 || ""),
+  underworldH2: /Under The Beauty Is The Machine\./.test(underworld.h2 || ""),
+  underworldRows: underworld.cards.length === 3 && underworld.cards.every((c) => c.revealed) && /Landing Page/.test(underworld.cards[0].h3) && /Funnel Logic/.test(underworld.cards[1].h3) && /Follow-Up/.test(underworld.cards[2].h3),
+  problemH2: /Why Beautiful Pages Still Fail\./.test(problem.h2 || ""),
   problemCards: problem.cards.length === 3 && /Template Trap/.test(problem.cards[0].h3) && /Weak Journey/.test(problem.cards[1].h3) && /Lost Leads/.test(problem.cards[2].h3),
-  bridgeCta: /Want your page to do more than look good/.test(problem.bridgeP || "") && problem.bridgeCta === "Map My Funnel",
+  bridgeCta: /Want Your Page To Do More Than Look Good\?/.test(problem.bridgeP || "") && problem.bridgeCta === "Map My Funnel",
+  noEmdash: !JSON.stringify({ hero, passage, underworld, problem }).includes("—"),
 };
 
 console.log("\n--- COPY UAT ---");

@@ -199,6 +199,19 @@ html, body {
     radial-gradient(ellipse 90% 70% at 50% 50%, transparent 30%, rgba(6, 16, 24, 0.4) 100%);
 }
 
+/* Per-station dark scrim: passage gets a heavier wash so type is readable
+   over the bright portal transition frames. */
+.cinema[data-station-active="passage"] .cinema__stage::before {
+  background:
+    linear-gradient(to bottom, rgba(6, 16, 24, 0.85) 0%, rgba(6, 16, 24, 0.55) 40%, rgba(6, 16, 24, 0.7) 70%, rgba(6, 16, 24, 0.92) 100%),
+    radial-gradient(ellipse 80% 70% at 50% 55%, transparent 25%, rgba(6, 16, 24, 0.55) 100%);
+}
+.cinema[data-station-active="underworld"] .cinema__stage::before {
+  background:
+    linear-gradient(to bottom, rgba(6, 16, 24, 0.7) 0%, transparent 50%, rgba(6, 16, 24, 0.92) 100%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 20%, rgba(6, 16, 24, 0.55) 100%);
+}
+
 .cinema__media {
   position: absolute;
   inset: 0;
@@ -328,37 +341,37 @@ html, body {
 
 .cinema-copy h1 {
   font-family: var(--font-display);
-  font-size: clamp(1.9rem, 3.6vw + 0.5rem, 3.2rem);
+  font-size: clamp(2.4rem, 6.5vw + 0.5rem, 5.5rem);
   font-weight: 500;
   font-style: normal;
-  line-height: 1.12;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  line-height: 1.04;
+  letter-spacing: 0.005em;
+  text-transform: none;
   margin: 0;
   color: var(--text);
-  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
-  max-width: 22ch;
+  text-shadow: 0 4px 56px rgba(0, 0, 0, 0.55);
+  max-width: 18ch;
 }
 
 .cinema-copy h2 {
   font-family: var(--font-body);
-  font-size: clamp(1.65rem, 2.2vw + 0.5rem, 2.5rem);
+  font-size: clamp(2.1rem, 4.8vw + 0.5rem, 4.2rem);
   font-weight: 500;
   font-style: normal;
-  line-height: 1.18;
-  letter-spacing: -0.005em;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
   margin: 0;
   color: var(--text);
-  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
-  max-width: 26ch;
+  text-shadow: 0 4px 38px rgba(0, 0, 0, 0.55);
+  max-width: 22ch;
 }
 
 .cinema-copy p {
   font-family: var(--font-body);
-  font-size: clamp(1rem, 0.5vw + 0.85rem, 1.1875rem);
-  line-height: 1.55;
+  font-size: clamp(1.15rem, 0.7vw + 0.95rem, 1.55rem);
+  line-height: 1.5;
   color: var(--text-muted);
-  max-width: 38ch;
+  max-width: 42ch;
   font-weight: 400;
   font-style: normal;
   margin: 0;
@@ -374,13 +387,14 @@ html, body {
 }
 
 /* ── Passage beats: visitor-arc micro-bullets ── */
+/* Passage beats: editorial three-up, no boxes */
 .cinema-passage__beats {
   list-style: none;
   margin: 0.5rem auto 0;
   padding: 0;
   display: grid;
-  gap: 0.65rem;
-  max-width: 52rem;
+  gap: 1.6rem;
+  max-width: 56rem;
   width: 100%;
   pointer-events: auto;
 }
@@ -388,7 +402,8 @@ html, body {
 @media (min-width: 720px) {
   .cinema-passage__beats {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.85rem;
+    column-gap: 2rem;
+    row-gap: 1.6rem;
   }
 }
 
@@ -397,17 +412,20 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.35rem;
-  padding: 0.9rem 0.75rem;
-  border: 1px solid rgba(94, 234, 212, 0.18);
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(12, 26, 34, 0.55) 0%, rgba(6, 16, 24, 0.7) 100%);
-  backdrop-filter: blur(8px);
+  gap: 0.55rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(94, 234, 212, 0.25);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.cinema-passage__beats li:hover {
+  border-color: rgba(94, 234, 212, 0.7);
+  transform: translateY(-3px);
 }
 
 .cinema-passage__num {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 1.05rem;
   font-weight: 500;
   font-variant: small-caps;
   letter-spacing: 0.22em;
@@ -416,8 +434,8 @@ html, body {
 
 .cinema-passage__beats li span:last-child {
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  line-height: 1.45;
+  font-size: 1.05rem;
+  line-height: 1.5;
   color: var(--text-muted);
 }
 
@@ -440,16 +458,16 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.95rem 1.6rem;
+  padding: 1.15rem 2rem;
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 500;
   font-style: normal;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
+  text-transform: none;
   text-decoration: none;
   border-radius: 999px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 
 .cinema-btn--primary {
@@ -523,7 +541,7 @@ html, body {
 
 .cinema-section h2 {
   font-family: var(--font-body);
-  font-size: clamp(1.85rem, 2.8vw + 0.6rem, 2.85rem);
+  font-size: clamp(2.4rem, 5.2vw + 0.5rem, 4.4rem);
   font-weight: 500;
   font-style: normal;
   line-height: 1.15;
@@ -607,92 +625,81 @@ html, body {
 }
 
 /* ── System cards inside Underworld (cinematic) ── */
+/* Underworld editorial rows: oversized numerals, no boxes */
 .cinema-system {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-  margin: 1.25rem auto 0;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem auto 0;
   pointer-events: auto;
-  max-width: 48rem;
+  max-width: 72rem;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid rgba(94, 234, 212, 0.2);
 }
 
-@media (min-width: 720px) {
-  .cinema-system {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.85rem;
-  }
-}
-
-.cinema-system__card {
-  position: relative;
-  padding: 1.1rem 1.1rem 1.25rem;
-  background: linear-gradient(
-    180deg,
-    rgba(12, 26, 34, 0.78) 0%,
-    rgba(6, 16, 24, 0.88) 100%
-  );
-  border: 1px solid rgba(94, 234, 212, 0.18);
-  border-radius: 14px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.cinema-system__row {
+  display: grid;
+  grid-template-columns: minmax(4rem, 6rem) 1fr;
+  column-gap: clamp(1rem, 3vw, 2.4rem);
+  align-items: baseline;
+  padding: clamp(1.4rem, 3vh, 2.4rem) 0;
+  border-bottom: 1px solid rgba(94, 234, 212, 0.2);
+  cursor: pointer;
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.25s, box-shadow 0.25s;
-  text-align: center;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease, border-color 0.35s ease, padding-left 0.4s ease;
 }
 
-.cinema-system__card.is-revealed {
+.cinema-system__row.is-revealed {
   opacity: 1;
   transform: translateY(0);
 }
 
-.cinema-system__card:hover {
-  border-color: rgba(94, 234, 212, 0.5);
-  box-shadow: 0 12px 40px rgba(45, 212, 191, 0.18);
+.cinema-system__row:hover {
+  border-color: rgba(94, 234, 212, 0.7);
+  padding-left: 1.2rem;
 }
 
 .cinema-system__num {
-  display: inline-block;
   font-family: var(--font-display);
-  font-size: 0.65rem;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
   font-weight: 500;
-  font-style: normal;
   font-variant: small-caps;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.06em;
   color: var(--accent);
-  margin-bottom: 0.7rem;
-  padding: 0.2rem 0.6rem;
-  border: 1px solid rgba(94, 234, 212, 0.35);
-  border-radius: 999px;
+  line-height: 1;
+  text-shadow: 0 2px 24px rgba(20, 184, 166, 0.35);
 }
 
-.cinema-system__card h3 {
+.cinema-system__body h3 {
   font-family: var(--font-body);
-  font-size: 1.18rem;
+  font-size: clamp(1.5rem, 2.8vw + 0.5rem, 2.4rem);
   font-weight: 600;
   font-style: normal;
   color: var(--text);
-  margin-bottom: 0.45rem;
+  margin: 0 0 0.5rem;
   letter-spacing: -0.005em;
+  line-height: 1.1;
 }
 
-.cinema-system__card p {
+.cinema-system__body p {
   font-family: var(--font-body);
-  font-size: 0.92rem;
+  font-size: clamp(1rem, 0.6vw + 0.85rem, 1.25rem);
   line-height: 1.5;
   color: var(--text-muted);
-  max-width: 32ch;
-  margin: 0 auto;
+  margin: 0;
+  max-width: 56ch;
 }
 
 .cinema-copy__actions--underworld {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cinema-hint__chev { animation: none; }
-  .cinema-system__card { transition: opacity 0.2s ease; }
+  .cinema-system__row { transition: opacity 0.2s ease; }
 }
 
 /* ── Station dot nav ── */
@@ -714,14 +721,21 @@ html, body {
   gap: 0.6rem;
   background: transparent;
   border: 0;
-  padding: 0.25rem 0;
+  padding: 0.45rem 0;
   cursor: pointer;
   color: rgba(236, 253, 245, 0.45);
   font-family: var(--font-display);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-style: normal;
   font-variant: small-caps;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.cinema-stations__dot:hover {
+  color: var(--accent);
+  transform: translateX(-4px);
+}
   text-transform: uppercase;
   text-align: right;
   justify-content: flex-end;

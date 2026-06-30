@@ -80,12 +80,12 @@ function applyStationCopy(idx) {
     el.setAttribute("aria-hidden", on ? "false" : "true");
   });
 
-  // System cards stagger in only when we land on the underworld.
-  const systemCards = document.querySelectorAll(".cinema-system__card");
-  systemCards.forEach((c) => c.classList.remove("is-revealed"));
+  // Underworld rows stagger in only when we land on the underworld.
+  const systemRows = document.querySelectorAll(".cinema-system__row");
+  systemRows.forEach((c) => c.classList.remove("is-revealed"));
   if (idx === 2) {
-    systemCards.forEach((card, i) => {
-      window.setTimeout(() => card.classList.add("is-revealed"), 350 + i * 180);
+    systemRows.forEach((row, i) => {
+      window.setTimeout(() => row.classList.add("is-revealed"), 350 + i * 220);
     });
   }
 
@@ -93,9 +93,9 @@ function applyStationCopy(idx) {
     scrollHint.style.opacity = idx === 0 ? "1" : "0";
   }
   if (scrollHintText) {
-    if (idx === 0) scrollHintText.textContent = "Scroll or press ↓ to descend";
-    else if (idx === STATIONS.length - 1) scrollHintText.textContent = "Final scene";
-    else scrollHintText.textContent = "Scroll to continue";
+    if (idx === 0) scrollHintText.textContent = "Scroll Or Press ↓ To Descend";
+    else if (idx === STATIONS.length - 1) scrollHintText.textContent = "Final Scene";
+    else scrollHintText.textContent = "Scroll To Continue";
   }
   if (vignette) {
     const base = 0.32 + idx * 0.12;
@@ -107,6 +107,10 @@ function updateStationDots() {
   stationDots.forEach((dot, i) => {
     dot.classList.toggle("is-active", i === state.current);
   });
+  if (cinema) {
+    const id = STATIONS[state.current]?.id;
+    cinema.setAttribute("data-station-active", id || "");
+  }
 }
 
 function showIdle() {
@@ -129,6 +133,27 @@ function easeInOutQuad(t) {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
 
+function fadeOutCopy(idx, durationS = 0.45) {
+  const el = document.getElementById(STATIONS[idx].copyId);
+  if (!el) return Promise.resolve();
+  el.style.transition = `opacity ${durationS}s ease, transform ${durationS}s ease`;
+  el.style.opacity = "0";
+  el.style.transform = "translateY(-12px)";
+  return new Promise((r) => setTimeout(r, durationS * 1000));
+}
+
+function fadeInCopy(idx, durationS = 0.6) {
+  return new Promise((resolve) => {
+    applyStationCopy(idx);
+    const el = document.getElementById(STATIONS[idx].copyId);
+    if (!el) return resolve();
+    el.style.transition = `opacity ${durationS}s ease, transform ${durationS}s ease`;
+    el.style.opacity = "1";
+    el.style.transform = "translateY(0)";
+    setTimeout(resolve, durationS * 1000);
+  });
+}
+
 function swooshTo(target) {
   if (state.activeTween) state.activeTween.kill();
   const from = STATIONS[state.current].heroFrame;
@@ -138,6 +163,10 @@ function swooshTo(target) {
 
   const tween = { t: 0 };
   const dur = reducedMotion ? 0.01 : SWOOSH_MS / 1000;
+
+  // Fade the outgoing copy OUT before the camera moves. The incoming copy
+  // fades IN only after the swoosh lands (handled by onComplete).
+  fadeOutCopy(state.current, 0.45);
 
   state.activeTween = gsap.to(tween, {
     t: 1,
@@ -166,8 +195,9 @@ function swooshTo(target) {
       if (flash) flash.style.opacity = "0";
       const sl = starsLayer();
       if (sl) sl.style.opacity = String(0.55 + state.current * 0.2);
-      applyStationCopy(state.current);
       updateStationDots();
+      // Fade in the destination copy only after the camera lands.
+      fadeInCopy(state.current, 0.65);
     },
   });
 }
@@ -194,6 +224,13 @@ function jumpTo(target) {
   if (target === state.current) return;
   state.lastAdvanceAt = performance.now();
   showFilm();
+  // Immediately hide the outgoing copy (no slow fade — it's a jump).
+  const cur = document.getElementById(STATIONS[state.current].copyId);
+  if (cur) {
+    cur.style.transition = "none";
+    cur.style.opacity = "0";
+    cur.style.visibility = "hidden";
+  }
   swooshTo(target);
 }
 
@@ -322,7 +359,17 @@ async function init() {
 
   setProgress(1);
   loader?.classList.add("is-done");
-  applyStationCopy(0);
+  // Hide the hero copy initially; the intro reverse plays without any copy on
+  // screen. The fade-in happens once the intro lands (handled by the intro
+  // onComplete below).
+  STATIONS.forEach((s, i) => {
+    const el = document.getElementById(s.copyId);
+    if (!el) return;
+    el.style.transition = "none";
+    el.style.opacity = "0";
+    el.style.visibility = "hidden";
+    el.setAttribute("aria-hidden", "true");
+  });
   updateStationDots();
   if (starsLayer()) starsLayer().style.opacity = "0.55";
 
@@ -382,6 +429,9 @@ function playIntroReverse(scrubber) {
       if (cinema) cinema.classList.remove("is-playing");
       drawStation(target, { scale: 1.08, offsetY: -22 });
       if (flash) flash.style.opacity = "0";
+      // Hero copy elegantly fades in only after the camera has finished its
+      // reverse-from-the-sky swoosh.
+      fadeInCopy(0, 0.9);
     },
   });
 }

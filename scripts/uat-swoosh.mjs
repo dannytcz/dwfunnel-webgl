@@ -10,7 +10,7 @@ page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.t
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
 await page.waitForSelector("#loader.is-done", { timeout: 120000 });
-await page.waitForTimeout(4500); // loader 2s + intro reverse 4s + buffer
+await page.waitForTimeout(5400); // loader 2s + intro 4s + hero fade-in 0.9s + buffer
 
 const snap = (label) =>
   page.evaluate((label) => {
@@ -35,26 +35,26 @@ samples.initial = await snap("initial");
 
 // Advance 1: ArrowDown to start swoosh to station 1
 await page.keyboard.press("ArrowDown");
-await page.waitForTimeout(1500);
+await page.waitForTimeout(2000);
 samples.mid_swoosh_1 = await snap("mid_swoosh_1");
-await page.waitForTimeout(3000);
+await page.waitForTimeout(3500);
 samples.after_arrow_1 = await snap("after_arrow_1");
 
 // Advance 2: ArrowDown to reach station 2
 await page.keyboard.press("ArrowDown");
-await page.waitForTimeout(4200);
+await page.waitForTimeout(5200);
 samples.after_arrow_2 = await snap("after_arrow_2");
 
 // Click station dot 0 directly
 await page.locator(".cinema-stations__dot[data-station='0']").click();
-await page.waitForTimeout(4200);
+await page.waitForTimeout(5200);
 samples.after_dot_0 = await snap("after_dot_0");
 
 // Wheel advance: station 1 — move cursor away from station dots first
 await page.mouse.move(640, 400);
 await page.waitForTimeout(50);
 await page.mouse.wheel(0, 400);
-await page.waitForTimeout(4200);
+await page.waitForTimeout(5200);
 samples.after_wheel = await snap("after_wheel");
 
 // Toggle free-scroll off
