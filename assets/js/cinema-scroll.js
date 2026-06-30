@@ -3,7 +3,7 @@ import { StarField } from "./stars.js";
 
 const MIN_READY = 36;
 const MIN_LOADER_MS = 2000;
-const INTRO_MS = 2400;
+const INTRO_MS = 4000;
 const ACT_KEYS = ["act0", "act1", "act2"];
 
 const STATIONS = [
@@ -12,10 +12,10 @@ const STATIONS = [
   { id: "underworld", copyId: "underworld-copy-block",startFrame: 420, heroFrame: 540, endFrame: 661 },
 ];
 
-const SWOOSH_MS = 2000;
+const SWOOSH_MS = 4000;
 const WHEEL_THRESHOLD = 8;
 const TOUCH_THRESHOLD = 30;
-const DEBOUNCE_MS = 350;
+const DEBOUNCE_MS = 500;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -341,11 +341,16 @@ async function init() {
   bindInputs();
 }
 
-// Reverse intro: play film frames from the last frame down to the hero frame,
-// so the camera "descends from the sky" into the current hero composition.
+// Reverse intro: play ACT 0 backwards from the last frame of act 0 down to
+// the hero frame, so the camera "zooms in from a far island" into the hero
+// composition over INTRO_MS. No user input is required to start it.
 function playIntroReverse(scrubber) {
   const total = scrubber.frames?.length ?? 0;
   if (!total) return;
+  // End of act 0 in the flat frame array.
+  const act0Len = window.DWF_CDN?.acts?.act0?.length ?? 0;
+  if (!act0Len) return;
+  const startIdx = act0Len - 1;
   const target = STATIONS[0].heroFrame;
   if (reducedMotion) {
     scrubber.draw(target, { scale: 1.08, offsetY: -18 });
@@ -362,9 +367,9 @@ function playIntroReverse(scrubber) {
     ease: "power2.inOut",
     onUpdate: () => {
       const e = easeInOutQuad(tween.t);
-      const idx = Math.round(total - 1 - (total - 1 - target) * e);
-      const scale = 1.02 + tween.t * 0.06;
-      const offsetY = -tween.t * 18;
+      const idx = Math.round(startIdx - (startIdx - target) * e);
+      const scale = 1.0 + tween.t * 0.08;
+      const offsetY = -tween.t * 22;
       drawStation(idx, { scale, offsetY });
       if (flash) {
         const a = tween.t < 0.5 ? tween.t * 2 * 0.55 : (1 - tween.t) * 2 * 0.55;
@@ -375,7 +380,7 @@ function playIntroReverse(scrubber) {
       state.playing = false;
       state.activeTween = null;
       if (cinema) cinema.classList.remove("is-playing");
-      drawStation(target, { scale: 1.08, offsetY: -18 });
+      drawStation(target, { scale: 1.08, offsetY: -22 });
       if (flash) flash.style.opacity = "0";
     },
   });

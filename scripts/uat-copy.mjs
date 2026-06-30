@@ -10,7 +10,7 @@ page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.t
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
 await page.waitForSelector("#loader.is-done", { timeout: 120000 });
-await page.waitForTimeout(2800); // intro reverse tween 2.4s + buffer
+await page.waitForTimeout(4500); // loader 2s + intro reverse 4s + buffer
 
 const getText = (sel) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim() ?? null, sel);
 
@@ -26,7 +26,7 @@ const hero = {
 
 // Advance via ArrowDown (click-to-descend removed)
 await page.keyboard.press("ArrowDown");
-await page.waitForTimeout(2200);
+await page.waitForTimeout(4200); // swoosh 4s + buffer
 
 const passage = {
   eyebrow: await getText("#passage-copy-block .cinema-copy__eyebrow"),
@@ -39,7 +39,7 @@ const passage = {
 
 // Advance to Underworld
 await page.keyboard.press("ArrowDown");
-await page.waitForTimeout(3200); // swoosh 2s + card stagger 0.7s + transition 0.45s
+await page.waitForTimeout(5000); // swoosh 4s + card stagger 0.7s + transition 0.45s
 
 const underworld = {
   eyebrow: await getText("#underworld-copy-block .cinema-copy__eyebrow"),
