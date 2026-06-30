@@ -6,8 +6,8 @@
   --accent-dim: rgba(94, 234, 212, 0.55);
   --text: #ecfdf5;
   --text-muted: rgba(236, 253, 245, 0.72);
-  --font-display: "Shizuru", "Yu Mincho", "Hiragino Mincho ProN", "Songti SC", serif;
-  --font-body: "Cormorant Garamond", "EB Garamond", "Georgia", "Yu Mincho", serif;
+  --font-display: "Cinzel", "Trajan Pro", serif;
+  --font-body: "EB Garamond", "EB Garamond 12", "Georgia", "Times New Roman", serif;
   --font: var(--font-body);
 }
 
@@ -57,7 +57,6 @@ html, body {
 
 .cinema-loader__sub {
   font-size: 0.95rem;
-  font-style: italic;
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
@@ -79,8 +78,8 @@ html, body {
 .cinema-loader__pct {
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  font-style: italic;
   letter-spacing: 0.08em;
+  font-variant: small-caps;
   color: var(--accent-dim);
 }
 
@@ -110,14 +109,14 @@ html, body {
 
 .cinema-header__cta {
   pointer-events: auto;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   text-decoration: none;
   color: var(--accent);
-  padding: 0.5rem 1.15rem;
+  padding: 0.55rem 1.15rem;
   border: 1px solid rgba(94, 234, 212, 0.35);
   border-radius: 999px;
   backdrop-filter: blur(8px);
@@ -132,16 +131,16 @@ html, body {
 
 .cinema-mode-toggle {
   pointer-events: auto;
-  font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--text-muted);
   background: rgba(6, 16, 24, 0.45);
   border: 1px solid rgba(94, 234, 212, 0.18);
   border-radius: 999px;
-  padding: 0.45rem 0.9rem 0.45rem 0.7rem;
+  padding: 0.55rem 0.9rem 0.55rem 0.75rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -195,12 +194,9 @@ html, body {
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  background: linear-gradient(
-    to right,
-    rgba(6, 16, 24, 0.78) 0%,
-    rgba(6, 16, 24, 0.42) 38%,
-    transparent 62%
-  );
+  background:
+    linear-gradient(to bottom, rgba(6, 16, 24, 0.55) 0%, transparent 40%, transparent 60%, rgba(6, 16, 24, 0.55) 100%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 30%, rgba(6, 16, 24, 0.4) 100%);
 }
 
 .cinema__media {
@@ -281,80 +277,28 @@ html, body {
   z-index: 5;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: clamp(5rem, 11vh, 6.5rem) clamp(1.25rem, 4vw, 2.5rem) clamp(2rem, 5vh, 3rem);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(5rem, 11vh, 6.5rem) clamp(1.5rem, 5vw, 4rem);
   pointer-events: none;
-  max-width: 36rem;
-}
-
-/* Hero is the offer — left side, generous breathing room */
-.cinema-copy--hero {
-  max-width: 36rem;
+  max-width: 38rem;
+  margin: 0 auto;
   left: 0;
-  right: auto;
-  width: 100%;
-  padding-left: clamp(1.5rem, 5vw, 4rem);
-  padding-right: clamp(1.5rem, 5vw, 4rem);
+  right: 0;
+  gap: 0.75rem;
 }
 
-@media (min-width: 960px) {
-  .cinema-copy--hero {
-    max-width: 37.5rem;
-  }
-}
-
-/* Subtle gradient behind left copy for readability — invisible when not needed */
-.cinema-copy--hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  right: -10vw;
-  background: linear-gradient(
-    to right,
-    rgba(6, 16, 24, 0.7) 0%,
-    rgba(6, 16, 24, 0.45) 45%,
-    rgba(6, 16, 24, 0.15) 75%,
-    transparent 100%
-  );
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Passage — single beat, lower-left, brief */
 .cinema-copy--mid {
-  padding-left: clamp(1.5rem, 5vw, 4rem);
-  padding-right: clamp(1.5rem, 5vw, 4rem);
-  justify-content: flex-end;
-  padding-bottom: 22vh;
+  padding-bottom: 30vh;
+  max-width: 36rem;
 }
 
-/* Underworld — left/center-left, system cards below */
 .cinema-copy--underworld {
-  padding-left: clamp(1.5rem, 5vw, 4rem);
-  padding-right: clamp(1.5rem, 5vw, 4rem);
   justify-content: flex-end;
-  padding-bottom: clamp(2.5rem, 7vh, 4rem);
-}
-
-.cinema-copy--underworld::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  right: -5vw;
-  background: linear-gradient(
-    to right,
-    rgba(6, 16, 24, 0.85) 0%,
-    rgba(6, 16, 24, 0.55) 50%,
-    transparent 100%
-  );
-  z-index: -1;
-  pointer-events: none;
-}
-
-@media (min-width: 960px) {
-  .cinema-copy {
-    justify-content: center;
-  }
+  padding-bottom: clamp(5rem, 13vh, 8rem);
+  max-width: 56rem;
+  gap: 0.65rem;
 }
 
 .cinema-copy--hero,
@@ -365,49 +309,53 @@ html, body {
   transition: opacity 0.35s ease, visibility 0.35s, transform 0.35s ease;
 }
 
-.cinema-copy__eyebrow {
+.cinema-copy .cinema-copy__eyebrow {
   font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 500;
   font-style: italic;
-  letter-spacing: 0.22em;
-  text-transform: none;
+  font-variant: small-caps;
+  letter-spacing: 0.24em;
   color: var(--accent);
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.5rem;
 }
 
 .cinema-copy h1 {
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 4.2vw + 0.6rem, 4rem);
-  font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-  font-feature-settings: "palt";
-  margin-bottom: 1.35rem;
+  font-size: clamp(1.9rem, 3.6vw + 0.5rem, 3.2rem);
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.12;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
   color: var(--text);
   text-shadow: 0 2px 28px rgba(0, 0, 0, 0.55);
-  max-width: 16ch;
+  max-width: 22ch;
 }
 
 .cinema-copy h2 {
   font-family: var(--font-body);
-  font-size: clamp(2rem, 3.4vw + 0.5rem, 3.25rem);
+  font-size: clamp(1.65rem, 2.2vw + 0.5rem, 2.5rem);
   font-weight: 500;
+  font-style: normal;
   line-height: 1.18;
   letter-spacing: -0.005em;
-  font-style: italic;
-  margin-bottom: 1.1rem;
+  margin: 0;
   color: var(--text);
   text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
-  max-width: 22ch;
+  max-width: 26ch;
 }
 
 .cinema-copy p {
-  font-size: clamp(1.0625rem, 0.6vw + 0.95rem, 1.25rem);
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 0.5vw + 0.85rem, 1.1875rem);
   line-height: 1.55;
   color: var(--text-muted);
-  max-width: 36ch;
+  max-width: 38ch;
   font-weight: 400;
+  font-style: normal;
+  margin: 0;
 }
 
 .cinema-copy__lede {
@@ -422,9 +370,10 @@ html, body {
 .cinema-copy__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.75rem;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
   pointer-events: auto;
+  justify-content: center;
 }
 
 .cinema-btn {
@@ -432,11 +381,12 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 0.95rem 1.6rem;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.04em;
+  font-style: normal;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   text-decoration: none;
   border-radius: 999px;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -465,14 +415,16 @@ html, body {
 }
 
 .cinema-hint {
-  margin-top: 1.75rem;
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-style: italic;
-  letter-spacing: 0.14em;
+  margin-top: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: var(--accent-dim);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
@@ -496,39 +448,45 @@ html, body {
   min-height: 100dvh;
   display: flex;
   align-items: center;
-  padding: clamp(4rem, 10vh, 6rem) clamp(1.25rem, 4vw, 2.5rem);
+  justify-content: center;
+  padding: clamp(4rem, 10vh, 6rem) clamp(1.5rem, 5vw, 4rem);
   background: var(--bg);
   transition: opacity 0.25s linear;
+  text-align: center;
 }
 
 .cinema-section__inner {
-  max-width: 52rem;
+  max-width: 56rem;
   width: 100%;
   margin-inline: auto;
 }
 
 .cinema-section h2 {
   font-family: var(--font-body);
-  font-size: clamp(2.2rem, 4vw, 3.1rem);
+  font-size: clamp(1.85rem, 2.8vw + 0.6rem, 2.85rem);
   font-weight: 500;
-  font-style: italic;
-  line-height: 1.12;
+  font-style: normal;
+  line-height: 1.15;
   letter-spacing: -0.005em;
-  margin-bottom: 0.85rem;
-  max-width: 22ch;
+  margin: 0 auto 0.85rem;
+  max-width: 26ch;
+  text-align: center;
 }
 
 .cinema-section__lead {
+  font-family: var(--font-body);
   color: var(--text-muted);
   font-size: 1.15rem;
   line-height: 1.55;
-  max-width: 42ch;
-  margin-bottom: 2rem;
+  max-width: 48ch;
+  margin: 0 auto 2rem;
+  text-align: center;
 }
 
 .cinema-cards {
   display: grid;
   gap: 1rem;
+  text-align: left;
 }
 
 @media (min-width: 768px) {
@@ -543,11 +501,12 @@ html, body {
 }
 
 .cinema-card__num {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.16em;
+  font-style: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.22em;
   color: var(--accent);
   display: block;
   margin-bottom: 0.5rem;
@@ -556,13 +515,14 @@ html, body {
 .cinema-card h3 {
   font-family: var(--font-body);
   font-size: 1.1rem;
-  font-weight: 500;
-  font-style: italic;
+  font-weight: 600;
+  font-style: normal;
   margin-bottom: 0.45rem;
 }
 
 .cinema-card p {
-  font-size: 0.95rem;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
   color: var(--text-muted);
   line-height: 1.55;
 }
@@ -572,6 +532,7 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 1.25rem;
   padding-top: 1.75rem;
   border-top: 1px solid rgba(94, 234, 212, 0.12);
@@ -580,7 +541,7 @@ html, body {
 .cinema-section__bridge p {
   font-family: var(--font-body);
   font-style: italic;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--text);
   margin: 0;
 }
@@ -590,9 +551,10 @@ html, body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
-  margin-top: 1.5rem;
+  margin: 1.25rem auto 0;
   pointer-events: auto;
-  max-width: 38rem;
+  max-width: 48rem;
+  width: 100%;
 }
 
 @media (min-width: 720px) {
@@ -617,6 +579,7 @@ html, body {
   opacity: 0;
   transform: translateY(18px);
   transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.25s, box-shadow 0.25s;
+  text-align: center;
 }
 
 .cinema-system__card.is-revealed {
@@ -631,33 +594,36 @@ html, body {
 
 .cinema-system__num {
   display: inline-block;
-  font-family: var(--font-body);
-  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.2em;
+  font-style: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.22em;
   color: var(--accent);
-  margin-bottom: 0.55rem;
-  padding: 0.15rem 0.55rem;
+  margin-bottom: 0.7rem;
+  padding: 0.2rem 0.6rem;
   border: 1px solid rgba(94, 234, 212, 0.35);
   border-radius: 999px;
 }
 
 .cinema-system__card h3 {
   font-family: var(--font-body);
-  font-size: 1.15rem;
-  font-weight: 500;
-  font-style: italic;
+  font-size: 1.18rem;
+  font-weight: 600;
+  font-style: normal;
   color: var(--text);
   margin-bottom: 0.45rem;
   letter-spacing: -0.005em;
 }
 
 .cinema-system__card p {
+  font-family: var(--font-body);
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--text-muted);
-  max-width: 28ch;
+  max-width: 32ch;
+  margin: 0 auto;
 }
 
 .cinema-copy__actions--underworld {
@@ -691,10 +657,11 @@ html, body {
   padding: 0.25rem 0;
   cursor: pointer;
   color: rgba(236, 253, 245, 0.45);
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  font-style: italic;
-  letter-spacing: 0.18em;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-style: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   text-align: right;
   justify-content: flex-end;
