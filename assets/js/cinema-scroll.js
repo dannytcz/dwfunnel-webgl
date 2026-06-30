@@ -2,6 +2,8 @@ import { FrameScrubber } from "./frame-scrub.js";
 import { StarField } from "./stars.js";
 
 const MIN_READY = 36;
+const MIN_LOADER_MS = 2000;
+const INTRO_MS = 2400;
 const ACT_KEYS = ["act0", "act1", "act2"];
 
 const STATIONS = [
@@ -91,9 +93,9 @@ function applyStationCopy(idx) {
     scrollHint.style.opacity = idx === 0 ? "1" : "0";
   }
   if (scrollHintText) {
-    if (idx === 0) scrollHintText.textContent = "Click anywhere to descend";
+    if (idx === 0) scrollHintText.textContent = "Scroll or press ↓ to descend";
     else if (idx === STATIONS.length - 1) scrollHintText.textContent = "Final scene";
-    else scrollHintText.textContent = "Click to continue";
+    else scrollHintText.textContent = "Scroll to continue";
   }
   if (vignette) {
     const base = 0.32 + idx * 0.12;
@@ -219,11 +221,6 @@ function isWheelBlockedTarget(t) {
 }
 
 function bindInputs() {
-  document.addEventListener("click", (e) => {
-    if (isInteractiveTarget(e.target)) return;
-    advance(+1);
-  });
-
   window.addEventListener(
     "wheel",
     (e) => {
@@ -313,7 +310,13 @@ async function init() {
 
   const scrubber = new FrameScrubber(cinema, canvas, filmUrls, { reducedMotion });
   window.__scrubber = scrubber;
+
+  const loadStart = performance.now();
   await scrubber.load((p) => setProgress(p), { minReady: MIN_READY });
+  const elapsed = performance.now() - loadStart;
+  if (elapsed < MIN_LOADER_MS) {
+    await new Promise((r) => setTimeout(r, MIN_LOADER_MS - elapsed));
+  }
 
   scrubber.resize();
 
@@ -334,7 +337,48 @@ async function init() {
   }
   gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
 
+  playIntroReverse(scrubber);
   bindInputs();
+}
+
+// Reverse intro: play film frames from the last frame down to the hero frame,
+// so the camera "descends from the sky" into the current hero composition.
+function playIntroReverse(scrubber) {
+  const total = scrubber.frames?.length ?? 0;
+  if (!total) return;
+  const target = STATIONS[0].heroFrame;
+  if (reducedMotion) {
+    scrubber.draw(target, { scale: 1.08, offsetY: -18 });
+    state.current = 0;
+    return;
+  }
+  showFilm();
+  if (cinema) cinema.classList.add("is-playing");
+  const tween = { t: 0 };
+  state.playing = true;
+  state.activeTween = gsap.to(tween, {
+    t: 1,
+    duration: INTRO_MS / 1000,
+    ease: "power2.inOut",
+    onUpdate: () => {
+      const e = easeInOutQuad(tween.t);
+      const idx = Math.round(total - 1 - (total - 1 - target) * e);
+      const scale = 1.02 + tween.t * 0.06;
+      const offsetY = -tween.t * 18;
+      drawStation(idx, { scale, offsetY });
+      if (flash) {
+        const a = tween.t < 0.5 ? tween.t * 2 * 0.55 : (1 - tween.t) * 2 * 0.55;
+        flash.style.opacity = String(a);
+      }
+    },
+    onComplete: () => {
+      state.playing = false;
+      state.activeTween = null;
+      if (cinema) cinema.classList.remove("is-playing");
+      drawStation(target, { scale: 1.08, offsetY: -18 });
+      if (flash) flash.style.opacity = "0";
+    },
+  });
 }
 
 init().catch((err) => {

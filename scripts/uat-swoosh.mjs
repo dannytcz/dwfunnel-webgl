@@ -10,7 +10,7 @@ page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.t
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
 await page.waitForSelector("#loader.is-done", { timeout: 120000 });
-await page.waitForTimeout(400);
+await page.waitForTimeout(2800); // intro reverse tween 2.4s + buffer
 
 const snap = (label) =>
   page.evaluate((label) => {
@@ -33,17 +33,17 @@ const samples = {};
 
 samples.initial = await snap("initial");
 
-// Click 1: should start a swoosh, then complete at station 1 after ~2.1s
-await page.mouse.click(640, 400);
+// Advance 1: ArrowDown to start swoosh to station 1
+await page.keyboard.press("ArrowDown");
 await page.waitForTimeout(600);
 samples.mid_swoosh_1 = await snap("mid_swoosh_1");
 await page.waitForTimeout(1700);
-samples.after_click_1 = await snap("after_click_1");
+samples.after_arrow_1 = await snap("after_arrow_1");
 
-// Click 2: should reach station 2
-await page.mouse.click(640, 400);
+// Advance 2: ArrowDown to reach station 2
+await page.keyboard.press("ArrowDown");
 await page.waitForTimeout(2200);
-samples.after_click_2 = await snap("after_click_2");
+samples.after_arrow_2 = await snap("after_arrow_2");
 
 // Click station dot 0 directly
 await page.locator(".cinema-stations__dot[data-station='0']").click();
@@ -74,8 +74,8 @@ const checks = {
   noErrors: errs.length === 0,
   initialHero: samples.initial.hero === 1 && samples.initial.passage === 0 && samples.initial.underworld === 0,
   midSwooshFlash: samples.mid_swoosh_1.flash > 0.1,
-  afterClick1Passage: samples.after_click_1.passage > 0.95 && samples.after_click1 === undefined ? true : (samples.after_click_1.passage > 0.95),
-  afterClick2Underworld: samples.after_click_2.underworld > 0.95,
+  afterArrow1Passage: samples.after_arrow_1?.passage > 0.95,
+  afterArrow2Underworld: samples.after_arrow_2?.underworld > 0.95,
   dotJumpBack: samples.after_dot_0.hero > 0.95,
   wheelAdv: samples.after_wheel.passage > 0.95,
   toggleOffBlocksWheel: samples.after_toggle_off_wheel.activeDot === before.activeDot,

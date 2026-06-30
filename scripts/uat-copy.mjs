@@ -10,7 +10,7 @@ page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.t
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
 await page.waitForSelector("#loader.is-done", { timeout: 120000 });
-await page.waitForTimeout(300);
+await page.waitForTimeout(2800); // intro reverse tween 2.4s + buffer
 
 const getText = (sel) => page.evaluate((s) => document.querySelector(s)?.textContent?.trim() ?? null, sel);
 
@@ -21,19 +21,24 @@ const hero = {
   lede: await getText("#hero-copy-block .cinema-copy__lede"),
   primaryCta: await getText("#hero-copy-block .cinema-btn--primary"),
   secondaryCta: await getText("#hero-copy-block .cinema-btn--ghost"),
+  hintText: await getText("#scroll-hint-text"),
 };
 
-// Click to advance to Passage
-await page.mouse.click(640, 400);
+// Advance via ArrowDown (click-to-descend removed)
+await page.keyboard.press("ArrowDown");
 await page.waitForTimeout(2200);
 
 const passage = {
   eyebrow: await getText("#passage-copy-block .cinema-copy__eyebrow"),
   h2: await getText("#passage-copy-block h2"),
+  lede: await getText("#passage-copy-block .cinema-copy__lede"),
+  beats: await page.evaluate(() => Array.from(document.querySelectorAll("#passage-copy-block .cinema-passage__beats li")).map((li) => ({
+    text: li.textContent?.replace(/\s+/g, " ").trim(),
+  }))),
 };
 
-// Click to advance to Underworld
-await page.mouse.click(640, 400);
+// Advance to Underworld
+await page.keyboard.press("ArrowDown");
 await page.waitForTimeout(3200); // swoosh 2s + card stagger 0.7s + transition 0.45s
 
 const underworld = {
@@ -69,9 +74,13 @@ console.log(JSON.stringify({ errs, hero, passage, underworld, problem }, null, 2
 const checks = {
   noErrors: errs.length === 0,
   heroH1: /A page people remember\./.test(hero.h1 || "") && /A funnel that follows up\./.test(hero.h1 || ""),
+  heroEyebrow: /Landing pages.*Funnels.*Follow-up/i.test(hero.eyebrow || ""),
   heroPrimary: hero.primaryCta === "Map My Funnel",
   heroSecondary: /See Why Pages Fail/i.test(hero.secondaryCta || ""),
-  passageHas: /Attention is only the entrance/.test(passage.eyebrow || "") && /curiosity to action/.test(passage.h2 || ""),
+  heroHintNoClick: !/click anywhere/i.test(hero.hintText || ""),
+  passageHas: /Attention is only the entrance/.test(passage.eyebrow || "") && /first booked call/i.test(passage.h2 || ""),
+  passageBeats: passage.beats.length === 3 && /See/.test(passage.beats[0].text) && /Trust/.test(passage.beats[1].text) && /Decide/.test(passage.beats[2].text),
+  underworldEyebrow: /The Machine/i.test(underworld.eyebrow || ""),
   underworldH2: /Under the beauty is the machine/.test(underworld.h2 || ""),
   underworldCards: underworld.cards.length === 3 && underworld.cards.every((c) => c.revealed) && /Landing Page/.test(underworld.cards[0].h3) && /Funnel Logic/.test(underworld.cards[1].h3) && /Follow-Up/.test(underworld.cards[2].h3),
   problemH2: /Why beautiful pages still fail/.test(problem.h2 || ""),

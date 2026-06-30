@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=7" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=8" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -60,9 +60,9 @@
 
       <!-- ── STATION 1 — HERO ──
            Visible offer, first impression.
-           Copy on the left, max 600px, headline + sub + 2 CTAs. -->
+           Full-width, no horizontal padding, headline + lede + 2 CTAs. -->
       <div id="hero-copy-block" class="cinema-copy cinema-copy--hero" data-station="hero">
-        <p class="cinema-copy__eyebrow">DW Funnel — by Daphne Wong</p>
+        <p class="cinema-copy__eyebrow">Landing pages · Funnels · Follow-up</p>
         <h1>A page people remember.<br/>A funnel that follows up.</h1>
         <p class="cinema-copy__lede">We build cinematic landing pages, conversion flows, and follow-up systems for business owners who want enquiries — not another pretty template.</p>
         <div class="cinema-copy__actions">
@@ -71,23 +71,29 @@
         </div>
         <p class="cinema-hint" id="scroll-hint">
           <span class="cinema-hint__chev" aria-hidden="true">↓</span>
-          <span id="scroll-hint-text">Click anywhere to descend</span>
+          <span id="scroll-hint-text">Scroll or press ↓ to descend</span>
         </p>
       </div>
 
       <!-- ── STATION 2 — PASSAGE ──
-           A brief cinematic beat during the swoosh.
-           1 strong line + 1 supporting line, fades quickly. -->
+           The cinematic beat between Hero and Underworld.
+           Eyebrow + h2 + lede + 3 visitor-arc bullets. Dwell ~4s. -->
       <div id="passage-copy-block" class="cinema-copy cinema-copy--mid" aria-hidden="true" data-station="passage">
         <p class="cinema-copy__eyebrow">Attention is only the entrance.</p>
-        <h2>Most pages stop at looking good. Yours should guide the visitor from curiosity to action.</h2>
+        <h2>From the first glance to the first booked call — every step has a job.</h2>
+        <p class="cinema-copy__lede">A visitor does not convert on impact alone. They need to see the offer clearly, trust the proof, decide without friction, and book before they leave.</p>
+        <ul class="cinema-passage__beats">
+          <li><span class="cinema-passage__num">i.</span><span><em>See</em> the offer clearly. The page names what you do, who it's for, and why it matters in the first scroll.</span></li>
+          <li><span class="cinema-passage__num">ii.</span><span><em>Trust</em> the proof. Outcomes, credentials, and named clients — placed before the visitor drops off.</span></li>
+          <li><span class="cinema-passage__num">iii.</span><span><em>Decide</em> without friction. One next step, one calendar, one click from interest to booking.</span></li>
+        </ul>
       </div>
 
       <!-- ── STATION 3 — UNDERWORLD ──
            The hidden conversion machine.
            Headline first, then 3 system cards stagger in. -->
       <div id="underworld-copy-block" class="cinema-copy cinema-copy--underworld" aria-hidden="true" data-station="underworld">
-        <p class="cinema-copy__eyebrow">The Underworld</p>
+        <p class="cinema-copy__eyebrow">The Machine</p>
         <h2>Under the beauty is the machine.</h2>
         <p class="cinema-copy__lede">Offer clarity, trust signals, booking flow, and follow-up automation — built as one system so leads do not disappear after the first click.</p>
 
@@ -172,6 +178,6 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=6"></script>
+  <script type="module" src="assets/js/cinema-scroll.js?v=7"></script>
 </body>
 </html>
