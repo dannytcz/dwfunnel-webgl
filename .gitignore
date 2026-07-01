@@ -3,3 +3,16 @@ assets/frames/cinema/_test/
 assets/frames/cinema/upload.log
 .vercel
 node_modules/
+
+# Dev / debug artifacts
+PLAN.*.md
+*.log
+trace-*.json
+perf-report*.md
+trace-breakdown.md
+previews/
+copy.log
+leaving.log
+swoosh.log
+typography.log
+perf.log

@@ -211,6 +211,7 @@ html, body {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  will-change: opacity;
 }
 
 .cinema__idle {

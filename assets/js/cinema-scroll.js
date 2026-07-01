@@ -6,10 +6,14 @@ const MIN_LOADER_MS = 2000;
 const INTRO_MS = 4000;
 const ACT_KEYS = ["act0", "act1", "act2"];
 
+// Station metadata is filled in at runtime by buildStations() once the
+// per-act frame counts are known. The hero frame is the LAST frame of
+// each act (the most composed shot), not a hard-coded index that would
+// break when the master sequence is trimmed for delivery.
 const STATIONS = [
-  { id: "hero",       copyId: "hero-copy-block",      startFrame: 0,   heroFrame: 100, endFrame: 200 },
-  { id: "passage",    copyId: "passage-copy-block",   startFrame: 200, heroFrame: 300, endFrame: 420 },
-  { id: "underworld", copyId: "underworld-copy-block",startFrame: 420, heroFrame: 540, endFrame: 661 },
+  { id: "hero",       copyId: "hero-copy-block" },
+  { id: "passage",    copyId: "passage-copy-block" },
+  { id: "underworld", copyId: "underworld-copy-block" },
 ];
 
 const SWOOSH_MS = 4000;
@@ -82,6 +86,24 @@ function buildFilmUrls() {
       );
     }
     return acts[act];
+  });
+}
+
+// Derive per-station start / hero / end frame indices from the actual
+// per-act frame counts. Hero = the last frame of each act (most composed).
+function buildStations(filmUrls) {
+  const acts = window.DWF_CDN?.acts ?? {};
+  const counts = ACT_KEYS.map((a) => acts[a]?.length ?? 0);
+  const offsets = [];
+  let acc = 0;
+  for (const c of counts) { offsets.push(acc); acc += c; }
+  // The flat array length is filmUrls.length; offsets sum to that.
+  return STATIONS.map((s, i) => {
+    const start = offsets[i] ?? 0;
+    const count = counts[i] ?? 0;
+    const end = start + Math.max(0, count - 1);
+    const hero = end;
+    return { ...s, startFrame: start, heroFrame: hero, endFrame: end };
   });
 }
 
@@ -312,7 +334,31 @@ function enterProblem() {
   // Tear down the star canvas so it doesn't keep running its rAF loop
   // while the user is reading the post-cinematic sections.
   window.__stars?.stop?.();
-  gsap.to(window, { duration: 1.2, ease: "power2.inOut", scrollTo: { y: "#problem", autoKill: false } });
+  // Hard-evict act 0 + the previous station range from the FrameScrubber
+  // so the working set drops to just the Underworld hero frame. Cache
+  // bitmaps for the post-cinematic range can be safely dropped too.
+  window.__scrubber?.releaseImagesOutsideWindow?.(STATIONS[2].heroFrame);
+
+  // Smooth cinematic-out: fade the canvas + idle still out first so the
+  // user is not looking at a frozen frame as the page scrolls, then ease
+  // into the #problem section. CSS handles the chrome (progress bar,
+  // station rail, scrim, pin visibility) on the same 0.6 s window.
+  const fadeLayer = cinema?.querySelector(".cinema__media");
+  const idleImgEl = document.getElementById("cinema-idle");
+  const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+  if (fadeLayer) {
+    tl.to(fadeLayer, { opacity: 0, duration: 0.45, ease: "power2.in" }, 0);
+  }
+  if (idleImgEl) {
+    tl.to(idleImgEl, { opacity: 0, duration: 0.35, ease: "power2.in" }, 0);
+  }
+  // Start the scroll a touch after the canvas starts fading so the user
+  // never sees the page jump.
+  tl.to(window, {
+    duration: 1.2,
+    ease: "power2.inOut",
+    scrollTo: { y: "#problem", autoKill: false },
+  }, 0.18);
 }
 
 function isInteractiveTarget(t) {
@@ -397,6 +443,12 @@ async function init() {
     loader?.classList.add("is-done");
     return;
   }
+  // Replace the placeholder STATIONS with one filled from the actual
+  // per-act frame counts. Hero is always the last frame of each act.
+  for (let i = 0; i < STATIONS.length; i++) {
+    const built = buildStations(filmUrls)[i];
+    if (built) STATIONS[i] = built;
+  }
 
   showIdle();
 
@@ -412,11 +464,15 @@ async function init() {
 
   scrubber.resize();
 
-  // Pre-rasterize the three hero landing frames so the first paint and
-  // the first ArrowDown are both zero-decode. The next-station frame is
-  // prewarmed on each swoosh onStart.
-  scrubber.prewarm(STATIONS.map((s) => s.heroFrame));
-  scrubber.releaseOutOfWindow(STATIONS[0].heroFrame);
+  // Pre-rasterize the three hero landing frames AND every act 0 frame
+  // the intro will play through. Without this, the intro paints black
+  // for any frame that has not yet been decoded. The next-station frame
+  // is prewarmed on each swoosh onStart.
+  const act0Len = window.DWF_CDN?.acts?.act0?.length ?? 0;
+  const introFrames = act0Len
+    ? Array.from({ length: act0Len }, (_, i) => i)
+    : [];
+  scrubber.prewarm([...introFrames, ...STATIONS.map((s) => s.heroFrame)]);
 
   setProgress(1);
   loader?.classList.add("is-done");
@@ -452,21 +508,41 @@ async function init() {
   }
   gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
 
-  playIntroReverse(scrubber);
+  await playIntroReverse(scrubber);
   bindInputs();
 }
 
-// Reverse intro: play ACT 0 backwards from the last frame of act 0 down to
-// the hero frame, so the camera "zooms in from a far island" into the hero
-// composition over INTRO_MS. No user input is required to start it.
-function playIntroReverse(scrubber) {
+// Wait for every act 0 frame to have a decoded bitmap (naturalWidth > 0).
+// Without this, the intro paints a black canvas for the first ~1 s while
+// the network-fetched WebPs are still being decoded off-thread.
+async function waitForIntroFrames(scrubber, act0Len) {
+  const deadline = performance.now() + 8000;
+  while (performance.now() < deadline) {
+    let ready = true;
+    for (let i = 0; i < act0Len; i++) {
+      const f = scrubber.frames[i];
+      if (!f || !f.naturalWidth) { ready = false; break; }
+    }
+    if (ready) return true;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  return false;
+}
+
+// Intro: sweep forward through ACT 0 from the establishing frame (0) to
+// the hero (last frame of act 0). Even with a static-feeling sequence the
+// long slow Ken-Burns (scale 1.00 -> 1.08, offsetY 0 -> -22) plus the
+// per-frame blit gives the page the cinematic "fly-in" feel the brand
+// promise depends on. No user input is required to start it.
+async function playIntroReverse(scrubber) {
   const total = scrubber.frames?.length ?? 0;
   if (!total) return;
   // End of act 0 in the flat frame array.
   const act0Len = window.DWF_CDN?.acts?.act0?.length ?? 0;
   if (!act0Len) return;
-  const startIdx = act0Len - 1;
-  const target = STATIONS[0].heroFrame;
+  await waitForIntroFrames(scrubber, act0Len);
+  const startIdx = 0;  // start of act 0 (the establishing / wide shot)
+  const target = STATIONS[0].heroFrame;  // end of act 0 (the hero)
   if (reducedMotion) {
     scrubber.draw(target, { scale: 1.08, offsetY: -18 });
     state.current = 0;
@@ -482,7 +558,7 @@ function playIntroReverse(scrubber) {
     ease: "power2.inOut",
     onUpdate: () => {
       const e = easeInOutQuad(tween.t);
-      const idx = Math.round(startIdx - (startIdx - target) * e);
+      const idx = Math.round(startIdx + (target - startIdx) * e);
       const scale = 1.0 + tween.t * 0.08;
       const offsetY = -tween.t * 22;
       drawStation(idx, { scale, offsetY });
@@ -498,7 +574,7 @@ function playIntroReverse(scrubber) {
       drawStation(target, { scale: 1.08, offsetY: -22 });
       if (flash) flash.style.opacity = "0";
       // Hero copy elegantly fades in only after the camera has finished its
-      // reverse-from-the-sky swoosh.
+      // swoosh.
       fadeInCopy(0, 0.9);
       // Progress bar fills to 1/3 of the journey.
       setProgressFill(1 / STATIONS.length);

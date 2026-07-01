@@ -63,7 +63,8 @@ export class FrameScrubber {
         const img = new Image();
         if (/^https?:\/\//.test(url)) img.crossOrigin = "anonymous";
         img.decoding = "async";
-        const finish = () => {
+        const markReady = () => {
+          // Only assign the frame once — a slow onload can race with decode.
           if (this.frames[i] === null) {
             this.frames[i] = img;
           }
@@ -72,8 +73,30 @@ export class FrameScrubber {
           onProgress?.(done / this.urls.length);
           if (done >= minReady || done === this.urls.length) settle();
         };
-        img.onload = finish;
-        img.onerror = finish;
+        const onError = () => {
+          // Even on decode failure the underlying image bytes are usable
+          // for a direct drawImage, so mark the frame ready rather than
+          // permanently black-holing it.
+          if (this.frames[i] === null) {
+            this.frames[i] = img;
+          }
+          done++;
+          this.loaded = done;
+          onProgress?.(done / this.urls.length);
+          if (done >= minReady || done === this.urls.length) settle();
+        };
+        // With decoding="async", naturalWidth is only valid AFTER decode.
+        // Wait for decode() to resolve before treating the frame as ready
+        // so the renderer doesn't draw a 0x0 placeholder.
+        if (img.decode) {
+          img.decode().then(markReady, () => {
+            if (img.complete) markReady();
+            else img.addEventListener("load", markReady, { once: true });
+          });
+        } else {
+          img.addEventListener("load", markReady, { once: true });
+        }
+        img.addEventListener("error", onError, { once: true });
         img.src = url;
       });
     });
@@ -110,9 +133,10 @@ export class FrameScrubber {
   }
 
   /**
-   * Evict frames outside the [current ± WINDOW_HALF] window. Keeps the
-   * working set bounded even after the user has scrubbed to multiple
-   * stations.
+   * Evict the offscreen bitmap cache entries outside the
+   * [current ± WINDOW_HALF] window. Does NOT null the underlying Image()
+   * objects, so a later draw() that re-enters that range is still a
+   * drawImage(cachedBitmap) blit — no re-decode, no re-upload.
    */
   releaseOutOfWindow(center) {
     const lo = Math.max(0, center - WINDOW_HALF);
@@ -122,10 +146,18 @@ export class FrameScrubber {
         this._cache.delete(idx);
       }
     }
-    // Rebuild the order list to match.
     this._cacheOrder = this._cacheOrder.filter((idx) => this._cache.has(idx));
-    // Garbage-collect any underlying Image() for frames that are outside
-    // the window so the renderer can free their texture handles.
+  }
+
+  /**
+   * Hard-evict Image() objects for frames outside the window. Used only
+   * once the cinematic has been left, to release the texture handles
+   * before the user starts reading the post-cinematic journey.
+   */
+  releaseImagesOutsideWindow(center) {
+    const lo = Math.max(0, center - WINDOW_HALF);
+    const hi = Math.min(this.urls.length - 1, center + WINDOW_HALF);
+    this.releaseOutOfWindow(center);
     for (let i = 0; i < this.frames.length; i++) {
       if ((i < lo || i > hi) && this.frames[i] && !this._inflight[i]) {
         this.frames[i] = null;
