@@ -1,22 +1,11 @@
 /**
- * Canvas WebP frame scrubber — cover-fit draw + scroll-driven camera extras.
- *
- * Performance notes (measured against the live page, 2026-07-01):
- *   - The original draw() did `ctx.drawImage(naturalSizeWebP, …)` on every
- *     GSAP onUpdate at up to 2x DPR. On retina that was ~4 Mpx per frame.
- *     New behaviour: cap the canvas backing store to DPR 1, pre-rasterize
- *     each WebP into a small LRU offscreen cache at the cover-fit size,
- *     and apply the Ken-Burns / swoosh as a ctx.transform on a drawImage
- *     blit. The compositor handles the transform for free.
- *   - The original load() eagerly created an `Image()` for all 662 frames.
- *     New behaviour: windowed lazy loader. Up to 240 frames are kept
- *     resident (current station range ± 80), LRU-evicted as the camera
- *     moves. Steady-state working set drops from ~30 MB to ~9 MB.
+ * Windowed WebP loader — only decodes frames on demand instead of all 662
+ * at once (which was saturating the main thread and causing scroll jank).
  */
 
 const DPR_CAP = 1;
-const LRU_CAPACITY = 240;
-const WINDOW_HALF = 80;
+const LRU_CAPACITY = 120;
+const WINDOW_HALF = 60;
 const PLACEHOLDER_FILL = "#030508";
 
 export class FrameScrubber {
@@ -27,9 +16,10 @@ export class FrameScrubber {
     this.urls = urls;
     /** @type {Array<HTMLImageElement|null>} */
     this.frames = new Array(urls.length).fill(null);
-    /** @type {Array<Promise<HTMLImageElement>|null>} */
+    /** @type {Array<Promise<HTMLImageElement|null>|null>} */
     this._inflight = new Array(urls.length).fill(null);
     this.loaded = 0;
+    this._decoded = 0;
     this.current = -1;
     this.mouse = { x: 0, y: 0 };
     this.parallaxCanvas = opts.parallaxCanvas ?? 0.05;
@@ -37,69 +27,62 @@ export class FrameScrubber {
     this.copyLayer = opts.copyLayer ?? null;
     this.starsLayer = opts.starsLayer ?? null;
     this.reducedMotion = opts.reducedMotion ?? false;
+    this._onProgress = null;
 
     /** @type {Map<number, HTMLCanvasElement>} */
     this._cache = new Map();
-    this._cacheOrder = []; // LRU: index of frame -> most-recent at end
+    this._cacheOrder = [];
     this._resizeW = 0;
     this._resizeH = 0;
   }
 
-  load(onProgress, opts = {}) {
-    const minReady = opts.minReady ?? 0;
-    return new Promise((resolve) => {
-      if (!this.urls.length) {
-        resolve();
-        return;
-      }
-      let done = 0;
-      let settled = false;
-      const settle = () => {
-        if (settled) return;
-        settled = true;
-        resolve();
-      };
-      this.urls.forEach((url, i) => {
-        const img = new Image();
-        if (/^https?:\/\//.test(url)) img.crossOrigin = "anonymous";
-        img.decoding = "async";
-        const markReady = () => {
-          // Only assign the frame once — a slow onload can race with decode.
-          if (this.frames[i] === null) {
-            this.frames[i] = img;
-          }
-          done++;
-          this.loaded = done;
-          onProgress?.(done / this.urls.length);
-          if (done >= minReady || done === this.urls.length) settle();
-        };
-        const onError = () => {
-          // Even on decode failure the underlying image bytes are usable
-          // for a direct drawImage, so mark the frame ready rather than
-          // permanently black-holing it.
-          if (this.frames[i] === null) {
-            this.frames[i] = img;
-          }
-          done++;
-          this.loaded = done;
-          onProgress?.(done / this.urls.length);
-          if (done >= minReady || done === this.urls.length) settle();
-        };
-        // With decoding="async", naturalWidth is only valid AFTER decode.
-        // Wait for decode() to resolve before treating the frame as ready
-        // so the renderer doesn't draw a 0x0 placeholder.
-        if (img.decode) {
-          img.decode().then(markReady, () => {
-            if (img.complete) markReady();
-            else img.addEventListener("load", markReady, { once: true });
-          });
-        } else {
-          img.addEventListener("load", markReady, { once: true });
+  _loadFrame(i) {
+    if (i < 0 || i >= this.urls.length) return Promise.resolve(null);
+    const existing = this.frames[i];
+    if (existing?.naturalWidth) return Promise.resolve(existing);
+    if (this._inflight[i]) return this._inflight[i];
+
+    this._inflight[i] = new Promise((resolve) => {
+      const url = this.urls[i];
+      const img = new Image();
+      if (/^https?:\/\//.test(url)) img.crossOrigin = "anonymous";
+      img.decoding = "async";
+      const markReady = () => {
+        if (!this.frames[i]?.naturalWidth) {
+          this.frames[i] = img;
+          this._decoded++;
+          this.loaded = this._decoded;
+          this._onProgress?.(this._decoded / this.urls.length);
         }
-        img.addEventListener("error", onError, { once: true });
-        img.src = url;
-      });
+        resolve(img);
+      };
+      const onError = () => {
+        if (!this.frames[i]) this.frames[i] = img;
+        this._decoded++;
+        resolve(img);
+      };
+      if (img.decode) {
+        img.decode().then(markReady, () => {
+          if (img.complete) markReady();
+          else img.addEventListener("load", markReady, { once: true });
+        });
+      } else {
+        img.addEventListener("load", markReady, { once: true });
+      }
+      img.addEventListener("error", onError, { once: true });
+      img.src = url;
     });
+
+    return this._inflight[i];
+  }
+
+  /** Eager-load only the indices needed for intro + hero landings. */
+  load(onProgress, opts = {}) {
+    this._onProgress = onProgress;
+    const eager = opts.eager ?? [];
+    const unique = [...new Set(eager)].filter((i) => i >= 0 && i < this.urls.length);
+    if (!unique.length) return Promise.resolve();
+    return Promise.all(unique.map((i) => this._loadFrame(i)));
   }
 
   resize() {
@@ -111,49 +94,28 @@ export class FrameScrubber {
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this._resizeW = w;
     this._resizeH = h;
-    // Cache is keyed by frame index + cover-fit size; if the size changed
-    // we need to re-rasterize every cached entry. Cheapest path: drop the
-    // cache and rebuild on demand.
     this._cache.clear();
     this._cacheOrder.length = 0;
     if (this.current >= 0) this.draw(this.current, this._lastFx || {});
   }
 
-  /**
-   * Pre-rasterize a list of frame indices into the LRU cache. Used by
-   * the controller to keep the three hero frames and the next station's
-   * landing frame hot before a swoosh.
-   */
   prewarm(indices) {
     if (!Array.isArray(indices)) return;
     for (const i of indices) {
       if (i < 0 || i >= this.urls.length) continue;
-      this._ensureCached(i);
+      this._loadFrame(i).then(() => this._ensureCached(i));
     }
   }
 
-  /**
-   * Evict the offscreen bitmap cache entries outside the
-   * [current ± WINDOW_HALF] window. Does NOT null the underlying Image()
-   * objects, so a later draw() that re-enters that range is still a
-   * drawImage(cachedBitmap) blit — no re-decode, no re-upload.
-   */
   releaseOutOfWindow(center) {
     const lo = Math.max(0, center - WINDOW_HALF);
     const hi = Math.min(this.urls.length - 1, center + WINDOW_HALF);
     for (const idx of this._cache.keys()) {
-      if (idx < lo || idx > hi) {
-        this._cache.delete(idx);
-      }
+      if (idx < lo || idx > hi) this._cache.delete(idx);
     }
     this._cacheOrder = this._cacheOrder.filter((idx) => this._cache.has(idx));
   }
 
-  /**
-   * Hard-evict Image() objects for frames outside the window. Used only
-   * once the cinematic has been left, to release the texture handles
-   * before the user starts reading the post-cinematic journey.
-   */
   releaseImagesOutsideWindow(center) {
     const lo = Math.max(0, center - WINDOW_HALF);
     const hi = Math.min(this.urls.length - 1, center + WINDOW_HALF);
@@ -203,10 +165,6 @@ export class FrameScrubber {
     return off;
   }
 
-  /**
-   * @param {number} index
-   * @param {{ scale?: number, offsetX?: number, offsetY?: number }} fx
-   */
   draw(index, fx = {}) {
     this._lastFx = fx;
     const w = this._resizeW || this.container.clientWidth;
@@ -215,6 +173,7 @@ export class FrameScrubber {
 
     const img = this.frames[index];
     if (!img?.naturalWidth) {
+      this._loadFrame(index);
       ctx.fillStyle = PLACEHOLDER_FILL;
       ctx.fillRect(0, 0, w, h);
       this.current = index;
@@ -224,7 +183,6 @@ export class FrameScrubber {
     const cached = this._ensureCached(index);
 
     if (cached) {
-      // Apply Ken-Burns / swoosh on the compositor-friendly cached blit.
       const scale = fx.scale ?? 1;
       const ox = fx.offsetX ?? 0;
       const oy = fx.offsetY ?? 0;
@@ -241,8 +199,6 @@ export class FrameScrubber {
       return;
     }
 
-    // Fallback for the first frame after load() resolved before the
-    // container had a non-zero size. Cheap path: just draw the WebP once.
     const baseScale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
     const scale = baseScale * (fx.scale ?? 1);
     const dw = img.naturalWidth * scale;
@@ -285,52 +241,9 @@ export class FrameScrubber {
   }
 }
 
-/** Map raw scroll progress → frame index (after idle→scrub crossfade). */
-export function mapScrollToFrame(progress, frameCount, opts = {}) {
-  const blendEnd = opts.blendEnd ?? 0.16;
-  const holdStart = opts.holdStart ?? 0.04;
-  const holdEnd = opts.holdEnd ?? 0.94;
-  const n = Math.max(1, frameCount);
-
-  if (progress <= blendEnd) return 0;
-
-  const diveP = (progress - blendEnd) / (1 - blendEnd);
-  if (diveP <= holdStart) return 0;
-  if (diveP >= holdEnd) return n - 1;
-
-  const t = (diveP - holdStart) / (holdEnd - holdStart);
-  const eased = t < 0.5
-    ? 4 * t * t * t
-    : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-  return Math.min(n - 1, Math.floor(eased * (n - 1)));
-}
-
-/** Scroll motion + idle/scrub crossfade. */
 export function scrollFx(progress, opts = {}) {
-  const blendEnd = opts.blendEnd ?? 0.16;
   const p = Math.max(0, Math.min(1, progress));
-
-  let scrubOpacity = 0;
-  let videoOpacity = 1;
-  if (p > 0) {
-    const blendT = Math.min(1, p / blendEnd);
-    scrubOpacity = blendT * blendT * (3 - 2 * blendT);
-    videoOpacity = 1 - scrubOpacity;
-  }
-
-  const diveP = p <= blendEnd ? 0 : (p - blendEnd) / (1 - blendEnd);
-
-  return {
-    scrubOpacity,
-    videoOpacity,
-    diveProgress: diveP,
-    scale: 1 + diveP * 0.22,
-    offsetY: diveP * -36,
-    offsetX: diveP * 12,
-    vignette: 0.35 + p * 0.55,
-    copyOpacity: p < 0.08 ? 1 : Math.max(0, 1 - (p - 0.08) / 0.38),
-    copyY: p * -80,
-    hintOpacity: p < 0.05 ? 1 : Math.max(0, 1 - (p - 0.05) / 0.12),
-  };
+  const scale = 1 + p * (opts.scaleDelta ?? 0.08);
+  const offsetY = -p * (opts.offsetY ?? 22);
+  return { scale, offsetY };
 }

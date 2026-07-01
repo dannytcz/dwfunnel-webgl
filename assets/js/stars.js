@@ -5,7 +5,7 @@
  * hidden, and capped to ~40 Hz to keep the rAF budget under 2.5 ms/frame.
  */
 
-const STAR_COUNT = 220;
+const STAR_COUNT = 140;
 const PARALLAX_PX = 8;
 const TICK_MS = 25;          // 40 Hz repaint ceiling
 const RESIZE_THRESHOLD_PX = 8;

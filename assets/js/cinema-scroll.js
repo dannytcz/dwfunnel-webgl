@@ -1,7 +1,7 @@
 import { FrameScrubber } from "./frame-scrub.js";
 import { StarField } from "./stars.js";
+import { initPageNav } from "./page-nav.js";
 
-const MIN_READY = 9999;
 const MIN_LOADER_MS = 3000;
 const INTRO_MS = 4200;
 const ACT_KEYS = ["act0", "act1", "act2"];
@@ -33,7 +33,14 @@ const canvas = document.getElementById("scrub-canvas");
 const idleImg = document.getElementById("cinema-idle");
 const vignette = document.getElementById("cinema-vignette");
 const flash = document.getElementById("cinema-flash");
-const stationDots = Array.from(document.querySelectorAll(".cinema-stations__dot"));
+const stationDots = []; // legacy — nav lives in #page-nav
+const pageNavApi = {
+  getCinemaStation: () => state.current,
+  onCinemaStationChange: null,
+  onCinemaUnlock: null,
+  goToCinemaStation: (idx) => goToCinemaStation(idx),
+  goToScrollSection: (sel) => goToScrollSection(sel),
+};
 const stationIndexEl = document.querySelector(".cinema-stations__current");
 const stationTotalEl = document.querySelector(".cinema-stations__total");
 const progressFill = document.querySelector(".cinema-progress__fill");
@@ -147,14 +154,11 @@ function applyStationCopy(idx) {
 }
 
 function updateStationDots() {
-  stationDots.forEach((dot, i) => {
-    dot.classList.toggle("is-active", i === state.current);
-  });
   if (cinema) {
     const id = STATIONS[state.current]?.id;
     cinema.setAttribute("data-station-active", id || "");
   }
-  updateStationIndex();
+  pageNavApi.onCinemaStationChange?.(state.current);
 }
 
 function showIdle() {
@@ -355,9 +359,39 @@ function jumpTo(target) {
   swooshTo(target);
 }
 
-function enterProblem() {
+function restoreCinemaVisual() {
+  document.body.removeAttribute("data-cinema-leaving");
+  cinema?.classList.remove("is-leaving");
+  document.getElementById("cinema-pin")?.classList.remove("cinema-pin--retired");
+  const fadeLayer = cinema?.querySelector(".cinema__media");
+  const idleImgEl = document.getElementById("cinema-idle");
+  if (window.gsap) {
+    if (fadeLayer) gsap.set(fadeLayer, { opacity: 1 });
+    if (idleImgEl) gsap.set(idleImgEl, { opacity: 1 });
+  } else {
+    if (fadeLayer) fadeLayer.style.opacity = "1";
+    if (idleImgEl) idleImgEl.style.opacity = "1";
+  }
+  window.__stars?.start?.();
+}
+
+function goToCinemaStation(idx) {
+  if (idx < 0 || idx >= STATIONS.length) return;
+  restoreCinemaVisual();
+  if (window.scrollY > 8 && window.gsap) {
+    gsap.to(window, {
+      duration: 0.75,
+      ease: "power2.inOut",
+      scrollTo: { y: 0, autoKill: true },
+      onComplete: () => jumpTo(idx),
+    });
+  } else {
+    jumpTo(idx);
+  }
+}
+
+function unlockCinema({ scrollTarget = null, fadeMedia = true } = {}) {
   if (!window.gsap) return;
-  if (!state.cinemaLocked) return;
   state.cinemaLocked = false;
   if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
   if (state.activeTween) state.activeTween.kill();
@@ -366,42 +400,50 @@ function enterProblem() {
   if (sl) sl.style.opacity = "0";
   if (flash) flash.style.opacity = "0";
   cinema?.classList.add("is-leaving");
-  // Flag the cinematic-leaving state so CSS fades out the progress bar, the
-  // station rail, the scrim, and the pinned cinema. Scroll to the first
-  // post-cinematic section (the new #problem).
   document.body.setAttribute("data-cinema-leaving", "true");
-  // Tear down the star canvas so it doesn't keep running its rAF loop
-  // while the user is reading the post-cinematic sections.
   window.__stars?.stop?.();
-  // Hard-evict act 0 + the previous station range from the FrameScrubber
-  // so the working set drops to just the Underworld hero frame. Cache
-  // bitmaps for the post-cinematic range can be safely dropped too.
   window.__scrubber?.releaseImagesOutsideWindow?.(STATIONS[2].heroFrame);
+  pageNavApi.onCinemaUnlock?.();
 
-  // Smooth cinematic-out: fade the canvas + idle still out first so the
-  // user is not looking at a frozen frame as the page scrolls, then ease
-  // into the #problem section. CSS handles the chrome (station rail,
-  // scrim, pin visibility) on the same 0.6 s window.
   const fadeLayer = cinema?.querySelector(".cinema__media");
   const idleImgEl = document.getElementById("cinema-idle");
   const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
-  if (fadeLayer) {
-    tl.to(fadeLayer, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
+  if (fadeMedia) {
+    if (fadeLayer) tl.to(fadeLayer, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
+    if (idleImgEl) tl.to(idleImgEl, { opacity: 0, duration: 0.3, ease: "power2.in" }, 0);
   }
-  if (idleImgEl) {
-    tl.to(idleImgEl, { opacity: 0, duration: 0.3, ease: "power2.in" }, 0);
+  if (scrollTarget) {
+    tl.to(window, {
+      duration: 0.9,
+      ease: "power2.inOut",
+      scrollTo: { y: scrollTarget, autoKill: true },
+      onComplete: () => {
+        document.getElementById("cinema-pin")?.classList.add("cinema-pin--retired");
+        window.ScrollTrigger?.refresh?.();
+      },
+    }, fadeMedia ? 0.05 : 0);
   }
-  // Snappier handoff to #problem: shorter duration, tiny delay so the canvas
-  // fade has already started.
-  tl.to(window, {
+}
+
+function goToScrollSection(selector) {
+  if (isCinemaLocked()) {
+    unlockCinema({ scrollTarget: selector, fadeMedia: true });
+    return;
+  }
+  if (!window.gsap) {
+    document.querySelector(selector)?.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  gsap.to(window, {
     duration: 0.9,
     ease: "power2.inOut",
-    scrollTo: { y: "#problem", autoKill: false },
-    onComplete: () => {
-      document.getElementById("cinema-pin")?.classList.add("cinema-pin--retired");
-      window.ScrollTrigger?.refresh?.();
-    },
-  }, 0.05);
+    scrollTo: { y: selector, autoKill: true },
+  });
+}
+
+function enterProblem() {
+  if (!state.cinemaLocked) return;
+  unlockCinema({ scrollTarget: "#problem", fadeMedia: true });
 }
 
 function isInteractiveTarget(t) {
@@ -410,9 +452,7 @@ function isInteractiveTarget(t) {
 
 function isWheelBlockedTarget(t) {
   if (!t || !t.closest) return false;
-  // Block wheel-advance only when the user is actively interacting with the
-  // station dots or the inline CTAs. Plain copy / canvas area still advances.
-  return !!(t.closest(".cinema-stations__dot, .cinema-copy__actions"));
+  return !!(t.closest(".page-nav__dot, .cinema-copy__actions"));
 }
 
 function bindInputs() {
@@ -462,19 +502,14 @@ function bindInputs() {
     advance(delta > 0 ? +1 : -1);
   }, { passive: true });
 
-  stationDots.forEach((dot, i) => {
-    dot.addEventListener("click", (e) => {
-      e.stopPropagation();
-      jumpTo(i);
-    });
-  });
-
   if (enterBtn) {
     enterBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       enterProblem();
     });
   }
+
+  initPageNav(pageNavApi);
 }
 
 async function init() {
@@ -504,24 +539,21 @@ async function init() {
   const scrubber = new FrameScrubber(cinema, canvas, filmUrls, { reducedMotion });
   window.__scrubber = scrubber;
 
+  const act0Len = window.DWF_CDN?.acts?.act0?.length ?? 0;
+  const eagerIndices = [
+    ...Array.from({ length: act0Len }, (_, i) => i),
+    ...STATIONS.map((s) => s.heroFrame),
+  ];
+
   const loadStart = performance.now();
-  await scrubber.load((p) => setProgress(p), { minReady: MIN_READY });
+  await scrubber.load((p) => setProgress(p), { eager: eagerIndices });
   const elapsed = performance.now() - loadStart;
   if (elapsed < MIN_LOADER_MS) {
     await new Promise((r) => setTimeout(r, MIN_LOADER_MS - elapsed));
   }
 
   scrubber.resize();
-
-  // Pre-rasterize the three hero landing frames AND every act 0 frame
-  // the intro will play through. Without this, the intro paints black
-  // for any frame that has not yet been decoded. The next-station frame
-  // is prewarmed on each swoosh onStart.
-  const act0Len = window.DWF_CDN?.acts?.act0?.length ?? 0;
-  const introFrames = act0Len
-    ? Array.from({ length: act0Len }, (_, i) => i)
-    : [];
-  scrubber.prewarm([...introFrames, ...STATIONS.map((s) => s.heroFrame)]);
+  scrubber.prewarm([...new Set(eagerIndices)]);
 
   setProgress(1);
   loader?.classList.add("is-done");
