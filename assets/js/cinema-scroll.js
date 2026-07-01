@@ -276,7 +276,7 @@ async function init() {
     window.ScrollTrigger?.refresh?.();
   });
 
-  if (!window.gsap?.ScrollTrigger) {
+  if (!window.gsap || !window.ScrollTrigger) {
     console.error("cinema: GSAP ScrollTrigger failed to load");
     return;
   }
