@@ -9,6 +9,9 @@
   --font-display: "Cinzel", "Trajan Pro", serif;
   --font-body: "EB Garamond", "EB Garamond 12", "Georgia", "Times New Roman", serif;
   --font: var(--font-body);
+  --max-lead: 62ch;
+  --section-pad-block: clamp(4rem, 8vw, 8rem);
+  --row-min-h: 96px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -343,6 +346,7 @@ html, body {
   color: var(--text);
   text-shadow: 0 4px 56px rgba(0, 0, 0, 0.55);
   max-width: 18ch;
+  text-wrap: balance;
 }
 
 .cinema-copy h2 {
@@ -356,6 +360,7 @@ html, body {
   color: var(--text);
   text-shadow: 0 4px 38px rgba(0, 0, 0, 0.55);
   max-width: 22ch;
+  text-wrap: balance;
 }
 
 .cinema-copy p {
@@ -378,6 +383,8 @@ html, body {
 .cinema-copy .cinema-copy__lede {
   font-style: italic;
   color: rgba(236, 253, 245, 0.92);
+  max-width: var(--max-lead);
+  text-wrap: pretty;
 }
 
 .cinema-copy p + p {
@@ -529,16 +536,19 @@ html, body {
   margin: 0 auto 0.85rem;
   max-width: 26ch;
   text-align: center;
+  text-wrap: balance;
 }
 
 .cinema-section__lead {
   font-family: var(--font-body);
   color: var(--text-muted);
   font-size: 1.15rem;
-  line-height: 1.55;
-  max-width: 48ch;
+  line-height: 1.6;
+  max-width: var(--max-lead);
   margin: 0 auto 2rem;
   text-align: center;
+  font-style: italic;
+  text-wrap: pretty;
 }
 
 .cinema-cards {
@@ -630,6 +640,7 @@ html, body {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.55s ease, transform 0.55s ease, border-color 0.35s ease, padding-left 0.4s ease;
+  min-height: var(--row-min-h);
 }
 
 .cinema-system__row.is-revealed {
@@ -675,6 +686,10 @@ html, body {
 
 .cinema-copy__actions--underworld {
   margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  :root { --row-min-h: 64px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -844,6 +859,7 @@ body[data-cinema-leaving="true"] .cinema-header__cta:hover {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
+  padding-block: var(--section-pad-block);
 }
 
 .cinema-section__inner {
@@ -858,12 +874,13 @@ body[data-cinema-leaving="true"] .cinema-header__cta:hover {
 }
 
 .cinema-section__lead {
-  max-width: 52ch;
+  max-width: var(--max-lead);
   margin: 0 auto 2.4rem;
   font-size: 1.15rem;
   line-height: 1.6;
   color: var(--text-muted);
   font-style: italic;
+  text-wrap: pretty;
 }
 
 .cinema-system--post {
@@ -960,6 +977,8 @@ body[data-cinema-leaving="true"] .cinema-header__cta:hover {
   display: grid;
   gap: 1.4rem;
   margin-top: 2.6rem;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
 }
 @media (min-width: 900px) {
   .contact-cta-grid { grid-template-columns: 1fr 1fr; }

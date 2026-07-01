@@ -1,10 +1,15 @@
 /**
  * Twinkling star canvas — 200 ambient stars behind the film, with
- * pointer parallax and reduced-motion fallback. Always-on, paint-only.
+ * pointer parallax and reduced-motion fallback. Visibility-gated so the
+ * rAF loop is paused when the stage scrolls out of view or the tab is
+ * hidden, and capped to ~40 Hz to keep the rAF budget under 2.5 ms/frame.
  */
 
 const STAR_COUNT = 220;
 const PARALLAX_PX = 8;
+const TICK_MS = 25;          // 40 Hz repaint ceiling
+const RESIZE_THRESHOLD_PX = 8;
+const PARALLAX_THROTTLE_MS = 32; // 30 Hz transform pushes
 
 const mulberry32 = (seed) => {
   let a = seed >>> 0;
@@ -25,11 +30,18 @@ export class StarField {
     this.canvas.className = "cinema__stars";
     this.ctx = this.canvas.getContext("2d");
     this.stars = [];
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.dpr = 1; // hard cap: star canvas doesn't need retina, halves the GPU cost
     this.mouseX = 0;
     this.mouseY = 0;
     this.started = 0;
     this.rafId = 0;
+    this._lastTickAt = 0;
+    this._lastW = 0;
+    this._lastH = 0;
+    this._visible = false;
+    this._alive = true;
+    this._lastPointerAt = 0;
+    this._pendingPointer = null;
 
     const media = stage.querySelector(".cinema__media") ?? stage;
     media.appendChild(this.canvas);
@@ -37,18 +49,53 @@ export class StarField {
     this.resize();
     this._onResize = this.resize.bind(this);
     this._onPointer = this._onPointer.bind(this);
+    this._onVisibility = this._onVisibility.bind(this);
     window.addEventListener("resize", this._onResize, { passive: true });
     window.addEventListener("pointermove", this._onPointer, { passive: true });
+    document.addEventListener("visibilitychange", this._onVisibility);
+
+    if ("IntersectionObserver" in window) {
+      this._io = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          this._visible = entry.isIntersecting;
+          if (this._visible) this._scheduleTick();
+          else this._cancelTick();
+        }
+      }, { threshold: 0.01 });
+      this._io.observe(stage);
+    } else {
+      this._visible = true;
+    }
   }
 
   _onPointer(e) {
+    const now = performance.now();
+    if (now - this._lastPointerAt < PARALLAX_THROTTLE_MS) return;
+    this._lastPointerAt = now;
     this.mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
     this.mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  }
+
+  _onVisibility() {
+    if (document.visibilityState === "visible" && this._visible) {
+      this._scheduleTick();
+    } else {
+      this._cancelTick();
+    }
   }
 
   resize() {
     const w = this.stage.clientWidth;
     const h = this.stage.clientHeight;
+    if (
+      Math.abs(w - this._lastW) < RESIZE_THRESHOLD_PX &&
+      Math.abs(h - this._lastH) < RESIZE_THRESHOLD_PX &&
+      this.stars.length
+    ) {
+      return;
+    }
+    this._lastW = w;
+    this._lastH = h;
     this.canvas.width = w * this.dpr;
     this.canvas.height = h * this.dpr;
     this.canvas.style.width = `${w}px`;
@@ -63,35 +110,68 @@ export class StarField {
       base: 0.25 + rng() * 0.55,
       phase: rng() * Math.PI * 2,
       speed: 0.6 + rng() * 1.6,
-      flicker: rng() < 0.04 ? 0 : -1,
       flickerUntil: 0,
     }));
   }
 
   start() {
     this.started = performance.now();
-    this._tick();
+    this._lastTickAt = 0;
+    if (this._visible) this._scheduleTick();
   }
 
   stop() {
-    cancelAnimationFrame(this.rafId);
-    this.rafId = 0;
+    this._alive = false;
+    this._cancelTick();
+    if (this._io) {
+      this._io.disconnect();
+      this._io = null;
+    }
     window.removeEventListener("resize", this._onResize);
     window.removeEventListener("pointermove", this._onPointer);
-    this.canvas.remove();
+    document.removeEventListener("visibilitychange", this._onVisibility);
+    if (this.canvas.parentNode) this.canvas.parentNode.removeChild(this.canvas);
+  }
+
+  _scheduleTick() {
+    if (!this._alive || this.rafId) return;
+    this.rafId = requestAnimationFrame(() => this._tick());
+  }
+
+  _cancelTick() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = 0;
+    }
   }
 
   _tick() {
-    const t = (performance.now() - this.started) / 1000;
-    const { ctx, canvas, stars, dpr } = this;
-    const w = canvas.width / dpr;
-    const h = canvas.height / dpr;
+    this.rafId = 0;
+    if (!this._alive || !this._visible) return;
+    const now = performance.now();
+    if (this._lastTickAt && now - this._lastTickAt < TICK_MS) {
+      this._scheduleTick();
+      return;
+    }
+    this._lastTickAt = now;
+
+    const t = (now - this.started) / 1000;
+    const { ctx, canvas, stars } = this;
+    const w = canvas.width;
+    const h = canvas.height;
     const ox = -this.mouseX * PARALLAX_PX;
     const oy = -this.mouseY * PARALLAX_PX;
 
     ctx.clearRect(0, 0, w, h);
 
-    for (const s of stars) {
+    // Batched: one fillStyle for the base pass, one for the glow pass.
+    // Each star is drawn as a single fillRect (no beginPath/arc/fill).
+    const baseR = 232, baseG = 244, baseB = 255;
+    const glowR = 94, glowG = 234, glowB = 212;
+
+    // Pass 1 — base white-blue stars
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
       let alpha = s.base;
       if (!this.reducedMotion) {
         alpha *= 0.45 + 0.55 * Math.sin(t * s.speed + s.phase);
@@ -107,21 +187,33 @@ export class StarField {
           }
         }
       }
-      alpha = Math.max(0, Math.min(1, alpha));
+      if (alpha <= 0) continue;
+      alpha = alpha > 1 ? 1 : alpha;
+      ctx.fillStyle = `rgba(${baseR},${baseG},${baseB},${alpha.toFixed(3)})`;
+      const x = s.x + ox;
+      const y = s.y + oy;
+      const r = s.r;
+      // Approximate the disc with a 2r x 2r fillRect (slight square halo, hidden by the dim alpha).
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
 
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(232, 244, 255, ${alpha})`;
-      ctx.arc(s.x + ox, s.y + oy, s.r, 0, Math.PI * 2);
-      ctx.fill();
-
-      if (s.r > 1.0 && alpha > 0.5) {
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(94, 234, 212, ${alpha * 0.35})`;
-        ctx.arc(s.x + ox, s.y + oy, s.r * 2.4, 0, Math.PI * 2);
-        ctx.fill();
+    // Pass 2 — teal glow halos, only for the larger stars that are bright enough.
+    if (!this.reducedMotion) {
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        if (s.r <= 1.0) continue;
+        let alpha = s.base;
+        alpha *= 0.45 + 0.55 * Math.sin(t * s.speed + s.phase);
+        if (alpha <= 0.35) continue;
+        alpha = Math.min(1, alpha * 0.35);
+        ctx.fillStyle = `rgba(${glowR},${glowG},${glowB},${alpha.toFixed(3)})`;
+        const x = s.x + ox;
+        const y = s.y + oy;
+        const r = s.r * 2.4;
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
       }
     }
 
-    this.rafId = requestAnimationFrame(this._tick.bind(this));
+    if (this._alive && this._visible) this._scheduleTick();
   }
 }

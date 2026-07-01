@@ -213,6 +213,10 @@ function swooshTo(target) {
   state.playing = true;
   if (cinema) cinema.classList.add("is-playing");
 
+  // Keep the destination frame hot in the LRU cache so the swoosh lands on
+  // a blit, not a WebP decode + upload.
+  window.__scrubber?.prewarm?.([to]);
+
   const tween = { t: 0 };
   const dur = reducedMotion ? 0.01 : SWOOSH_MS / 1000;
 
@@ -249,6 +253,8 @@ function swooshTo(target) {
       const sl = starsLayer();
       if (sl) sl.style.opacity = String(0.55 + state.current * 0.2);
       updateStationDots();
+      // Evict frames outside the [current ± 80] window.
+      window.__scrubber?.releaseOutOfWindow?.(to);
       // Fade in the destination copy only after the camera lands.
       fadeInCopy(state.current, 0.65);
       // Progress bar advances to the next station (1/3 -> 2/3 -> 1).
@@ -303,6 +309,9 @@ function enterProblem() {
   // station rail, the scrim, and the pinned cinema. Scroll to the first
   // post-cinematic section (the new #problem).
   document.body.setAttribute("data-cinema-leaving", "true");
+  // Tear down the star canvas so it doesn't keep running its rAF loop
+  // while the user is reading the post-cinematic sections.
+  window.__stars?.stop?.();
   gsap.to(window, { duration: 1.2, ease: "power2.inOut", scrollTo: { y: "#problem", autoKill: false } });
 }
 
@@ -379,6 +388,7 @@ async function init() {
   let stars = null;
   if (stage) {
     stars = new StarField(stage, { reducedMotion });
+    window.__stars = stars;
     stars.start();
   }
 
@@ -401,6 +411,12 @@ async function init() {
   }
 
   scrubber.resize();
+
+  // Pre-rasterize the three hero landing frames so the first paint and
+  // the first ArrowDown are both zero-decode. The next-station frame is
+  // prewarmed on each swoosh onStart.
+  scrubber.prewarm(STATIONS.map((s) => s.heroFrame));
+  scrubber.releaseOutOfWindow(STATIONS[0].heroFrame);
 
   setProgress(1);
   loader?.classList.add("is-done");
