@@ -49,15 +49,9 @@ function buildSectionTimeline(section) {
   if (h2) {
     const hasWords = h2.textContent.trim().length > 0;
     if (hasWords) {
-      // Walk the original child nodes to build a flat token list, so we
-      // preserve <br> boundaries and counter spans without losing their
-      // attributes. Each token is one of:
-      //   { type: 'br' }
-      //   { type: 'text', text: 'word' }
-      //   { type: 'counter', count: '270', placeholder: '0' }
+      // Build a flat token list by walking the H2's direct children once.
+      // Tokens preserve <br> boundaries and any data-count counter spans.
       const tokens = [];
-      const walker = document.createTreeWalker(h2, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null);
-      let node = h2.firstChild;
       const pushText = (txt) => {
         const parts = txt.split(/(\s+)/);
         parts.forEach((p) => {
@@ -66,7 +60,7 @@ function buildSectionTimeline(section) {
           else tokens.push({ type: "text", text: p });
         });
       };
-      while (node) {
+      Array.from(h2.childNodes).forEach((node) => {
         if (node.nodeType === Node.TEXT_NODE) {
           pushText(node.textContent);
         } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -76,16 +70,27 @@ function buildSectionTimeline(section) {
             tokens.push({
               type: "counter",
               count: node.getAttribute("data-count"),
-              text: node.textContent,
             });
           } else {
-            // Any other element: capture its inner text and recurse for
-            // counters (none expected here).
-            pushText(node.textContent);
+            // Any other element (e.g. <em>) — capture its visible text and
+            // recurse for nested counters.
+            const recurse = (n) => {
+              if (n.nodeType === Node.TEXT_NODE) return pushText(n.textContent);
+              if (n.nodeType === Node.ELEMENT_NODE) {
+                if (n.tagName === "BR") return tokens.push({ type: "br" });
+                if (n.hasAttribute && n.hasAttribute("data-count")) {
+                  return tokens.push({
+                    type: "counter",
+                    count: n.getAttribute("data-count"),
+                  });
+                }
+              }
+              Array.from(n.childNodes).forEach(recurse);
+            };
+            recurse(node);
           }
         }
-        node = walker.nextNode();
-      }
+      });
 
       // Reset H2 and re-stream tokens into cinema-word spans.
       h2.innerHTML = "";
@@ -154,13 +159,18 @@ function buildSectionTimeline(section) {
   if (midCta) tl.from(midCta, { opacity: 0, y: 12, duration: 0.55, ease: "power2.out" }, 0.6);
   if (urgency) tl.from(urgency, { opacity: 0, y: 10, duration: 0.55, ease: "power2.out" }, 0.7);
 
-  // Stat counters ride the same trigger; they count once visible.
+  // Stat counters ride the same trigger; they count once visible. Re-query
+  // inside onEnter because the H2 word reveal may have replaced the
+  // original counter spans with cinema-word__inner spans that carry the
+  // data-count attribute.
   if (counters.length) {
     ScrollTrigger.create({
       trigger: section,
       start: "top 82%",
       once: true,
-      onEnter: () => counters.forEach((c) => animateCounter(c)),
+      onEnter: () => {
+        section.querySelectorAll("[data-count]").forEach((c) => animateCounter(c));
+      },
     });
   }
 }
