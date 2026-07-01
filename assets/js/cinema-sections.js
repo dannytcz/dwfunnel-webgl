@@ -47,75 +47,100 @@ function buildSectionTimeline(section) {
 
   if (eyebrow) tl.from(eyebrow, { opacity: 0, y: 12, duration: 0.5, ease: "power2.out" }, 0);
   if (h2) {
-    // Skip the word reveal if this h2 is empty (or has no real words).
     const hasWords = h2.textContent.trim().length > 0;
     if (hasWords) {
-      // Capture counters BEFORE we wipe innerHTML, then re-inject them as
-      // their own word span so the counter animation can still find them.
-      const counterEls = Array.from(h2.querySelectorAll("[data-count]"));
-      const counterValues = counterEls.map((c) => ({
-        count: c.getAttribute("data-count"),
-        text: c.textContent,
-      }));
+      // Walk the original child nodes to build a flat token list, so we
+      // preserve <br> boundaries and counter spans without losing their
+      // attributes. Each token is one of:
+      //   { type: 'br' }
+      //   { type: 'text', text: 'word' }
+      //   { type: 'counter', count: '270', placeholder: '0' }
+      const tokens = [];
+      const walker = document.createTreeWalker(h2, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null);
+      let node = h2.firstChild;
+      const pushText = (txt) => {
+        const parts = txt.split(/(\s+)/);
+        parts.forEach((p) => {
+          if (p === "") return;
+          if (/^\s+$/.test(p)) tokens.push({ type: "space", text: p });
+          else tokens.push({ type: "text", text: p });
+        });
+      };
+      while (node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          pushText(node.textContent);
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName === "BR") {
+            tokens.push({ type: "br" });
+          } else if (node.hasAttribute && node.hasAttribute("data-count")) {
+            tokens.push({
+              type: "counter",
+              count: node.getAttribute("data-count"),
+              text: node.textContent,
+            });
+          } else {
+            // Any other element: capture its inner text and recurse for
+            // counters (none expected here).
+            pushText(node.textContent);
+          }
+        }
+        node = walker.nextNode();
+      }
 
-      // Tokenise the visible text, preserving <br> boundaries.
-      const tokens = h2.innerHTML.split(/(<br\s*\/?>)/i);
+      // Reset H2 and re-stream tokens into cinema-word spans.
+      h2.innerHTML = "";
       const wordSpans = [];
 
-      // Reset the H2, then re-stream tokens.
-      h2.innerHTML = "";
-      let counterIdx = 0;
-
-      const wrapWord = (text) => {
+      const wrap = (inner) => {
         const span = document.createElement("span");
         span.className = "cinema-word";
         span.style.display = "inline-block";
         span.style.overflow = "hidden";
         span.style.verticalAlign = "bottom";
         span.style.lineHeight = "1.05";
-        const inner = document.createElement("span");
-        inner.className = "cinema-word__inner";
-        inner.style.display = "inline-block";
-        inner.style.transform = "translateY(110%)";
-        inner.style.willChange = "transform";
-        // If the text starts with a numeric placeholder that matches a
-        // counter, render it as a counter span instead of plain text.
-        const matched = counterValues[counterIdx];
-        if (matched && text.trim() === matched.text) {
-          inner.setAttribute("data-count", matched.count);
-          inner.textContent = "0";
-          counterIdx++;
-        } else {
-          inner.textContent = text;
-        }
         span.appendChild(inner);
         h2.appendChild(span);
         return inner;
       };
 
+      const newInner = (text, counterCount) => {
+        const inner = document.createElement("span");
+        inner.className = "cinema-word__inner";
+        inner.style.display = "inline-block";
+        inner.style.transform = "translateY(110%)";
+        inner.style.willChange = "transform";
+        if (counterCount != null) {
+          inner.setAttribute("data-count", counterCount);
+          inner.textContent = "0";
+        } else {
+          inner.textContent = text;
+        }
+        return inner;
+      };
+
       tokens.forEach((tok) => {
-        if (!tok) return;
-        if (/<br\s*\/?>/i.test(tok)) {
+        if (tok.type === "br") {
           h2.appendChild(document.createElement("br"));
           return;
         }
-        // Split by whitespace, keep separators.
-        const parts = tok.split(/(\s+)/);
-        parts.forEach((p) => {
-          if (p === "") return;
-          if (/^\s+$/.test(p)) {
-            h2.appendChild(document.createTextNode(p));
-            return;
-          }
-          wordSpans.push(wrapWord(p));
-        });
+        if (tok.type === "space") {
+          h2.appendChild(document.createTextNode(tok.text));
+          return;
+        }
+        if (tok.type === "counter") {
+          wordSpans.push(wrap(newInner(null, tok.count)));
+          return;
+        }
+        wordSpans.push(wrap(newInner(tok.text, null)));
       });
 
-      tl.to(
-        wordSpans,
-        { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.04 },
-        0.08
-      );
+      if (wordSpans.length) {
+        tl.to(
+          wordSpans,
+          { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.04 },
+          0.08
+        );
+      }
     }
   }
   if (lead) tl.from(lead, { opacity: 0, y: 18, duration: 0.6, ease: "power2.out" }, 0.28);
