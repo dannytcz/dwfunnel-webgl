@@ -9,7 +9,7 @@ page.on("pageerror", (e) => errs.push(`[pageerror] ${e.message}`));
 page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.text()}`); });
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
-await page.waitForSelector("#loader.is-done", { timeout: 120000 });
+await page.waitForSelector("#loader.is-done", { state: "attached", timeout: 120000 });
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(5400); // loader 2s + intro 4s + hero fade-in 0.9s + buffer
 
@@ -52,9 +52,12 @@ const snap = {
   heroP: await inspect("#hero-copy-block p:not(.cinema-copy__eyebrow):not(.cinema-copy__lede)"),
   heroButton: await inspect("#hero-copy-block .cinema-btn--primary"),
   problemH2: await inspect("#problem h2"),
-  cardH3: await inspect("#problem .cinema-card h3"),
-  cardNum: await inspect("#problem .cinema-card__num"),
+  problemRowH3: await inspect("#problem .cinema-system__row h3"),
+  problemRowNum: await inspect("#problem .cinema-system__num"),
   stationDot: await inspect(".cinema-stations__dot"),
+  midCta: await inspect(".cinema-section__cta-mid .cinema-btn--ghost"),
+  contactCardH3: await inspect("#work-with-us .contact-cta h3"),
+  contactLabel: await inspect(".contact-cta__label"),
 };
 
 console.log(JSON.stringify({ errs, fontsReady, snap }, null, 2));
@@ -89,13 +92,16 @@ const checks = {
   ledeNotItalic: snap.heroLede?.fontStyle === "italic", // the lede IS italic — guard it explicitly
   btnNotItalic: snap.heroButton?.fontStyle === "normal",
   eyebrowItalic: snap.heroEyebrow?.fontStyle === "italic",
-  cardH3NotItalic: snap.cardH3?.fontStyle === "normal",
-  cardNumSmallCaps: snap.cardNum?.fontVariant === "small-caps",
+  cardH3NotItalic: snap.problemRowH3?.fontStyle === "normal",
+  cardNumSmallCaps: snap.problemRowNum?.fontVariant === "small-caps",
   stationDotCinzel: /Cinzel/i.test(snap.stationDot?.fontFamily || ""),
   heroBlockCentered: Math.abs(heroBlock.cx - 640) < 16,
   noShizuruLeak: !/Shizuru|Cormorant/i.test(JSON.stringify(snap)),
   heroScrimPresent: progressAndScrim.scrim > 0.25,
   heroProgressStarted: progressAndScrim.progressScale > 0.02,
+  midCtaBtnStyle: snap.midCta !== null,
+  contactLabelItalic: snap.contactLabel?.fontStyle === "italic",
+  contactCardH3NotItalic: snap.contactCardH3?.fontStyle === "normal",
 };
 
 console.log("\n--- TYPOGRAPHY UAT ---");

@@ -299,7 +299,11 @@ function enterProblem() {
   if (sl) sl.style.opacity = "0";
   if (flash) flash.style.opacity = "0";
   cinema?.classList.add("is-leaving");
-  gsap.to(window, { duration: 1.4, ease: "power2.inOut", scrollTo: { y: "#problem", autoKill: false } });
+  // Flag the cinematic-leaving state so CSS fades out the progress bar, the
+  // station rail, the scrim, and the pinned cinema. Scroll to the first
+  // post-cinematic section (the new #problem).
+  document.body.setAttribute("data-cinema-leaving", "true");
+  gsap.to(window, { duration: 1.2, ease: "power2.inOut", scrollTo: { y: "#problem", autoKill: false } });
 }
 
 function isInteractiveTarget(t) {

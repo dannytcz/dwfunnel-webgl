@@ -181,7 +181,7 @@ html, body {
   z-index: 4;
   pointer-events: none;
   opacity: var(--scrim-opacity);
-  transition: opacity 0.45s ease;
+  transition: opacity 0.45s ease, background 0.45s ease;
   background:
     linear-gradient(to bottom,
       rgba(6, 16, 24, 0.78) 0%,
@@ -190,6 +190,18 @@ html, body {
       rgba(6, 16, 24, 0.92) 100%),
     radial-gradient(ellipse 80% 70% at 50% 55%,
       transparent 25%, rgba(6, 16, 24, 0.55) 100%);
+}
+
+/* Underworld: dense central radial wash so the bright teal beam in the film
+   can no longer punch through the copy column. Same --scrim-opacity,
+   different background. */
+.cinema[data-station-active="underworld"] .cinema__stage::after {
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 52%,
+      rgba(6, 16, 24, 0.94) 0%,
+      rgba(6, 16, 24, 0.78) 30%,
+      rgba(6, 16, 24, 0.45) 65%,
+      rgba(6, 16, 24, 0.18) 100%);
 }
 
 .cinema__media {
@@ -793,4 +805,215 @@ html, body {
   transition: transform 4s cubic-bezier(0.65, 0, 0.35, 1);
   background: linear-gradient(90deg, var(--accent-soft), var(--accent));
   box-shadow: 0 0 12px var(--accent-dim);
+}
+
+/* Cinematic chrome fades out as soon as we leave the cinematic.
+   Triggered by body[data-cinema-leaving="true"] from enterProblem(). */
+.cinema-progress,
+.cinema-stations,
+.cinema__stage::after { transition: opacity 0.6s ease, visibility 0.6s; }
+body[data-cinema-leaving="true"] .cinema-progress,
+body[data-cinema-leaving="true"] .cinema-stations,
+body[data-cinema-leaving="true"] .cinema__stage::after {
+  opacity: 0;
+  pointer-events: none;
+}
+body[data-cinema-leaving="true"] .cinema-pin {
+  visibility: hidden;
+  transition-delay: 0.6s;
+}
+
+/* Once we have left the cinematic, the sticky header treatment relaxes:
+   the CTA pill drops to a low-key ghost and returns on hover. */
+body[data-cinema-leaving="true"] .cinema-header__cta {
+  opacity: 0.7;
+  background: transparent;
+  backdrop-filter: none;
+}
+body[data-cinema-leaving="true"] .cinema-header__cta:hover {
+  opacity: 1;
+  background: rgba(6, 16, 24, 0.45);
+}
+.cinema-header__cta { transition: opacity 0.4s ease, background 0.3s ease, border-color 0.3s ease; }
+
+/* ── Post-cinematic sections ──
+   Each .cinema-section is a full-viewport stop with its own editorial stack.
+   Background: var(--bg) so the retired pin does not bleed through. */
+
+.cinema-section {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+.cinema-section__inner {
+  max-width: 64rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.cinema-section--problem,
+.cinema-section--contact {
+  background: var(--bg);
+}
+
+.cinema-section__lead {
+  max-width: 52ch;
+  margin: 0 auto 2.4rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.cinema-system--post {
+  margin-top: 2rem;
+  border-top: 1px solid rgba(94, 234, 212, 0.22);
+}
+
+.cinema-section__cta-mid {
+  margin-top: 2.8rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Platforms list (single column editorial) */
+.platforms-list {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(94, 234, 212, 0.22);
+}
+.platforms-list__item {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) 1fr;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid rgba(94, 234, 212, 0.12);
+  text-align: left;
+  transition: background 0.2s ease, padding-left 0.25s ease;
+}
+.platforms-list__item:hover {
+  padding-left: 0.5rem;
+  background: rgba(94, 234, 212, 0.04);
+}
+.platforms-list__item strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+.platforms-list__item span {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Testimonials */
+.testimonials-list {
+  list-style: none;
+  margin: 2.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.4rem;
+}
+@media (min-width: 900px) {
+  .testimonials-list { grid-template-columns: 1fr 1fr 1fr; }
+}
+.testimonial {
+  background: rgba(6, 16, 24, 0.55);
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  border-radius: 12px;
+  padding: 1.5rem 1.4rem;
+  text-align: left;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.testimonial:hover {
+  transform: translateY(-2px);
+  border-color: rgba(94, 234, 212, 0.45);
+}
+.testimonial blockquote {
+  margin: 0;
+}
+.testimonial p {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0 0 1rem;
+}
+.testimonial footer {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  font-variant: small-caps;
+}
+
+/* Contact CTA grid */
+.contact-cta-grid {
+  display: grid;
+  gap: 1.4rem;
+  margin-top: 2.6rem;
+}
+@media (min-width: 900px) {
+  .contact-cta-grid { grid-template-columns: 1fr 1fr; }
+}
+.contact-cta {
+  background: rgba(6, 16, 24, 0.55);
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  border-radius: 14px;
+  padding: 2rem 1.8rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.contact-cta:hover {
+  transform: translateY(-3px);
+  border-color: rgba(94, 234, 212, 0.55);
+  box-shadow: 0 14px 36px rgba(45, 212, 191, 0.18);
+}
+.contact-cta__label {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  letter-spacing: 0.24em;
+  font-style: italic;
+  color: var(--accent);
+  margin: 0;
+}
+.contact-cta h3 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text);
+}
+.contact-cta p {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.contact-cta .cinema-btn {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+.contact-cta__urgency {
+  margin: 2.2rem auto 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  max-width: 40ch;
 }

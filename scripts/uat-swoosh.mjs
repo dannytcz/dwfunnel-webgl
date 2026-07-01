@@ -9,7 +9,7 @@ page.on("pageerror", (e) => errs.push(`[pageerror] ${e.message}`));
 page.on("console", (m) => { if (m.type() === "error") errs.push(`[console] ${m.text()}`); });
 
 await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 120000 });
-await page.waitForSelector("#loader.is-done", { timeout: 120000 });
+await page.waitForSelector("#loader.is-done", { state: "attached", timeout: 120000 });
 await page.waitForTimeout(5400); // loader 2s + intro 4s + hero fade-in 0.9s + buffer
 
 const snap = (label) =>
