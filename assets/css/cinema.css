@@ -828,47 +828,11 @@ html, body {
   box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.14);
 }
 
-/* Cinematic chrome fades out as soon as we leave the cinematic.
-   Page nav stays visible for full-journey scroll. */
-.cinema__stage::after { transition: opacity 0.6s ease, visibility 0.6s; }
-body[data-cinema-leaving="true"] .cinema__stage::after {
-  opacity: 0;
-  pointer-events: none;
-}
-body[data-cinema-leaving="true"] .cinema-pin {
-  visibility: hidden;
-  pointer-events: none;
-  transition-delay: 0.5s;
-}
-
-/* Retire the pin from document flow after the handoff scroll completes so
-   the post-cinematic sections are not preceded by a dead 100dvh gap. */
-.cinema-pin--retired {
-  position: absolute;
-  width: 100%;
-  height: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* Once we have left the cinematic, the sticky header treatment relaxes:
-   the CTA pill drops to a low-key ghost and returns on hover. */
-body[data-cinema-leaving="true"] .cinema-header__cta {
-  opacity: 0.7;
-  background: transparent;
-  backdrop-filter: none;
-}
-body[data-cinema-leaving="true"] .cinema-header__cta:hover {
-  opacity: 1;
-  background: rgba(6, 16, 24, 0.45);
-}
 .cinema-header__cta { transition: opacity 0.4s ease, background 0.3s ease, border-color 0.3s ease; }
 
 /* ── Post-cinematic sections ──
    Each .cinema-section is a full-viewport stop with its own editorial stack.
-   Background: var(--bg) so the retired pin does not bleed through. */
+   Background: var(--bg) — full editorial stack per section. */
 
 .cinema-section {
   background: var(--bg);
@@ -907,6 +871,64 @@ body[data-cinema-leaving="true"] .cinema-header__cta:hover {
   margin-top: 2.8rem;
   display: flex;
   justify-content: center;
+}
+
+.agitate-block {
+  margin-top: 3rem;
+  padding-top: 2.4rem;
+  border-top: 1px solid rgba(94, 234, 212, 0.18);
+}
+
+.agitate-block h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 500;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.agitate-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.agitate-list__item {
+  padding: 0.85rem 1rem;
+  border-left: 2px solid rgba(94, 234, 212, 0.35);
+  background: rgba(6, 16, 24, 0.45);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.transform-list {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.transform-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 8px;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.transform-list__item::before {
+  content: "→";
+  color: var(--accent);
+  flex-shrink: 0;
+  font-family: var(--font-display);
 }
 
 /* Platforms list (single column editorial) */

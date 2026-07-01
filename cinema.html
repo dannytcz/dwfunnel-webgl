@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=22" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=23" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -37,8 +37,10 @@
     <button type="button" class="page-nav__dot" data-nav-id="underworld" aria-label="Underworld"></button>
     <button type="button" class="page-nav__dot" data-nav-id="problem" aria-label="Problem"></button>
     <button type="button" class="page-nav__dot" data-nav-id="build" aria-label="Build"></button>
+    <button type="button" class="page-nav__dot" data-nav-id="transform" aria-label="Transform"></button>
     <button type="button" class="page-nav__dot" data-nav-id="platforms" aria-label="Platforms"></button>
     <button type="button" class="page-nav__dot" data-nav-id="how-it-works" aria-label="How it works"></button>
+    <button type="button" class="page-nav__dot" data-nav-id="process" aria-label="Process"></button>
     <button type="button" class="page-nav__dot" data-nav-id="proof" aria-label="Proof"></button>
     <button type="button" class="page-nav__dot" data-nav-id="testimonials" aria-label="Testimonials"></button>
     <button type="button" class="page-nav__dot" data-nav-id="work-with-us" aria-label="Work with us"></button>
@@ -46,8 +48,7 @@
 
   <!-- =======================================================
        CINEMATIC — Hero / Passage / Underworld
-       Locked. User controls pace, not the camera.
-       Click anywhere (or wheel-down / Down arrow) to advance.
+       Native scroll: pin + scrub through three acts, then release.
        ======================================================= -->
   <div id="cinema-pin" class="cinema-pin">
     <section id="cinema" class="cinema" aria-label="Cinematic sequence">
@@ -118,23 +119,55 @@
 
         <div class="cinema-copy__actions cinema-copy__actions--underworld">
           <a href="#work-with-us" class="cinema-btn cinema-btn--primary">Send Me My Funnel Plan</a>
-          <button id="cinema-enter" class="cinema-btn cinema-btn--ghost" type="button">Continue Reading</button>
+          <a href="#problem" class="cinema-btn cinema-btn--ghost">See Why Pages Fail</a>
         </div>
       </div>
     </section>
   </div>
 
   <!-- =======================================================
-       POST-CINEMATIC — problem → build → platforms →
-       how it works → proof → testimonials → work with us.
-       Sections cut for length: strategy, transform, process.
+       POST-CINEMATIC — problem → build → transform → platforms
+       → how it works → process → proof → testimonials → work with us.
        ======================================================= -->
 
   <section id="problem" class="cinema-section cinema-section--problem" aria-label="Problem">
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">The Funnel Leak</p>
       <h2>You've Tried Templates, Courses, ChatGPT…<br/>Still No Sales?</h2>
-      <p class="cinema-section__lead">Built for busy creators who want results, not overwhelm. Most funnels fail because they're built the hard way — with guesswork, bloated templates, and too many tabs open.</p>
+      <p class="cinema-section__lead">Built for busy creators who want results, not overwhelm. You have traffic. You have a page. The page does not move the visitor from curious to booked — so every click evaporates. Forget about learning funnels… let me build you one that works.</p>
+      <ol class="cinema-system cinema-system--post" id="problem-system">
+        <li class="cinema-system__row" data-row="1">
+          <span class="cinema-system__num">01</span>
+          <div class="cinema-system__body">
+            <h3>Template Trap</h3>
+            <p>The page looks finished, but reads like every other coach or creator in your niche. Visitors skim, recognise the template, and leave.</p>
+          </div>
+        </li>
+        <li class="cinema-system__row" data-row="2">
+          <span class="cinema-system__num">02</span>
+          <div class="cinema-system__body">
+            <h3>Weak Journey</h3>
+            <p>No clear next step, no proof before the fold, no rhythm from headline to CTA. Visitors bounce because nothing tells them what to do.</p>
+          </div>
+        </li>
+        <li class="cinema-system__row" data-row="3">
+          <span class="cinema-system__num">03</span>
+          <div class="cinema-system__body">
+            <h3>Lost Leads</h3>
+            <p>People click, hesitate, leave, and nothing follows up. You lose the click the moment the tab closes.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="agitate-block">
+        <h3>Still Duct-Taping Your Funnel Together?</h3>
+        <ul class="agitate-list">
+          <li class="agitate-list__item">You bought the course, copied the template, asked ChatGPT — and still wake up to an empty calendar.</li>
+          <li class="agitate-list__item">Your page looks fine in preview mode. Real visitors scroll once, feel nothing, and vanish.</li>
+          <li class="agitate-list__item">Every lead that ghosts you is money you already paid to acquire. The leak is not traffic — it is the funnel.</li>
+        </ul>
+      </div>
+
       <div class="cinema-section__cta-mid">
         <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
       </div>
@@ -145,30 +178,49 @@
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">What I Build</p>
       <h2>Here's What I Can Build For You.<br/>(No Template, Just Results.)</h2>
-      <p class="cinema-section__lead">Not sure what fits? I'll custom-fit the funnel to your offer — just hit me up.</p>
+      <p class="cinema-section__lead">One offer, one page, one machine behind it. Pages, emails, automations, and follow-up — wired as one system on the platform you already use. No duct tape, no eleven tabs open.</p>
       <ol class="cinema-system cinema-system--post">
         <li class="cinema-system__row" data-row="1">
           <span class="cinema-system__num">i.</span>
           <div class="cinema-system__body">
             <h3>The Page</h3>
-            <p>Cinematic. Fast. Clear about your offer. Mobile-first.</p>
+            <p>Cinematic, fast, and clear about the offer. Built to load in under a second and read on a phone first.</p>
           </div>
         </li>
         <li class="cinema-system__row" data-row="2">
           <span class="cinema-system__num">ii.</span>
           <div class="cinema-system__body">
             <h3>The Sequence</h3>
-            <p>Confirmation, reminder, recovery. Three emails that close.</p>
+            <p>Confirmation, reminder, recovery. Three emails that move a booked call from maybe to confirmed.</p>
           </div>
         </li>
         <li class="cinema-system__row" data-row="3">
           <span class="cinema-system__num">iii.</span>
           <div class="cinema-system__body">
             <h3>The Follow-Up</h3>
-            <p>Automated replies and reminders. Warm leads, no chasing.</p>
+            <p>Automated replies and reminders that keep warm leads moving toward booking — without you chasing.</p>
           </div>
         </li>
       </ol>
+      <div class="cinema-section__cta-mid">
+        <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="transform" class="cinema-section" aria-label="Transform">
+    <div class="cinema-section__inner">
+      <p class="cinema-copy__eyebrow">Imagine How It'd Feel</p>
+      <h2>Strangers Stop Bouncing.<br/>Leads Stop Ghosting. You Stop Hoping.</h2>
+      <p class="cinema-section__lead">Picture opening your calendar and seeing calls already booked — while you were offline. That is what a funnel built for conversion feels like.</p>
+      <ul class="transform-list">
+        <li class="transform-list__item">A page you are proud to send in DMs — one that matches your price before they read a word.</li>
+        <li class="transform-list__item">Proof placed before the fold, so visitors trust you before they decide.</li>
+        <li class="transform-list__item">One calendar, one click — from curious stranger to confirmed call.</li>
+        <li class="transform-list__item">Three emails and a WhatsApp reminder that turn a maybe into a yes.</li>
+        <li class="transform-list__item">A weekly number that tells you what is working — not another dashboard you ignore.</li>
+        <li class="transform-list__item">Enquiries that follow up themselves, so you stop losing leads you already paid for.</li>
+      </ul>
       <div class="cinema-section__cta-mid">
         <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
       </div>
@@ -178,13 +230,14 @@
   <section id="platforms" class="cinema-section" aria-label="Platforms">
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">Where It Lives</p>
-      <h2>Built On The Platform You Already Use.</h2>
-      <p class="cinema-section__lead">GoHighLevel, ClickFunnels, Systeme.io, WordPress. I match you with the one that plays nicest with your goals.</p>
+      <h2>Built On The Platform You Already Trust.</h2>
+      <p class="cinema-section__lead">GoHighLevel, ClickFunnels, Systeme.io, WordPress, or a custom cinematic site. You bring the stack, we bring the engine.</p>
       <ul class="platforms-list">
-        <li class="platforms-list__item"><strong>GoHighLevel</strong><span>All-in-one CRM, pipelines, automations.</span></li>
-        <li class="platforms-list__item"><strong>ClickFunnels</strong><span>Funnels, A/B tests, upsells.</span></li>
-        <li class="platforms-list__item"><strong>Systeme.io</strong><span>Email, courses, checkout in one login.</span></li>
-        <li class="platforms-list__item"><strong>WordPress</strong><span>Elementor or Divi, on your domain.</span></li>
+        <li class="platforms-list__item"><strong>GoHighLevel</strong><span>All-in-one CRM, pipelines, and automations.</span></li>
+        <li class="platforms-list__item"><strong>ClickFunnels</strong><span>Funnels, A/B tests, and one-click upsells.</span></li>
+        <li class="platforms-list__item"><strong>Systeme.io</strong><span>Email, courses, and checkout, under one login.</span></li>
+        <li class="platforms-list__item"><strong>WordPress</strong><span>Elementor or Divi, on your domain, with your SEO intact.</span></li>
+        <li class="platforms-list__item"><strong>Custom Cinematic</strong><span>A bespoke site like this one, when the offer is worth it.</span></li>
       </ul>
     </div>
   </section>
@@ -193,23 +246,31 @@
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">The Mechanism</p>
       <h2>Six Parts. One Outcome.<br/>Clients Who Convert.</h2>
-      <p class="cinema-section__lead">No mystery. No jargon. The whole machine, named plainly.</p>
+      <p class="cinema-section__lead">No mystery, no proprietary jargon. The whole machine, named plainly.</p>
       <ol class="cinema-system cinema-system--post">
         <li class="cinema-system__row" data-row="1">
           <span class="cinema-system__num">01</span>
-          <div class="cinema-system__body"><h3>Offer Clarity</h3><p>One sentence: what you sell, who it's for, why it matters.</p></div>
+          <div class="cinema-system__body"><h3>Offer Clarity</h3><p>One sentence for what you sell, who it is for, and why it matters. Read it once, feel the weight.</p></div>
         </li>
         <li class="cinema-system__row" data-row="2">
           <span class="cinema-system__num">02</span>
-          <div class="cinema-system__body"><h3>Proof Stack</h3><p>Outcomes and named clients placed before the visitor drops off.</p></div>
+          <div class="cinema-system__body"><h3>Proof Stack</h3><p>Outcomes, credentials, and named clients placed before the visitor drops off, not after.</p></div>
         </li>
         <li class="cinema-system__row" data-row="3">
           <span class="cinema-system__num">03</span>
-          <div class="cinema-system__body"><h3>Single Next Step</h3><p>One calendar. One click. From interest to booked.</p></div>
+          <div class="cinema-system__body"><h3>Rhythm</h3><p>Headline, sub, social proof, mechanism, risk reversal, CTA. Six beats, no padding.</p></div>
         </li>
         <li class="cinema-system__row" data-row="4">
           <span class="cinema-system__num">04</span>
-          <div class="cinema-system__body"><h3>Follow-Up Engine</h3><p>Three emails. One WhatsApp reminder. Maybe becomes confirmed.</p></div>
+          <div class="cinema-system__body"><h3>Single Next Step</h3><p>One calendar, one form, one click from interest to booked. No menus, no menus, no menus.</p></div>
+        </li>
+        <li class="cinema-system__row" data-row="5">
+          <span class="cinema-system__num">05</span>
+          <div class="cinema-system__body"><h3>Follow-Up Engine</h3><p>Three emails and one WhatsApp reminder that turn a maybe into a confirmed call.</p></div>
+        </li>
+        <li class="cinema-system__row" data-row="6">
+          <span class="cinema-system__num">06</span>
+          <div class="cinema-system__body"><h3>Tracking</h3><p>Events, source attribution, and a weekly number that tells you what is working.</p></div>
         </li>
       </ol>
       <div class="cinema-section__cta-mid">
@@ -218,23 +279,53 @@
     </div>
   </section>
 
+  <section id="process" class="cinema-section" aria-label="Process">
+    <div class="cinema-section__inner">
+      <p class="cinema-copy__eyebrow">Behind The Scenes</p>
+      <h2>Five Steps From Brief To Live.</h2>
+      <p class="cinema-section__lead">Discovery, strategy, design, build, launch. With named timelines and what you owe us at each gate.</p>
+      <ol class="cinema-system cinema-system--post">
+        <li class="cinema-system__row" data-row="1">
+          <span class="cinema-system__num">01</span>
+          <div class="cinema-system__body"><h3>Discovery</h3><p>Your offer, audience, and what already failed. No generic questionnaire. Two days.</p></div>
+        </li>
+        <li class="cinema-system__row" data-row="2">
+          <span class="cinema-system__num">02</span>
+          <div class="cinema-system__body"><h3>Strategy</h3><p>Wireframes and proof placement on the page, not gut feel. Three days.</p></div>
+        </li>
+        <li class="cinema-system__row" data-row="3">
+          <span class="cinema-system__num">03</span>
+          <div class="cinema-system__body"><h3>Design</h3><p>UI that matches your price point. Dark, gold, cinematic, on-brand. Three days.</p></div>
+        </li>
+        <li class="cinema-system__row" data-row="4">
+          <span class="cinema-system__num">04</span>
+          <div class="cinema-system__body"><h3>Build</h3><p>GHL, ClickFunnels, Systeme.io, or WordPress. One wired system. Five to seven days.</p></div>
+        </li>
+        <li class="cinema-system__row" data-row="5">
+          <span class="cinema-system__num">05</span>
+          <div class="cinema-system__body"><h3>Launch</h3><p>QA, tracking, mobile check. Then go live with confidence. Two days.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
   <section id="proof" class="cinema-section" aria-label="Proof">
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">Real Numbers</p>
       <h2><span data-count="270">0</span>+ Builds. <span data-count="10">0</span> Calls A Week, On Autopilot.</h2>
-      <p class="cinema-section__lead">This funnel blueprint helped 270 business owners get their first 10 clients.</p>
+      <p class="cinema-section__lead">This funnel blueprint helped 270 business owners get their first 10 clients. The result, the volume, and the named client mix — no vanity metrics.</p>
       <ol class="cinema-system cinema-system--post">
         <li class="cinema-system__row" data-row="1">
           <span class="cinema-system__num">01</span>
-          <div class="cinema-system__body"><h3>Page Speed Under One Second</h3><p>Mobile-first. Tested on slow 4G before launch.</p></div>
+          <div class="cinema-system__body"><h3>Page Speed Under One Second</h3><p>Every build is mobile-first and tested on a slow 4G connection before launch.</p></div>
         </li>
         <li class="cinema-system__row" data-row="2">
           <span class="cinema-system__num">02</span>
-          <div class="cinema-system__body"><h3>One Calendar, One Click</h3><p>From hero to booked call is one click on every page we ship.</p></div>
+          <div class="cinema-system__body"><h3>One Calendar, One Click</h3><p>The path from hero to booked call is one click on every page we ship.</p></div>
         </li>
         <li class="cinema-system__row" data-row="3">
           <span class="cinema-system__num">03</span>
-          <div class="cinema-system__body"><h3>Three Emails That Convert</h3><p>Confirmation, reminder, recovery. The whole follow-up, no nudging.</p></div>
+          <div class="cinema-system__body"><h3>Three Emails That Convert</h3><p>Confirmation, reminder, recovery. The whole follow-up, three emails, no nudging.</p></div>
         </li>
       </ol>
       <div class="cinema-section__cta-mid">
@@ -251,13 +342,13 @@
       <ul class="testimonials-list">
         <li class="testimonial">
           <blockquote>
-            <p>Sent traffic to template pages for a year. Two weeks after Daphne rebuilt mine, the calendar had actual gaps. The page matched my price.</p>
+            <p>I sent traffic to template pages for a year. Two weeks after Daphne rebuilt mine, my calendar had actual gaps filled. The page finally matched my price.</p>
             <footer><strong>Sarah M.</strong>, Business Coach</footer>
           </blockquote>
         </li>
         <li class="testimonial">
           <blockquote>
-            <p>Needed something that looked premium without me learning design. Daphne delivered a page I'm proud to send in DMs.</p>
+            <p>I needed something that looked premium without me learning design. Daphne delivered a page I am proud to send in DMs.</p>
             <footer><strong>Priya K.</strong>, Consultant</footer>
           </blockquote>
         </li>
@@ -274,20 +365,20 @@
   <section id="work-with-us" class="cinema-section cinema-section--contact" aria-label="Work with us">
     <div class="cinema-section__inner">
       <p class="cinema-copy__eyebrow">The Next Step</p>
-      <h2>Map Your Funnel In One Call.<br/>Or Send Me Your Offer Now.</h2>
-      <p class="cinema-section__lead">100% free funnel plan. No templates. Custom-built for your offer.</p>
+      <h2>Map Your Funnel In One Call.<br/>Or Message Daphne On Facebook Right Now.</h2>
+      <p class="cinema-section__lead">100% free funnel plan. No templates. Custom-built for your offer. Tell us about your offer — we reply within one business day, whichever path you pick.</p>
 
       <div class="contact-cta-grid">
         <article class="contact-cta contact-cta--call">
           <p class="contact-cta__label">The Calm Path</p>
           <h3>Book A 20-Minute Call</h3>
-          <p>Walk us through your offer. We tell you on the call whether we're the right fit.</p>
+          <p>Walk us through your offer, your page, and the gap. We tell you on the call whether we are the right fit — no sales script.</p>
           <a class="cinema-btn cinema-btn--primary" href="https://cal.com/daphne-wong-funnel/20min" target="_blank" rel="noopener">Send Me My Funnel Plan</a>
         </article>
         <article class="contact-cta contact-cta--dm">
           <p class="contact-cta__label">The Urgent Path</p>
           <h3>Message Daphne On Facebook</h3>
-          <p>Two lines about your offer. Same-day reply, weekday hours.</p>
+          <p>Two lines about your offer, dropped in the chat. Same-day reply, weekday hours. Best when you want to talk before scheduling.</p>
           <a class="cinema-btn cinema-btn--ghost" href="https://m.me/daphne.wong.funnel" target="_blank" rel="noopener">DM On Facebook</a>
         </article>
       </div>
@@ -300,7 +391,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=22"></script>
-  <script src="assets/js/cinema-sections.js?v=22"></script>
+  <script type="module" src="assets/js/cinema-scroll.js?v=23"></script>
+  <script src="assets/js/cinema-sections.js?v=23"></script>
 </body>
 </html>

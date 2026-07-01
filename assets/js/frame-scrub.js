@@ -34,6 +34,7 @@ export class FrameScrubber {
     this._cacheOrder = [];
     this._resizeW = 0;
     this._resizeH = 0;
+    this._lastDrawnIndex = -1;
   }
 
   _loadFrame(i) {
@@ -107,6 +108,24 @@ export class FrameScrubber {
     }
   }
 
+  /** Background-decode a contiguous frame range (e.g. one act). */
+  prefetchRange(lo, hi, batchSize = 8) {
+    const start = Math.max(0, lo);
+    const end = Math.min(this.urls.length - 1, hi);
+    if (start > end) return Promise.resolve();
+
+    let cursor = start;
+    const pump = () => {
+      const batch = [];
+      while (cursor <= end && batch.length < batchSize) {
+        batch.push(this._loadFrame(cursor++));
+      }
+      if (!batch.length) return Promise.resolve();
+      return Promise.all(batch).then(pump);
+    };
+    return pump();
+  }
+
   releaseOutOfWindow(center) {
     const lo = Math.max(0, center - WINDOW_HALF);
     const hi = Math.min(this.urls.length - 1, center + WINDOW_HALF);
@@ -174,6 +193,10 @@ export class FrameScrubber {
     const img = this.frames[index];
     if (!img?.naturalWidth) {
       this._loadFrame(index);
+      if (this._lastDrawnIndex >= 0 && this._lastDrawnIndex !== index) {
+        this.draw(this._lastDrawnIndex, fx);
+        return;
+      }
       ctx.fillStyle = PLACEHOLDER_FILL;
       ctx.fillRect(0, 0, w, h);
       this.current = index;
@@ -196,6 +219,7 @@ export class FrameScrubber {
       ctx.drawImage(cached, 0, 0);
       ctx.restore();
       this.current = index;
+      this._lastDrawnIndex = index;
       return;
     }
 
@@ -210,6 +234,7 @@ export class FrameScrubber {
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(img, dx, dy, dw, dh);
     this.current = index;
+    this._lastDrawnIndex = index;
   }
 
   bindParallax(idleLayer = null) {

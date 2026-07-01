@@ -1,45 +1,46 @@
 /**
  * Multi-act scroll cinema timeline.
- * One global scroll progress → act segment → frame index (with idle handoff).
+ * Global scroll progress → act segment → frame index.
  */
 
 export const CINEMA_SEGMENTS = [
   {
-    id: "entry",
-    label: "Act 0 — Entry",
+    id: "hero",
+    label: "Hero",
     cdnKey: "act0",
     share: 0.42,
     ease: "dive",
-    useHandoff: true,
+    useHandoff: false,
     rangeEnd: null,
     fx: { scaleMax: 0.2, driftY: -32 },
     copy: "#hero-copy-block",
-    hint: "#scroll-hint",
+    scrim: 0.35,
   },
   {
-    id: "ambient",
-    label: "Act 1 — Drift",
+    id: "passage",
+    label: "Passage",
     cdnKey: "act1",
     share: 0.28,
     ease: "drift",
     useHandoff: false,
     rangeEnd: null,
     fx: { scaleMax: 0.06, driftY: -8 },
-    copy: "#act1-copy-block",
-    hint: null,
+    copy: "#passage-copy-block",
+    scrim: 1.0,
   },
   {
-    id: "bridge",
-    label: "Act 2 — Bridge",
+    id: "underworld",
+    label: "Underworld",
     cdnKey: "act2",
     share: 0.3,
     ease: "burst",
     useHandoff: false,
     rangeEnd: null,
     fx: { scaleMax: 0.28, driftY: -48 },
-    copy: null,
-    contentReveal: "#act2",
-    contentRevealAt: 0.62,
+    copy: "#underworld-copy-block",
+    scrim: 0.55,
+    contentReveal: ".underworld-card",
+    contentRevealAt: 0.55,
   },
 ];
 
@@ -50,12 +51,12 @@ export function globalToSegment(globalProgress, segments = CINEMA_SEGMENTS) {
     const next = acc + seg.share;
     if (p <= next || seg === segments[segments.length - 1]) {
       const local = seg.share > 0 ? Math.min(1, (p - acc) / seg.share) : 0;
-      return { segment: seg, local, index: segments.indexOf(seg) };
+      return { segment: seg, local, index: segments.indexOf(seg), acc };
     }
     acc = next;
   }
   const last = segments[segments.length - 1];
-  return { segment: last, local: 1, index: segments.length - 1 };
+  return { segment: last, local: 1, index: segments.length - 1, acc: 1 - last.share };
 }
 
 function easeDive(t) {
@@ -74,19 +75,15 @@ function easeBurst(t) {
 export function easeSegment(t, type = "drift") {
   const x = Math.max(0, Math.min(1, t));
   switch (type) {
-    case "dive": return easeDive(x);
-    case "burst": return easeBurst(x);
-    default: return easeDrift(x);
+    case "dive":
+      return easeDive(x);
+    case "burst":
+      return easeBurst(x);
+    default:
+      return easeDrift(x);
   }
 }
 
-/**
- * Map segment-local progress → frame index.
- * @param {object} segment
- * @param {number} localProgress 0–1 within segment
- * @param {number} frameCount
- * @param {number | null} handoffFrame — captured from idle loop at scroll start (entry only)
- */
 export function segmentToFrame(segment, localProgress, frameCount, handoffFrame = null) {
   const n = Math.max(1, frameCount);
   let start = 0;
@@ -116,21 +113,38 @@ export function segmentFx(segment, localProgress, globalProgress) {
 }
 
 export function segmentUi(segment, localProgress, globalProgress) {
-  const ui = { copyOpacity: 0, copyY: 0, hintOpacity: 0, contentOpacity: null };
+  const ui = { copyOpacity: 0, copyY: 0, hintOpacity: 0, contentOpacity: null, scrim: segment.scrim ?? 0.35 };
 
-  if (segment.id === "entry") {
-    ui.copyOpacity = localProgress < 0.12 ? 1 : Math.max(0, 1 - (localProgress - 0.12) / 0.35);
-    ui.copyY = localProgress * -60;
-    ui.hintOpacity = globalProgress < 0.02 ? 1 : Math.max(0, 1 - globalProgress / 0.06);
+  if (segment.id === "hero") {
+    if (globalProgress <= 0.008) {
+      ui.copyOpacity = 1;
+      ui.copyY = 0;
+    } else {
+      ui.copyOpacity =
+        localProgress < 0.1 ? localProgress / 0.1 : localProgress > 0.82 ? Math.max(0, 1 - (localProgress - 0.82) / 0.15) : 1;
+      ui.copyY = (1 - localProgress) * 12;
+    }
+    ui.hintOpacity = globalProgress < 0.04 ? 1 : Math.max(0, 1 - globalProgress / 0.08);
   }
 
-  if (segment.id === "ambient") {
-    ui.copyOpacity = localProgress < 0.08
-      ? localProgress / 0.08
-      : localProgress > 0.75
-        ? Math.max(0, 1 - (localProgress - 0.75) / 0.2)
-        : 1;
-    ui.copyY = (1 - localProgress) * 20;
+  if (segment.id === "passage") {
+    ui.copyOpacity =
+      localProgress < 0.1
+        ? localProgress / 0.1
+        : localProgress > 0.78
+          ? Math.max(0, 1 - (localProgress - 0.78) / 0.18)
+          : 1;
+    ui.copyY = (1 - localProgress) * 16;
+  }
+
+  if (segment.id === "underworld") {
+    ui.copyOpacity =
+      localProgress < 0.08
+        ? localProgress / 0.08
+        : localProgress > 0.92
+          ? Math.max(0, 1 - (localProgress - 0.92) / 0.08)
+          : 1;
+    ui.copyY = (1 - localProgress) * 10;
   }
 
   if (segment.contentReveal && segment.contentRevealAt != null) {
@@ -141,6 +155,16 @@ export function segmentUi(segment, localProgress, globalProgress) {
   return ui;
 }
 
-export function totalPinLength(segments = CINEMA_SEGMENTS, baseVh = 520) {
+/** Pin scroll progress for each cinematic station (mid-segment). */
+export function stationPinProgress(stationIndex, segments = CINEMA_SEGMENTS) {
+  let acc = 0;
+  for (let i = 0; i < stationIndex && i < segments.length; i++) {
+    acc += segments[i].share;
+  }
+  const share = segments[stationIndex]?.share ?? 0;
+  return acc + share * 0.42;
+}
+
+export function totalPinLength(segments = CINEMA_SEGMENTS, baseVh = 480) {
   return `+=${baseVh}%`;
 }
