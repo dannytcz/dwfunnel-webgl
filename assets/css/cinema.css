@@ -824,7 +824,20 @@ body[data-cinema-leaving="true"] .cinema__stage::after {
 }
 body[data-cinema-leaving="true"] .cinema-pin {
   visibility: hidden;
+  pointer-events: none;
   transition-delay: 0.5s;
+}
+
+/* Retire the pin from document flow after the handoff scroll completes so
+   the post-cinematic sections are not preceded by a dead 100dvh gap. */
+.cinema-pin--retired {
+  position: absolute;
+  width: 100%;
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Once we have left the cinematic, the sticky header treatment relaxes:

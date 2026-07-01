@@ -47,7 +47,15 @@ const state = {
   lastAdvanceAt: 0,
   activeTween: null,
   autoEngageTimer: null,
+  // While true, wheel / touch / arrow keys advance stations instead of
+  // native scroll. Flipped false in enterProblem() so the page scrolls
+  // normally once we hand off to the post-cinematic sections.
+  cinemaLocked: true,
 };
+
+function isCinemaLocked() {
+  return state.cinemaLocked;
+}
 
 // Resting scrim opacity per station. Drives .cinema__stage::after opacity
 // so the dark overlay always rides the same transition as the copy fade.
@@ -337,6 +345,8 @@ function jumpTo(target) {
 
 function enterProblem() {
   if (!window.gsap) return;
+  if (!state.cinemaLocked) return;
+  state.cinemaLocked = false;
   if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
   if (state.activeTween) state.activeTween.kill();
   state.playing = false;
@@ -375,6 +385,10 @@ function enterProblem() {
     duration: 0.9,
     ease: "power2.inOut",
     scrollTo: { y: "#problem", autoKill: false },
+    onComplete: () => {
+      document.getElementById("cinema-pin")?.classList.add("cinema-pin--retired");
+      window.ScrollTrigger?.refresh?.();
+    },
   }, 0.05);
 }
 
@@ -393,8 +407,11 @@ function bindInputs() {
   window.addEventListener(
     "wheel",
     (e) => {
+      // After enterProblem(), let the browser handle scroll normally.
+      if (!isCinemaLocked()) return;
       if (isWheelBlockedTarget(e.target)) return;
       if (Math.abs(e.deltaY) < WHEEL_THRESHOLD) return;
+      // Swallow wheel only while we are actively hijacking it.
       e.preventDefault();
       if (state.playing) return;
       advance(e.deltaY > 0 ? +1 : -1);
@@ -403,6 +420,7 @@ function bindInputs() {
   );
 
   window.addEventListener("keydown", (e) => {
+    if (!isCinemaLocked()) return;
     if (e.key === "ArrowDown" || e.key === " " || e.key === "Enter" || e.key === "PageDown") {
       e.preventDefault();
       advance(+1);
@@ -418,9 +436,11 @@ function bindInputs() {
 
   let touchStartY = null;
   window.addEventListener("touchstart", (e) => {
+    if (!isCinemaLocked()) return;
     if (e.touches.length === 1) touchStartY = e.touches[0].clientY;
   }, { passive: true });
   window.addEventListener("touchend", (e) => {
+    if (!isCinemaLocked()) return;
     if (touchStartY == null) return;
     const endY = e.changedTouches[0]?.clientY ?? touchStartY;
     const delta = touchStartY - endY;
