@@ -334,10 +334,13 @@ function advance(dir) {
 }
 
 function jumpTo(target) {
-  if (state.playing) return;
   if (target < 0 || target >= STATIONS.length) return;
-  if (target === state.current) return;
+  if (target === state.current && !state.playing) return;
   if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
+  // Allow dot-clicks to interrupt an in-flight intro / swoosh.
+  if (state.activeTween) state.activeTween.kill();
+  state.playing = false;
+  if (cinema) cinema.classList.remove("is-playing");
   state.lastAdvanceAt = performance.now();
   showFilm();
   // Immediately hide the outgoing copy (no slow fade — it's a jump) and ramp
