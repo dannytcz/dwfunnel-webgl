@@ -1,10 +1,11 @@
 import { FrameScrubber } from "./frame-scrub.js";
 import { StarField } from "./stars.js";
 
-const MIN_READY = 36;
-const MIN_LOADER_MS = 2000;
-const INTRO_MS = 4000;
+const MIN_READY = 9999;
+const MIN_LOADER_MS = 3000;
+const INTRO_MS = 4200;
 const ACT_KEYS = ["act0", "act1", "act2"];
+const AUTO_ENGAGE_MS = 2000;
 
 // Station metadata is filled in at runtime by buildStations() once the
 // per-act frame counts are known. The hero frame is the LAST frame of
@@ -45,6 +46,7 @@ const state = {
   playing: false,
   lastAdvanceAt: 0,
   activeTween: null,
+  autoEngageTimer: null,
 };
 
 // Resting scrim opacity per station. Drives .cinema__stage::after opacity
@@ -60,13 +62,13 @@ function setScrim(targetOpacity, durationS = 0.45) {
 }
 
 function setProgressFill(ratio) {
-  if (!progressFill) return;
-  progressFill.style.transform = `scaleX(${ratio})`;
+  // Progress bar removed from DOM — kept as no-op so other call sites don't break.
+  void ratio;
 }
 
 function updateStationIndex() {
-  if (stationIndexEl) stationIndexEl.textContent = String(state.current + 1).padStart(2, "0");
-  if (stationTotalEl) stationTotalEl.textContent = String(STATIONS.length).padStart(2, "0");
+  // 01/03 index removed from DOM — no-op.
+  void 0;
 }
 
 function buildFilmUrls() {
@@ -126,11 +128,11 @@ function applyStationCopy(idx) {
     }
   });
 
-  // Underworld rows stagger in only when we land on the underworld.
-  const systemRows = document.querySelectorAll(".cinema-system__row");
-  systemRows.forEach((c) => c.classList.remove("is-revealed"));
+  // Underworld cards stagger in only when we land on the underworld.
+  const cards = document.querySelectorAll(".underworld-card");
+  cards.forEach((c) => c.classList.remove("is-revealed"));
   if (idx === 2) {
-    systemRows.forEach((row, i) => {
+    cards.forEach((row, i) => {
       window.setTimeout(() => row.classList.add("is-revealed"), 350 + i * 220);
     });
   }
@@ -233,6 +235,9 @@ function swooshTo(target) {
   const from = STATIONS[state.current].heroFrame;
   const to = STATIONS[target].heroFrame;
   state.playing = true;
+  // Clear any pending auto-engage — a manual advance shouldn't be followed
+  // by an automatic enterProblem a second later.
+  if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
   if (cinema) cinema.classList.add("is-playing");
 
   // Keep the destination frame hot in the LRU cache so the swoosh lands on
@@ -281,6 +286,16 @@ function swooshTo(target) {
       fadeInCopy(state.current, 0.65);
       // Progress bar advances to the next station (1/3 -> 2/3 -> 1).
       setProgressFill((state.current + 1) / STATIONS.length);
+      // Auto-engage the post-cinematic scroll once we've landed on the last
+      // (Underworld) station. Cancel any existing timer first so a fast user
+      // doesn't double-fire enterProblem.
+      if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
+      if (state.current === STATIONS.length - 1) {
+        state.autoEngageTimer = window.setTimeout(() => {
+          state.autoEngageTimer = null;
+          if (state.current === STATIONS.length - 1 && !state.playing) enterProblem();
+        }, AUTO_ENGAGE_MS);
+      }
     },
   });
 }
@@ -305,6 +320,7 @@ function jumpTo(target) {
   if (state.playing) return;
   if (target < 0 || target >= STATIONS.length) return;
   if (target === state.current) return;
+  if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
   state.lastAdvanceAt = performance.now();
   showFilm();
   // Immediately hide the outgoing copy (no slow fade — it's a jump) and ramp
@@ -321,6 +337,7 @@ function jumpTo(target) {
 
 function enterProblem() {
   if (!window.gsap) return;
+  if (state.autoEngageTimer) { clearTimeout(state.autoEngageTimer); state.autoEngageTimer = null; }
   if (state.activeTween) state.activeTween.kill();
   state.playing = false;
   const sl = starsLayer();
@@ -341,24 +358,24 @@ function enterProblem() {
 
   // Smooth cinematic-out: fade the canvas + idle still out first so the
   // user is not looking at a frozen frame as the page scrolls, then ease
-  // into the #problem section. CSS handles the chrome (progress bar,
-  // station rail, scrim, pin visibility) on the same 0.6 s window.
+  // into the #problem section. CSS handles the chrome (station rail,
+  // scrim, pin visibility) on the same 0.6 s window.
   const fadeLayer = cinema?.querySelector(".cinema__media");
   const idleImgEl = document.getElementById("cinema-idle");
   const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
   if (fadeLayer) {
-    tl.to(fadeLayer, { opacity: 0, duration: 0.45, ease: "power2.in" }, 0);
+    tl.to(fadeLayer, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
   }
   if (idleImgEl) {
-    tl.to(idleImgEl, { opacity: 0, duration: 0.35, ease: "power2.in" }, 0);
+    tl.to(idleImgEl, { opacity: 0, duration: 0.3, ease: "power2.in" }, 0);
   }
-  // Start the scroll a touch after the canvas starts fading so the user
-  // never sees the page jump.
+  // Snappier handoff to #problem: shorter duration, tiny delay so the canvas
+  // fade has already started.
   tl.to(window, {
-    duration: 1.2,
+    duration: 0.9,
     ease: "power2.inOut",
     scrollTo: { y: "#problem", autoKill: false },
-  }, 0.18);
+  }, 0.05);
 }
 
 function isInteractiveTarget(t) {
@@ -529,11 +546,12 @@ async function waitForIntroFrames(scrubber, act0Len) {
   return false;
 }
 
-// Intro: sweep forward through ACT 0 from the establishing frame (0) to
-// the hero (last frame of act 0). Even with a static-feeling sequence the
-// long slow Ken-Burns (scale 1.00 -> 1.08, offsetY 0 -> -22) plus the
-// per-frame blit gives the page the cinematic "fly-in" feel the brand
-// promise depends on. No user input is required to start it.
+// Intro: "reverse the video" — sweep BACKWARD through ACT 0 (from the hero
+// frame down to the establishing / wide shot), then land back on the hero
+// for the user to read. The Ken-Burns (scale 1.08 -> 1.00, offsetY -22 -> 0)
+// gives it the cinematic pull-back-and-resolve feel. Hero copy fades in
+// 1.6 s in (already while the camera is still moving) so the user sees
+// words faster.
 async function playIntroReverse(scrubber) {
   const total = scrubber.frames?.length ?? 0;
   if (!total) return;
@@ -542,10 +560,11 @@ async function playIntroReverse(scrubber) {
   if (!act0Len) return;
   await waitForIntroFrames(scrubber, act0Len);
   const startIdx = 0;  // start of act 0 (the establishing / wide shot)
-  const target = STATIONS[0].heroFrame;  // end of act 0 (the hero)
+  const hero = STATIONS[0].heroFrame;  // end of act 0 (the hero)
   if (reducedMotion) {
-    scrubber.draw(target, { scale: 1.08, offsetY: -18 });
+    scrubber.draw(hero, { scale: 1.0, offsetY: 0 });
     state.current = 0;
+    fadeInCopy(0, 0.9);
     return;
   }
   showFilm();
@@ -557,26 +576,39 @@ async function playIntroReverse(scrubber) {
     duration: INTRO_MS / 1000,
     ease: "power2.inOut",
     onUpdate: () => {
+      // Reverse sweep: start at hero frame, walk BACKWARDS to startIdx as
+      // t increases.
       const e = easeInOutQuad(tween.t);
-      const idx = Math.round(startIdx + (target - startIdx) * e);
-      const scale = 1.0 + tween.t * 0.08;
-      const offsetY = -tween.t * 22;
+      const idx = Math.round(hero + (startIdx - hero) * e);
+      // Ken-Burns: pull back from hero composition (1.08, -22) to wide shot.
+      const scale = 1.08 - tween.t * 0.08;
+      const offsetY = -22 + tween.t * 22;
       drawStation(idx, { scale, offsetY });
       if (flash) {
         const a = tween.t < 0.5 ? tween.t * 2 * 0.55 : (1 - tween.t) * 2 * 0.55;
         flash.style.opacity = String(a);
+      }
+      // Begin the hero copy reveal earlier (1.6 s in) so the user sees the
+      // wording faster — they don't have to wait the full 4.2 s.
+      const introElapsedMs = tween.t * INTRO_MS;
+      if (introElapsedMs > 1600 && !state._introCopyFired) {
+        state._introCopyFired = true;
+        fadeInCopy(0, 0.9);
       }
     },
     onComplete: () => {
       state.playing = false;
       state.activeTween = null;
       if (cinema) cinema.classList.remove("is-playing");
-      drawStation(target, { scale: 1.08, offsetY: -22 });
+      // Land on the hero frame, neutral Ken-Burns (composition held).
+      drawStation(hero, { scale: 1.0, offsetY: 0 });
       if (flash) flash.style.opacity = "0";
-      // Hero copy elegantly fades in only after the camera has finished its
-      // swoosh.
-      fadeInCopy(0, 0.9);
-      // Progress bar fills to 1/3 of the journey.
+      // Safety net: if the copy reveal never fired during the onUpdate
+      // (e.g. reduced motion path skipped it), make sure it fires here.
+      if (!state._introCopyFired) {
+        state._introCopyFired = true;
+        fadeInCopy(0, 0.9);
+      }
       setProgressFill(1 / STATIONS.length);
     },
   });
