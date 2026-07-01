@@ -773,7 +773,7 @@ html, body {
 }
 
 /* ── Station dot nav ── */
-/* 3 pulsing dots on the LEFT edge. No labels, no index. */
+/* 3 pulsing dots on the LEFT edge. Click to jump between scenes. */
 .cinema-stations {
   position: fixed;
   top: 50%;
@@ -783,19 +783,23 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .cinema-stations__dot {
   display: block;
   width: 0.55rem;
   height: 0.55rem;
+  padding: 0;
   border-radius: 50%;
   background: rgba(94, 234, 212, 0.22);
   border: 1px solid rgba(94, 234, 212, 0.5);
   box-shadow: 0 0 0 0 rgba(94, 234, 212, 0);
   animation: cinema-station-pulse 2.4s ease-in-out infinite;
   transition: background 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .cinema-stations__dot:nth-child(2) { animation-delay: 0.4s; }

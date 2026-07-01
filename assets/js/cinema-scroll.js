@@ -177,21 +177,30 @@ function easeInOutQuad(t) {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
 
+function prewarmFrameRange(from, to) {
+  const lo = Math.min(from, to);
+  const hi = Math.max(from, to);
+  const ids = [];
+  const step = Math.max(1, Math.floor((hi - lo) / 28));
+  for (let i = lo; i <= hi; i += step) ids.push(i);
+  if (!ids.includes(to)) ids.push(to);
+  if (!ids.includes(from)) ids.push(from);
+  window.__scrubber?.prewarm?.(ids);
+}
+
 function fadeOutCopy(idx, durationS = 0.45) {
   const el = document.getElementById(STATIONS[idx].copyId);
   if (!el) return Promise.resolve();
-  // Stagger child reveals so the lede fades after the H1, actions after lede.
   const eyebrow = el.querySelector(".cinema-copy__eyebrow");
   const rule = el.querySelector(".cinema-copy__rule");
   const h1 = el.querySelector("h1, h2");
   const lede = el.querySelector(".cinema-copy__lede");
   const actions = el.querySelector(".cinema-copy__actions");
-  // On fade-out we collapse everything together; child transitions are reset
-  // by fadeInCopy.
+  const beats = el.querySelectorAll(".cinema-passage__beats li");
   el.style.transition = `opacity ${durationS}s ease, transform ${durationS}s ease`;
   el.style.opacity = "0";
   el.style.transform = "translateY(-12px)";
-  [eyebrow, rule, h1, lede, actions].forEach((c) => {
+  [eyebrow, rule, h1, lede, actions, ...beats].forEach((c) => {
     if (!c) return;
     c.style.transition = "none";
     c.style.opacity = "";
@@ -212,10 +221,8 @@ function fadeInCopy(idx, durationS = 0.65) {
     const h1 = el.querySelector("h1, h2");
     const lede = el.querySelector(".cinema-copy__lede");
     const actions = el.querySelector(".cinema-copy__actions");
+    const beats = el.querySelectorAll(".cinema-passage__beats li");
 
-    // Stage the copy: eyebrow + rule + h1 first, lede delayed 250ms, actions
-    // delayed 450ms. Container opacity drives the scrim down to its resting
-    // value in parallel.
     const block = durationS;
     const fade = (node, delayS) => {
       if (!node) return;
@@ -224,7 +231,8 @@ function fadeInCopy(idx, durationS = 0.65) {
       node.style.transform = "translateY(0)";
     };
     [eyebrow, rule, h1].forEach((n) => fade(n, 0));
-    fade(lede, 0.25);
+    fade(lede, 0.15);
+    beats.forEach((b, i) => fade(b, 0.22 + i * 0.07));
     fade(actions, 0.45);
 
     el.style.transition = `opacity ${block}s ease, transform ${block}s ease`;
@@ -249,8 +257,9 @@ function swooshTo(target) {
   if (cinema) cinema.classList.add("is-playing");
 
   // Keep the destination frame hot in the LRU cache so the swoosh lands on
-  // a blit, not a WebP decode + upload.
-  window.__scrubber?.prewarm?.([to]);
+  // a blit, not a WebP decode + upload. Prewarm the whole travel range so
+  // backward navigation (Passage → Hero) does not paint black mid-swoosh.
+  prewarmFrameRange(from, to);
 
   const tween = { t: 0 };
   const dur = reducedMotion ? 0.01 : SWOOSH_MS / 1000;
@@ -521,7 +530,9 @@ async function init() {
     el.style.opacity = "0";
     el.style.visibility = "hidden";
     el.setAttribute("aria-hidden", "true");
-    const kids = el.querySelectorAll(".cinema-copy__eyebrow, .cinema-copy__rule, h1, h2, .cinema-copy__lede, .cinema-copy__actions");
+    const kids = el.querySelectorAll(
+      ".cinema-copy__eyebrow, .cinema-copy__rule, h1, h2, .cinema-copy__lede, .cinema-copy__actions, .cinema-passage__beats li"
+    );
     kids.forEach((k) => {
       k.style.transition = "none";
       k.style.opacity = "0";
