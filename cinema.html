@@ -3,386 +3,280 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DW Funnel — A Page People Remember. A Funnel That Follows Up.</title>
-  <meta name="description" content="DW Funnel builds cinematic landing pages, conversion flows, and follow-up systems for business owners who want enquiries — not another pretty template." />
+  <title>DW Funnel · Beautiful On The Surface. Ruthless Underneath.</title>
+  <meta name="description" content="DW Funnel builds cinematic landing pages with a conversion machine wired beneath them. For business owners who want booked calls, not another pretty template." />
   <meta name="theme-color" content="#061018" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=25" />
+  <link rel="preload" href="assets/fonts/Satoshi-400.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/ClashDisplay-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=26" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
 
-  <!-- Preloader — quick fade once frames are ready, capped at 3s -->
-  <div id="loader" class="cinema-loader" aria-live="polite">
-    <div class="cinema-loader__inner">
-      <p class="cinema-loader__brand">DW Funnel</p>
-      <p class="cinema-loader__sub">Loading the journey</p>
-      <div class="cinema-loader__track"><div class="cinema-loader__fill"></div></div>
-      <p class="cinema-loader__pct">0%</p>
+  <div id="loader" class="loader" aria-live="polite" aria-busy="true">
+    <div class="loader__panel">
+      <p class="loader__brand">DW Funnel</p>
+      <div class="loader__track"><div class="loader__fill" id="loader-fill"></div></div>
+      <p class="loader__pct" id="loader-pct">0%</p>
     </div>
   </div>
 
-  <!-- Header — refined corner ornaments: wordmark + Book A Call only -->
-  <header class="cinema-header">
-    <a href="/" class="cinema-header__brand">DW Funnel</a>
-    <a class="cinema-header__cta" href="#work-with-us">Book a call</a>
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor__dot"></span>
+    <span class="cursor__ring"></span>
+  </div>
+
+  <header class="site-nav" id="site-nav">
+    <a href="/" class="site-nav__logo">DW Funnel</a>
+    <a href="#act-work" class="btn btn--primary site-nav__cta magnetic" data-magnetic>Map My Funnel</a>
   </header>
 
-  <!-- Full-page section rail — one dot per scene / section -->
-  <nav class="page-nav" id="page-nav" aria-label="Page sections">
-    <button type="button" class="page-nav__dot is-active" data-nav-id="hero" aria-label="Hero"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="passage" aria-label="Passage"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="underworld" aria-label="Underworld"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="problem" aria-label="Problem"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="build" aria-label="Build"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="transform" aria-label="Transform"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="platforms" aria-label="Platforms"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="how-it-works" aria-label="How it works"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="process" aria-label="Process"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="proof" aria-label="Proof"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="testimonials" aria-label="Testimonials"></button>
-    <button type="button" class="page-nav__dot" data-nav-id="work-with-us" aria-label="Work with us"></button>
-  </nav>
+  <a href="#act-work" class="sticky-cta btn btn--primary magnetic" id="sticky-cta" data-magnetic aria-label="Map My Funnel">Map My Funnel</a>
 
-  <!-- =======================================================
-       CINEMATIC — Hero / Passage / Underworld
-       Native scroll: pin + scrub through three acts, then release.
-       ======================================================= -->
-  <div id="cinema-pin" class="cinema-pin">
-    <section id="cinema" class="cinema" aria-label="Cinematic sequence">
-
-      <!-- Visual stage: idle still, film canvas, vignette, swoosh flash -->
-      <div class="cinema__stage">
-        <div class="cinema__media">
-          <img
-            id="cinema-idle"
-            class="cinema__idle is-hidden"
-            src="assets/images/still-B-surface-4k.png"
-            alt=""
-            decoding="async"
-            aria-hidden="true"
-          />
-          <canvas id="scrub-canvas" class="cinema__canvas" aria-hidden="true"></canvas>
-        </div>
-        <div class="cinema__vignette" id="cinema-vignette" aria-hidden="true"></div>
-        <div class="cinema__flash" id="cinema-flash" aria-hidden="true"></div>
-        <p class="cinema-scroll-hint" id="scroll-hint" aria-hidden="true">Scroll</p>
+  <!-- HERO (pinned, scroll scrubbed) -->
+  <div id="hero-pin" class="hero-pin">
+    <section id="hero" class="hero" aria-label="Hero">
+      <div class="hero__stage">
+        <picture class="hero__poster" id="hero-poster">
+          <source type="image/webp" srcset="assets/images/hero/poster-768.webp 768w, assets/images/hero/poster-1280.webp 1280w, assets/images/hero/poster-1920.webp 1920w, assets/images/hero/poster-2560.webp 2560w" sizes="100vw" />
+          <img src="assets/images/hero/poster.webp" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" />
+        </picture>
+        <canvas id="scrub-canvas" class="hero__canvas" aria-hidden="true"></canvas>
+        <div class="hero__scrim" aria-hidden="true"></div>
       </div>
 
-      <!-- ── STATION 1 — HERO ── -->
-      <div id="hero-copy-block" class="cinema-copy cinema-copy--hero" data-station="hero">
-        <span class="cinema-copy__rule" aria-hidden="true"></span>
-        <p class="cinema-copy__eyebrow">Landing Pages · Funnels · Follow-Up</p>
-        <h1>A Page People Remember.<br/>A Funnel That Follows Up.</h1>
-        <p class="cinema-copy__lede">Cinematic landing pages, conversion flows, and follow-up systems, built for business owners who want enquiries, not another pretty template.</p>
-        <div class="cinema-copy__actions">
-          <a href="#work-with-us" class="cinema-btn cinema-btn--primary">Map My Funnel</a>
-          <a href="#problem" class="cinema-btn cinema-btn--ghost">See Why Pages Fail</a>
+      <div class="hero__copy">
+        <p class="eyebrow">Landing Pages · Funnels · Follow-Up</p>
+        <h1 class="hero__title" id="hero-title">Beautiful On The Surface. Ruthless Underneath.</h1>
+        <p class="hero__sub" id="hero-sub">DW Funnel builds cinematic landing pages with a conversion machine wired beneath them. For business owners who want booked calls, not another pretty template.</p>
+        <div class="hero__actions" id="hero-actions">
+          <a href="#act-work" class="btn btn--primary magnetic" data-magnetic>Map My Funnel</a>
+          <a href="#act-machine" class="btn btn--ghost magnetic" data-magnetic>See The Machine</a>
         </div>
       </div>
 
-      <!-- ── STATION 2 — PASSAGE ── -->
-      <div id="passage-copy-block" class="cinema-copy cinema-copy--mid" aria-hidden="true" data-station="passage">
-        <p class="cinema-copy__eyebrow">The Invisible Layer</p>
-        <h2>I Don't Just Build Funnels —<br/>I Fix What Breaks Them.</h2>
-        <p class="cinema-copy__lede">Most creators only see the surface. I spot what kills conversions behind the clicks.</p>
-        <ul class="cinema-passage__beats">
-          <li><span class="cinema-passage__num">i.</span><span><em>See</em> the offer — named in one scroll.</span></li>
-          <li><span class="cinema-passage__num">ii.</span><span><em>Trust</em> the proof — before they drop off.</span></li>
-          <li><span class="cinema-passage__num">iii.</span><span><em>Book</em> in one click — no friction.</span></li>
-        </ul>
-      </div>
-
-      <!-- ── STATION 3 — UNDERWORLD ── -->
-      <div id="underworld-copy-block" class="cinema-copy cinema-copy--underworld" aria-hidden="true" data-station="underworld">
-        <p class="cinema-copy__eyebrow">The Machine</p>
-        <h2>Under The Beauty Is The Machine.</h2>
-        <p class="cinema-copy__lede">Three pieces. One outcome. The work that fills the calendar.</p>
-
-        <ol class="underworld-grid" id="cinema-system">
-          <li class="underworld-card" data-row="1">
-            <span class="underworld-card__num">01</span>
-            <h3>Landing Page</h3>
-            <p>Premium first impression. Your offer, named in one sentence.</p>
-          </li>
-          <li class="underworld-card" data-row="2">
-            <span class="underworld-card__num">02</span>
-            <h3>Funnel Logic</h3>
-            <p>Proof, objection-handling, and the CTA path that closes.</p>
-          </li>
-          <li class="underworld-card" data-row="3">
-            <span class="underworld-card__num">03</span>
-            <h3>Follow-Up</h3>
-            <p>Three emails and one WhatsApp reminder. No chasing.</p>
-          </li>
-        </ol>
-
-        <div class="cinema-copy__actions cinema-copy__actions--underworld">
-          <a href="#work-with-us" class="cinema-btn cinema-btn--primary">Send Me My Funnel Plan</a>
-          <a href="#problem" class="cinema-btn cinema-btn--ghost">See Why Pages Fail</a>
-        </div>
-      </div>
+      <p class="scroll-hint" id="scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="scroll-hint__line" aria-hidden="true"></span>
+      </p>
     </section>
-
-    <div id="cinema-handoff" class="cinema-handoff" aria-hidden="true">
-      <div class="cinema-handoff__veil"></div>
-    </div>
   </div>
 
-  <!-- =======================================================
-       POST-CINEMATIC — problem → build → transform → platforms
-       → how it works → process → proof → testimonials → work with us.
-       ======================================================= -->
-
-  <section id="problem" class="cinema-section cinema-section--problem" aria-label="Problem">
-    <div class="cinema-section__inner">
-      <p class="section-label">01 — Problem</p>
-      <div class="problem-bento">
-        <div class="problem-bento__head">
-          <p class="cinema-copy__eyebrow">The Funnel Leak</p>
-          <h2>You've Tried Templates, Courses, ChatGPT…<br/>Still No Sales?</h2>
-          <p class="cinema-section__lead">Built for busy creators who want results, not overwhelm. You have traffic. You have a page. The page does not move the visitor from curious to booked — so every click evaporates.</p>
-        </div>
-        <ol class="problem-bento__rows cinema-system cinema-system--post" id="problem-system">
-          <li class="cinema-system__row" data-row="1">
-            <span class="cinema-system__num">01</span>
-            <div class="cinema-system__body">
-              <h3>Template Trap</h3>
-              <p>The page looks finished, but reads like every other coach or creator in your niche. Visitors skim, recognise the template, and leave.</p>
-            </div>
-          </li>
-          <li class="cinema-system__row" data-row="2">
-            <span class="cinema-system__num">02</span>
-            <div class="cinema-system__body">
-              <h3>Weak Journey</h3>
-              <p>No clear next step, no proof before the fold, no rhythm from headline to CTA. Visitors bounce because nothing tells them what to do.</p>
-            </div>
-          </li>
-          <li class="cinema-system__row" data-row="3">
-            <span class="cinema-system__num">03</span>
-            <div class="cinema-system__body">
-              <h3>Lost Leads</h3>
-              <p>People click, hesitate, leave, and nothing follows up. You lose the click the moment the tab closes.</p>
-            </div>
-          </li>
-        </ol>
-      </div>
-
-      <div class="agitate-block agitate-block--inset">
-        <h3>Still Duct-Taping Your Funnel Together?</h3>
-        <ul class="agitate-list">
-          <li class="agitate-list__item">You bought the course, copied the template, asked ChatGPT — and still wake up to an empty calendar.</li>
-          <li class="agitate-list__item">Your page looks fine in preview mode. Real visitors scroll once, feel nothing, and vanish.</li>
-          <li class="agitate-list__item">Every lead that ghosts you is money you already paid to acquire. The leak is not traffic — it is the funnel.</li>
-        </ul>
-      </div>
-
-      <div class="cinema-section__cta-mid">
-        <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
+  <!-- TRUST STRIP -->
+  <section id="trust-strip" class="trust-strip" aria-label="Trusted by">
+    <div class="trust-strip__marquee" aria-hidden="true">
+      <div class="trust-strip__track">
+        <!-- [PLACEHOLDER] 6 client logo SVGs, monochrome, replace with real client logos -->
+        <span class="trust-logo">Client One</span>
+        <span class="trust-logo">Client Two</span>
+        <span class="trust-logo">Client Three</span>
+        <span class="trust-logo">Client Four</span>
+        <span class="trust-logo">Client Five</span>
+        <span class="trust-logo">Client Six</span>
+        <span class="trust-logo">Client One</span>
+        <span class="trust-logo">Client Two</span>
+        <span class="trust-logo">Client Three</span>
+        <span class="trust-logo">Client Four</span>
+        <span class="trust-logo">Client Five</span>
+        <span class="trust-logo">Client Six</span>
       </div>
     </div>
+    <p class="trust-strip__text">
+      Trusted by founders across MY and SG
+      <!-- [PLACEHOLDER] trust line, replace with real client geography or count -->
+    </p>
   </section>
 
-  <section id="build" class="cinema-section cinema-section--build" aria-label="Build">
-    <div class="cinema-section__inner">
-      <p class="section-label">02 — Build</p>
-      <p class="cinema-copy__eyebrow">What I Build</p>
-      <h2>Here's What I Can Build For You.<br/>(No Template, Just Results.)</h2>
-      <p class="cinema-section__lead">One offer, one page, one machine behind it. Pages, emails, automations, and follow-up — wired as one system on the platform you already use.</p>
-      <div class="build-grid">
-        <article class="build-card">
-          <span class="build-card__num">i.</span>
-          <h3>The Page</h3>
-          <p>Cinematic, fast, and clear about the offer. Built to load in under a second and read on a phone first.</p>
+  <!-- ACT 01: THE LEAK -->
+  <section id="act-leak" class="act act--leak" aria-labelledby="act-leak-heading">
+    <div class="act__inner">
+      <p class="act__eyebrow"><span class="act-numeral">01</span> · The Leak</p>
+      <h2 class="act__title split-lines" id="act-leak-heading">You Have Traffic. The Page Is Where It Dies.</h2>
+      <p class="act__intro">You bought the course, copied the template, asked ChatGPT. The calendar is still empty. The leak is not traffic. It is the funnel.</p>
+      <div class="leak-cards">
+        <article class="leak-card">
+          <h3>Template Trap</h3>
+          <p>The page looks finished but reads like every other operator in your niche. Visitors recognise the pattern and leave.</p>
         </article>
-        <article class="build-card">
-          <span class="build-card__num">ii.</span>
-          <h3>The Sequence</h3>
-          <p>Confirmation, reminder, recovery. Three emails that move a booked call from maybe to confirmed.</p>
+        <article class="leak-card">
+          <h3>No Journey</h3>
+          <p>No proof before the fold, no rhythm from headline to CTA, no single next step. Nothing tells the visitor what to do.</p>
         </article>
-        <article class="build-card">
-          <span class="build-card__num">iii.</span>
-          <h3>The Follow-Up</h3>
-          <p>Automated replies and reminders that keep warm leads moving toward booking — without you chasing.</p>
+        <article class="leak-card">
+          <h3>Silent Exit</h3>
+          <p>People click, hesitate, and close the tab. Nothing follows up. Every ghosted lead is money you already spent.</p>
         </article>
       </div>
-      <div class="cinema-section__cta-mid">
-        <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
-      </div>
     </div>
   </section>
 
-  <section id="transform" class="cinema-section cinema-section--transform" aria-label="Transform">
-    <div class="cinema-section__inner">
-      <p class="section-label">03 — Transform</p>
-      <div class="transform-panel">
-        <div class="transform-panel__head">
-          <p class="cinema-copy__eyebrow">Imagine How It'd Feel</p>
-          <h2>Strangers Stop Bouncing.<br/>Leads Stop Ghosting. You Stop Hoping.</h2>
-          <p class="cinema-section__lead">Picture opening your calendar and seeing calls already booked — while you were offline. That is what a funnel built for conversion feels like.</p>
-        </div>
-        <ul class="transform-list transform-list--grid">
-          <li class="transform-list__item">A page you are proud to send in DMs — one that matches your price before they read a word.</li>
-          <li class="transform-list__item">Proof placed before the fold, so visitors trust you before they decide.</li>
-          <li class="transform-list__item">One calendar, one click — from curious stranger to confirmed call.</li>
-          <li class="transform-list__item">Three emails and a WhatsApp reminder that turn a maybe into a yes.</li>
-          <li class="transform-list__item">A weekly number that tells you what is working — not another dashboard you ignore.</li>
-          <li class="transform-list__item">Enquiries that follow up themselves, so you stop losing leads you already paid for.</li>
-        </ul>
+  <!-- ACT 02: THE MACHINE (pinned) -->
+  <div id="machine-pin" class="machine-pin">
+    <section id="act-machine" class="act act--machine" aria-labelledby="act-machine-heading">
+      <div class="machine__stage">
+        <canvas id="machine-canvas" class="machine__canvas" aria-hidden="true"></canvas>
+        <div class="machine__scrim" aria-hidden="true"></div>
       </div>
-      <div class="cinema-section__cta-mid">
-        <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
+      <div class="machine__copy">
+        <p class="act__eyebrow"><span class="act-numeral">02</span> · The Machine</p>
+        <h2 class="act__title" id="act-machine-heading">Under The Beauty Is The Machine.</h2>
+        <p class="act__intro">Three components. One outcome. A calendar that fills itself.</p>
       </div>
-    </div>
-  </section>
-
-  <section id="platforms" class="cinema-section cinema-section--platforms" aria-label="Platforms">
-    <div class="cinema-section__inner">
-      <p class="section-label">04 — Platforms</p>
-      <p class="cinema-copy__eyebrow">Where It Lives</p>
-      <h2>Built On The Platform You Already Trust.</h2>
-      <p class="cinema-section__lead">GoHighLevel, ClickFunnels, Systeme.io, WordPress, or a custom cinematic site. You bring the stack, we bring the engine.</p>
-      <ul class="platforms-list platforms-list--table">
-        <li class="platforms-list__item"><strong>GoHighLevel</strong><span>All-in-one CRM, pipelines, and automations.</span></li>
-        <li class="platforms-list__item"><strong>ClickFunnels</strong><span>Funnels, A/B tests, and one-click upsells.</span></li>
-        <li class="platforms-list__item"><strong>Systeme.io</strong><span>Email, courses, and checkout, under one login.</span></li>
-        <li class="platforms-list__item"><strong>WordPress</strong><span>Elementor or Divi, on your domain, with your SEO intact.</span></li>
-        <li class="platforms-list__item"><strong>Custom Cinematic</strong><span>A bespoke site like this one, when the offer is worth it.</span></li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="how-it-works" class="cinema-section cinema-section--timeline" aria-label="How it works">
-    <div class="cinema-section__inner">
-      <p class="section-label">05 — How It Works</p>
-      <p class="cinema-copy__eyebrow">The Mechanism</p>
-      <h2>Six Parts. One Outcome.<br/>Clients Who Convert.</h2>
-      <p class="cinema-section__lead">No mystery, no proprietary jargon. The whole machine, named plainly.</p>
-      <ol class="timeline timeline--vertical">
-        <li class="timeline__node" data-step="1">
-          <span class="timeline__dot"></span>
-          <div class="timeline__body"><h3>Offer Clarity</h3><p>One sentence for what you sell, who it is for, and why it matters.</p></div>
+      <ol class="machine-components" id="machine-components">
+        <li class="machine-component is-active" data-component="0">
+          <span class="machine-component__numeral act-numeral">01</span>
+          <div class="machine-component__body">
+            <h3>The Page</h3>
+            <p>Cinematic, fast, and clear about the offer. Loads in under a second and reads on a phone first.</p>
+          </div>
         </li>
-        <li class="timeline__node" data-step="2">
-          <span class="timeline__dot"></span>
-          <div class="timeline__body"><h3>Proof Stack</h3><p>Outcomes, credentials, and named clients placed before the visitor drops off.</p></div>
+        <li class="machine-component" data-component="1">
+          <span class="machine-component__numeral act-numeral">02</span>
+          <div class="machine-component__body">
+            <h3>The Sequence</h3>
+            <p>Confirmation, reminder, recovery. Three emails that move a booking from maybe to confirmed.</p>
+          </div>
         </li>
-        <li class="timeline__node" data-step="3">
-          <span class="timeline__dot"></span>
-          <div class="timeline__body"><h3>Rhythm</h3><p>Headline, sub, social proof, mechanism, risk reversal, CTA. Six beats, no padding.</p></div>
-        </li>
-        <li class="timeline__node" data-step="4">
-          <span class="timeline__dot"></span>
-          <div class="timeline__body"><h3>Single Next Step</h3><p>One calendar, one form, one click from interest to booked.</p></div>
-        </li>
-        <li class="timeline__node" data-step="5">
-          <span class="timeline__dot"></span>
-          <div class="timeline__body"><h3>Follow-Up Engine</h3><p>Three emails and one WhatsApp reminder that turn a maybe into a confirmed call.</p></div>
-        </li>
-        <li class="timeline__node" data-step="6">
-          <span class="timeline__dot"></span>
-          <div class="timeline__body"><h3>Tracking</h3><p>Events, source attribution, and a weekly number that tells you what is working.</p></div>
+        <li class="machine-component" data-component="2">
+          <span class="machine-component__numeral act-numeral">03</span>
+          <div class="machine-component__body">
+            <h3>The Follow Up</h3>
+            <p>Automated WhatsApp and email nudges that keep warm leads moving without anyone chasing.</p>
+          </div>
         </li>
       </ol>
-      <div class="cinema-section__cta-mid">
-        <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
+      <a href="#act-work" class="btn btn--primary machine__cta magnetic" data-magnetic>Map My Funnel</a>
+    </section>
+  </div>
+
+  <!-- ACT 03: PROOF -->
+  <section id="act-proof" class="act act--proof" aria-labelledby="act-proof-heading">
+    <div class="act__inner">
+      <p class="act__eyebrow"><span class="act-numeral">03</span> · Proof</p>
+      <h2 class="act__title" id="act-proof-heading">Numbers First. Praise Second.</h2>
+      <div class="stat-row" id="stat-row">
+        <!-- [PLACEHOLDER] all three stat values, replace with real studio numbers -->
+        <div class="stat">
+          <span class="stat__value" data-count="47" data-suffix="">47</span>
+          <span class="stat__label">Builds Shipped</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" data-count="120" data-suffix="+">120+</span>
+          <span class="stat__label">Calls Booked Monthly For Clients</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" data-count="0.9" data-suffix="s" data-decimal="1">0.9s</span>
+          <span class="stat__label">Average Load Time</span>
+        </div>
+      </div>
+      <ul class="proof-cards">
+        <!-- [PLACEHOLDER] all three testimonials including names, roles, metrics, replace with real client proof -->
+        <li class="proof-card">
+          <blockquote>
+            <p>I sent traffic to template pages for a year. Two weeks after DW Funnel rebuilt mine, the calendar had real bookings. The page finally matched my price.</p>
+            <footer>
+              <cite><strong>Sarah Menon</strong>, Business Coach</cite>
+              <span class="proof-card__metric">14 calls booked in the first 21 days</span>
+            </footer>
+          </blockquote>
+        </li>
+        <li class="proof-card">
+          <blockquote>
+            <p>I needed premium without learning design. They shipped a page I am proud to send in DMs, and the follow up runs itself.</p>
+            <footer>
+              <cite><strong>Priya Krishnan</strong>, Consultant</cite>
+              <span class="proof-card__metric">3.2x enquiry rate in 30 days</span>
+            </footer>
+          </blockquote>
+        </li>
+        <li class="proof-card">
+          <blockquote>
+            <p>The follow up engine alone paid for the build. Bookings show up while I am off the clock.</p>
+            <footer>
+              <cite><strong>Marcus Tan</strong>, Course Creator</cite>
+              <span class="proof-card__metric">RM48K attributed in 60 days</span>
+            </footer>
+          </blockquote>
+        </li>
+      </ul>
+      <div class="founder-moment">
+        <!-- [PLACEHOLDER] Daphne Wong portrait image -->
+        <picture class="founder-moment__portrait">
+          <img src="assets/images/hero/poster-768.webp" alt="Portrait of the DW Funnel founder" width="120" height="120" loading="lazy" decoding="async" />
+        </picture>
+        <p>Founded by Daphne Wong, DW Funnel is a studio of designers and funnel engineers who treat every page as a conversion instrument.</p>
       </div>
     </div>
   </section>
 
-  <section id="process" class="cinema-section cinema-section--process" aria-label="Process">
-    <div class="cinema-section__inner">
-      <p class="section-label">06 — Process</p>
-      <p class="cinema-copy__eyebrow">Behind The Scenes</p>
-      <h2>Five Steps From Brief To Live.</h2>
-      <p class="cinema-section__lead">Discovery, strategy, design, build, launch. With named timelines and what you owe us at each gate.</p>
-      <ol class="process-pipeline">
-        <li class="process-step"><span class="process-step__num">01</span><h3>Discovery</h3><p>Your offer, audience, and what already failed. Two days.</p></li>
-        <li class="process-step"><span class="process-step__num">02</span><h3>Strategy</h3><p>Wireframes and proof placement on the page, not gut feel. Three days.</p></li>
-        <li class="process-step"><span class="process-step__num">03</span><h3>Design</h3><p>UI that matches your price point. Dark, gold, cinematic, on-brand. Three days.</p></li>
-        <li class="process-step"><span class="process-step__num">04</span><h3>Build</h3><p>GHL, ClickFunnels, Systeme.io, or WordPress. One wired system. Five to seven days.</p></li>
-        <li class="process-step"><span class="process-step__num">05</span><h3>Launch</h3><p>QA, tracking, mobile check. Then go live with confidence. Two days.</p></li>
+  <!-- ACT 04: THE METHOD -->
+  <section id="act-method" class="act act--method" aria-labelledby="act-method-heading">
+    <div class="act__inner">
+      <p class="act__eyebrow"><span class="act-numeral">04</span> · The Method</p>
+      <h2 class="act__title" id="act-method-heading">Six Parts. Five Steps. No Mystery.</h2>
+      <div class="method-grid">
+        <article class="method-item"><h3>Offer Clarity</h3><p>One sentence for what you sell, who it is for, and why it matters.</p></article>
+        <article class="method-item"><h3>Proof Stack</h3><p>Outcomes and named clients placed before the visitor drops off.</p></article>
+        <article class="method-item"><h3>Rhythm</h3><p>Headline, proof, mechanism, risk reversal, CTA. Beats, no padding.</p></article>
+        <article class="method-item"><h3>Single Next Step</h3><p>One calendar, one form, one click from interest to booked.</p></article>
+        <article class="method-item"><h3>Follow Up Engine</h3><p>Three emails and one WhatsApp reminder that turn a maybe into a confirmed call.</p></article>
+        <article class="method-item"><h3>Tracking</h3><p>Events, source attribution, and one weekly number that tells you what is working.</p></article>
+      </div>
+      <ol class="method-timeline" id="method-timeline">
+        <li class="method-step"><span class="method-step__num act-numeral">01</span><h3>Discovery</h3><p>Your offer, audience, and what already failed.</p><span class="method-step__dur">Two days.</span></li>
+        <li class="method-step"><span class="method-step__num act-numeral">02</span><h3>Strategy</h3><p>Wireframes and proof placement, decided on evidence.</p><span class="method-step__dur">Three days.</span></li>
+        <li class="method-step"><span class="method-step__num act-numeral">03</span><h3>Design</h3><p>UI that matches your price point.</p><span class="method-step__dur">Three days.</span></li>
+        <li class="method-step"><span class="method-step__num act-numeral">04</span><h3>Build</h3><p>One wired system on your stack.</p><span class="method-step__dur">Five to seven days.</span></li>
+        <li class="method-step"><span class="method-step__num act-numeral">05</span><h3>Launch</h3><p>QA, tracking, mobile check, live.</p><span class="method-step__dur">Two days.</span></li>
       </ol>
     </div>
   </section>
 
-  <section id="proof" class="cinema-section cinema-section--proof" aria-label="Proof">
-    <div class="proof-stat-band">
-      <div class="proof-stat-band__inner">
-        <div class="proof-stat"><span class="proof-stat__num" data-count="270">0</span><span class="proof-stat__label">Builds Shipped</span></div>
-        <div class="proof-stat"><span class="proof-stat__num" data-count="10">0</span><span class="proof-stat__label">Calls / Week On Autopilot</span></div>
-      </div>
-    </div>
-    <div class="cinema-section__inner">
-      <p class="section-label">07 — Proof</p>
-      <p class="cinema-copy__eyebrow">Real Numbers</p>
-      <h2>Results You Can Name.<br/>Not Vanity Metrics.</h2>
-      <p class="cinema-section__lead">This funnel blueprint helped 270 business owners get their first 10 clients. The result, the volume, and the named client mix.</p>
-      <div class="proof-cards">
-        <article class="proof-card"><h3>Page Speed Under One Second</h3><p>Every build is mobile-first and tested on a slow 4G connection before launch.</p></article>
-        <article class="proof-card"><h3>One Calendar, One Click</h3><p>The path from hero to booked call is one click on every page we ship.</p></article>
-        <article class="proof-card"><h3>Three Emails That Convert</h3><p>Confirmation, reminder, recovery. The whole follow-up, three emails, no nudging.</p></article>
-      </div>
-      <div class="cinema-section__cta-mid">
-        <a href="#work-with-us" class="cinema-btn cinema-btn--ghost">Send Me My Funnel Plan</a>
+  <!-- ACT 05: WHERE IT LIVES -->
+  <section id="act-platforms" class="act act--platforms" aria-labelledby="act-platforms-heading">
+    <div class="act__inner">
+      <p class="act__eyebrow"><span class="act-numeral">05</span> · Where It Lives</p>
+      <h2 class="act__title" id="act-platforms-heading">Flagship Builds. Deployed Anywhere.</h2>
+      <article class="platform-featured">
+        <h3>Custom Cinematic</h3>
+        <p>A bespoke site like this one. Our flagship tier, for offers worth the stage.</p>
+      </article>
+      <p class="platform-intro">We also design and wire the same machine on the stack you already run.</p>
+      <div class="platform-grid">
+        <article class="platform-card"><h3>GoHighLevel</h3><p>CRM, pipelines, and automations in one login.</p></article>
+        <article class="platform-card"><h3>ClickFunnels</h3><p>Funnels, split tests, and one click upsells.</p></article>
+        <article class="platform-card"><h3>Systeme.io</h3><p>Email, courses, and checkout under one roof.</p></article>
+        <article class="platform-card"><h3>WordPress</h3><p>Elementor or Divi on your domain, SEO intact.</p></article>
       </div>
     </div>
   </section>
 
-  <section id="testimonials" class="cinema-section cinema-section--testimonials" aria-label="Testimonials">
-    <div class="cinema-section__inner">
-      <p class="section-label">08 — Testimonials</p>
-      <p class="cinema-copy__eyebrow">Words From Clients</p>
-      <h2>Creators Who Stopped Sending Template Links.</h2>
-      <p class="cinema-section__lead">Three named testimonials with role and outcome. No anonymous initials, no vague praise.</p>
-      <ul class="testimonials-list testimonials-list--asymmetric">
-        <li class="testimonial">
-          <blockquote>
-            <p>I sent traffic to template pages for a year. Two weeks after Daphne rebuilt mine, my calendar had actual gaps filled. The page finally matched my price.</p>
-            <footer><strong>Sarah M.</strong>, Business Coach</footer>
-          </blockquote>
-        </li>
-        <li class="testimonial">
-          <blockquote>
-            <p>I needed something that looked premium without me learning design. Daphne delivered a page I am proud to send in DMs.</p>
-            <footer><strong>Priya K.</strong>, Consultant</footer>
-          </blockquote>
-        </li>
-        <li class="testimonial">
-          <blockquote>
-            <p>The follow-up engine alone paid for the build. Bookings started showing up without me chasing every lead.</p>
-            <footer><strong>Marcus T.</strong>, Course Creator</footer>
-          </blockquote>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="work-with-us" class="cinema-section cinema-section--contact" aria-label="Work with us">
-    <div class="cinema-section__inner">
-      <p class="section-label">09 — Work With Us</p>
-      <p class="cinema-copy__eyebrow">The Next Step</p>
-      <h2>Map Your Funnel In One Call.<br/>Or Message Daphne On Facebook Right Now.</h2>
-      <p class="cinema-section__lead">100% free funnel plan. No templates. Custom-built for your offer. Tell us about your offer — we reply within one business day, whichever path you pick.</p>
-
-      <div class="contact-cta-grid">
-        <article class="contact-cta contact-cta--call">
-          <p class="contact-cta__label">The Calm Path</p>
-          <h3>Book A 20-Minute Call</h3>
-          <p>Walk us through your offer, your page, and the gap. We tell you on the call whether we are the right fit — no sales script.</p>
-          <a class="cinema-btn cinema-btn--primary" href="https://cal.com/daphne-wong-funnel/20min" target="_blank" rel="noopener">Send Me My Funnel Plan</a>
+  <!-- ACT 06: WORK WITH US -->
+  <section id="act-work" class="act act--work" aria-labelledby="act-work-heading">
+    <div class="act__inner">
+      <p class="act__eyebrow"><span class="act-numeral">06</span> · Work With Us</p>
+      <h2 class="act__title" id="act-work-heading">Map Your Funnel In One Call.</h2>
+      <p class="act__intro">Twenty minutes. We walk through your offer, your page, and the gap, then tell you exactly what we would build and whether we are the right fit. No script, no pressure.</p>
+      <p class="qualification-line">We take on four builds per month. We work best with founders who already have an offer that sells and traffic to send. If that is you, book the call.</p>
+      <div class="work-paths">
+        <article class="work-path work-path--call">
+          <h3>Book The Call</h3>
+          <p>Pick a slot. Bring your current page if you have one.</p>
+          <div class="work-path__embed" id="cal-embed" data-src="https://cal.com/daphne-wong-funnel/20min">
+            <!-- [PLACEHOLDER] confirm cal.com URL is final -->
+            <div class="work-path__embed-placeholder" aria-hidden="true">Calendar loads when you scroll here</div>
+          </div>
         </article>
-        <article class="contact-cta contact-cta--dm">
-          <p class="contact-cta__label">The Urgent Path</p>
-          <h3>Message Daphne On Facebook</h3>
-          <p>Two lines about your offer, dropped in the chat. Same-day reply, weekday hours. Best when you want to talk before scheduling.</p>
-          <a class="cinema-btn cinema-btn--ghost" href="https://m.me/daphne.wong.funnel" target="_blank" rel="noopener">DM On Facebook</a>
+        <article class="work-path work-path--wa">
+          <h3>WhatsApp Us</h3>
+          <p>Two lines about your offer. Same day reply on weekdays.</p>
+          <a href="https://wa.me/0000000000" class="btn btn--ghost magnetic" data-magnetic target="_blank" rel="noopener noreferrer">Message On WhatsApp</a>
+          <!-- [PLACEHOLDER] real WhatsApp Business number -->
         </article>
       </div>
-
-      <p class="contact-cta__urgency">Only 3 audit slots left this week.</p>
+      <p class="footer-micro">DW Funnel · Built the way we build for clients. This page loads in under a second. Check.</p>
     </div>
   </section>
 
@@ -390,7 +284,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
-  <script type="module" src="assets/js/cinema-scroll.js?v=25"></script>
-  <script src="assets/js/cinema-sections.js?v=25"></script>
+  <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=26"></script>
 </body>
 </html>
