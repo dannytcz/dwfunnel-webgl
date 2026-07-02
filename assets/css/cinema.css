@@ -830,6 +830,59 @@ html, body {
 
 .cinema-header__cta { transition: opacity 0.4s ease, background 0.3s ease, border-color 0.3s ease; }
 
+/* Scroll hint — visible at sky / start of act0 */
+.cinema-scroll-hint {
+  position: absolute;
+  bottom: clamp(1.5rem, 4vh, 2.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(94, 234, 212, 0.65);
+  pointer-events: none;
+  opacity: var(--hint-opacity, 1);
+  transition: opacity 0.4s ease;
+}
+
+.cinema-scroll-hint::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 2rem;
+  margin: 0.5rem auto 0;
+  background: linear-gradient(to bottom, rgba(94, 234, 212, 0.5), transparent);
+  animation: hintPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.35; transform: scaleY(0.7); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+/* Bridge handoff — #problem slides up over cinema in last 12% of pin */
+body[data-cinema-bridge="true"] .cinema__media {
+  will-change: transform, opacity, filter;
+}
+
+#problem.cinema-bridge-active {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  transform: translateY(calc((1 - var(--bridge-t, 0)) * 100%));
+  pointer-events: none;
+  margin: 0;
+  box-shadow: 0 -24px 80px rgba(0, 0, 0, 0.55);
+}
+
+#problem.cinema-bridge-active .cinema-section__inner {
+  opacity: calc(0.35 + var(--bridge-t, 0) * 0.65);
+}
+
 /* ── Post-cinematic sections ──
    Each .cinema-section is a full-viewport stop with its own editorial stack.
    Background: var(--bg) — full editorial stack per section. */
@@ -839,6 +892,85 @@ html, body {
   color: var(--text);
   font-family: var(--font-body);
   padding-block: var(--section-pad-block);
+  position: relative;
+}
+
+.cinema-section[data-revealed="true"] .cinema-system__row,
+.cinema-section[data-revealed="true"] .platforms-list__item,
+.cinema-section[data-revealed="true"] .transform-list__item,
+.cinema-section[data-revealed="true"] .agitate-list__item,
+.cinema-section[data-revealed="true"] .testimonial,
+.cinema-section[data-revealed="true"] .contact-cta {
+  opacity: 1;
+  transform: none;
+}
+
+/* Section-specific initial states (GSAP animates from here) */
+#problem:not([data-revealed="true"]) .cinema-section__inner {
+  clip-path: inset(100% 0 0 0);
+}
+
+#problem.cinema-bridge-active .cinema-section__inner {
+  clip-path: none !important;
+}
+
+#build .cinema-system__row {
+  opacity: 0;
+  transform: translateX(-28px);
+}
+
+#transform .transform-list__item {
+  transform: translateX(-16px);
+  opacity: 0;
+}
+
+#platforms .platforms-list__item {
+  clip-path: inset(0 100% 0 0);
+}
+
+#how-it-works {
+  --timeline-h: 0%;
+}
+
+#how-it-works::before {
+  content: "";
+  position: absolute;
+  left: clamp(1.5rem, 5vw, 3rem);
+  top: 12%;
+  bottom: 12%;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  transform: scaleY(var(--timeline-h, 0));
+  transform-origin: top;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+#process .cinema-system__row .cinema-system__num {
+  transition: text-shadow 0.4s ease, color 0.4s ease;
+}
+
+#proof [data-count] {
+  display: inline-block;
+  min-width: 2ch;
+}
+
+#testimonials .testimonial {
+  transform: translateY(32px);
+}
+
+#work-with-us .contact-cta--call {
+  transform: translateX(-24px);
+  opacity: 0;
+}
+
+#work-with-us .contact-cta--dm {
+  transform: translateX(24px);
+  opacity: 0;
+}
+
+#work-with-us .contact-cta__urgency {
+  opacity: 0;
 }
 
 .cinema-section__inner {
