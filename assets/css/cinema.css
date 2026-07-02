@@ -9,8 +9,8 @@
   --text: #eaf2f6;
   --muted: #93a7b3;
   --gold: #d8b15c;
-  --font-display: "Clash Display", system-ui, sans-serif;
-  --font-body: "Satoshi", system-ui, sans-serif;
+  --font-display: "Cinzel", "Trajan Pro", serif;
+  --font-body: "EB Garamond", "EB Garamond 12", "Georgia", "Times New Roman", serif;
   --max-w: 72rem;
   --nav-h: 4.5rem;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -31,6 +31,7 @@ body {
   font-weight: 400;
   line-height: 1.55;
   overflow-x: hidden;
+  overflow-y: visible;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -136,13 +137,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   right: clamp(1rem, 3vw, 2rem);
   bottom: clamp(1rem, 3vw, 2rem);
   z-index: 90;
+  visibility: hidden;
   opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none;
-  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
 }
-.sticky-cta.is-visible { opacity: 1; transform: none; pointer-events: auto; }
-.sticky-cta.is-hidden { opacity: 0; transform: translateY(12px); pointer-events: none; }
 
 /* Buttons */
 .btn {
@@ -236,6 +233,10 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   display: inline-block;
   opacity: 0;
   transform: translateY(1.1em);
+}
+.hero__title .word {
+  display: inline-block;
+  white-space: nowrap;
 }
 .hero__sub {
   font-size: clamp(1rem, 2vw, 1.2rem);
@@ -345,6 +346,29 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transform: translateY(110%);
 }
 
+.booking-placeholder { padding: 0.5rem 0; }
+.booking-placeholder__slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.booking-slot {
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 242, 246, 0.2);
+  background: rgba(6, 16, 24, 0.4);
+  color: var(--muted);
+  font-size: 0.85rem;
+  opacity: 0.6;
+  cursor: default;
+}
+.booking-placeholder__cta {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
 /* Act 01 leak cards */
 .leak-cards {
   display: grid;
@@ -379,7 +403,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   inset: 0;
   z-index: 0;
 }
-.machine__canvas { width: 100%; height: 100%; }
+.machine__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.machine__canvas.is-active { opacity: 1; }
 .machine__scrim {
   position: absolute;
   inset: 0;

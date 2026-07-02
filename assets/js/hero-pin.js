@@ -30,14 +30,19 @@ export function initHeroPin({ scrubber, reducedMotion }) {
     onUpdate: (self) => {
       const p = self.progress;
       const frame = segmentToHeroFrame(p, frameCount);
-      scrubber.prewarm([frame - 1, frame, frame + 1]);
-      scrubber.draw(frame, { scale: 1 + p * 0.06, offsetY: -p * 18 });
+      scrubber.setTargetFrame(frame);
+      scrubber.setFx({ scale: 1 + p * 0.06, offsetY: -p * 18, offsetX: 0 });
       poster?.classList.toggle("is-hidden", p > 0.02);
       if (hint) hint.style.opacity = String(p < 0.05 ? 1 : Math.max(0, 1 - p / 0.08));
-      if (p <= 0.015) scrubber.draw(0, { scale: 1, offsetY: 0 });
+      if (p <= 0.015) {
+        scrubber.setTargetFrame(0);
+        scrubber.setFx({ scale: 1, offsetY: 0, offsetX: 0 });
+      }
     },
   });
 
   window.__heroPinST = st;
-  scrubber.draw(0, { scale: 1, offsetY: 0 });
+
+  scrubber.setTargetFrame(0);
+  scrubber.setFx({ scale: 1, offsetY: 0, offsetX: 0 });
 }

@@ -6,14 +6,10 @@ import { initSections } from "./sections.js";
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = window.matchMedia("(max-width: 767px)").matches;
-const saveData = navigator.connection?.saveData;
-const slowNet = ["slow-2g", "2g", "3g"].includes(navigator.connection?.effectiveType);
 
 export const appState = {
   reducedMotion,
   isMobile,
-  saveData,
-  slowNet,
   scrubber: null,
   machineScrubber: null,
   lenis: null,
@@ -56,12 +52,32 @@ function buildAct2Urls() {
 
 function initLenis() {
   if (reducedMotion || !window.Lenis) return null;
-  const lenis = new window.Lenis({ lerp: 0.08, smoothWheel: true });
+  const lenis = new window.Lenis({ autoRaf: false });
+  window.lenis = lenis;
   appState.lenis = lenis;
-  lenis.on("scroll", () => window.ScrollTrigger?.update());
-  window.gsap?.ticker.add((time) => lenis.raf(time * 1000));
-  window.gsap?.ticker.lagSmoothing(0);
+  lenis.on("scroll", window.ScrollTrigger.update);
+  window.gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+  window.gsap.ticker.lagSmoothing(0);
   return lenis;
+}
+
+function bindAnchorScroll(lenis) {
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      const id = a.getAttribute("href");
+      if (!id || id.length < 2) return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) {
+        lenis.scrollTo(target, { offset: 0 });
+      } else {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
 }
 
 async function init() {
@@ -82,30 +98,19 @@ async function init() {
   if (act0Urls.length && heroCanvas && hero) {
     const scrubber = new FrameScrubber(hero, heroCanvas, act0Urls, { reducedMotion });
     appState.scrubber = scrubber;
-    scrubber.resize();
+    scrubber.bindResize();
     loaderApi.track(async () => {
-      await scrubber.load((p) => loaderApi.setProgress(0.2 + p * 0.65), { eager: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
-      scrubber.draw(0, { scale: 1, offsetY: 0 });
+      await scrubber.load((p) => loaderApi.setProgress(0.1 + p * 0.85));
+      scrubber.setTargetFrame(0);
     });
   } else {
     loaderApi.setProgress(0.5);
   }
 
-  if (act2Urls.length && machineCanvas) {
-    const machineScrubber = new FrameScrubber(
-      document.getElementById("act-machine"),
-      machineCanvas,
-      act2Urls,
-      { reducedMotion }
-    );
-    appState.machineScrubber = machineScrubber;
-    machineScrubber.resize();
-    machineScrubber.prefetchRange(0, Math.min(20, act2Urls.length - 1)).catch(() => {});
-  }
-
   await loaderApi.finish();
 
-  initLenis();
+  const lenis = initLenis();
+  bindAnchorScroll(lenis);
 
   if (!reducedMotion && !isMobile && appState.scrubber) {
     initHeroPin(appState);
@@ -114,11 +119,38 @@ async function init() {
     document.getElementById("scrub-canvas")?.classList.remove("is-active");
   }
 
-  if (!reducedMotion && !isMobile && appState.machineScrubber) {
-    initMachinePin(appState);
+  initSections(appState);
+
+  if (act2Urls.length && machineCanvas) {
+    const machineScrubber = new FrameScrubber(
+      document.getElementById("act-machine"),
+      machineCanvas,
+      act2Urls,
+      { reducedMotion, debugLabel: "machine" }
+    );
+    appState.machineScrubber = machineScrubber;
+    machineScrubber.bindResize();
+    console.info(
+      `[machine-canvas] act2 frames: ${act2Urls.length}, path: assets/frames/cinema/act2/, sample: frame_00001.webp`
+    );
+    machineScrubber
+      .load()
+      .then(() => {
+        machineScrubber.setTargetFrame(0);
+        if (!reducedMotion && !isMobile) initMachinePin(appState);
+        window.ScrollTrigger.refresh();
+      })
+      .catch((err) => console.warn("machine preload failed", err));
+  } else {
+    machineCanvas?.setAttribute("aria-hidden", "true");
+    if (machineCanvas) machineCanvas.style.visibility = "hidden";
+    document.getElementById("act-machine")?.insertAdjacentHTML(
+      "beforeend",
+      "<!-- [PLACEHOLDER] machine section frame sequence not yet produced. Unhide and wire when frames are added. -->"
+    );
   }
 
-  initSections(appState);
+  await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }
 

@@ -1,3 +1,5 @@
+import { splitHeadlineWords } from "./text-split.js";
+
 const LOADER_CAP_MS = 2500;
 
 export function initMotionUi() {
@@ -9,15 +11,10 @@ export function initMotionUi() {
   const cursor = document.getElementById("cursor");
   const finePointer = window.matchMedia("(pointer: fine)").matches;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  let baseProgress = 0.15;
-  let assetProgress = 0.15;
-  const start = performance.now();
   const tasks = [];
 
   function setProgress(v) {
-    assetProgress = Math.max(assetProgress, Math.min(1, v));
-    const n = Math.round(assetProgress * 100);
+    const n = Math.round(Math.max(0, Math.min(1, v)) * 100);
     if (fill) fill.style.width = `${n}%`;
     if (pct) pct.textContent = `${n}%`;
   }
@@ -38,28 +35,29 @@ export function initMotionUi() {
   }
 
   function animateHeroIntro() {
+    const title = document.getElementById("hero-title");
+    const sub = document.getElementById("hero-sub");
+    const actions = document.getElementById("hero-actions");
+
+    if (title) splitHeadlineWords(title);
+
     if (!window.gsap || reducedMotion) {
       document.querySelectorAll(".hero__title .char").forEach((c) => {
         c.style.opacity = "1";
         c.style.transform = "none";
       });
-      const sub = document.getElementById("hero-sub");
-      const actions = document.getElementById("hero-actions");
-      if (sub) { sub.style.opacity = "1"; sub.style.transform = "none"; }
-      if (actions) { actions.style.opacity = "1"; actions.style.transform = "none"; }
+      if (sub) {
+        sub.style.opacity = "1";
+        sub.style.transform = "none";
+      }
+      if (actions) {
+        actions.style.opacity = "1";
+        actions.style.transform = "none";
+      }
       return;
     }
-    const title = document.getElementById("hero-title");
-    if (title && !title.querySelector(".char")) {
-      const text = title.textContent;
-      title.textContent = "";
-      text.split("").forEach((ch) => {
-        const span = document.createElement("span");
-        span.className = "char";
-        span.textContent = ch === " " ? "\u00a0" : ch;
-        title.appendChild(span);
-      });
-    }
+
+    window.gsap.set(".hero__title .char", { opacity: 0, y: "1.1em" });
     const tl = window.gsap.timeline();
     tl.to(".hero__title .char", {
       opacity: 1,
@@ -68,12 +66,16 @@ export function initMotionUi() {
       stagger: 0.02,
       ease: "power3.out",
     });
-    tl.to(["#hero-sub", "#hero-actions"], {
-      opacity: 1,
-      y: 0,
-      duration: 0.7,
-      ease: "power2.out",
-    }, 0.3);
+    tl.to(
+      ["#hero-sub", "#hero-actions"],
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: "power2.out",
+      },
+      0.3
+    );
   }
 
   if (finePointer && !reducedMotion && cursor) {
@@ -122,48 +124,37 @@ export function initMotionUi() {
   }
 
   if (window.ScrollTrigger && sticky && nav) {
+    window.gsap.set(sticky, { autoAlpha: 0, y: 12 });
+
     window.ScrollTrigger.create({
       start: "100vh top",
       onEnter: () => nav.classList.add("is-solid"),
       onLeaveBack: () => nav.classList.remove("is-solid"),
     });
+
+    const showPill = () => {
+      window.gsap.to(sticky, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" });
+    };
+    const hidePill = () => {
+      window.gsap.to(sticky, { autoAlpha: 0, y: 12, duration: 0.35, ease: "power2.out" });
+    };
+
     window.ScrollTrigger.create({
       trigger: "#act-leak",
-      start: "bottom 80%",
-      onEnter: () => sticky.classList.add("is-visible"),
-      onLeaveBack: () => sticky.classList.remove("is-visible"),
+      start: "top 85%",
+      onEnter: showPill,
+      onLeaveBack: hidePill,
     });
+
     window.ScrollTrigger.create({
       trigger: "#act-work",
       start: "top 85%",
-      end: "bottom top",
-      onEnter: () => sticky.classList.add("is-hidden"),
-      onLeave: () => sticky.classList.remove("is-hidden"),
-      onEnterBack: () => sticky.classList.add("is-hidden"),
-      onLeaveBack: () => sticky.classList.remove("is-hidden"),
+      onEnter: hidePill,
+      onLeaveBack: showPill,
     });
   }
 
-  document.fonts?.ready?.then(() => setProgress(0.25)).catch(() => {});
+  document.fonts?.ready?.then(() => setProgress(0.1)).catch(() => {});
 
-  document.querySelectorAll('a[href^="#"]').forEach((a) => {
-    a.addEventListener("click", (e) => {
-      const id = a.getAttribute("href");
-      if (!id || id.length < 2) return;
-      const target = document.querySelector(id);
-      if (!target) return;
-      e.preventDefault();
-      if (window.gsap?.to) {
-        window.gsap.to(window, {
-          duration: 1,
-          ease: "power2.inOut",
-          scrollTo: { y: target, autoKill: true },
-        });
-      } else {
-        target.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  });
-
-  return { setProgress, track, finish, baseProgress };
+  return { setProgress, track, finish };
 }

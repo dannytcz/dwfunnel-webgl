@@ -1,3 +1,5 @@
+import { splitLinesWords } from "./text-split.js";
+
 export function initSections({ reducedMotion, isMobile }) {
   if (!window.gsap || !window.ScrollTrigger) return;
 
@@ -12,29 +14,15 @@ export function initSections({ reducedMotion, isMobile }) {
     return;
   }
 
-  splitLines(document.querySelector("#act-leak .split-lines"));
+  splitLinesWords(document.querySelector("#act-leak .split-lines"));
   revealLeakCards(start);
   revealMethod(start);
   revealPlatforms(start);
   revealWork(start);
   initStats();
-  initCalEmbed();
 }
 
-function splitLines(el) {
-  if (!el || el.dataset.split) return;
-  const text = el.textContent.trim();
-  el.dataset.split = "1";
-  el.innerHTML = "";
-  text.split(". ").forEach((part, i, arr) => {
-    const line = document.createElement("span");
-    line.className = "line";
-    const inner = document.createElement("span");
-    inner.className = "line-inner";
-    inner.textContent = part + (i < arr.length - 1 ? "." : "");
-    line.appendChild(inner);
-    el.appendChild(line);
-  });
+function revealLeakCards(start) {
   window.gsap.to("#act-leak .line-inner", {
     scrollTrigger: { trigger: "#act-leak", start: "top 75%", once: true },
     y: 0,
@@ -42,9 +30,6 @@ function splitLines(el) {
     stagger: 0.08,
     ease: "power3.out",
   });
-}
-
-function revealLeakCards(start) {
   window.gsap.to(".leak-card", {
     scrollTrigger: { trigger: ".leak-cards", start, once: true },
     opacity: 1,
@@ -146,29 +131,6 @@ function initStats() {
           },
         });
       });
-    },
-  });
-}
-
-function initCalEmbed() {
-  const host = document.getElementById("cal-embed");
-  if (!host || host.dataset.loaded) return;
-  const src = host.dataset.src;
-  if (!src) return;
-
-  window.ScrollTrigger.create({
-    trigger: "#act-work",
-    start: "top 75%",
-    once: true,
-    onEnter: () => {
-      if (host.dataset.loaded) return;
-      host.dataset.loaded = "1";
-      const iframe = document.createElement("iframe");
-      iframe.src = src;
-      iframe.title = "Book a call with DW Funnel";
-      iframe.loading = "lazy";
-      host.innerHTML = "";
-      host.appendChild(iframe);
     },
   });
 }

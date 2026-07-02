@@ -6,11 +6,11 @@
   <title>DW Funnel · Beautiful On The Surface. Ruthless Underneath.</title>
   <meta name="description" content="DW Funnel builds cinematic landing pages with a conversion machine wired beneath them. For business owners who want booked calls, not another pretty template." />
   <meta name="theme-color" content="#061018" />
-  <link rel="preload" href="assets/fonts/Satoshi-400.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/fonts/ClashDisplay-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/fonts/fonts.css" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=26" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=27" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -264,9 +264,16 @@
         <article class="work-path work-path--call">
           <h3>Book The Call</h3>
           <p>Pick a slot. Bring your current page if you have one.</p>
-          <div class="work-path__embed" id="cal-embed" data-src="https://cal.com/daphne-wong-funnel/20min">
-            <!-- [PLACEHOLDER] confirm cal.com URL is final -->
-            <div class="work-path__embed-placeholder" aria-hidden="true">Calendar loads when you scroll here</div>
+          <div class="work-path__embed" id="cal-embed">
+            <!-- [PLACEHOLDER] Replace this block with the real cal.com inline embed once the account is live. Keep lazy loading: only inject the embed script when Act 06 enters viewport. -->
+            <div class="booking-placeholder">
+              <div class="booking-placeholder__slots">
+                <button type="button" class="booking-slot" disabled>Mon 10:00</button>
+                <button type="button" class="booking-slot" disabled>Tue 14:30</button>
+                <button type="button" class="booking-slot" disabled>Thu 11:00</button>
+              </div>
+              <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary booking-placeholder__cta" target="_blank" rel="noopener noreferrer">Map My Funnel</a>
+            </div>
           </div>
         </article>
         <article class="work-path work-path--wa">
@@ -285,6 +292,6 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=26"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=27"></script>
 </body>
 </html>

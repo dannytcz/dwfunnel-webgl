@@ -2,8 +2,11 @@ const MACHINE_PIN_VH = 300;
 
 export function initMachinePin({ machineScrubber, reducedMotion }) {
   const pin = document.getElementById("machine-pin");
+  const canvas = document.getElementById("machine-canvas");
   const components = Array.from(document.querySelectorAll(".machine-component"));
   const frameCount = machineScrubber.urls.length;
+
+  canvas?.classList.add("is-active");
 
   window.ScrollTrigger.create({
     trigger: pin,
@@ -15,7 +18,8 @@ export function initMachinePin({ machineScrubber, reducedMotion }) {
     onUpdate: (self) => {
       const p = self.progress;
       const frame = Math.round(p * (frameCount - 1));
-      machineScrubber.draw(frame, { scale: 1 + p * 0.04, offsetY: -p * 12 });
+      machineScrubber.setTargetFrame(frame);
+      machineScrubber.setFx({ scale: 1 + p * 0.04, offsetY: -p * 12, offsetX: 0 });
 
       const idx = Math.min(2, Math.floor(p * 3));
       components.forEach((el, i) => {
