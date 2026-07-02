@@ -1,7 +1,4 @@
-import { easeSegment } from "./scroll-timeline.js?v=31";
-
 const HERO_PIN_VH = 300;
-const HOLD_SHARE = 0.12;
 // First frame where the scene is clearly visible. act0 frame 0 is the open sky
 // and is already visible, so scroll position zero starts here.
 const START_FRAME = 0;
@@ -10,11 +7,12 @@ const START_FRAME = 0;
 const TEXT_EXIT_START = 0.8; // final 20%: text block resolves out
 const RESOLVE_START = 0.9; // final 10%: overlay ramps to page background
 
+// FIX 1: distribute the visible frame range evenly across the full pin (0→1)
+// so every 10% of scroll advances frames. No hold, no easing compression.
 function segmentToHeroFrame(local, frameCount) {
-  if (local <= HOLD_SHARE) return START_FRAME;
-  const dive = (local - HOLD_SHARE) / (1 - HOLD_SHARE);
-  const t = easeSegment(dive, "dive");
-  return START_FRAME + Math.round(t * (frameCount - 1 - START_FRAME));
+  const p = Math.max(0, Math.min(1, local));
+  const endFrame = frameCount - 1;
+  return START_FRAME + Math.round(p * (endFrame - START_FRAME));
 }
 
 export function initHeroPin({ scrubber, reducedMotion }) {
@@ -27,12 +25,16 @@ export function initHeroPin({ scrubber, reducedMotion }) {
   const frameCount = scrubber.urls.length;
 
   canvas?.classList.add("is-active");
+  // FIX 2: only tighten the post-pin gap when the hero pin is actually active.
+  document.body.classList.add("hero-pinned");
 
   // CHANGE 3: draw the first visible frame immediately, before any scroll.
   scrubber.setTargetFrame(START_FRAME);
   scrubber.setFx({ scale: 1, offsetY: 0, offsetX: 0 });
   scrubber.renderNow?.();
-  console.info(`[hero] scene start frame index: ${START_FRAME}`);
+  console.info(
+    `[hero] frame mapping — start frame: ${START_FRAME}, end frame: ${frameCount - 1}, pin length: ${HERO_PIN_VH}% (linear, even across 0→1)`
+  );
 
   const st = window.ScrollTrigger.create({
     trigger: pin,
@@ -41,6 +43,9 @@ export function initHeroPin({ scrubber, reducedMotion }) {
     pin: true,
     scrub: reducedMotion ? false : 0.12,
     anticipatePin: 1,
+    // Refresh before triggers created earlier (e.g. the sticky pill in
+    // motion-ui.js) so this pin's spacing is applied to their positions.
+    refreshPriority: 2,
     onUpdate: (self) => {
       const p = self.progress;
       const frame = segmentToHeroFrame(p, frameCount);

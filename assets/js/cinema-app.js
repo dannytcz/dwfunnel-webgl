@@ -1,8 +1,8 @@
-import { FrameScrubber } from "./frame-scrub.js?v=31";
-import { initHeroPin } from "./hero-pin.js?v=31";
-import { initMachinePin } from "./machine-pin.js?v=31";
-import { initMotionUi } from "./motion-ui.js?v=31";
-import { initSections } from "./sections.js?v=31";
+import { FrameScrubber } from "./frame-scrub.js?v=40";
+import { initHeroPin } from "./hero-pin.js?v=40";
+import { initMachinePin } from "./machine-pin.js?v=40";
+import { initMotionUi, initStickyPill } from "./motion-ui.js?v=40";
+import { initSections } from "./sections.js?v=40";
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = window.matchMedia("(max-width: 767px)").matches;
@@ -120,6 +120,11 @@ async function init() {
   }
 
   initSections(appState);
+
+  // Create the sticky pill trigger now that the hero pin exists, so its resolved
+  // start/end include pin spacing (the machine pin push is folded in on the
+  // subsequent ScrollTrigger.refresh calls, same as the section triggers).
+  initStickyPill();
 
   if (act2Urls.length && machineCanvas) {
     const machineScrubber = new FrameScrubber(

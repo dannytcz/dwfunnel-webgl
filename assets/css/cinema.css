@@ -301,6 +301,13 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   50% { opacity: 1; transform: scaleY(1); }
 }
 
+/* FIX 2: the resolve completes at the pin end, but the hero's own height (100vh)
+   would otherwise scroll past as flat background before the trust strip arrives.
+   Pull the trust strip up so it lands ~120px after the resolve. Only applies when
+   the hero pin is active (class added by hero-pin.js); the fixed, opaque hero
+   fully covers the strip during the pin, so it never peeks early. */
+.hero-pinned #trust-strip { margin-top: calc(120px - 100vh); }
+
 /* Trust strip */
 .trust-strip {
   display: grid;
@@ -460,12 +467,22 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   display: grid;
   gap: 1.5rem;
 }
+/* FIX 4: soft scrim behind the component column only, between canvas and text */
+.machine-components::before {
+  content: "";
+  position: absolute;
+  inset: -1rem -0.75rem;
+  z-index: -1;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(6, 16, 24, 0.55) 0%, rgba(6, 16, 24, 0) 65%);
+  pointer-events: none;
+}
 .machine-component {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 1.25rem;
   align-items: start;
-  opacity: 0.4;
+  opacity: 0.55;
   transform: scale(0.98);
   transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
 }
@@ -688,23 +705,17 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   margin: 0 0 0.5rem;
 }
 .work-path p { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; }
+/* FIX 5: no fixed height — wrap the slot chips + CTA, 24px bottom padding */
 .work-path__embed {
-  min-height: 420px;
   border-radius: 8px;
   overflow: hidden;
   background: rgba(6, 16, 24, 0.5);
+  padding: 1rem 1rem 24px;
 }
 .work-path__embed iframe {
   width: 100%;
   height: 420px;
   border: 0;
-}
-.work-path__embed-placeholder {
-  display: grid;
-  place-items: center;
-  height: 420px;
-  color: var(--muted);
-  font-size: 0.85rem;
 }
 .footer-micro {
   text-align: center;

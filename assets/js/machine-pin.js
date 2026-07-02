@@ -15,6 +15,9 @@ export function initMachinePin({ machineScrubber, reducedMotion }) {
     pin: true,
     scrub: reducedMotion ? false : 0.15,
     anticipatePin: 1,
+    // Refresh before the sticky pill trigger so this pin's spacing is applied
+    // to the pill's resolved start/end positions.
+    refreshPriority: 1,
     onUpdate: (self) => {
       const p = self.progress;
       const frame = Math.round(p * (frameCount - 1));
@@ -24,7 +27,7 @@ export function initMachinePin({ machineScrubber, reducedMotion }) {
       const idx = Math.min(2, Math.floor(p * 3));
       components.forEach((el, i) => {
         el.classList.toggle("is-active", i === idx);
-        el.style.opacity = i < idx ? "0.4" : i === idx ? "1" : "0.4";
+        el.style.opacity = i < idx ? "0.55" : i === idx ? "1" : "0.55";
         if (i < idx) el.style.transform = "scale(0.96)";
         else if (i === idx) el.style.transform = "scale(1)";
         else el.style.transform = "scale(0.96)";

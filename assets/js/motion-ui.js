@@ -1,4 +1,4 @@
-import { splitHeadlineWords } from "./text-split.js?v=31";
+import { splitHeadlineWords } from "./text-split.js?v=40";
 
 const LOADER_CAP_MS = 2500;
 
@@ -124,6 +124,8 @@ export function initMotionUi() {
   }
 
   if (window.ScrollTrigger && sticky && nav) {
+    // Pill starts hidden; the show/hide ScrollTrigger is created later, after the
+    // pins exist (see initStickyPill), so pin spacing is baked into its position.
     window.gsap.set(sticky, { autoAlpha: 0, y: 12 });
 
     window.ScrollTrigger.create({
@@ -131,28 +133,43 @@ export function initMotionUi() {
       onEnter: () => nav.classList.add("is-solid"),
       onLeaveBack: () => nav.classList.remove("is-solid"),
     });
-
-    const showPill = () => {
-      window.gsap.to(sticky, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" });
-    };
-    const hidePill = () => {
-      window.gsap.to(sticky, { autoAlpha: 0, y: 12, duration: 0.35, ease: "power2.out" });
-    };
-
-    // CHANGE 5: single trigger from top of trust strip to top of Act 06.
-    window.ScrollTrigger.create({
-      trigger: "#trust-strip",
-      start: "top 85%",
-      endTrigger: "#act-work",
-      end: "top 85%",
-      onEnter: showPill,
-      onLeave: hidePill,
-      onEnterBack: showPill,
-      onLeaveBack: hidePill,
-    });
   }
 
   document.fonts?.ready?.then(() => setProgress(0.1)).catch(() => {});
 
   return { setProgress, track, finish };
+}
+
+/**
+ * CHANGE 5 / FIX 3: sticky pill show/hide.
+ * Created AFTER the hero and machine pins so ScrollTrigger bakes their pin
+ * spacing into the pill's resolved start/end (creating it before the pins, as
+ * in the loader, leaves it in unpinned coordinates). Anchored to the clean
+ * #act-leak / #act-work elements rather than #trust-strip, whose FIX 2 negative
+ * margin corrupts position resolution. "top top" on #act-leak resolves to just
+ * past the hero pin's release, so the pill stays hidden through the entire pin,
+ * appears as Act 01 reaches the top, and hides again as Act 06 enters.
+ */
+export function initStickyPill() {
+  const sticky = document.getElementById("sticky-cta");
+  if (!window.ScrollTrigger || !sticky) return;
+
+  const showPill = () => {
+    window.gsap.to(sticky, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" });
+  };
+  const hidePill = () => {
+    window.gsap.to(sticky, { autoAlpha: 0, y: 12, duration: 0.35, ease: "power2.out" });
+  };
+
+  window.ScrollTrigger.create({
+    trigger: "#act-leak",
+    start: "top top",
+    endTrigger: "#act-work",
+    end: "top 85%",
+    invalidateOnRefresh: true,
+    onEnter: showPill,
+    onLeave: hidePill,
+    onEnterBack: showPill,
+    onLeaveBack: hidePill,
+  });
 }
