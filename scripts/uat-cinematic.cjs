@@ -1,10 +1,10 @@
-// UAT: native scroll cinema — pin/scrub through acts, then post-cinematic sections.
-const { chromium } = require('playwright');
-const fs = require('fs');
-const path = require('path');
+// UAT: native scroll cinema v25 — act0 sky hold, nav dots, handoff veil, section layouts.
+const { chromium } = require("playwright");
+const fs = require("fs");
+const path = require("path");
 
-const URL = process.env.UAT_URL || 'https://dwfunnel-webgl.vercel.app/cinema.html?v=23';
-const OUT = path.resolve(__dirname, '..', 'previews');
+const URL = process.env.UAT_URL || "https://dwfunnel-webgl.vercel.app/cinema.html?v=25";
+const OUT = path.resolve(__dirname, "..", "previews");
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
@@ -13,84 +13,150 @@ const OUT = path.resolve(__dirname, '..', 'previews');
   const page = await ctx.newPage();
 
   const errors = [];
-  page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
-  page.on('console', (m) => {
-    if (m.type() === 'error') errors.push('console.error: ' + m.text());
+  page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push("console.error: " + m.text());
   });
 
-  console.log('navigating ->', URL);
-  await page.goto(URL, { waitUntil: 'networkidle', timeout: 60000 });
+  console.log("navigating ->", URL);
+  await page.goto(URL, { waitUntil: "networkidle", timeout: 90000 });
   await page.waitForTimeout(3500);
 
-  const sample = await page.evaluate(() => ({
-    loaderDone: !!document.getElementById('loader')?.classList.contains('is-done'),
+  const atTop = await page.evaluate(() => ({
+    loaderDone: !!document.getElementById("loader")?.classList.contains("is-done"),
     pinTrigger: !!window.__cinemaPinST,
-    scrubber: window.__scrubber ? {
-      total: window.__scrubber.frames?.length ?? 0,
-      lastDrawn: window.__scrubber._lastDrawnIndex ?? null,
-    } : null,
+    lastDrawn: window.__scrubber?._lastDrawnIndex ?? null,
     heroCopyVisible: (() => {
-      const el = document.querySelector('#hero-copy-block');
-      if (!el) return null;
-      return parseFloat(getComputedStyle(el).opacity) > 0.5;
+      const el = document.querySelector("#hero-copy-block");
+      return el ? parseFloat(getComputedStyle(el).opacity) > 0.5 : false;
     })(),
-    problemRows: document.querySelectorAll('#problem-system .cinema-system__row').length,
-    transformItems: document.querySelectorAll('.transform-list__item').length,
-    processSteps: document.querySelectorAll('#process .cinema-system__row').length,
+    heroDotActive: !!document.querySelector('.page-nav__dot[data-nav-id="hero"]')?.classList.contains("is-active"),
+    idleHidden: document.getElementById("cinema-idle")?.classList.contains("is-hidden"),
+    handoffExists: !!document.getElementById("cinema-handoff"),
+    problemFixed: getComputedStyle(document.getElementById("problem")).position !== "fixed",
+    problemRows: document.querySelectorAll("#problem-system .cinema-system__row").length,
+    buildCards: document.querySelectorAll("#build .build-card").length,
+    timelineNodes: document.querySelectorAll("#how-it-works .timeline__node").length,
   }));
-  console.log('cinematic sample:', JSON.stringify(sample, null, 2));
+  console.log("at top:", JSON.stringify(atTop, null, 2));
 
-  await page.screenshot({ path: path.join(OUT, 'uat-01-hero.png') });
+  if (atTop.lastDrawn !== 0) {
+    console.error("FAIL: expected frame 0 (sky) at page top, got", atTop.lastDrawn);
+    process.exit(1);
+  }
+  if (!atTop.heroDotActive) {
+    console.error("FAIL: hero nav dot should be active at scroll top");
+    process.exit(1);
+  }
+  if (!atTop.problemFixed) {
+    console.error("FAIL: #problem must not use position:fixed bridge");
+    process.exit(1);
+  }
 
-  // Scroll through pin (passage + underworld)
-  await page.evaluate(() => window.scrollTo({ top: window.innerHeight * 2.5, behavior: 'instant' }));
-  await page.waitForTimeout(800);
-  await page.screenshot({ path: path.join(OUT, 'uat-02-mid-pin.png') });
+  await page.screenshot({ path: path.join(OUT, "uat-v25-01-hero.png") });
 
-  const sections = ['problem', 'build', 'transform', 'platforms', 'how-it-works', 'process', 'proof', 'testimonials', 'work-with-us'];
+  const pinStart = await page.evaluate(() => window.__cinemaPinST?.start ?? 0);
+  const pinEnd = await page.evaluate(() => window.__cinemaPinST?.end ?? window.innerHeight * 4);
+  const scroll5 = pinStart + (pinEnd - pinStart) * 0.05;
+
+  await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), scroll5);
+  await page.waitForTimeout(600);
+
+  const after5pct = await page.evaluate(() => ({
+    lastDrawn: window.__scrubber?._lastDrawnIndex ?? null,
+    globalP: window.__cinemaProgress?.globalP ?? null,
+  }));
+  console.log("after 5% pin scroll:", after5pct);
+
+  if (after5pct.lastDrawn !== null && after5pct.lastDrawn < 0) {
+    console.error("FAIL: frame index went backward on first scroll");
+    process.exit(1);
+  }
+
+  await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), pinEnd * 0.5);
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: path.join(OUT, "uat-v25-02-mid-pin.png") });
+
+  const sections = [
+    "problem",
+    "build",
+    "transform",
+    "platforms",
+    "how-it-works",
+    "process",
+    "proof",
+    "testimonials",
+    "work-with-us",
+  ];
   for (const id of sections) {
     await page.evaluate((sid) => {
-      const el = document.getElementById(sid);
-      if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+      document.getElementById(sid)?.scrollIntoView({ behavior: "instant", block: "start" });
     }, id);
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(700);
     const data = await page.evaluate((sid) => {
       const el = document.getElementById(sid);
       if (!el) return null;
-      const h2 = el.querySelector('h2');
-      const lead = el.querySelector('.cinema-section__lead');
-      return {
-        h2: h2?.innerText?.slice(0, 80) ?? null,
-        lead: lead?.innerText?.slice(0, 80) ?? null,
-        rows: el.querySelectorAll('.cinema-system__row, .transform-list__item, .agitate-list__item').length,
-      };
+      return { h2: el.querySelector("h2")?.innerText?.slice(0, 60) ?? null, revealed: el.getAttribute("data-revealed") };
     }, id);
     console.log(`section ${id}:`, JSON.stringify(data));
-    await page.screenshot({ path: path.join(OUT, `uat-${id}.png`) });
   }
 
-  // Scroll back up to hero
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await page.waitForTimeout(800);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.waitForTimeout(900);
+
   const backTop = await page.evaluate(() => ({
     scrollY: window.scrollY,
-    heroVisible: parseFloat(getComputedStyle(document.querySelector('#hero-copy-block')).opacity) > 0.3,
+    lastDrawn: window.__scrubber?._lastDrawnIndex ?? null,
+    heroDotActive: !!document.querySelector('.page-nav__dot[data-nav-id="hero"]')?.classList.contains("is-active"),
+    problemVisible: (() => {
+      const el = document.getElementById("problem");
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top < window.innerHeight && r.bottom > 0;
+    })(),
+    handoffActive: document.getElementById("cinema-handoff")?.classList.contains("is-active"),
   }));
-  console.log('scroll back to top:', backTop);
+  console.log("scroll back to top:", backTop);
+
+  if (backTop.lastDrawn !== 0) {
+    console.error("FAIL: expected frame 0 after scroll back to top");
+    process.exit(1);
+  }
+  if (backTop.problemVisible) {
+    console.error("FAIL: #problem visible when scrolled back to hero");
+    process.exit(1);
+  }
+  if (backTop.handoffActive) {
+    console.error("FAIL: handoff veil still active at scroll top");
+    process.exit(1);
+  }
+
+  await page.click('.page-nav__dot[data-nav-id="hero"]');
+  await page.waitForTimeout(800);
+  const heroClick = await page.evaluate(() => window.scrollY);
+  console.log("hero dot click scrollY:", heroClick);
+  if (heroClick > 50) {
+    console.error("FAIL: hero dot click should scroll to top");
+    process.exit(1);
+  }
 
   await browser.close();
 
   if (errors.length) {
-    console.error('ERRORS:', errors);
+    console.error("ERRORS:", errors);
     process.exit(1);
   }
-  if (!sample.pinTrigger) {
-    console.error('FAIL: ScrollTrigger pin not initialized');
+  if (!atTop.pinTrigger) {
+    console.error("FAIL: ScrollTrigger pin not initialized");
     process.exit(1);
   }
-  if (sample.problemRows < 3) {
-    console.error('FAIL: problem section missing rows');
+  if (atTop.problemRows < 3) {
+    console.error("FAIL: problem section missing rows");
     process.exit(1);
   }
-  console.log('UAT passed');
+  if (atTop.buildCards < 3) {
+    console.error("FAIL: build section missing cards");
+    process.exit(1);
+  }
+  console.log("UAT passed");
 })();

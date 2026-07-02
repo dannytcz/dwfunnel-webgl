@@ -14,6 +14,8 @@ import {
 
 const MIN_LOADER_MS = 3000;
 const ACT_KEYS = ["act0", "act1", "act2"];
+const SKY_FRAME = 0;
+const RESET_THRESHOLD = 0.015;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -25,20 +27,21 @@ const stage = cinema?.querySelector(".cinema__stage");
 const canvas = document.getElementById("scrub-canvas");
 const idleImg = document.getElementById("cinema-idle");
 const flash = document.getElementById("cinema-flash");
-const problemSection = document.getElementById("problem");
 const scrollHint = document.getElementById("scroll-hint");
+const handoffEl = document.getElementById("cinema-handoff");
 const starsLayer = () => document.querySelector(".cinema__stars");
 
 const state = {
   currentStation: 0,
   pinTrigger: null,
-  underworldCardsLocked: false,
-  bridgeActive: false,
+  scrubber: null,
+  globalP: 0,
 };
 
 const pageNavApi = {
   getCinemaStation: () => state.currentStation,
-  onCinemaStationChange: null,
+  getGlobalProgress: () => state.globalP,
+  onProgress: null,
   scrollToPinProgress: (progress) => scrollToPinProgress(progress),
   goToCinemaStation: (idx) => goToCinemaStation(idx),
   goToScrollSection: (sel) => goToScrollSection(sel),
@@ -94,32 +97,32 @@ function setProgress(value) {
   if (pct) pct.textContent = `${n}%`;
 }
 
-function showIdle() {
-  if (idleImg) idleImg.classList.remove("is-hidden");
-  if (canvas) canvas.classList.remove("is-active");
-}
-
 function showFilm() {
-  if (idleImg) idleImg.classList.add("is-hidden");
+  if (idleImg) {
+    idleImg.classList.add("is-hidden");
+    idleImg.setAttribute("aria-hidden", "true");
+  }
   if (canvas) canvas.classList.add("is-active");
 }
 
 function revealUnderworldCards(local, segment) {
   const revealAt = segment.cardRevealAt ?? 0.38;
   if (local < revealAt) return;
-  state.underworldCardsLocked = true;
   document.querySelectorAll(".underworld-card").forEach((card, i) => {
     const t = local - revealAt - i * 0.04;
     if (t > 0) card.classList.add("is-revealed");
   });
 }
 
-function clearBridge() {
-  if (!state.bridgeActive) return;
-  state.bridgeActive = false;
-  document.body.removeAttribute("data-cinema-bridge");
-  problemSection?.classList.remove("cinema-bridge-active");
-  problemSection?.style.removeProperty("--bridge-t");
+function resetUnderworldCards() {
+  document.querySelectorAll(".underworld-card").forEach((c) => c.classList.remove("is-revealed"));
+}
+
+function clearHandoff(force = false) {
+  if (!force && !handoffEl?.classList.contains("is-active")) return;
+  handoffEl?.classList.remove("is-active");
+  handoffEl?.style.removeProperty("--veil-opacity");
+  document.body.removeAttribute("data-cinema-handoff");
   const media = cinema?.querySelector(".cinema__media");
   if (media) {
     media.style.removeProperty("opacity");
@@ -128,30 +131,18 @@ function clearBridge() {
   }
 }
 
-function applyBridge(bridgeT, ui) {
-  state.bridgeActive = bridgeT > 0.001;
-  if (!state.bridgeActive) {
-    clearBridge();
+function applyHandoff(bridgeT) {
+  if (bridgeT <= 0.001) {
+    clearHandoff(true);
     return;
   }
-
-  document.body.setAttribute("data-cinema-bridge", "true");
-  problemSection?.classList.add("cinema-bridge-active");
-  problemSection?.style.setProperty("--bridge-t", String(bridgeT));
-
+  document.body.setAttribute("data-cinema-handoff", "true");
+  handoffEl?.classList.add("is-active");
+  handoffEl?.style.setProperty("--veil-opacity", String(bridgeT * 0.85));
   const media = cinema?.querySelector(".cinema__media");
   if (media) {
-    media.style.opacity = String(1 - bridgeT * 0.4);
-    media.style.transform = `scale(${1 + bridgeT * 0.05})`;
-    media.style.filter = `brightness(${1 - bridgeT * 0.25})`;
-  }
-
-  // Underworld copy stays locked during bridge — slight lift only.
-  const underworld = document.querySelector("#underworld-copy-block");
-  if (underworld && ui.lockCopy) {
-    underworld.style.opacity = "1";
-    underworld.style.transform = `translateY(${-bridgeT * 40}px)`;
-    underworld.style.visibility = "visible";
+    media.style.opacity = String(1 - bridgeT * 0.35);
+    media.style.transform = `scale(${1 + bridgeT * 0.04})`;
   }
 }
 
@@ -166,7 +157,7 @@ function applyUi(segment, ui, fx, local = 0) {
       el.style.transform = ui.lockCopy && ui.bridgeT <= 0 ? "translateY(0)" : `translateY(${ui.copyY}px)`;
       el.style.visibility = opacity > 0.02 ? "visible" : "hidden";
       el.setAttribute("aria-hidden", opacity > 0.02 ? "false" : "true");
-    } else if (!ui.lockCopy || seg.id !== "underworld") {
+    } else if (!(ui.lockCopy && seg.id === "underworld")) {
       el.style.opacity = "0";
       el.style.visibility = "hidden";
       el.setAttribute("aria-hidden", "true");
@@ -176,7 +167,6 @@ function applyUi(segment, ui, fx, local = 0) {
   setScrim(ui.scrim ?? 0.35);
 
   if (scrollHint) {
-    scrollHint.style.setProperty("--hint-opacity", String(ui.hintOpacity ?? 0));
     scrollHint.style.opacity = String(ui.hintOpacity ?? 0);
   }
 
@@ -195,22 +185,52 @@ function applyUi(segment, ui, fx, local = 0) {
     sl.style.opacity = String(0.45 + starP * 0.35);
   }
 
-  applyBridge(ui.bridgeT, ui);
+  applyHandoff(ui.bridgeT);
 }
 
-function updateStationFromProgress(globalP) {
+function resetToSky() {
+  const scrubber = state.scrubber;
+  if (!scrubber) return;
+  showFilm();
+  scrubber.draw(SKY_FRAME, { scale: 1, offsetY: 0 });
+  resetUnderworldCards();
+  clearHandoff(true);
+  applyUi(
+    CINEMA_SEGMENTS[0],
+    segmentUi(CINEMA_SEGMENTS[0], 0, 0),
+    segmentFx(CINEMA_SEGMENTS[0], 0, 0),
+    0
+  );
+  state.currentStation = 0;
+  if (cinema) cinema.setAttribute("data-station-active", "hero");
+  pageNavApi.onProgress?.(0, 0);
+}
+
+function updateProgress(globalP) {
+  state.globalP = globalP;
+  window.__cinemaProgress = {
+    globalP,
+    stationIndex: state.currentStation,
+    bridgeActive: globalP >= BRIDGE_START,
+  };
+
   if (globalP >= BRIDGE_START) return;
+
   const { index } = globalToSegment(globalP);
   if (index !== state.currentStation) {
     state.currentStation = index;
-    pageNavApi.onCinemaStationChange?.(index);
     if (cinema) {
       cinema.setAttribute("data-station-active", CINEMA_SEGMENTS[index]?.id || "");
     }
   }
+  pageNavApi.onProgress?.(globalP, state.currentStation);
 }
 
 function scrollToPinProgress(progress) {
+  if (progress <= 0.001) {
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    return;
+  }
   const st = state.pinTrigger;
   if (!st || !window.gsap) return;
   const p = Math.max(0, Math.min(1, progress));
@@ -247,15 +267,8 @@ function prefetchActs(scrubber) {
     scrubber.prefetchRange(offsets.act1, offsets.act1 + act1Len - 1).catch(() => {});
   }
   if (act2Len) {
-    window.requestIdleCallback?.(
-      () => {
-        scrubber.prefetchRange(offsets.act2, offsets.act2 + act2Len - 1).catch(() => {});
-      },
-      { timeout: 4000 }
-    ) ??
-      window.setTimeout(() => {
-        scrubber.prefetchRange(offsets.act2, offsets.act2 + act2Len - 1).catch(() => {});
-      }, 1200);
+    const run = () => scrubber.prefetchRange(offsets.act2, offsets.act2 + act2Len - 1).catch(() => {});
+    window.requestIdleCallback?.(run, { timeout: 4000 }) ?? window.setTimeout(run, 1200);
   }
 }
 
@@ -266,9 +279,9 @@ function bindParallax() {
     if (!rect || rect.bottom < 0 || rect.top > window.innerHeight) return;
     const mx = (e.clientX / window.innerWidth - 0.5) * 2;
     const my = (e.clientY / window.innerHeight - 0.5) * 2;
-    const cx = mx * 0.055 * 28;
-    const cy = my * 0.055 * 18;
-    if (canvas) canvas.style.transform = `translate(${cx}px, ${cy}px) scale(1.02)`;
+    if (canvas) {
+      canvas.style.transform = `translate(${mx * 0.055 * 28}px, ${my * 0.055 * 18}px) scale(1.02)`;
+    }
     if (starsLayer()) {
       starsLayer().style.transform = `translate(${mx * 4}px, ${my * 3}px)`;
     }
@@ -290,13 +303,18 @@ async function init() {
     return;
   }
 
-  showIdle();
+  if (idleImg) idleImg.classList.add("is-hidden");
 
   const scrubber = new FrameScrubber(cinema, canvas, filmUrls, { reducedMotion });
+  state.scrubber = scrubber;
   window.__scrubber = scrubber;
 
   const act0Len = window.DWF_CDN?.acts?.act0?.length ?? 0;
   const eagerIndices = Array.from({ length: act0Len }, (_, i) => i);
+
+  scrubber.resize();
+  showFilm();
+  scrubber.draw(SKY_FRAME, { scale: 1, offsetY: 0 });
 
   const loadStart = performance.now();
   await scrubber.load((p) => setProgress(p), { eager: eagerIndices });
@@ -305,17 +323,12 @@ async function init() {
     await new Promise((r) => setTimeout(r, MIN_LOADER_MS - elapsed));
   }
 
-  scrubber.resize();
+  scrubber.draw(SKY_FRAME, { scale: 1, offsetY: 0 });
   scrubber.prewarm(eagerIndices);
   prefetchActs(scrubber);
 
   setProgress(1);
   loader?.classList.add("is-done");
-
-  // Act 0 starts at sky (frame 0), not shrine.
-  const skyFrame = 0;
-  showFilm();
-  scrubber.draw(skyFrame, { scale: 1, offsetY: 0 });
 
   CINEMA_SEGMENTS.forEach((seg) => {
     const el = document.querySelector(seg.copy);
@@ -327,7 +340,6 @@ async function init() {
 
   const heroEl = document.querySelector("#hero-copy-block");
   if (heroEl) {
-    heroEl.style.transition = "opacity 0.8s ease, transform 0.8s ease";
     heroEl.style.visibility = "visible";
     heroEl.style.opacity = "1";
     heroEl.setAttribute("aria-hidden", "false");
@@ -345,8 +357,8 @@ async function init() {
     return;
   }
 
-  const { gsap, ScrollTrigger } = window;
-  gsap.registerPlugin(ScrollTrigger, window.ScrollToPlugin);
+  const { ScrollTrigger } = window;
+  window.gsap.registerPlugin(ScrollTrigger, window.ScrollToPlugin);
 
   bindParallax();
   initPageNav(pageNavApi);
@@ -360,17 +372,17 @@ async function init() {
     end: pinEnd,
     pin: true,
     anticipatePin: 1,
-    scrub: reducedMotion ? false : 0.55,
-    onLeave: () => clearBridge(),
-    onEnterBack: () => clearBridge(),
+    scrub: reducedMotion ? false : 0.12,
+    onLeave: () => clearHandoff(true),
+    onEnterBack: () => {
+      if (state.globalP < BRIDGE_START) clearHandoff(true);
+    },
     onUpdate: (self) => {
       const globalP = self.progress;
+      state.globalP = globalP;
 
-      if (globalP <= 0.001) {
-        showFilm();
-        scrubber.draw(skyFrame, { scale: 1, offsetY: 0 });
-        applyUi(CINEMA_SEGMENTS[0], segmentUi(CINEMA_SEGMENTS[0], 0, 0), segmentFx(CINEMA_SEGMENTS[0], 0, 0), 0);
-        updateStationFromProgress(0);
+      if (globalP <= RESET_THRESHOLD) {
+        resetToSky();
         return;
       }
 
@@ -384,7 +396,7 @@ async function init() {
       scrubber.prewarm([flatIdx - 2, flatIdx - 1, flatIdx, flatIdx + 1, flatIdx + 2]);
       scrubber.draw(flatIdx, fx);
       applyUi(segment, ui, fx, local);
-      updateStationFromProgress(globalP);
+      updateProgress(globalP);
 
       if (segment.id === "hero" && local > 0.55) {
         const offsets = getActOffsets();
@@ -400,6 +412,7 @@ async function init() {
   });
 
   window.__cinemaPinST = state.pinTrigger;
+  pageNavApi.onProgress?.(0, 0);
 }
 
 init().catch((err) => {

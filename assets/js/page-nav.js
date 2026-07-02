@@ -1,6 +1,5 @@
 /**
- * Full-page section rail — one dot per scene/section.
- * Clicks scroll to pin progress (cinema) or section (post-cinematic).
+ * Full-page section rail — progress-driven spy from pin + scroll sections.
  */
 
 const PAGE_NAV = [
@@ -24,6 +23,8 @@ export function initPageNav(api) {
 
   const dots = Array.from(nav.querySelectorAll(".page-nav__dot"));
   let activeId = "hero";
+  let pinReleased = false;
+  let activeScrollId = null;
 
   function setActive(id) {
     if (id === activeId) return;
@@ -42,7 +43,11 @@ export function initPageNav(api) {
       if (!item) return;
 
       if (item.mode === "cinema") {
-        api.goToCinemaStation(item.station);
+        if (item.station === 0) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          api.goToCinemaStation(item.station);
+        }
         setActive(id);
         return;
       }
@@ -52,9 +57,14 @@ export function initPageNav(api) {
     });
   });
 
-  api.onCinemaStationChange = (stationIdx) => {
-    const item = PAGE_NAV.find((n) => n.mode === "cinema" && n.station === stationIdx);
-    if (item) setActive(item.id);
+  api.onProgress = (globalP, stationIdx) => {
+    pinReleased = globalP >= 0.995;
+    if (!pinReleased) {
+      const item = PAGE_NAV.find((n) => n.mode === "cinema" && n.station === stationIdx);
+      if (item) setActive(item.id);
+    } else if (activeScrollId) {
+      setActive(activeScrollId);
+    }
   };
 
   if (window.ScrollTrigger) {
@@ -65,28 +75,16 @@ export function initPageNav(api) {
         trigger: el,
         start: "top 55%",
         end: "bottom 45%",
-        onEnter: () => setActive(item.id),
-        onEnterBack: () => setActive(item.id),
-      });
-    });
-
-    const pin = document.getElementById("cinema-pin");
-    if (pin) {
-      window.ScrollTrigger.create({
-        trigger: pin,
-        start: "top top",
-        end: "bottom top",
-        onLeave: () => {
-          const last = PAGE_NAV.find((n) => n.id === "underworld");
-          if (last && window.scrollY > window.innerHeight * 0.5) setActive("problem");
+        onEnter: () => {
+          activeScrollId = item.id;
+          if (pinReleased) setActive(item.id);
         },
         onEnterBack: () => {
-          const st = api.getCinemaStation?.() ?? 2;
-          const item = PAGE_NAV.find((n) => n.mode === "cinema" && n.station === st);
-          if (item) setActive(item.id);
+          activeScrollId = item.id;
+          if (pinReleased) setActive(item.id);
         },
       });
-    }
+    });
   }
 
   setActive("hero");

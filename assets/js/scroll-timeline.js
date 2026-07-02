@@ -3,8 +3,8 @@
  * Global scroll progress → act segment → frame index.
  */
 
-/** Last 12% of pin — cinema hands off to #problem. */
-export const BRIDGE_START = 0.88;
+/** Last 10% of pin — handoff veil before #problem. */
+export const BRIDGE_START = 0.9;
 
 export const CINEMA_SEGMENTS = [
   {
@@ -14,6 +14,7 @@ export const CINEMA_SEGMENTS = [
     share: 0.42,
     ease: "dive",
     useHandoff: false,
+    holdShare: 0.12,
     rangeEnd: null,
     fx: { scaleMax: 0.08, driftY: -22 },
     copy: "#hero-copy-block",
@@ -96,12 +97,31 @@ export function segmentToFrame(segment, localProgress, frameCount, handoffFrame 
     start = Math.min(handoffFrame, end);
   }
 
-  const t = easeSegment(localProgress, segment.ease);
+  let diveLocal = localProgress;
+  const hold = segment.holdShare ?? 0;
+  if (hold > 0) {
+    if (localProgress <= hold) return 0;
+    diveLocal = (localProgress - hold) / (1 - hold);
+  }
+
+  const t = easeSegment(diveLocal, segment.ease);
   return Math.round(start + t * (end - start));
 }
 
 export function segmentFx(segment, localProgress, globalProgress) {
-  const p = easeSegment(localProgress, segment.ease);
+  const hold = segment.holdShare ?? 0;
+  let diveLocal = localProgress;
+  if (hold > 0 && localProgress <= hold) {
+    return {
+      scale: 1,
+      offsetY: 0,
+      offsetX: 0,
+      vignette: 0.35 + globalProgress * 0.45,
+    };
+  }
+  if (hold > 0) diveLocal = (localProgress - hold) / (1 - hold);
+
+  const p = easeSegment(diveLocal, segment.ease);
   const fx = segment.fx ?? {};
   const scaleMax = fx.scaleMax ?? 0.1;
   const driftY = fx.driftY ?? -16;
@@ -125,11 +145,10 @@ export function segmentUi(segment, localProgress, globalProgress) {
   };
 
   if (segment.id === "hero") {
-    // Sky → shrine: copy stays readable, fades only entering passage.
     ui.copyOpacity = localProgress > 0.85 ? Math.max(0, 1 - (localProgress - 0.85) / 0.15) : 1;
     ui.copyY = 0;
-    ui.scrim = 0.35 + localProgress * 0.2;
-    ui.hintOpacity = globalProgress < 0.06 ? 1 : Math.max(0, 1 - globalProgress / 0.1);
+    ui.scrim = 0.35 + Math.max(0, localProgress - (segment.holdShare ?? 0)) * 0.25;
+    ui.hintOpacity = globalProgress < 0.08 ? 1 : Math.max(0, 1 - globalProgress / 0.12);
   }
 
   if (segment.id === "passage") {
@@ -143,7 +162,6 @@ export function segmentUi(segment, localProgress, globalProgress) {
   }
 
   if (segment.id === "underworld") {
-    // Fade in once, then lock — never fade out on scroll.
     ui.copyOpacity = localProgress < 0.08 ? localProgress / 0.08 : 1;
     ui.copyY = localProgress < 0.08 ? (1 - localProgress / 0.08) * 12 : 0;
     ui.lockCopy = localProgress >= 0.08;
@@ -154,13 +172,14 @@ export function segmentUi(segment, localProgress, globalProgress) {
 }
 
 export function stationPinProgress(stationIndex, segments = CINEMA_SEGMENTS) {
+  if (stationIndex <= 0) return 0;
   let acc = 0;
   for (let i = 0; i < stationIndex && i < segments.length; i++) {
     acc += segments[i].share;
   }
   const share = segments[stationIndex]?.share ?? 0;
-  if (stationIndex === 0) return acc + share * 0.72;
-  return acc + share * 0.42;
+  const mid = stationIndex === 1 ? 0.5 : 0.35;
+  return acc + share * mid;
 }
 
 export function totalPinLength(segments = CINEMA_SEGMENTS, baseVh = 480) {
