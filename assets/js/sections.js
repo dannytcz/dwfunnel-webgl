@@ -1,4 +1,4 @@
-import { splitLinesWords } from "./text-split.js";
+import { splitLinesWords } from "./text-split.js?v=31";
 
 export function initSections({ reducedMotion, isMobile }) {
   if (!window.gsap || !window.ScrollTrigger) return;

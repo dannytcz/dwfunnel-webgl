@@ -181,14 +181,28 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .hero {
   position: relative;
   min-height: 100dvh;
-  display: grid;
-  align-items: end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Slight upward bias so copy centers around ~45% viewport height */
+  padding-bottom: 10vh;
+  /* Belt-and-braces fallback so a canvas failure never shows black */
+  background: var(--bg) url("../images/hero/poster-1280.webp") center / cover no-repeat;
 }
 .hero__stage {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background: transparent;
+  z-index: 0;
+}
+.hero__resolve {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
   background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
 }
 .hero__poster {
   position: absolute;
@@ -212,22 +226,28 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .hero__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(6, 16, 24, 0.92) 0%, rgba(6, 16, 24, 0.35) 45%, rgba(6, 16, 24, 0.15) 100%);
+  background:
+    radial-gradient(ellipse 72% 56% at 50% 45%, rgba(6, 16, 24, 0.55) 0%, rgba(6, 16, 24, 0) 70%),
+    linear-gradient(to top, rgba(6, 16, 24, 0.6) 0%, rgba(6, 16, 24, 0) 40%);
   pointer-events: none;
+  z-index: 1;
 }
 .hero__copy {
   position: relative;
   z-index: 2;
-  padding: clamp(5rem, 14vh, 8rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 8vh, 5rem);
-  max-width: var(--max-w);
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 5vw, 4rem);
+  text-align: center;
 }
 .hero__title {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-size: clamp(2.1rem, 6vw, 4.5rem);
   line-height: 1.05;
-  margin: 0 0 1.25rem;
-  max-width: 14ch;
+  margin: 0 auto 1.25rem;
+  max-width: 18ch;
 }
 .hero__title .char {
   display: inline-block;
@@ -241,15 +261,16 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .hero__sub {
   font-size: clamp(1rem, 2vw, 1.2rem);
   color: var(--muted);
-  max-width: 42ch;
-  margin: 0 0 1.75rem;
+  max-width: 52ch;
+  margin: 0 auto 1.75rem;
   opacity: 0;
   transform: translateY(1rem);
 }
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 16px;
   opacity: 0;
   transform: translateY(1rem);
 }
@@ -287,8 +308,8 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   align-items: center;
   gap: 2rem;
   padding: 1.25rem clamp(1.5rem, 5vw, 4rem);
-  background: var(--surface);
-  border-block: 1px solid rgba(234, 242, 246, 0.06);
+  background: var(--bg);
+  border: 0;
   overflow: hidden;
 }
 .trust-strip__marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
@@ -414,7 +435,16 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .machine__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(6, 16, 24, 0.75), rgba(11, 27, 38, 0.55));
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(6, 16, 24, 0.5) 0%, rgba(6, 16, 24, 0) 72%),
+    linear-gradient(135deg, rgba(6, 16, 24, 0.45), rgba(11, 27, 38, 0.3));
+}
+/* Designed depth fallback behind the machine canvas (belt-and-braces) */
+.act--machine {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(216, 177, 92, 0.05) 0%, rgba(6, 16, 24, 0) 55%),
+    radial-gradient(circle at 50% 50%, rgba(6, 16, 24, 0) 60%, rgba(6, 16, 24, 0.6) 100%),
+    var(--bg);
 }
 .machine__copy, .machine-components, .machine__cta {
   position: relative;
@@ -700,7 +730,10 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (max-width: 767px) {
   .trust-strip { grid-template-columns: 1fr; }
   .trust-strip__text { text-align: center; white-space: normal; }
-  .hero__actions { flex-direction: column; align-items: stretch; }
+  .hero__copy { max-width: 100%; }
+  .hero__title { font-size: clamp(1.85rem, 7.5vw, 2.6rem); line-height: 1.08; max-width: 16ch; }
+  .hero__actions { flex-direction: column; align-items: center; }
+  .hero__actions .btn { width: 100%; max-width: 320px; justify-content: center; }
   .machine-component__numeral { font-size: 2.5rem; }
   .method-timeline { grid-template-columns: 1fr; }
 }

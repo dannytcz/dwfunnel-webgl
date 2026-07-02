@@ -36,10 +36,10 @@ const dashMatches = visible.match(/[—–]/g);
 console.log("  count:", dashMatches ? dashMatches.length : 0);
 
 console.log("\n=== CTA labels ===");
-const mapCount = (html.match(/Map My Funnel/g) || []).length;
+const mapCount = (html.match(/Get My Funnel Plan/g) || []).length;
 const sendCount = (html.match(/Send Me My Funnel Plan/g) || []).length;
 const waCount = (html.match(/Message On WhatsApp/g) || []).length;
-console.log(`  Map My Funnel: ${mapCount}`);
+console.log(`  Get My Funnel Plan: ${mapCount}`);
 console.log(`  Message On WhatsApp: ${waCount}`);
 console.log(`  Send Me My Funnel Plan (should be 0): ${sendCount}`);
 

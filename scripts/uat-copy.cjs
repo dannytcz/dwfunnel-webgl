@@ -103,7 +103,7 @@ async function main() {
     noErrors: errs.length === 0,
     heroH1: /A Page People Remember\./.test(hero.h1 || "") && /A Funnel That Follows Up\./.test(hero.h1 || ""),
     heroEyebrow: /Landing Pages.*Funnels.*Follow-Up/i.test(hero.eyebrow || ""),
-    heroPrimary: hero.primaryCta === "Map My Funnel",
+    heroPrimary: hero.primaryCta === "Get My Funnel Plan",
     heroSecondary: /See Why Pages Fail/i.test(hero.secondaryCta || ""),
     heroRulePresent: hero.rulePresent === true,
     noScrollHint: hero.scrollHintPresent === false,

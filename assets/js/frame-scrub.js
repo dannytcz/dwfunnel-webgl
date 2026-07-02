@@ -33,17 +33,33 @@ export class FrameScrubber {
   }
 
   async _fetchBitmap(url) {
-    const res = await fetch(url, { mode: "cors", credentials: "omit" });
-    if (!res.ok) throw new Error(`fetch ${url}`);
-    const blob = await res.blob();
     try {
-      return await createImageBitmap(blob, {
-        resizeWidth: BITMAP_MAX_W,
-        resizeQuality: "high",
-      });
+      const res = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (!res.ok) throw new Error(`fetch ${url}`);
+      const blob = await res.blob();
+      try {
+        return await createImageBitmap(blob, {
+          resizeWidth: BITMAP_MAX_W,
+          resizeQuality: "high",
+        });
+      } catch {
+        return await createImageBitmap(blob);
+      }
     } catch {
-      return await createImageBitmap(blob);
+      // Fallback: some CDNs omit CORS headers, which fails fetch/createImageBitmap.
+      // An <img> element can still be drawn to canvas (we never read pixels back).
+      return await this._loadImageElement(url);
     }
+  }
+
+  _loadImageElement(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error(`img ${url}`));
+      img.src = url;
+    });
   }
 
   /** Preload every frame; loader progress tied to decode count. */
@@ -51,14 +67,32 @@ export class FrameScrubber {
     this._onProgress = onProgress;
     if (!this.urls.length) return;
 
-    let done = 0;
     const total = this.urls.length;
+
+    // Decode the first visible frame first, then paint immediately so the scene
+    // is never a black void while the rest of the sequence streams in.
+    const priority = Math.max(0, Math.min(total - 1, this.priorityIndex ?? 0));
+    try {
+      this.bitmaps[priority] = await this._fetchBitmap(this.urls[priority]);
+    } catch {
+      this.bitmaps[priority] = null;
+    }
+    this.resize();
+    this._ensureTicker();
+    // Paint the first frame synchronously so the scene shows immediately,
+    // without waiting on the next rAF tick.
+    this.renderNow();
+
+    let done = 1;
+    this._onProgress?.(done / total);
+
     const concurrency = 6;
     let next = 0;
 
     const worker = async () => {
       while (next < total) {
         const i = next++;
+        if (i === priority) continue;
         try {
           this.bitmaps[i] = await this._fetchBitmap(this.urls[i]);
         } catch {
@@ -71,7 +105,7 @@ export class FrameScrubber {
 
     await Promise.all(Array.from({ length: Math.min(concurrency, total) }, () => worker()));
     this.resize();
-    this._ensureTicker();
+    this.renderNow();
   }
 
   /** @deprecated use setTargetFrame in scroll callbacks */
@@ -103,6 +137,11 @@ export class FrameScrubber {
       if (this.bitmaps[index + d]) return this.bitmaps[index + d];
     }
     return null;
+  }
+
+  /** Force an immediate synchronous paint of the current target frame. */
+  renderNow() {
+    this._renderTick();
   }
 
   _ensureTicker() {
@@ -140,10 +179,13 @@ export class FrameScrubber {
     const ox = fx.offsetX ?? 0;
     const oy = fx.offsetY ?? 0;
 
-    const baseScale = Math.max(w / bmp.width, h / bmp.height);
+    const bw = bmp.width || bmp.naturalWidth;
+    const bh = bmp.height || bmp.naturalHeight;
+    if (!bw || !bh) return;
+    const baseScale = Math.max(w / bw, h / bh);
     const drawScale = baseScale * scale;
-    const dw = bmp.width * drawScale;
-    const dh = bmp.height * drawScale;
+    const dw = bw * drawScale;
+    const dh = bh * drawScale;
     const dx = (w - dw) / 2 + ox;
     const dy = (h - dh) / 2 + oy;
 
@@ -165,6 +207,9 @@ export class FrameScrubber {
     this.canvas.height = Math.round(h * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.lastDrawnFrame = -1;
+    // Resizing clears the canvas backing store; invalidate the paint key so the
+    // next render repaints instead of being skipped by the equality guard.
+    this._lastPaintKey = null;
   }
 
   bindResize() {

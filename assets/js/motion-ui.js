@@ -1,4 +1,4 @@
-import { splitHeadlineWords } from "./text-split.js";
+import { splitHeadlineWords } from "./text-split.js?v=31";
 
 const LOADER_CAP_MS = 2500;
 
@@ -139,18 +139,16 @@ export function initMotionUi() {
       window.gsap.to(sticky, { autoAlpha: 0, y: 12, duration: 0.35, ease: "power2.out" });
     };
 
+    // CHANGE 5: single trigger from top of trust strip to top of Act 06.
     window.ScrollTrigger.create({
-      trigger: "#act-leak",
+      trigger: "#trust-strip",
       start: "top 85%",
+      endTrigger: "#act-work",
+      end: "top 85%",
       onEnter: showPill,
+      onLeave: hidePill,
+      onEnterBack: showPill,
       onLeaveBack: hidePill,
-    });
-
-    window.ScrollTrigger.create({
-      trigger: "#act-work",
-      start: "top 85%",
-      onEnter: hidePill,
-      onLeaveBack: showPill,
     });
   }
 

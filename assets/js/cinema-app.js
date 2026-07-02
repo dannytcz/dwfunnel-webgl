@@ -1,8 +1,8 @@
-import { FrameScrubber } from "./frame-scrub.js";
-import { initHeroPin } from "./hero-pin.js";
-import { initMachinePin } from "./machine-pin.js";
-import { initMotionUi } from "./motion-ui.js";
-import { initSections } from "./sections.js";
+import { FrameScrubber } from "./frame-scrub.js?v=31";
+import { initHeroPin } from "./hero-pin.js?v=31";
+import { initMachinePin } from "./machine-pin.js?v=31";
+import { initMotionUi } from "./motion-ui.js?v=31";
+import { initSections } from "./sections.js?v=31";
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = window.matchMedia("(max-width: 767px)").matches;
@@ -137,6 +137,7 @@ async function init() {
       .load()
       .then(() => {
         machineScrubber.setTargetFrame(0);
+        machineScrubber.renderNow?.();
         if (!reducedMotion && !isMobile) initMachinePin(appState);
         window.ScrollTrigger.refresh();
       })
