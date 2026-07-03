@@ -612,9 +612,20 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   fill: var(--anno);
   text-transform: uppercase;
 }
-/* a chamber ignites (brightens + soft glow pulse) when its segment finishes */
-.schem-chamber { filter: drop-shadow(0 0 var(--glow, 0px) rgba(216, 177, 92, 0.6)); }
-.schem-chamber.is-lit .schem-draw { stroke: var(--gold); }
+/* A chamber ignites when its segment finishes drawing: the outline brightens
+   and thickens with a one-shot pulse. Deliberately NO SVG filter here — a
+   drop-shadow on these groups re-rasterizes the whole group on every scrub
+   frame (strokeDashoffset changes inside it) and saturates the main thread. */
+.schem-draw { transition: stroke 0.35s ease, stroke-width 0.35s ease; }
+.schem-chamber.is-lit .schem-draw { stroke: var(--gold); stroke-width: 2; }
+@media (prefers-reduced-motion: no-preference) {
+  .schem-chamber.is-lit .schem-draw { animation: chamberIgnite 0.5s var(--ease-out) 1; }
+}
+@keyframes chamberIgnite {
+  0% { stroke-width: 1.5; }
+  45% { stroke-width: 3.4; }
+  100% { stroke-width: 2; }
+}
 .act--machine {
   background: transparent;
 }

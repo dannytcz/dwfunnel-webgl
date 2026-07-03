@@ -4,6 +4,18 @@
  * funnel machine draws itself segment by segment (stroke-dashoffset scrub),
  * each chamber ignites as it completes, the text components sync to the
  * igniting chamber, and a sparse particle drift flows down the funnel path.
+ *
+ * PERF NOTES (main-thread safety):
+ * - No distance-accumulation loops (for d += step) anywhere. Every loop has a
+ *   fixed iteration count, so a zero/invalid path length can never infinite-loop.
+ * - Path geometry is measured once at init (diagnostic only, guarded against 0).
+ * - No SVG filter is applied to elements whose strokeDashoffset changes during
+ *   scrub. An ancestor filter (e.g. drop-shadow) would force the whole group to
+ *   re-rasterize every frame and lock the main thread; ignite is done with a
+ *   pure stroke change instead.
+ * - Particles are a fixed pool of 40, recycled (never allocated per frame),
+ *   the tick is added to gsap.ticker exactly once and removed when the pin is
+ *   inactive, and it is created lazily only after the canvas is laid out.
  */
 const MACHINE_PIN_VH = 200;
 const SEG_COUNT = 4; // 0 intake, 1-3 chambers (+ output on seg 3)
@@ -11,18 +23,42 @@ const MAX_PARTICLES = 40;
 
 function collectDraws(svg) {
   const segs = Array.from({ length: SEG_COUNT }, () => []);
-  svg.querySelectorAll(".schem-draw").forEach((p) => {
+  const lengths = [];
+  svg.querySelectorAll(".schem-draw").forEach((p, idx) => {
     const seg = parseInt(p.getAttribute("data-seg") || "0", 10);
-    // pathLength="1" is set in markup so dash math is uniform for all shapes.
+    // Diagnostic measurement, once. pathLength="1" makes the dash math uniform
+    // regardless of geometry, so we never divide by this. A zero/invalid length
+    // just means the path is not laid out or degenerate: skip its draw.
+    let len = 0;
+    try {
+      len = p.getTotalLength();
+    } catch {
+      len = 0;
+    }
+    lengths.push(Math.round(len));
+    if (!isFinite(len) || len <= 0) {
+      console.warn(`[schematic] path #${idx} (seg ${seg}) length ${len} — skipping its draw`);
+      p.style.strokeDasharray = "none";
+      p.style.strokeDashoffset = "0";
+      return;
+    }
     p.style.strokeDasharray = "1";
     p.style.strokeDashoffset = "1";
+    p._last = 1;
     (segs[seg] || segs[0]).push(p);
   });
+  console.info(`[schematic] measured path lengths (px): ${lengths.join(", ")}`);
   return segs;
 }
 
 function setSegOffset(paths, offset) {
-  for (const p of paths) p.style.strokeDashoffset = String(offset);
+  const clamped = offset < 0 ? 0 : offset > 1 ? 1 : offset;
+  const rounded = Math.round(clamped * 1000) / 1000;
+  for (const p of paths) {
+    if (p._last === rounded) continue; // skip redundant style writes / repaints
+    p._last = rounded;
+    p.style.strokeDashoffset = String(rounded);
+  }
 }
 
 /** Fully drawn, statically lit — mobile + reduced motion. */
@@ -32,10 +68,7 @@ function drawStatic(svg) {
     p.style.strokeDashoffset = "0";
   });
   svg.querySelectorAll(".schem-chamber[data-chamber]").forEach((c) => {
-    if (parseInt(c.getAttribute("data-chamber"), 10) >= 0) {
-      c.classList.add("is-lit");
-      c.style.setProperty("--glow", "5px");
-    }
+    if (parseInt(c.getAttribute("data-chamber"), 10) >= 0) c.classList.add("is-lit");
   });
   document.querySelectorAll(".machine-component").forEach((el, i) => {
     el.classList.toggle("is-active", i === 2);
@@ -44,7 +77,10 @@ function drawStatic(svg) {
 
 function createParticles(canvas) {
   const ctx = canvas.getContext("2d");
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // DPR 1 on purpose: this canvas is full-viewport and cleared every frame;
+  // 2px dots do not need a higher backing store, and DPR 2 would quadruple the
+  // per-frame clear/fill cost for no visible benefit.
+  const dpr = 1;
   let w = 0;
   let h = 0;
   const parts = [];
@@ -53,26 +89,27 @@ function createParticles(canvas) {
     const r = canvas.getBoundingClientRect();
     w = r.width;
     h = r.height;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.max(1, Math.round(w * dpr));
     canvas.height = Math.max(1, Math.round(h * dpr));
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   function spawn() {
-    // Drift down the central funnel column with slight horizontal jitter.
+    const cw = w > 0 ? w : 1;
+    const ch = h > 0 ? h : 1;
     return {
-      x: w * 0.5 + (Math.random() - 0.5) * w * 0.16,
-      y: -Math.random() * h,
+      x: cw * 0.5 + (Math.random() - 0.5) * cw * 0.16,
+      y: -Math.random() * ch,
       v: 0.4 + Math.random() * 0.9,
       drift: (Math.random() - 0.5) * 0.25,
     };
   }
 
   resize();
+  // Fixed pool, allocated once.
   for (let i = 0; i < MAX_PARTICLES; i++) {
     const p = spawn();
-    p.y = Math.random() * h;
+    p.y = Math.random() * (h > 0 ? h : 1);
     parts.push(p);
   }
 
@@ -84,7 +121,7 @@ function createParticles(canvas) {
     for (const p of parts) {
       p.y += p.v;
       p.x += p.drift;
-      if (p.y > h + 4) Object.assign(p, spawn());
+      if (p.y > h + 4) Object.assign(p, spawn()); // recycle, no new allocation
       ctx.beginPath();
       ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
       ctx.fill();
@@ -96,14 +133,14 @@ function createParticles(canvas) {
 
   return {
     start() {
-      if (running) return;
+      if (running) return; // guard: never stack ticker callbacks
       running = true;
       window.gsap.ticker.add(tick);
     },
     stop() {
       if (!running) return;
       running = false;
-      window.gsap.ticker.remove(tick);
+      window.gsap.ticker.remove(tick); // removed, not just flagged
       ctx.clearRect(0, 0, w, h);
     },
     kill() {
@@ -132,28 +169,32 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
 
   const segs = collectDraws(svg);
   const litState = chambers.map(() => false);
-  const particles = particlesCanvas ? createParticles(particlesCanvas) : null;
+
+  // Particles are created lazily on first pin activation, only once the canvas
+  // is confirmed laid out (width > 0), with a single next-frame retry.
+  let particles = null;
+  let particlesResolved = false;
+  function ensureParticles(allowRetry = true) {
+    if (particles || particlesResolved || !particlesCanvas) return;
+    const width = particlesCanvas.getBoundingClientRect().width;
+    if (!(width > 0)) {
+      if (allowRetry) {
+        requestAnimationFrame(() => ensureParticles(false));
+      } else {
+        console.warn("[schematic] particle canvas not laid out (width 0) — particles disabled");
+        particlesResolved = true;
+      }
+      return;
+    }
+    particles = createParticles(particlesCanvas);
+    particlesResolved = true;
+    particles.start();
+  }
 
   function igniteChamber(i, lit) {
     if (litState[i] === lit) return;
     litState[i] = lit;
-    const el = chambers[i];
-    el.classList.toggle("is-lit", lit);
-    if (lit) {
-      const o = { g: 2 };
-      window.gsap.to(o, {
-        g: 16,
-        duration: 0.22,
-        repeat: 1,
-        yoyo: true,
-        ease: "sine.inOut",
-        onUpdate: () => el.style.setProperty("--glow", o.g + "px"),
-        onComplete: () => el.style.setProperty("--glow", "5px"),
-      });
-    } else {
-      window.gsap.killTweensOf(el);
-      el.style.setProperty("--glow", "0px");
-    }
+    chambers[i].classList.toggle("is-lit", lit); // pure class toggle, no filter
   }
 
   const st = window.ScrollTrigger.create({
@@ -164,24 +205,30 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
     scrub: 0.2,
     anticipatePin: 1,
     onToggle: (self) => {
-      if (self.isActive) particles?.start();
-      else particles?.stop();
+      if (self.isActive) {
+        ensureParticles();
+        particles?.start();
+      } else {
+        particles?.stop();
+      }
     },
     onUpdate: (self) => {
       const p = self.progress;
-      // Segment i draws across its quarter of the pin.
+      // Fixed 4-iteration loop; each segment draws across its quarter of the pin.
       for (let i = 0; i < SEG_COUNT; i++) {
-        const local = Math.max(0, Math.min(1, (p - i * 0.25) / 0.25));
+        const local = (p - i * 0.25) / 0.25; // constant divisor, never zero
         setSegOffset(segs[i], 1 - local);
       }
       // Chambers map to segments 1..3; ignite when their segment finishes.
-      chambers.forEach((_, i) => {
-        const local = Math.max(0, Math.min(1, (p - (i + 1) * 0.25) / 0.25));
+      for (let i = 0; i < chambers.length; i++) {
+        const local = (p - (i + 1) * 0.25) / 0.25;
         igniteChamber(i, local >= 0.98);
-      });
+      }
       // Text components sync with the igniting chamber.
       const activeIdx = p < 0.25 ? 0 : Math.min(2, Math.floor((p - 0.25) / 0.25));
-      components.forEach((el, i) => el.classList.toggle("is-active", i === activeIdx));
+      for (let i = 0; i < components.length; i++) {
+        components[i].classList.toggle("is-active", i === activeIdx);
+      }
     },
   });
 
