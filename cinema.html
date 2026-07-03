@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=43" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=44" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -21,13 +21,11 @@
   <!-- The Underneath: fixed technical grid behind post-hero sections -->
   <div class="blueprint-grid" id="blueprint-grid" aria-hidden="true"></div>
 
-  <!-- One fixed film grain overlay across the whole page -->
-  <svg class="film-grain" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-    <filter id="grain-noise">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
-    </filter>
-    <rect width="100%" height="100%" filter="url(#grain-noise)" />
-  </svg>
+  <!-- One fixed film grain overlay across the whole page.
+       The turbulence is baked into a small tiled texture (rasterized once and
+       cached) rather than a live full-viewport SVG filter, so it never
+       re-rasterizes or re-composites per scroll/animation frame. -->
+  <div class="film-grain" aria-hidden="true"></div>
 
   <div id="loader" class="loader" aria-live="polite" aria-busy="true">
     <div class="loader__panel">

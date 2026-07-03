@@ -102,18 +102,26 @@ body {
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 80px 80px;
   background-position: -1px -1px;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
-/* One fixed full-viewport film grain across the whole page, hero included. */
+/* One fixed film grain across the whole page, hero included.
+   Perf: the feTurbulence is baked into a 140x140 tile via a data URI so the
+   browser rasterizes it exactly once and simply repeats the cached bitmap.
+   No live full-viewport filter and no mix-blend-mode, both of which force the
+   main thread to recompute/recomposite the whole viewport on every frame. */
 .film-grain {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='140'%20height='140'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  /* isolate onto its own compositor layer so it never triggers backdrop repaints */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 img, picture, video, canvas { display: block; max-width: 100%; }
