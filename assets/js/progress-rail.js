@@ -14,7 +14,7 @@ const ACTS = [
 export function initProgressRail({ lenis } = {}) {
   const rail = document.getElementById("progress-rail");
   if (!rail || !window.ScrollTrigger) return () => {};
-  const dots = Array.from(rail.querySelectorAll(".progress-dot"));
+  const dots = Array.from(rail.querySelectorAll(".progress-tick"));
   const sts = [];
   const clickHandlers = [];
 

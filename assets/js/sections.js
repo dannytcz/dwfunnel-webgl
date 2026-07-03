@@ -9,6 +9,8 @@ export function initSections({ reducedMotion }) {
       el.style.transform = "none";
     });
     document.querySelectorAll(".machine-component").forEach((el) => el.classList.add("is-active"));
+    document.querySelectorAll(".method-step").forEach((el) => el.classList.add("is-lit"));
+    document.querySelectorAll(".stat").forEach((el) => el.classList.add("is-drawn"));
     return;
   }
 
@@ -166,6 +168,8 @@ function initStats() {
     start: "top 60%",
     once: true,
     onEnter: () => {
+      // Phase 4.1: draw each instrument readout underline on entry.
+      row.querySelectorAll(".stat").forEach((el) => el.classList.add("is-drawn"));
       row.querySelectorAll("[data-count]").forEach((el) => {
         const target = parseFloat(el.getAttribute("data-count"));
         const suffix = el.getAttribute("data-suffix") || "";

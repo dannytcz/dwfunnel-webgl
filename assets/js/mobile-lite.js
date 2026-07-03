@@ -51,7 +51,7 @@ function crossfadeLayer(stage, urls) {
   return tl;
 }
 
-export function initMobileLite({ heroUrls = [], machineUrls = [], saveData = false }) {
+export function initMobileLite({ heroUrls = [], saveData = false }) {
   const heroPoster = document.getElementById("hero-poster");
   if (saveData) {
     heroPoster?.classList.remove("is-hidden");
@@ -60,14 +60,12 @@ export function initMobileLite({ heroUrls = [], machineUrls = [], saveData = fal
   }
 
   const heroStage = document.querySelector("#hero .hero__stage");
-  const machineStage = document.querySelector("#act-machine .machine__stage");
   const tls = [];
+  // Machine is a static SVG schematic on mobile, so only the hero crossfades.
   const t1 = crossfadeLayer(heroStage, pickEven(heroUrls, 4));
-  const t2 = crossfadeLayer(machineStage, pickEven(machineUrls, 3));
   if (t1) tls.push(t1);
-  if (t2) tls.push(t2);
   if (heroPoster) heroPoster.classList.add("is-hidden");
-  console.info("[mobile-lite] hero keyframe crossfade running (4), machine (3)");
+  console.info("[mobile-lite] hero keyframe crossfade running (4)");
 
   return () => {
     tls.forEach((t) => t.kill());

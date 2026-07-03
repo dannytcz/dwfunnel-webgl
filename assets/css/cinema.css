@@ -23,8 +23,30 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Space Mono (self hosted) — the "underneath" annotation voice: eyebrows,
+   numerals, stat readouts, button/nav labels, progress rail, technical
+   callouts. Tabular figures for all numbers. */
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/space-mono-latin-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/space-mono-latin-700.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   --bg: #061018;
+  /* The Underneath base — blueprint substrate for every post-hero section */
+  --blueprint: #05090D;
   --surface: #0b1b26;
   /* Card fill, a touch lighter than --surface so cards read on both
      --bg and --surface (alternating) section backgrounds */
@@ -32,10 +54,17 @@
   --text: #eaf2f6;
   --muted: #93a7b3;
   --gold: #d8b15c;
-  /* Cinzel: reserved for h1, h2, testimonial blockquotes only */
+  /* Blueprint line/annotation tints */
+  --grid-line: rgba(216, 177, 92, 0.035);
+  --panel-line: rgba(216, 177, 92, 0.22);
+  --panel-line-hover: rgba(216, 177, 92, 0.5);
+  --anno: rgba(216, 177, 92, 0.55);
+  /* Cinzel: reserved for hero h1 + testimonial blockquotes only */
   --font-cinzel: "Cinzel", "Trajan Pro", serif;
-  /* Space Grotesk: everything else */
+  /* Space Grotesk: section h2, card titles, body copy */
   --font-ui: "Space Grotesk", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* Space Mono: eyebrows, numerals, labels, annotations */
+  --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --font-body: var(--font-ui);
   --max-w: 72rem;
   --nav-h: 4.5rem;
@@ -51,7 +80,7 @@ html.lenis, html.lenis body { height: auto; }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--blueprint);
   color: var(--text);
   font-family: var(--font-body);
   font-weight: 400;
@@ -59,6 +88,32 @@ body {
   overflow-x: hidden;
   overflow-y: visible;
   -webkit-font-smoothing: antialiased;
+}
+
+/* The Underneath: a fixed technical grid behind every post-hero section.
+   Transparent acts let it show; solid --blueprint acts hide it (rhythm). */
+.blueprint-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: -1px -1px;
+}
+
+/* One fixed full-viewport film grain across the whole page, hero included. */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
 }
 
 img, picture, video, canvas { display: block; max-width: 100%; }
@@ -69,7 +124,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   outline-offset: 3px;
 }
 
-.act-numeral { color: var(--gold); font-family: var(--font-ui); font-weight: 700; font-variant-numeric: tabular-nums; }
+.act-numeral { color: var(--gold); font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* Loader */
 .loader {
@@ -153,9 +208,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   backdrop-filter: blur(12px);
 }
 .site-nav__logo {
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
   letter-spacing: 0.08em;
 }
 .sticky-cta {
@@ -174,9 +229,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   justify-content: center;
   min-height: 44px;
   padding: 0.85rem 1.6rem;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: 999px;
@@ -194,17 +249,18 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .btn--ghost:hover { border-color: rgba(234, 242, 246, 0.55); }
 
 .eyebrow, .act__eyebrow {
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
   margin: 0 0 1rem;
 }
+.act__eyebrow { color: var(--anno); }
 
 /* Hero */
-.hero-pin { position: relative; }
+.hero-pin { position: relative; z-index: 1; }
 .hero {
   position: relative;
   min-height: 100dvh;
@@ -232,9 +288,23 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   position: absolute;
   inset: 0;
   z-index: 5;
-  background: var(--bg);
+  background: var(--blueprint);
   opacity: 0;
   pointer-events: none;
+}
+/* Phase 2: the signature beat — the painting dissolves into the grid.
+   Fades in over the darkening resolve during the final 10% of the hero pin. */
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: -1px -1px;
 }
 .hero__poster {
   position: absolute;
@@ -336,13 +406,16 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 
 /* Trust strip */
 .trust-strip {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 2rem;
   padding: 1.25rem clamp(1.5rem, 5vw, 4rem);
-  background: var(--bg);
-  border: 0;
+  background: var(--blueprint);
+  border-top: 1px solid rgba(216, 177, 92, 0.15);
+  border-bottom: 1px solid rgba(216, 177, 92, 0.15);
   overflow: hidden;
 }
 .trust-strip__marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
@@ -358,56 +431,62 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   to { transform: translateX(-50%); }
 }
 .trust-logo {
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(234, 242, 246, 0.35);
+  color: rgba(234, 242, 246, 0.3);
   white-space: nowrap;
 }
 .trust-strip__text {
   margin: 0;
-  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
   color: var(--muted);
   white-space: nowrap;
 }
 
-/* Acts */
+/* Acts — every post-hero section lives in The Underneath */
 .act {
   position: relative;
+  z-index: 1;
   overflow: hidden;
   padding: clamp(5rem, 12vh, 8rem) clamp(1.5rem, 5vw, 4rem);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 .act__inner { position: relative; z-index: 1; max-width: var(--max-w); margin: 0 auto; }
 
-/* Phase 2.1: giant watermark numerals behind act titles */
+/* Phase 1.7: giant watermark numerals — outlined Space Mono */
 .act-watermark {
   position: absolute;
   top: clamp(0.5rem, 3vh, 2.5rem);
   left: clamp(0.5rem, 3vw, 2.5rem);
   z-index: 0;
-  font-family: var(--font-ui);
+  font-family: var(--font-mono);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-size: 28vw;
   line-height: 0.78;
   letter-spacing: -0.02em;
-  color: rgba(216, 177, 92, 0.04);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(216, 177, 92, 0.07);
+  text-stroke: 1px rgba(216, 177, 92, 0.07);
   pointer-events: none;
   user-select: none;
   will-change: transform;
 }
 
-/* Phase 2.2: alternating section backgrounds */
-.act--leak { background: var(--surface); }
-.act--proof { background: var(--bg); }
-.act--method { background: var(--surface); }
-.act--platforms { background: var(--bg); }
-.act--work { background: var(--surface); }
+/* Phase 1.3: sections alternate the fixed grid visible (transparent) or
+   hidden (solid --blueprint) to keep rhythm. */
+.act--leak { background: transparent; }
+.act--proof { background: var(--blueprint); }
+.act--method { background: transparent; }
+.act--platforms { background: var(--blueprint); }
+.act--work { background: transparent; }
 .act__title {
-  font-family: var(--font-cinzel);
+  font-family: var(--font-ui);
   font-weight: 600;
   font-size: clamp(2rem, 4.5vw, 3.25rem);
   line-height: 1.1;
@@ -480,6 +559,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   align-content: center;
   padding-block: clamp(4rem, 10vh, 6rem);
 }
+/* Phase 3: the machine stage now holds a self-drawing SVG blueprint schematic */
 .machine__stage {
   position: absolute;
   top: 0;
@@ -491,28 +571,50 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   overflow: hidden;
   z-index: 0;
 }
-.machine__canvas {
+.machine-schematic {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  max-width: none;
-  opacity: 0;
+  pointer-events: none;
 }
-.machine__canvas.is-active { opacity: 1; }
+/* particle drift canvas sits over the schematic */
+.machine-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+/* drawable strokes: hidden until the pin scrubs them in */
+.schem-draw {
+  fill: none;
+  stroke: rgba(216, 177, 92, 0.9);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.schem-fill { fill: rgba(216, 177, 92, 0.9); stroke: none; }
+.schem-label {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  fill: var(--anno);
+  text-transform: uppercase;
+}
+/* a chamber ignites (brightens + soft glow pulse) when its segment finishes */
+.schem-chamber { filter: drop-shadow(0 0 var(--glow, 0px) rgba(216, 177, 92, 0.6)); }
+.schem-chamber.is-lit .schem-draw { stroke: var(--gold); }
+.act--machine {
+  background: transparent;
+}
 .machine__scrim {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(6, 16, 24, 0.5) 0%, rgba(6, 16, 24, 0) 72%),
-    linear-gradient(135deg, rgba(6, 16, 24, 0.45), rgba(11, 27, 38, 0.3));
-}
-/* Designed depth fallback behind the machine canvas (belt-and-braces) */
-.act--machine {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(216, 177, 92, 0.05) 0%, rgba(6, 16, 24, 0) 55%),
-    radial-gradient(circle at 50% 50%, rgba(6, 16, 24, 0) 60%, rgba(6, 16, 24, 0.6) 100%),
-    var(--bg);
+  background: radial-gradient(ellipse 60% 55% at 30% 45%, rgba(5, 9, 13, 0.55) 0%, rgba(5, 9, 13, 0) 70%);
+  pointer-events: none;
 }
 .machine__copy, .machine-components, .machine__cta {
   position: relative;
@@ -528,15 +630,24 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   display: grid;
   gap: 1.5rem;
 }
-/* FIX 4: soft scrim behind the component column only, between canvas and text */
+/* soft scrim behind the component column so text stays legible over the schematic */
 .machine-components::before {
   content: "";
   position: absolute;
   inset: -1rem -0.75rem;
   z-index: -1;
-  border-radius: 12px;
-  background: linear-gradient(90deg, rgba(6, 16, 24, 0.55) 0%, rgba(6, 16, 24, 0) 65%);
+  background: linear-gradient(90deg, rgba(5, 9, 13, 0.72) 0%, rgba(5, 9, 13, 0) 70%);
   pointer-events: none;
+}
+.machine-component__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--anno);
+  margin: 0 0 0.4rem;
 }
 .machine-component {
   display: grid;
@@ -570,18 +681,32 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   margin: 2rem 0 3rem;
 }
 @media (min-width: 768px) { .stat-row { grid-template-columns: repeat(3, 1fr); } }
+.stat { position: relative; }
 .stat__value {
   display: block;
-  font-family: var(--font-ui);
+  font-family: var(--font-mono);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   color: var(--text);
   line-height: 1;
 }
+/* Phase 4.1: instrument readout — a thin gold rule draws left to right */
+.stat__value::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 3.5rem;
+  margin-top: 0.7rem;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-out);
+}
+.stat.is-drawn .stat__value::after { transform: scaleX(1); }
 .stat__label {
   display: block;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   font-size: 0.85rem;
   color: var(--muted);
 }
@@ -651,9 +776,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transition: filter 0.3s, box-shadow 0.3s;
 }
 .founder-monogram {
-  font-family: var(--font-cinzel);
-  font-weight: 500;
-  font-size: 2.25rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 2rem;
   letter-spacing: 0.04em;
   color: var(--gold);
 }
@@ -696,22 +821,58 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
     grid-template-columns: repeat(5, 1fr);
     gap: 0.5rem;
   }
+  /* static schematic track */
+  .method-timeline::after {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: rgba(216, 177, 92, 0.15);
+    z-index: 0;
+  }
+  /* gold progress line drawing left to right with scroll */
   .method-timeline::before {
     content: "";
     position: absolute;
-    top: 1.5rem;
-    left: 5%;
-    right: 5%;
+    top: 0.75rem;
+    left: 10%;
+    right: 10%;
     height: 1px;
-    background: rgba(234, 242, 246, 0.15);
+    background: var(--gold);
     transform: scaleX(var(--timeline-progress, 0));
     transform-origin: left;
     transition: transform 0.1s linear;
+    z-index: 0;
+  }
+  .method-step { padding-top: 1.75rem; }
+  /* node circles that fill as the line passes, like stations on a diagram */
+  .method-step::before {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    margin: -5.5px 0 0 -5.5px;
+    border-radius: 50%;
+    background: var(--blueprint);
+    border: 1px solid rgba(216, 177, 92, 0.4);
+    z-index: 1;
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .method-step.is-lit::before {
+    background: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(216, 177, 92, 0.5);
   }
 }
 .method-step {
+  position: relative;
   text-align: center;
-  padding: 0 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   opacity: 0.5;
   transition: opacity 0.3s;
 }
@@ -770,11 +931,21 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .act--work { min-height: 100dvh; }
 .qualification-line {
   padding: 1.25rem 1.5rem;
-  background: var(--card);
-  border-left: 3px solid var(--gold);
+  background: transparent;
+  border-left: 1px solid var(--gold);
   color: var(--muted);
   margin: 0 0 2rem;
   font-size: 0.95rem;
+}
+.fit-check {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-right: 0.6rem;
+  white-space: nowrap;
 }
 .work-paths {
   display: grid;
@@ -797,10 +968,12 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .work-path p { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; }
 /* FIX 5: no fixed height — wrap the slot chips + CTA, 24px bottom padding */
 .work-path__embed {
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   background: rgba(6, 16, 24, 0.5);
+  border: 1px solid rgba(216, 177, 92, 0.12);
   padding: 1rem 1rem 24px;
+  margin-top: 1rem;
 }
 .work-path__embed iframe {
   width: 100%;
@@ -819,6 +992,61 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   margin: 0 0 2rem;
 }
 
+/* ============================================================
+   BLUEPRINT PANELS (Phase 1.5 / 1.6)
+   Every card becomes a technical outline panel: transparent fill,
+   hairline gold border, square corners, 8px corner tick marks, and
+   a mono annotation callout above the title. Hover brightens the
+   border and adds a soft outer glow — no lift.
+   ============================================================ */
+.leak-card, .proof-card, .method-item, .platform-card,
+.platform-featured, .work-path {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--panel-line);
+  border-radius: 0;
+  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.leak-card::before, .proof-card::before, .method-item::before,
+.platform-card::before, .platform-featured::before, .work-path::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--gold), var(--gold)) 0 0 / 8px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 0 0 / 1px 8px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 100% 0 / 8px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 100% 0 / 1px 8px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 0 100% / 8px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 0 100% / 1px 8px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 100% 100% / 8px 1px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 100% 100% / 1px 8px no-repeat;
+  opacity: 0.65;
+  transition: opacity 0.3s;
+}
+.leak-card:hover, .proof-card:hover, .method-item:hover,
+.platform-card:hover, .platform-featured:hover, .work-path:hover {
+  transform: none;
+  border-color: var(--panel-line-hover);
+  box-shadow: 0 0 28px rgba(216, 177, 92, 0.14);
+}
+.leak-card:hover::before, .proof-card:hover::before, .method-item:hover::before,
+.platform-card:hover::before, .platform-featured:hover::before, .work-path:hover::before {
+  opacity: 1;
+}
+/* Mono annotation callout, first child of each panel above the title */
+.bp-anno {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--anno);
+  margin: 0 0 0.75rem;
+}
+
 /* Phase 5: mobile cinematic-lite keyframe crossfade layer */
 .cine-lite {
   position: absolute;
@@ -835,7 +1063,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   will-change: opacity;
 }
 
-/* QA 7: progress rail (desktop only) */
+/* Phase 1.8: progress rail as a technical measure rule (desktop only) */
 .progress-rail {
   display: none;
 }
@@ -843,41 +1071,56 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   .progress-rail {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    justify-content: space-between;
     position: fixed;
     left: clamp(1rem, 2.5vw, 2rem);
     top: 50%;
     transform: translateY(-50%);
+    height: min(340px, 46vh);
     z-index: 80;
-    padding: 0.75rem 0;
+    padding: 0.25rem 0;
   }
+  /* the ruler: a 1px gold hairline down the left edge */
   .progress-rail::before {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 50%;
-    width: 2px;
-    transform: translateX(-50%);
-    background: rgba(234, 242, 246, 0.14);
+    left: 0;
+    width: 1px;
+    background: rgba(216, 177, 92, 0.28);
   }
-  .progress-dot {
+  .progress-tick {
     position: relative;
-    width: 9px;
-    height: 9px;
-    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0 0.25rem 0 0;
     border: 0;
-    border-radius: 50%;
-    background: rgba(234, 242, 246, 0.28);
+    background: none;
     cursor: pointer;
-    transition: background 0.3s, transform 0.3s;
   }
-  .progress-dot:hover { transform: scale(1.3); }
-  .progress-dot.is-active {
-    background: var(--gold);
-    box-shadow: 0 0 0 4px rgba(216, 177, 92, 0.18);
+  /* tick mark drawn off the ruler */
+  .progress-tick::before {
+    content: "";
+    width: 9px;
+    height: 1px;
+    background: rgba(216, 177, 92, 0.4);
+    transition: width 0.3s var(--ease-out), background 0.3s;
   }
+  .progress-tick__num {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    font-variant-numeric: tabular-nums;
+    color: rgba(234, 242, 246, 0.32);
+    transition: color 0.3s;
+  }
+  .progress-tick:hover .progress-tick__num { color: rgba(234, 242, 246, 0.7); }
+  .progress-tick:hover::before { width: 14px; }
+  .progress-tick.is-active::before { width: 18px; background: var(--gold); }
+  .progress-tick.is-active .progress-tick__num { color: var(--gold); }
 }
 
 /* Reduced motion */

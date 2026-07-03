@@ -4,6 +4,7 @@ const START_FRAME = 0;
 // Choreography windows inside the pin timeline
 const TEXT_EXIT_START = 0.8; // final 20%: text block resolves out
 const RESOLVE_START = 0.85; // final 15%: overlay ramps to page background
+const GRID_START = 0.9; // Phase 2: final 10%: blueprint grid dissolves in with resolve
 
 // Distribute the visible frame range evenly across the full pin (0->1).
 function segmentToHeroFrame(local, frameCount) {
@@ -19,6 +20,7 @@ export function initHeroPin({ scrubber, reducedMotion }) {
   const hint = document.getElementById("scroll-hint");
   const copy = document.querySelector(".hero__copy");
   const resolve = document.getElementById("hero-resolve");
+  const grid = document.getElementById("hero-grid");
   const frameCount = scrubber.urls.length;
 
   canvas?.classList.add("is-active");
@@ -66,6 +68,12 @@ export function initHeroPin({ scrubber, reducedMotion }) {
       if (resolve) {
         const re = p > RESOLVE_START ? (p - RESOLVE_START) / (1 - RESOLVE_START) : 0;
         resolve.style.opacity = String(re);
+      }
+
+      // Phase 2: the painting dissolves into the grid, landing exactly with resolve.
+      if (grid) {
+        const ge = p > GRID_START ? (p - GRID_START) / (1 - GRID_START) : 0;
+        grid.style.opacity = String(ge);
       }
 
       if (p <= 0.015) {
