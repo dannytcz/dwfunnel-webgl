@@ -12,6 +12,9 @@
 const PLACEHOLDER_FILL = "#061018";
 const DEFAULT_DECODE_W = 1280;
 const DPR_CAP = 1.5;
+// Hard cap on the canvas backing-store width so 4K/5K displays never allocate a
+// huge canvas. Height follows proportionally so the drawn frame stays cover-fit.
+const MAX_BACKING_W = 3200;
 const RESIZE_DEBOUNCE_MS = 200;
 
 export class FrameScrubber {
@@ -215,43 +218,53 @@ export class FrameScrubber {
   };
 
   _paint(bmp) {
-    const w = this._clientW || this.container.clientWidth;
-    const h = this._clientH || this.container.clientHeight;
-    if (!w || !h) return;
-
     const ctx = this.ctx;
-    const fx = this.fx;
-    const scale = fx.scale ?? 1;
-    const ox = fx.offsetX ?? 0;
-    const oy = fx.offsetY ?? 0;
+    // Work in device pixels (the backing store) so the frame always covers the
+    // full canvas regardless of devicePixelRatio or the 3200px width cap.
+    const cw = this.canvas.width;
+    const ch = this.canvas.height;
+    if (!cw || !ch) return;
 
     const bw = bmp.width || bmp.naturalWidth;
     const bh = bmp.height || bmp.naturalHeight;
     if (!bw || !bh) return;
-    const baseScale = Math.max(w / bw, h / bh);
-    const drawScale = baseScale * scale;
-    const dw = bw * drawScale;
-    const dh = bh * drawScale;
-    const dx = (w - dw) / 2 + ox;
-    const dy = (h - dh) / 2 + oy;
+
+    const fx = this.fx;
+    const userScale = fx.scale ?? 1;
+    // fx offsets are authored in CSS pixels; convert to backing pixels.
+    const rs = this._clientW ? cw / this._clientW : 1;
+    const ox = (fx.offsetX ?? 0) * rs;
+    const oy = (fx.offsetY ?? 0) * rs;
+
+    // Cover fit: scale so the frame fills the canvas on both axes, center crop.
+    const cover = Math.max(cw / bw, ch / bh) * userScale;
+    const dw = bw * cover;
+    const dh = bh * cover;
+    const dx = (cw - dw) / 2 + ox;
+    const dy = (ch - dh) / 2 + oy;
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = PLACEHOLDER_FILL;
-    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.fillRect(0, 0, cw, ch);
     ctx.drawImage(bmp, dx, dy, dw, dh);
     this._lastPaintFx = { ...fx };
   }
 
   resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
     const w = this.container.clientWidth;
     const h = this.container.clientHeight;
     if (!w || !h) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+    // Cap backing width at 3200; scale height by the same factor to preserve the
+    // element's aspect ratio so cover-fit drawing has no letterboxing.
+    let renderScale = dpr;
+    if (w * renderScale > MAX_BACKING_W) renderScale = MAX_BACKING_W / w;
     this._clientW = w;
     this._clientH = h;
-    this.canvas.width = Math.round(w * dpr);
-    this.canvas.height = Math.round(h * dpr);
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.canvas.width = Math.max(1, Math.round(w * renderScale));
+    this.canvas.height = Math.max(1, Math.round(h * renderScale));
+    // Draw in identity space; _paint computes everything in backing pixels.
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.lastDrawnFrame = -1;
     this._lastPaintKey = null;
   }
