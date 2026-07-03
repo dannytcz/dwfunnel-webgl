@@ -1,15 +1,10 @@
-import { splitHeadlineWords } from "./text-split.js?v=40";
-
 const LOADER_CAP_MS = 2500;
 
-export function initMotionUi() {
+/* Loader + hero intro. Returns the loader control API. */
+export function initLoader() {
   const loader = document.getElementById("loader");
   const fill = document.getElementById("loader-fill");
   const pct = document.getElementById("loader-pct");
-  const nav = document.getElementById("site-nav");
-  const sticky = document.getElementById("sticky-cta");
-  const cursor = document.getElementById("cursor");
-  const finePointer = window.matchMedia("(pointer: fine)").matches;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tasks = [];
 
@@ -31,108 +26,7 @@ export function initMotionUi() {
     setProgress(1);
     loader?.classList.add("is-done");
     loader?.setAttribute("aria-busy", "false");
-    animateHeroIntro();
-  }
-
-  function animateHeroIntro() {
-    const title = document.getElementById("hero-title");
-    const sub = document.getElementById("hero-sub");
-    const actions = document.getElementById("hero-actions");
-
-    if (title) splitHeadlineWords(title);
-
-    if (!window.gsap || reducedMotion) {
-      document.querySelectorAll(".hero__title .char").forEach((c) => {
-        c.style.opacity = "1";
-        c.style.transform = "none";
-      });
-      if (sub) {
-        sub.style.opacity = "1";
-        sub.style.transform = "none";
-      }
-      if (actions) {
-        actions.style.opacity = "1";
-        actions.style.transform = "none";
-      }
-      return;
-    }
-
-    window.gsap.set(".hero__title .char", { opacity: 0, y: "1.1em" });
-    const tl = window.gsap.timeline();
-    tl.to(".hero__title .char", {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      stagger: 0.02,
-      ease: "power3.out",
-    });
-    tl.to(
-      ["#hero-sub", "#hero-actions"],
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        ease: "power2.out",
-      },
-      0.3
-    );
-  }
-
-  if (finePointer && !reducedMotion && cursor) {
-    const dot = cursor.querySelector(".cursor__dot");
-    const ring = cursor.querySelector(".cursor__ring");
-    let mx = 0;
-    let my = 0;
-    let rx = 0;
-    let ry = 0;
-    window.addEventListener("mousemove", (e) => {
-      mx = e.clientX;
-      my = e.clientY;
-      if (dot) {
-        dot.style.left = `${mx}px`;
-        dot.style.top = `${my}px`;
-      }
-    });
-    const tick = () => {
-      rx += (mx - rx) * 0.15;
-      ry += (my - ry) * 0.15;
-      if (ring) {
-        ring.style.left = `${rx}px`;
-        ring.style.top = `${ry}px`;
-      }
-      requestAnimationFrame(tick);
-    };
-    tick();
-    document.querySelectorAll("a, button, .btn").forEach((el) => {
-      el.addEventListener("mouseenter", () => cursor.classList.add("is-hover"));
-      el.addEventListener("mouseleave", () => cursor.classList.remove("is-hover"));
-    });
-  }
-
-  if (finePointer && !reducedMotion) {
-    document.querySelectorAll("[data-magnetic]").forEach((btn) => {
-      btn.addEventListener("mousemove", (e) => {
-        const r = btn.getBoundingClientRect();
-        const dx = ((e.clientX - r.left) / r.width - 0.5) * 16;
-        const dy = ((e.clientY - r.top) / r.height - 0.5) * 16;
-        btn.style.transform = `translate(${Math.max(-8, Math.min(8, dx))}px, ${Math.max(-8, Math.min(8, dy))}px)`;
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.transform = "";
-      });
-    });
-  }
-
-  if (window.ScrollTrigger && sticky && nav) {
-    // Pill starts hidden; the show/hide ScrollTrigger is created later, after the
-    // pins exist (see initStickyPill), so pin spacing is baked into its position.
-    window.gsap.set(sticky, { autoAlpha: 0, y: 12 });
-
-    window.ScrollTrigger.create({
-      start: "100vh top",
-      onEnter: () => nav.classList.add("is-solid"),
-      onLeaveBack: () => nav.classList.remove("is-solid"),
-    });
+    animateHeroIntro(reducedMotion);
   }
 
   document.fonts?.ready?.then(() => setProgress(0.1)).catch(() => {});
@@ -140,36 +34,154 @@ export function initMotionUi() {
   return { setProgress, track, finish };
 }
 
+function animateHeroIntro(reducedMotion) {
+  const title = document.getElementById("hero-title");
+  const sub = document.getElementById("hero-sub");
+  const actions = document.getElementById("hero-actions");
+  const gsap = window.gsap;
+
+  const showStatic = () => {
+    if (title) {
+      title.style.opacity = "1";
+      title.querySelectorAll(".char").forEach((c) => {
+        c.style.opacity = "1";
+        c.style.transform = "none";
+      });
+    }
+    [sub, actions].forEach((el) => {
+      if (el) {
+        el.style.opacity = "1";
+        el.style.transform = "none";
+      }
+    });
+  };
+
+  if (!gsap || reducedMotion || !window.SplitText || !title) {
+    showStatic();
+    return;
+  }
+
+  // Phase 4.4: GSAP SplitText — words + chars for the h1.
+  const split = new window.SplitText(title, {
+    type: "words,chars",
+    charsClass: "char",
+    wordsClass: "word",
+  });
+  title.style.opacity = "1";
+  gsap.set(split.chars, { opacity: 0, yPercent: 110 });
+  const tl = gsap.timeline();
+  tl.to(split.chars, {
+    opacity: 1,
+    yPercent: 0,
+    duration: 0.8,
+    stagger: 0.02,
+    ease: "power3.out",
+  });
+  tl.to(
+    ["#hero-sub", "#hero-actions"],
+    { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
+    0.3
+  );
+}
+
+/* Nav goes solid after the first viewport. Global (no motion cost). */
+export function initNav() {
+  const nav = document.getElementById("site-nav");
+  if (!window.ScrollTrigger || !nav) return;
+  window.ScrollTrigger.create({
+    start: "100vh top",
+    onEnter: () => nav.classList.add("is-solid"),
+    onLeaveBack: () => nav.classList.remove("is-solid"),
+  });
+}
+
+/* Phase 4.5: custom cursor via gsap.quickTo. Returns cleanup. */
+export function initCursor() {
+  const cursor = document.getElementById("cursor");
+  const gsap = window.gsap;
+  if (!cursor || !gsap) return () => {};
+  const dot = cursor.querySelector(".cursor__dot");
+  const ring = cursor.querySelector(".cursor__ring");
+
+  const ringX = gsap.quickTo(ring, "left", { duration: 0.4, ease: "power3" });
+  const ringY = gsap.quickTo(ring, "top", { duration: 0.4, ease: "power3" });
+
+  const onMove = (e) => {
+    if (dot) {
+      dot.style.left = `${e.clientX}px`;
+      dot.style.top = `${e.clientY}px`;
+    }
+    ringX(e.clientX);
+    ringY(e.clientY);
+  };
+  window.addEventListener("mousemove", onMove);
+
+  const hoverEls = Array.from(document.querySelectorAll("a, button, .btn"));
+  const enter = () => cursor.classList.add("is-hover");
+  const leave = () => cursor.classList.remove("is-hover");
+  hoverEls.forEach((el) => {
+    el.addEventListener("mouseenter", enter);
+    el.addEventListener("mouseleave", leave);
+  });
+
+  return () => {
+    window.removeEventListener("mousemove", onMove);
+    hoverEls.forEach((el) => {
+      el.removeEventListener("mouseenter", enter);
+      el.removeEventListener("mouseleave", leave);
+    });
+  };
+}
+
+/* Phase 4.5: magnetic buttons via gsap.quickTo. Returns cleanup. */
+export function initMagnetic() {
+  const gsap = window.gsap;
+  if (!gsap) return () => {};
+  const cleanups = [];
+  document.querySelectorAll("[data-magnetic]").forEach((btn) => {
+    const xTo = gsap.quickTo(btn, "x", { duration: 0.4, ease: "power3" });
+    const yTo = gsap.quickTo(btn, "y", { duration: 0.4, ease: "power3" });
+    const move = (e) => {
+      const r = btn.getBoundingClientRect();
+      const dx = ((e.clientX - r.left) / r.width - 0.5) * 16;
+      const dy = ((e.clientY - r.top) / r.height - 0.5) * 16;
+      xTo(Math.max(-8, Math.min(8, dx)));
+      yTo(Math.max(-8, Math.min(8, dy)));
+    };
+    const reset = () => {
+      xTo(0);
+      yTo(0);
+    };
+    btn.addEventListener("mousemove", move);
+    btn.addEventListener("mouseleave", reset);
+    cleanups.push(() => {
+      btn.removeEventListener("mousemove", move);
+      btn.removeEventListener("mouseleave", reset);
+      gsap.set(btn, { x: 0, y: 0 });
+    });
+  });
+  return () => cleanups.forEach((fn) => fn());
+}
+
 /**
- * CHANGE 5 / FIX 3: sticky pill show/hide.
- * Created AFTER the hero and machine pins so ScrollTrigger bakes their pin
- * spacing into the pill's resolved start/end (creating it before the pins, as
- * in the loader, leaves it in unpinned coordinates). Anchored to the clean
- * #act-leak / #act-work elements rather than #trust-strip, whose FIX 2 negative
- * margin corrupts position resolution. "top top" on #act-leak resolves to just
- * past the hero pin's release, so the pill stays hidden through the entire pin,
- * appears as Act 01 reaches the top, and hides again as Act 06 enters.
+ * Phase 4.2: sticky pill, plain trigger logic.
+ * Show after the trust strip has scrolled past, hide when Act 06 enters.
+ * With the #trust-strip negative-margin hack removed, positions resolve cleanly
+ * without refreshPriority tricks or deferred creation. Returns the ScrollTrigger.
  */
 export function initStickyPill() {
   const sticky = document.getElementById("sticky-cta");
-  if (!window.ScrollTrigger || !sticky) return;
+  if (!window.ScrollTrigger || !sticky) return null;
+  window.gsap.set(sticky, { autoAlpha: 0, y: 12 });
 
-  const showPill = () => {
-    window.gsap.to(sticky, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" });
-  };
-  const hidePill = () => {
-    window.gsap.to(sticky, { autoAlpha: 0, y: 12, duration: 0.35, ease: "power2.out" });
-  };
+  const show = () => window.gsap.to(sticky, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" });
+  const hide = () => window.gsap.to(sticky, { autoAlpha: 0, y: 12, duration: 0.35, ease: "power2.out" });
 
-  window.ScrollTrigger.create({
-    trigger: "#act-leak",
-    start: "top top",
+  return window.ScrollTrigger.create({
+    trigger: "#trust-strip",
+    start: "bottom top",
     endTrigger: "#act-work",
-    end: "top 85%",
-    invalidateOnRefresh: true,
-    onEnter: showPill,
-    onLeave: hidePill,
-    onEnterBack: showPill,
-    onLeaveBack: hidePill,
+    end: "top center",
+    onToggle: (self) => (self.isActive ? show() : hide()),
   });
 }

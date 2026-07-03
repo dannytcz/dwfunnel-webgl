@@ -3,14 +3,40 @@
  * Design tokens, layout, motion hooks, accessibility
  */
 
+/* Space Grotesk (self hosted, variable weight 400-700) — the "machine" voice:
+   UI, eyebrows, buttons, numerals, labels, body. Cinzel (loaded via Google) is
+   reserved for the "surface" voice: h1, h2, and testimonial blockquotes. */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   --bg: #061018;
   --surface: #0b1b26;
+  /* Card fill, a touch lighter than --surface so cards read on both
+     --bg and --surface (alternating) section backgrounds */
+  --card: #10222f;
   --text: #eaf2f6;
   --muted: #93a7b3;
   --gold: #d8b15c;
-  --font-display: "Cinzel", "Trajan Pro", serif;
-  --font-body: "EB Garamond", "EB Garamond 12", "Georgia", "Times New Roman", serif;
+  /* Cinzel: reserved for h1, h2, testimonial blockquotes only */
+  --font-cinzel: "Cinzel", "Trajan Pro", serif;
+  /* Space Grotesk: everything else */
+  --font-ui: "Space Grotesk", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-ui);
   --max-w: 72rem;
   --nav-h: 4.5rem;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -43,7 +69,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   outline-offset: 3px;
 }
 
-.act-numeral { color: var(--gold); font-family: var(--font-display); font-weight: 600; }
+.act-numeral { color: var(--gold); font-family: var(--font-ui); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* Loader */
 .loader {
@@ -58,7 +84,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .loader.is-done { transform: translateY(-100%); pointer-events: none; }
 .loader__panel { text-align: center; width: min(18rem, 80vw); }
 .loader__brand {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-weight: 600;
   letter-spacing: 0.12em;
   margin: 0 0 1.5rem;
@@ -127,7 +153,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   backdrop-filter: blur(12px);
 }
 .site-nav__logo {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.08em;
@@ -148,10 +174,10 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   justify-content: center;
   min-height: 44px;
   padding: 0.85rem 1.6rem;
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-weight: 500;
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: 999px;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
@@ -168,9 +194,10 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .btn--ghost:hover { border-color: rgba(234, 242, 246, 0.55); }
 
 .eyebrow, .act__eyebrow {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
   margin: 0 0 1rem;
@@ -242,7 +269,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   text-align: center;
 }
 .hero__title {
-  font-family: var(--font-display);
+  font-family: var(--font-cinzel);
   font-weight: 600;
   font-size: clamp(2.1rem, 6vw, 4.5rem);
   line-height: 1.05;
@@ -301,13 +328,6 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   50% { opacity: 1; transform: scaleY(1); }
 }
 
-/* FIX 2: the resolve completes at the pin end, but the hero's own height (100vh)
-   would otherwise scroll past as flat background before the trust strip arrives.
-   Pull the trust strip up so it lands ~120px after the resolve. Only applies when
-   the hero pin is active (class added by hero-pin.js); the fixed, opaque hero
-   fully covers the strip during the pin, so it never peeks early. */
-.hero-pinned #trust-strip { margin-top: calc(120px - 100vh); }
-
 /* Trust strip */
 .trust-strip {
   display: grid;
@@ -332,9 +352,11 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   to { transform: translateX(-50%); }
 }
 .trust-logo {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: rgba(234, 242, 246, 0.35);
   white-space: nowrap;
 }
@@ -348,11 +370,38 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 /* Acts */
 .act {
   position: relative;
+  overflow: hidden;
   padding: clamp(5rem, 12vh, 8rem) clamp(1.5rem, 5vw, 4rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
-.act__inner { max-width: var(--max-w); margin: 0 auto; }
+.act__inner { position: relative; z-index: 1; max-width: var(--max-w); margin: 0 auto; }
+
+/* Phase 2.1: giant watermark numerals behind act titles */
+.act-watermark {
+  position: absolute;
+  top: clamp(0.5rem, 3vh, 2.5rem);
+  left: clamp(0.5rem, 3vw, 2.5rem);
+  z-index: 0;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 28vw;
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  color: rgba(216, 177, 92, 0.04);
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+/* Phase 2.2: alternating section backgrounds */
+.act--leak { background: var(--surface); }
+.act--proof { background: var(--bg); }
+.act--method { background: var(--surface); }
+.act--platforms { background: var(--bg); }
+.act--work { background: var(--surface); }
 .act__title {
-  font-family: var(--font-display);
+  font-family: var(--font-cinzel);
   font-weight: 600;
   font-size: clamp(2rem, 4.5vw, 3.25rem);
   line-height: 1.1;
@@ -405,14 +454,13 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (min-width: 768px) { .leak-cards { grid-template-columns: repeat(3, 1fr); } }
 .leak-card {
   padding: 1.5rem;
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid rgba(234, 242, 246, 0.08);
   border-radius: 8px;
   opacity: 0;
-  transform: translateY(24px);
 }
 .leak-card h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.1rem;
   margin: 0 0 0.5rem;
 }
@@ -495,7 +543,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   line-height: 1;
 }
 .machine-component h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.35rem;
   margin: 0 0 0.35rem;
 }
@@ -511,8 +559,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (min-width: 768px) { .stat-row { grid-template-columns: repeat(3, 1fr); } }
 .stat__value {
   display: block;
-  font-family: var(--font-display);
-  font-weight: 600;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   color: var(--text);
   line-height: 1;
@@ -533,7 +582,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (min-width: 900px) { .proof-cards { grid-template-columns: repeat(3, 1fr); } }
 .proof-card {
   padding: 1.5rem;
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid rgba(234, 242, 246, 0.1);
   border-radius: 10px;
   transition: transform 0.3s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
@@ -543,8 +592,24 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   border-color: rgba(216, 177, 92, 0.45);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
+/* Phase 2.3: unified card hover across all card types */
+.leak-card, .method-item, .platform-card, .platform-featured, .work-path {
+  transition: transform 0.3s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
+}
+.leak-card:hover, .method-item:hover, .platform-card:hover,
+.platform-featured:hover, .work-path:hover {
+  transform: translateY(-6px);
+  border-color: rgba(216, 177, 92, 0.45);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
 .proof-card blockquote { margin: 0; }
-.proof-card p { margin: 0 0 1rem; font-style: italic; color: var(--text); }
+.proof-card p {
+  margin: 0 0 1rem;
+  font-family: var(--font-cinzel);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--text);
+}
 .proof-card cite { font-style: normal; font-size: 0.8rem; color: var(--muted); display: block; }
 .proof-card__metric {
   display: block;
@@ -561,16 +626,28 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transform: translateY(16px);
 }
 @media (min-width: 600px) { .founder-moment { grid-template-columns: 120px 1fr; } }
-.founder-moment__portrait img {
+.founder-moment__portrait {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: 1px solid var(--gold);
   filter: grayscale(1);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
+  transition: filter 0.3s, box-shadow 0.3s;
 }
-.founder-moment__portrait:hover img { border-color: var(--gold); }
+.founder-monogram {
+  font-family: var(--font-cinzel);
+  font-weight: 500;
+  font-size: 2.25rem;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+.founder-moment__portrait:hover {
+  filter: grayscale(0);
+  box-shadow: 0 0 0 4px rgba(216, 177, 92, 0.18);
+}
 .founder-moment p { margin: 0; color: var(--muted); font-size: 0.95rem; }
 
 /* Act 04 method */
@@ -582,13 +659,13 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (min-width: 768px) { .method-grid { grid-template-columns: repeat(3, 1fr); } }
 .method-item {
   padding: 1.25rem;
-  background: var(--surface);
+  background: var(--card);
+  border: 1px solid rgba(234, 242, 246, 0.08);
   border-radius: 8px;
   opacity: 0;
-  transform: translateY(20px);
 }
 .method-item h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1rem;
   margin: 0 0 0.35rem;
 }
@@ -632,7 +709,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   margin-bottom: 0.5rem;
 }
 .method-step h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 0.95rem;
   margin: 0 0 0.35rem;
 }
@@ -643,7 +720,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .act--platforms { padding-block: clamp(4rem, 8vh, 6rem); }
 .platform-featured {
   padding: 2rem;
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid rgba(234, 242, 246, 0.1);
   border-radius: 12px;
   margin-bottom: 1.5rem;
@@ -651,7 +728,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transform: scale(0.96);
 }
 .platform-featured h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.35rem;
   margin: 0 0 0.5rem;
 }
@@ -663,13 +740,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (min-width: 768px) { .platform-grid { grid-template-columns: repeat(4, 1fr); } }
 .platform-card {
   padding: 1.25rem;
-  background: var(--surface);
+  background: var(--card);
+  border: 1px solid rgba(234, 242, 246, 0.08);
   border-radius: 8px;
   opacity: 0;
   transform: translateY(12px);
 }
 .platform-card h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 0.95rem;
   margin: 0 0 0.35rem;
 }
@@ -679,7 +757,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .act--work { min-height: 100dvh; }
 .qualification-line {
   padding: 1.25rem 1.5rem;
-  background: var(--surface);
+  background: var(--card);
   border-left: 3px solid var(--gold);
   color: var(--muted);
   margin: 0 0 2rem;
@@ -693,14 +771,13 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 @media (min-width: 900px) { .work-paths { grid-template-columns: 1fr 1fr; } }
 .work-path {
   padding: 1.75rem;
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid rgba(234, 242, 246, 0.1);
   border-radius: 12px;
   opacity: 0;
-  transform: translateY(20px);
 }
 .work-path h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.2rem;
   margin: 0 0 0.5rem;
 }
@@ -722,6 +799,72 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   font-size: 0.8rem;
   color: var(--muted);
   margin: 2rem 0 0;
+}
+.risk-reversal {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 2rem;
+}
+
+/* Phase 5: mobile cinematic-lite keyframe crossfade layer */
+.cine-lite {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.cine-lite__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: opacity;
+}
+
+/* QA 7: progress rail (desktop only) */
+.progress-rail {
+  display: none;
+}
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .progress-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: fixed;
+    left: clamp(1rem, 2.5vw, 2rem);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 80;
+    padding: 0.75rem 0;
+  }
+  .progress-rail::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background: rgba(234, 242, 246, 0.14);
+  }
+  .progress-dot {
+    position: relative;
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(234, 242, 246, 0.28);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .progress-dot:hover { transform: scale(1.3); }
+  .progress-dot.is-active {
+    background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(216, 177, 92, 0.18);
+  }
 }
 
 /* Reduced motion */

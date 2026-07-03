@@ -1,6 +1,4 @@
-import { splitLinesWords } from "./text-split.js?v=40";
-
-export function initSections({ reducedMotion, isMobile }) {
+export function initSections({ reducedMotion }) {
   if (!window.gsap || !window.ScrollTrigger) return;
 
   const start = reducedMotion ? "top 90%" : "top 75%";
@@ -14,41 +12,81 @@ export function initSections({ reducedMotion, isMobile }) {
     return;
   }
 
-  splitLinesWords(document.querySelector("#act-leak .split-lines"));
+  revealLeakHeading();
   revealLeakCards(start);
   revealMethod(start);
   revealPlatforms(start);
   revealWork(start);
   initStats();
+  initWatermarks();
 }
 
-function revealLeakCards(start) {
-  window.gsap.to("#act-leak .line-inner", {
-    scrollTrigger: { trigger: "#act-leak", start: "top 75%", once: true },
-    y: 0,
+/* Phase 2.1: subtle parallax drift on the giant act watermark numerals */
+function initWatermarks() {
+  document.querySelectorAll(".act-watermark").forEach((el) => {
+    const sec = el.closest(".act");
+    if (!sec) return;
+    window.gsap.fromTo(
+      el,
+      { y: 40 },
+      {
+        y: -40,
+        ease: "none",
+        scrollTrigger: { trigger: sec, start: "top bottom", end: "bottom top", scrub: true },
+      }
+    );
+  });
+}
+
+/* Phase 4.4: h2 line reveal with masking via GSAP SplitText. */
+function revealLeakHeading() {
+  const h2 = document.querySelector("#act-leak .split-lines");
+  if (!h2) return;
+  if (!window.SplitText) {
+    h2.style.opacity = "1";
+    return;
+  }
+  const split = new window.SplitText(h2, { type: "lines", mask: "lines", linesClass: "st-line" });
+  window.gsap.set(split.lines, { yPercent: 110 });
+  window.gsap.to(split.lines, {
+    yPercent: 0,
     duration: 0.7,
     stagger: 0.08,
     ease: "power3.out",
-  });
-  window.gsap.to(".leak-card", {
-    scrollTrigger: { trigger: ".leak-cards", start, once: true },
-    opacity: 1,
-    y: 0,
-    duration: 0.6,
-    stagger: 0.12,
-    ease: "power2.out",
+    scrollTrigger: { trigger: "#act-leak", start: "top 75%", once: true },
   });
 }
 
+function revealLeakCards(start) {
+  window.gsap.fromTo(
+    ".leak-card",
+    { opacity: 0, y: 24 },
+    {
+      scrollTrigger: { trigger: ".leak-cards", start, once: true },
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: "power2.out",
+      clearProps: "transform",
+    }
+  );
+}
+
 function revealMethod(start) {
-  window.gsap.to(".method-item", {
-    scrollTrigger: { trigger: ".method-grid", start, once: true },
-    opacity: 1,
-    y: 0,
-    duration: 0.55,
-    stagger: 0.08,
-    ease: "power2.out",
-  });
+  window.gsap.fromTo(
+    ".method-item",
+    { opacity: 0, y: 20 },
+    {
+      scrollTrigger: { trigger: ".method-grid", start, once: true },
+      opacity: 1,
+      y: 0,
+      duration: 0.55,
+      stagger: 0.08,
+      ease: "power2.out",
+      clearProps: "transform",
+    }
+  );
 
   const timeline = document.getElementById("method-timeline");
   if (!timeline) return;
@@ -76,27 +114,38 @@ function revealPlatforms(start) {
       scale: 1,
       duration: 0.6,
       ease: "power2.out",
+      clearProps: "transform",
     }
   );
-  window.gsap.to(".platform-card", {
-    scrollTrigger: { trigger: ".platform-grid", start, once: true },
-    opacity: 1,
-    y: 0,
-    duration: 0.5,
-    stagger: 0.08,
-    ease: "power2.out",
-  });
+  window.gsap.fromTo(
+    ".platform-card",
+    { opacity: 0, y: 20 },
+    {
+      scrollTrigger: { trigger: ".platform-grid", start, once: true },
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      stagger: 0.08,
+      ease: "power2.out",
+      clearProps: "transform",
+    }
+  );
 }
 
 function revealWork(start) {
-  window.gsap.to(".work-path", {
-    scrollTrigger: { trigger: ".work-paths", start, once: true },
-    opacity: 1,
-    y: 0,
-    duration: 0.55,
-    stagger: 0.1,
-    ease: "power2.out",
-  });
+  window.gsap.fromTo(
+    ".work-path",
+    { opacity: 0, y: 20 },
+    {
+      scrollTrigger: { trigger: ".work-paths", start, once: true },
+      opacity: 1,
+      y: 0,
+      duration: 0.55,
+      stagger: 0.1,
+      ease: "power2.out",
+      clearProps: "transform",
+    }
+  );
   window.gsap.to(".founder-moment", {
     scrollTrigger: { trigger: ".founder-moment", start: "top 80%", once: true },
     opacity: 1,

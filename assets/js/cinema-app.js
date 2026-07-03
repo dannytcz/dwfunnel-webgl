@@ -1,64 +1,72 @@
-import { FrameScrubber } from "./frame-scrub.js?v=40";
-import { initHeroPin } from "./hero-pin.js?v=40";
-import { initMachinePin } from "./machine-pin.js?v=40";
-import { initMotionUi, initStickyPill } from "./motion-ui.js?v=40";
-import { initSections } from "./sections.js?v=40";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=41";
+import { initHeroPin } from "./hero-pin.js?v=41";
+import { initMachinePin } from "./machine-pin.js?v=41";
+import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=41";
+import { initSections } from "./sections.js?v=41";
+import { initMobileLite } from "./mobile-lite.js?v=41";
+import { initProgressRail } from "./progress-rail.js?v=41";
 
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const isMobile = window.matchMedia("(max-width: 767px)").matches;
+const DECODED_BUDGET_MB = 600;
 
 export const appState = {
-  reducedMotion,
-  isMobile,
   scrubber: null,
   machineScrubber: null,
   lenis: null,
 };
 
-function buildAct0Urls() {
-  const acts = window.DWF_CDN?.acts ?? {};
-  const count = acts.act0?.length ?? 0;
-  const local =
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.port === "8766";
+// Debug/QA hook: inspect decoded-memory + scrubber state from the console.
+window.__cinemaState = appState;
 
-  if (!count) return [];
-  if (local) {
-    return Array.from(
-      { length: count },
-      (_, i) => `assets/frames/cinema/act0/frame_${String(i + 1).padStart(5, "0")}.webp`
-    );
-  }
-  return acts.act0;
+/* Phase 3.1: use every second frame (halve the sequence). */
+function halve(arr) {
+  return arr.filter((_, i) => i % 2 === 0);
 }
 
-function buildAct2Urls() {
-  const acts = window.DWF_CDN?.acts ?? {};
-  const count = acts.act2?.length ?? 0;
-  const local =
+function isLocal() {
+  return (
     location.hostname === "localhost" ||
     location.hostname === "127.0.0.1" ||
-    location.port === "8766";
-  if (!count) return [];
-  if (local) {
-    return Array.from(
-      { length: count },
-      (_, i) => `assets/frames/cinema/act2/frame_${String(i + 1).padStart(5, "0")}.webp`
-    );
-  }
-  return acts.act2;
+    location.port === "8766"
+  );
 }
 
-function initLenis() {
-  if (reducedMotion || !window.Lenis) return null;
+function buildUrls(actKey, localDir) {
+  const acts = window.DWF_CDN?.acts ?? {};
+  const count = acts[actKey]?.length ?? 0;
+  if (!count) return [];
+  const full = isLocal()
+    ? Array.from(
+        { length: count },
+        (_, i) => `assets/frames/cinema/${localDir}/frame_${String(i + 1).padStart(5, "0")}.webp`
+      )
+    : acts[actKey];
+  return halve(full);
+}
+
+function connectionSaveData() {
+  const c = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+  if (!c) return false;
+  if (c.saveData) return true;
+  const et = String(c.effectiveType || "");
+  return et === "slow-2g" || et === "2g" || et === "3g";
+}
+
+function logDecodedMemory(label = "") {
+  const bytes =
+    (appState.scrubber?.decodedBytes?.() || 0) + (appState.machineScrubber?.decodedBytes?.() || 0);
+  const mb = bytes / (1024 * 1024);
+  console.info(
+    `[frames] decoded memory ${mb.toFixed(0)}MB / budget ${DECODED_BUDGET_MB}MB${label ? " — " + label : ""}`
+  );
+}
+
+function initLenis(reduce) {
+  if (reduce || !window.Lenis) return null;
   const lenis = new window.Lenis({ autoRaf: false });
   window.lenis = lenis;
   appState.lenis = lenis;
   lenis.on("scroll", window.ScrollTrigger.update);
-  window.gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
+  window.gsap.ticker.add((time) => lenis.raf(time * 1000));
   window.gsap.ticker.lagSmoothing(0);
   return lenis;
 }
@@ -71,12 +79,18 @@ function bindAnchorScroll(lenis) {
       const target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
-      if (lenis) {
-        lenis.scrollTo(target, { offset: 0 });
-      } else {
-        target.scrollIntoView({ behavior: "smooth" });
-      }
+      if (lenis) lenis.scrollTo(target, { offset: 0 });
+      else target.scrollIntoView({ behavior: "smooth" });
     });
+  });
+}
+
+function setStatsFinal() {
+  document.querySelectorAll("[data-count]").forEach((el) => {
+    const target = parseFloat(el.getAttribute("data-count"));
+    const suffix = el.getAttribute("data-suffix") || "";
+    const decimals = parseInt(el.getAttribute("data-decimal") || "0", 10);
+    el.textContent = (decimals ? target.toFixed(decimals) : String(Math.round(target))) + suffix;
   });
 }
 
@@ -86,78 +100,176 @@ async function init() {
     return;
   }
   window.gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
+  if (window.SplitText) window.gsap.registerPlugin(window.SplitText);
 
   const heroCanvas = document.getElementById("scrub-canvas");
   const machineCanvas = document.getElementById("machine-canvas");
   const hero = document.getElementById("hero");
-  const act0Urls = buildAct0Urls();
-  const act2Urls = buildAct2Urls();
 
-  const loaderApi = initMotionUi();
+  const heroUrls = buildUrls("act0", "act0");
+  const machineUrls = buildUrls("act2", "act2");
+  const tier = decodeTierWidth();
 
-  if (act0Urls.length && heroCanvas && hero) {
-    const scrubber = new FrameScrubber(hero, heroCanvas, act0Urls, { reducedMotion });
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const mobile = window.matchMedia("(max-width: 899px)").matches;
+  const saveData = connectionSaveData();
+
+  const loader = initLoader();
+  initNav();
+
+  // Phase 3.3: the hero sequence loads immediately and gates the loader
+  // (desktop only; mobile-lite/reduced use static keyframes/posters).
+  const wantFullHero = !reduce && !mobile && heroCanvas && hero && heroUrls.length;
+  if (wantFullHero) {
+    const scrubber = new FrameScrubber(hero, heroCanvas, heroUrls, {
+      decodeWidth: tier,
+      priorityIndex: 0,
+    });
     appState.scrubber = scrubber;
     scrubber.bindResize();
-    loaderApi.track(async () => {
-      await scrubber.load((p) => loaderApi.setProgress(0.1 + p * 0.85));
+    loader.track(async () => {
+      await scrubber.load((p) => loader.setProgress(0.1 + p * 0.85));
       scrubber.setTargetFrame(0);
+      logDecodedMemory("hero loaded");
     });
   } else {
-    loaderApi.setProgress(0.5);
+    loader.setProgress(0.5);
   }
 
-  await loaderApi.finish();
+  await loader.finish();
 
-  const lenis = initLenis();
+  const lenis = initLenis(reduce);
   bindAnchorScroll(lenis);
 
-  if (!reducedMotion && !isMobile && appState.scrubber) {
-    initHeroPin(appState);
-  } else {
-    document.getElementById("hero-poster")?.classList.remove("is-hidden");
-    document.getElementById("scrub-canvas")?.classList.remove("is-active");
-  }
+  // Phase 4.3: a single gsap.matchMedia() block, three contexts.
+  const mm = window.gsap.matchMedia();
+  mm.add(
+    {
+      desktop: "(min-width: 900px) and (prefers-reduced-motion: no-preference)",
+      mobileCtx: "(max-width: 899px) and (prefers-reduced-motion: no-preference)",
+      reduced: "(prefers-reduced-motion: reduce)",
+    },
+    (ctx) => {
+      const { desktop, mobileCtx, reduced } = ctx.conditions;
 
-  initSections(appState);
+      if (reduced) {
+        document.getElementById("hero-poster")?.classList.remove("is-hidden");
+        document.getElementById("scrub-canvas")?.classList.remove("is-active");
+        initSections({ reducedMotion: true });
+        setStatsFinal();
+        return () => {};
+      }
 
-  // Create the sticky pill trigger now that the hero pin exists, so its resolved
-  // start/end include pin spacing (the machine pin push is folded in on the
-  // subsequent ScrollTrigger.refresh calls, same as the section triggers).
-  initStickyPill();
-
-  if (act2Urls.length && machineCanvas) {
-    const machineScrubber = new FrameScrubber(
-      document.getElementById("act-machine"),
-      machineCanvas,
-      act2Urls,
-      { reducedMotion, debugLabel: "machine" }
-    );
-    appState.machineScrubber = machineScrubber;
-    machineScrubber.bindResize();
-    console.info(
-      `[machine-canvas] act2 frames: ${act2Urls.length}, path: assets/frames/cinema/act2/, sample: frame_00001.webp`
-    );
-    machineScrubber
-      .load()
-      .then(() => {
-        machineScrubber.setTargetFrame(0);
-        machineScrubber.renderNow?.();
-        if (!reducedMotion && !isMobile) initMachinePin(appState);
+      if (mobileCtx) {
+        const liteCleanup = initMobileLite({ heroUrls, machineUrls, saveData });
+        initSections({ reducedMotion: false });
+        const pill = initStickyPill();
         window.ScrollTrigger.refresh();
-      })
-      .catch((err) => console.warn("machine preload failed", err));
-  } else {
-    machineCanvas?.setAttribute("aria-hidden", "true");
-    if (machineCanvas) machineCanvas.style.visibility = "hidden";
-    document.getElementById("act-machine")?.insertAdjacentHTML(
-      "beforeend",
-      "<!-- [PLACEHOLDER] machine section frame sequence not yet produced. Unhide and wire when frames are added. -->"
-    );
-  }
+        return () => {
+          liteCleanup?.();
+          pill?.kill?.();
+        };
+      }
+
+      if (desktop) {
+        if (appState.scrubber) {
+          initHeroPin({ scrubber: appState.scrubber, reducedMotion: false });
+        } else {
+          document.getElementById("hero-poster")?.classList.remove("is-hidden");
+        }
+        initSections({ reducedMotion: false });
+        const pill = initStickyPill();
+        const railCleanup = initProgressRail({ lenis });
+        const cursorCleanup = initCursor();
+        const magneticCleanup = initMagnetic();
+        const machineCtl = setupMachineLazy(machineUrls, machineCanvas, tier);
+        window.ScrollTrigger.refresh();
+        return () => {
+          pill?.kill?.();
+          railCleanup?.();
+          cursorCleanup?.();
+          magneticCleanup?.();
+          machineCtl?.kill?.();
+        };
+      }
+
+      return () => {};
+    }
+  );
 
   await document.fonts.ready;
   window.ScrollTrigger.refresh();
+}
+
+/**
+ * Phase 3.3/3.4: machine sequence loads only when Act 01 enters the viewport.
+ * On load, the hero sequence bitmaps are released first so only one full
+ * sequence is decoded at rest (kept under the 600MB budget). Scrolling back up
+ * above the machine pin releases the machine and the hero pin re-decodes.
+ */
+function setupMachineLazy(machineUrls, machineCanvas, tier) {
+  if (!machineCanvas || !machineUrls.length) {
+    machineCanvas?.setAttribute("aria-hidden", "true");
+    if (machineCanvas) machineCanvas.style.visibility = "hidden";
+    return null;
+  }
+
+  let started = false;
+  let machineST = null;
+  let releaseST = null;
+
+  const loadTrigger = window.ScrollTrigger.create({
+    trigger: "#act-leak",
+    start: "top bottom",
+    onEnter: () => {
+      if (started) return;
+      started = true;
+      // Free the hero sequence first so we never hold both decoded.
+      appState.scrubber?.releaseBitmaps?.();
+      logDecodedMemory("hero released, machine loading");
+
+      const scrubber = new FrameScrubber(
+        document.getElementById("act-machine"),
+        machineCanvas,
+        machineUrls,
+        { decodeWidth: tier, priorityIndex: 0, debugLabel: "machine" }
+      );
+      appState.machineScrubber = scrubber;
+      scrubber.bindResize();
+      console.info(
+        `[machine-canvas] lazy load begins at Act 01, ${machineUrls.length} frames (halved), tier ${tier}px`
+      );
+      scrubber
+        .load()
+        .then(() => {
+          scrubber.setTargetFrame(0);
+          scrubber.renderNow?.();
+          machineST = initMachinePin({ machineScrubber: scrubber, reducedMotion: false });
+          logDecodedMemory("machine loaded");
+          window.ScrollTrigger.refresh();
+
+          // Release machine when scrolling back up above its pin; the hero pin's
+          // onToggle re-decodes the hero as it re-enters.
+          releaseST = window.ScrollTrigger.create({
+            trigger: "#machine-pin",
+            start: "top bottom",
+            onLeaveBack: () => {
+              appState.machineScrubber?.releaseBitmaps?.();
+              logDecodedMemory("machine released (scrolled back to hero)");
+            },
+          });
+        })
+        .catch((err) => console.warn("machine preload failed", err));
+    },
+  });
+
+  return {
+    kill: () => {
+      loadTrigger.kill();
+      machineST?.kill?.();
+      releaseST?.kill?.();
+    },
+  };
 }
 
 init().catch((err) => {

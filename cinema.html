@@ -8,9 +8,10 @@
   <meta name="theme-color" content="#061018" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=40" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=41" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -30,10 +31,19 @@
 
   <header class="site-nav" id="site-nav">
     <a href="/" class="site-nav__logo">DW Funnel</a>
-    <a href="#act-work" class="btn btn--primary site-nav__cta magnetic" data-magnetic>Get My Funnel Plan</a>
+    <a href="#act-work" class="btn btn--primary site-nav__cta magnetic" data-magnetic aria-label="Start Your Build">Start Your Build</a>
   </header>
 
-  <a href="#act-work" class="sticky-cta btn btn--primary magnetic" id="sticky-cta" data-magnetic aria-label="Get My Funnel Plan">Get My Funnel Plan</a>
+  <a href="#act-work" class="sticky-cta btn btn--primary magnetic" id="sticky-cta" data-magnetic aria-label="Start Your Build">Start Your Build</a>
+
+  <nav class="progress-rail" id="progress-rail" aria-label="Section progress" hidden>
+    <button type="button" class="progress-dot" aria-label="The Leak"></button>
+    <button type="button" class="progress-dot" aria-label="The Machine"></button>
+    <button type="button" class="progress-dot" aria-label="Proof"></button>
+    <button type="button" class="progress-dot" aria-label="The Method"></button>
+    <button type="button" class="progress-dot" aria-label="Where It Lives"></button>
+    <button type="button" class="progress-dot" aria-label="Work With Us"></button>
+  </nav>
 
   <!-- HERO (pinned, scroll scrubbed) -->
   <div id="hero-pin" class="hero-pin">
@@ -54,7 +64,7 @@
         <h1 class="hero__title" id="hero-title">Beautiful On The Surface. Ruthless Underneath.</h1>
         <p class="hero__sub" id="hero-sub">DW Funnel builds cinematic landing pages with a conversion machine wired beneath them. For business owners who want booked calls, not another pretty template.</p>
         <div class="hero__actions" id="hero-actions">
-          <a href="#act-work" class="btn btn--primary magnetic" data-magnetic>Get My Funnel Plan</a>
+          <a href="#act-work" class="btn btn--primary magnetic" data-magnetic aria-label="Start Your Build">Start Your Build</a>
           <a href="#act-machine" class="btn btn--ghost magnetic" data-magnetic>See The Machine</a>
         </div>
       </div>
@@ -86,13 +96,14 @@
       </div>
     </div>
     <p class="trust-strip__text">
-      Trusted by founders across MY and SG
+      Trusted by founders across Malaysia and Singapore
       <!-- [PLACEHOLDER] trust line, replace with real client geography or count -->
     </p>
   </section>
 
   <!-- ACT 01: THE LEAK -->
   <section id="act-leak" class="act act--leak" aria-labelledby="act-leak-heading">
+    <span class="act-watermark" aria-hidden="true">01</span>
     <div class="act__inner">
       <p class="act__eyebrow"><span class="act-numeral">01</span> · The Leak</p>
       <h2 class="act__title split-lines" id="act-leak-heading">You Have Traffic. The Page Is Where It Dies.</h2>
@@ -117,6 +128,7 @@
   <!-- ACT 02: THE MACHINE (pinned) -->
   <div id="machine-pin" class="machine-pin">
     <section id="act-machine" class="act act--machine" aria-labelledby="act-machine-heading">
+      <span class="act-watermark act-watermark--machine" aria-hidden="true">02</span>
       <div class="machine__stage">
         <canvas id="machine-canvas" class="machine__canvas" aria-hidden="true"></canvas>
         <div class="machine__scrim" aria-hidden="true"></div>
@@ -149,12 +161,13 @@
           </div>
         </li>
       </ol>
-      <a href="#act-work" class="btn btn--primary machine__cta magnetic" data-magnetic>Get My Funnel Plan</a>
+      <a href="#act-work" class="btn btn--primary machine__cta magnetic" data-magnetic aria-label="Start Your Build">Start Your Build</a>
     </section>
   </div>
 
   <!-- ACT 03: PROOF -->
   <section id="act-proof" class="act act--proof" aria-labelledby="act-proof-heading">
+    <span class="act-watermark" aria-hidden="true">03</span>
     <div class="act__inner">
       <p class="act__eyebrow"><span class="act-numeral">03</span> · Proof</p>
       <h2 class="act__title" id="act-proof-heading">Numbers First. Praise Second.</h2>
@@ -204,10 +217,10 @@
         </li>
       </ul>
       <div class="founder-moment">
-        <!-- [PLACEHOLDER] Daphne Wong portrait image -->
-        <picture class="founder-moment__portrait">
-          <img src="assets/images/hero/poster-768.webp" alt="Portrait of the DW Funnel founder" width="120" height="120" loading="lazy" decoding="async" />
-        </picture>
+        <!-- [PLACEHOLDER] replace monogram with real square portrait of Daphne Wong, minimum 240x240 -->
+        <div class="founder-moment__portrait" aria-hidden="true">
+          <span class="founder-monogram">DW</span>
+        </div>
         <p>Founded by Daphne Wong, DW Funnel is a studio of designers and funnel engineers who treat every page as a conversion instrument.</p>
       </div>
     </div>
@@ -215,6 +228,7 @@
 
   <!-- ACT 04: THE METHOD -->
   <section id="act-method" class="act act--method" aria-labelledby="act-method-heading">
+    <span class="act-watermark" aria-hidden="true">04</span>
     <div class="act__inner">
       <p class="act__eyebrow"><span class="act-numeral">04</span> · The Method</p>
       <h2 class="act__title" id="act-method-heading">Six Parts. Five Steps. No Mystery.</h2>
@@ -238,6 +252,7 @@
 
   <!-- ACT 05: WHERE IT LIVES -->
   <section id="act-platforms" class="act act--platforms" aria-labelledby="act-platforms-heading">
+    <span class="act-watermark" aria-hidden="true">05</span>
     <div class="act__inner">
       <p class="act__eyebrow"><span class="act-numeral">05</span> · Where It Lives</p>
       <h2 class="act__title" id="act-platforms-heading">Flagship Builds. Deployed Anywhere.</h2>
@@ -257,11 +272,13 @@
 
   <!-- ACT 06: WORK WITH US -->
   <section id="act-work" class="act act--work" aria-labelledby="act-work-heading">
+    <span class="act-watermark" aria-hidden="true">06</span>
     <div class="act__inner">
       <p class="act__eyebrow"><span class="act-numeral">06</span> · Work With Us</p>
-      <h2 class="act__title" id="act-work-heading">Map Your Funnel In One Call.</h2>
-      <p class="act__intro">Twenty minutes. We walk through your offer, your page, and the gap, then tell you exactly what we would build and whether we are the right fit. No script, no pressure.</p>
+      <h2 class="act__title" id="act-work-heading">Start Your Build.</h2>
+      <p class="act__intro">One twenty minute call. We look at your offer, your page, and the gap, then scope what we would build and whether we are the right fit.</p>
       <p class="qualification-line">We take on four builds per month. We work best with founders who already have an offer that sells and traffic to send. If that is you, book the call.</p>
+      <p class="risk-reversal">If we are not the right fit, we tell you on the call and point you somewhere better.</p>
       <div class="work-paths">
         <article class="work-path work-path--call">
           <h3>Book The Call</h3>
@@ -274,7 +291,7 @@
                 <button type="button" class="booking-slot" disabled>Tue 14:30</button>
                 <button type="button" class="booking-slot" disabled>Thu 11:00</button>
               </div>
-              <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary booking-placeholder__cta" target="_blank" rel="noopener noreferrer">Get My Funnel Plan</a>
+              <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary booking-placeholder__cta" target="_blank" rel="noopener noreferrer" aria-label="Start Your Build">Start Your Build</a>
             </div>
           </div>
         </article>
@@ -290,10 +307,11 @@
   </section>
 
   <script src="assets/js/cdn-manifest.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=40"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=41"></script>
 </body>
 </html>

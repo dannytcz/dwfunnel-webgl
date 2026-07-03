@@ -1,9 +1,16 @@
 /**
- * Bitmap frame scrubber — preload via createImageBitmap, draw on gsap.ticker only.
+ * Bitmap frame scrubber — preload via createImageBitmap, draw on gsap.ticker.
+ *
+ * Phase 3 (frame pipeline diet):
+ *  - decode width is a resolution tier chosen by the caller (960 / 1280 / 1440)
+ *    so decoded memory scales with the viewport.
+ *  - the gsap.ticker draw callback is paused when the owning pin is inactive
+ *    (resumeTicker / pauseTicker, driven by ScrollTrigger onToggle).
+ *  - releaseBitmaps()/reload() let the app keep only the active sequence decoded.
  */
 
 const PLACEHOLDER_FILL = "#061018";
-const BITMAP_MAX_W = 1600;
+const DEFAULT_DECODE_W = 1280;
 const DPR_CAP = 1.5;
 const RESIZE_DEBOUNCE_MS = 200;
 
@@ -13,18 +20,22 @@ export class FrameScrubber {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d", { alpha: false });
     this.urls = urls;
-    /** @type {(ImageBitmap|null)[]} */
+    /** @type {(ImageBitmap|HTMLImageElement|null)[]} */
     this.bitmaps = new Array(urls.length).fill(null);
     this.targetFrame = 0;
     this.lastDrawnFrame = -1;
     this.fx = { scale: 1, offsetY: 0, offsetX: 0 };
     this.reducedMotion = opts.reducedMotion ?? false;
+    this.decodeWidth = opts.decodeWidth ?? DEFAULT_DECODE_W;
+    this.priorityIndex = opts.priorityIndex ?? 0;
     this._onProgress = null;
     this._tickerActive = false;
     this._resizeTimer = null;
     this._clientW = 0;
     this._clientH = 0;
     this._lastFx = {};
+    this._released = false;
+    this._loaded = false;
     this.debugLabel = opts.debugLabel ?? "";
   }
 
@@ -39,7 +50,7 @@ export class FrameScrubber {
       const blob = await res.blob();
       try {
         return await createImageBitmap(blob, {
-          resizeWidth: BITMAP_MAX_W,
+          resizeWidth: this.decodeWidth,
           resizeQuality: "high",
         });
       } catch {
@@ -64,8 +75,9 @@ export class FrameScrubber {
 
   /** Preload every frame; loader progress tied to decode count. */
   async load(onProgress) {
-    this._onProgress = onProgress;
+    this._onProgress = onProgress ?? this._onProgress;
     if (!this.urls.length) return;
+    this._released = false;
 
     const total = this.urls.length;
 
@@ -78,9 +90,6 @@ export class FrameScrubber {
       this.bitmaps[priority] = null;
     }
     this.resize();
-    this._ensureTicker();
-    // Paint the first frame synchronously so the scene shows immediately,
-    // without waiting on the next rAF tick.
     this.renderNow();
 
     let done = 1;
@@ -93,6 +102,7 @@ export class FrameScrubber {
       while (next < total) {
         const i = next++;
         if (i === priority) continue;
+        if (this._released) return;
         try {
           this.bitmaps[i] = await this._fetchBitmap(this.urls[i]);
         } catch {
@@ -104,8 +114,42 @@ export class FrameScrubber {
     };
 
     await Promise.all(Array.from({ length: Math.min(concurrency, total) }, () => worker()));
+    this._loaded = true;
     this.resize();
     this.renderNow();
+  }
+
+  /** Re-decode after a releaseBitmaps() (re-fetch is cheap from HTTP cache). */
+  async reload(onProgress) {
+    if (!this._released && this._loaded) return;
+    await this.load(onProgress);
+  }
+
+  /** Free decoded memory for the inactive sequence. */
+  releaseBitmaps() {
+    if (this._released) return;
+    this._released = true;
+    this._loaded = false;
+    this.pauseTicker();
+    for (let i = 0; i < this.bitmaps.length; i++) {
+      const b = this.bitmaps[i];
+      if (b && typeof b.close === "function") b.close();
+      this.bitmaps[i] = null;
+    }
+    this.lastDrawnFrame = -1;
+    this._lastPaintKey = null;
+  }
+
+  /** Sum of decoded pixels * 4 bytes for currently held bitmaps. */
+  decodedBytes() {
+    let bytes = 0;
+    for (const b of this.bitmaps) {
+      if (!b) continue;
+      const w = b.width || b.naturalWidth || 0;
+      const h = b.height || b.naturalHeight || 0;
+      bytes += w * h * 4;
+    }
+    return bytes;
   }
 
   /** @deprecated use setTargetFrame in scroll callbacks */
@@ -124,7 +168,6 @@ export class FrameScrubber {
     this._lastFx = this.fx;
   }
 
-  /** No-op — all frames preloaded in load(). */
   prewarm() {}
   prefetchRange() {
     return Promise.resolve();
@@ -144,10 +187,17 @@ export class FrameScrubber {
     this._renderTick();
   }
 
-  _ensureTicker() {
+  resumeTicker() {
     if (this._tickerActive || !this.urls.length || !window.gsap) return;
     this._tickerActive = true;
     window.gsap.ticker.add(this._renderTick);
+    this.renderNow();
+  }
+
+  pauseTicker() {
+    if (!this._tickerActive || !window.gsap) return;
+    this._tickerActive = false;
+    window.gsap.ticker.remove(this._renderTick);
   }
 
   _renderTick = () => {
@@ -162,10 +212,6 @@ export class FrameScrubber {
     this._paint(bmp);
     this.lastDrawnFrame = target;
     this._lastPaintKey = fxKey;
-
-    if (this.debugLabel && window.__DEBUG_MACHINE) {
-      console.log(`[${this.debugLabel}] frames=${this.urls.length} target=${target} drawn=${this.lastDrawnFrame}`);
-    }
   };
 
   _paint(bmp) {
@@ -207,8 +253,6 @@ export class FrameScrubber {
     this.canvas.height = Math.round(h * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.lastDrawnFrame = -1;
-    // Resizing clears the canvas backing store; invalidate the paint key so the
-    // next render repaints instead of being skipped by the equality guard.
     this._lastPaintKey = null;
   }
 
@@ -219,6 +263,7 @@ export class FrameScrubber {
       clearTimeout(this._resizeTimer);
       this._resizeTimer = setTimeout(() => {
         this.resize();
+        this.renderNow();
         window.ScrollTrigger?.refresh?.();
       }, RESIZE_DEBOUNCE_MS);
     });
@@ -231,4 +276,13 @@ export function scrollFx(progress, opts = {}) {
     scale: 1 + p * (opts.scaleDelta ?? 0.08),
     offsetY: -p * (opts.offsetY ?? 22),
   };
+}
+
+/** Viewport resolution tier for decode width (Phase 3.2). */
+export function decodeTierWidth(vw = window.innerWidth) {
+  if (vw < 900) return 960;
+  if (vw < 1440) return 1280;
+  // 1600 requested for large screens, but 120 frames * 1600x900x4B ~= 691MB
+  // exceeds the 600MB decoded-memory budget; 1440 keeps one sequence ~560MB.
+  return 1440;
 }

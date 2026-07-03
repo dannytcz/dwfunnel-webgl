@@ -1,4 +1,4 @@
-const MACHINE_PIN_VH = 300;
+const MACHINE_PIN_VH = 200; // Phase 3.6: shortened from 300vh
 
 export function initMachinePin({ machineScrubber, reducedMotion }) {
   const pin = document.getElementById("machine-pin");
@@ -8,29 +8,36 @@ export function initMachinePin({ machineScrubber, reducedMotion }) {
 
   canvas?.classList.add("is-active");
 
-  window.ScrollTrigger.create({
+  return window.ScrollTrigger.create({
     trigger: pin,
     start: "top top",
     end: `+=${MACHINE_PIN_VH}%`,
     pin: true,
     scrub: reducedMotion ? false : 0.15,
     anticipatePin: 1,
-    // Refresh before the sticky pill trigger so this pin's spacing is applied
-    // to the pill's resolved start/end positions.
-    refreshPriority: 1,
+    onToggle: (self) => {
+      if (self.isActive) {
+        if (machineScrubber._released) {
+          machineScrubber.reload().then(() => machineScrubber.resumeTicker());
+        } else {
+          machineScrubber.resumeTicker();
+        }
+      } else {
+        machineScrubber.pauseTicker();
+      }
+    },
     onUpdate: (self) => {
       const p = self.progress;
       const frame = Math.round(p * (frameCount - 1));
       machineScrubber.setTargetFrame(frame);
       machineScrubber.setFx({ scale: 1 + p * 0.04, offsetY: -p * 12, offsetX: 0 });
 
+      // Three reveals evenly across the pin.
       const idx = Math.min(2, Math.floor(p * 3));
       components.forEach((el, i) => {
         el.classList.toggle("is-active", i === idx);
-        el.style.opacity = i < idx ? "0.55" : i === idx ? "1" : "0.55";
-        if (i < idx) el.style.transform = "scale(0.96)";
-        else if (i === idx) el.style.transform = "scale(1)";
-        else el.style.transform = "scale(0.96)";
+        el.style.opacity = i === idx ? "1" : "0.55";
+        el.style.transform = i === idx ? "scale(1)" : "scale(0.96)";
       });
 
       const numeral = components[idx]?.querySelector(".machine-component__numeral");
