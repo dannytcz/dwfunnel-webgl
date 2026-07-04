@@ -49,3 +49,10 @@ constrains keyframe selection when the final film is cut.
 - Locked look: slim oval face, loose low chignon, charcoal blazer over
   black silk top, warm gold rim light, gold schematic lines behind.
 - Palette: warm gold on near black only. No readable text inside footage.
+
+## Law 4: No dead frames
+
+A scrub frame with no movement is stolen scroll distance. Every clip
+keeps continuous motion: the camera or the subject always moves, calm
+pockets are slow, never frozen. When cutting clips into frame sequences
+for the site, trim static heads and tails so scroll only buys motion.
