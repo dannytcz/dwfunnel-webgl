@@ -1,10 +1,23 @@
 const HERO_PIN_VH = 260;
 const START_FRAME = 0;
 
-// Choreography windows inside the pin timeline
-const TEXT_EXIT_START = 0.8; // final 20%: text block resolves out
+// Founder hero beat map (fractions of pin progress). Words enter in the
+// film's calm pockets and never share a peak with heavy motion.
+const NAME_HOLD_END = 0.3; // giant name owns the opening
+const NAME_OUT_END = 0.42; // name recedes as line one arrives
+const LINE1_IN = [0.14, 0.2];
+const LINE2_IN = [0.34, 0.4];
+const SUB_IN = [0.44, 0.5];
+const ACTIONS_IN = [0.46, 0.52];
+const COPY_EXIT = [0.62, 0.72]; // whole copy leaves before the final stretch
 const RESOLVE_START = 0.85; // final 15%: overlay ramps to page background
-const GRID_START = 0.9; // Phase 2: final 10%: blueprint grid dissolves in with resolve
+const GRID_START = 0.9; // final 10%: blueprint grid dissolves in with resolve
+
+// Progress of p through the band [a, b], clamped 0..1, eased.
+function band(p, [a, b]) {
+  const t = Math.max(0, Math.min(1, (p - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+}
 
 // Distribute the visible frame range evenly across the full pin (0->1).
 function segmentToHeroFrame(local, frameCount) {
@@ -21,7 +34,22 @@ export function initHeroPin({ scrubber, reducedMotion }) {
   const copy = document.querySelector(".hero__copy");
   const resolve = document.getElementById("hero-resolve");
   const grid = document.getElementById("hero-grid");
+  const name = document.getElementById("hero-name");
+  const line1 = document.getElementById("hero-line1");
+  const line2 = document.getElementById("hero-line2");
+  const sub = document.getElementById("hero-sub");
+  const actions = document.getElementById("hero-actions");
+  const title = document.getElementById("hero-title");
   const frameCount = scrubber.urls.length;
+
+  // Scroll-controlled elements start hidden; the beat map reveals them.
+  if (title) title.style.opacity = "1";
+  [line1, line2].forEach((el) => {
+    if (el) {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(26px)";
+    }
+  });
 
   canvas?.classList.add("is-active");
 
@@ -58,9 +86,29 @@ export function initHeroPin({ scrubber, reducedMotion }) {
       poster?.classList.toggle("is-hidden", p > 0.02);
       if (hint) hint.style.opacity = String(p < 0.05 ? 1 : Math.max(0, 1 - p / 0.08));
 
+      // Beat 1: giant name holds, then recedes as the headline arrives.
+      if (name) {
+        const out = p <= NAME_HOLD_END ? 0 : band(p, [NAME_HOLD_END, NAME_OUT_END]);
+        // Before the pin moves, the loader intro owns the name reveal.
+        if (p > 0.015) name.style.opacity = String(1 - out);
+        name.style.transform = `scale(${1 - 0.06 * out})`;
+      }
+
+      // Beats 2 to 4: headline lines, sub, and actions enter on their marks.
+      const setIn = (el, bd) => {
+        if (!el) return;
+        const t = band(p, bd);
+        el.style.opacity = String(t);
+        el.style.transform = `translateY(${26 * (1 - t)}px)`;
+      };
+      setIn(line1, LINE1_IN);
+      setIn(line2, LINE2_IN);
+      setIn(sub, SUB_IN);
+      setIn(actions, ACTIONS_IN);
+
+      // Beat 5: the whole copy block leaves before the final stretch.
       if (copy) {
-        const te = p > TEXT_EXIT_START ? (p - TEXT_EXIT_START) / (1 - TEXT_EXIT_START) : 0;
-        const eased = te * te;
+        const eased = band(p, COPY_EXIT);
         copy.style.opacity = String(1 - eased);
         copy.style.transform = `translateY(${-40 * eased}px)`;
       }
