@@ -1,10 +1,10 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=47";
-import { initHeroPin } from "./hero-pin.js?v=47";
-import { initMachineSchematic } from "./machine-schematic.js?v=47";
-import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=47";
-import { initSections } from "./sections.js?v=47";
-import { initMobileLite } from "./mobile-lite.js?v=47";
-import { initProgressRail } from "./progress-rail.js?v=47";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=48";
+import { initHeroPin } from "./hero-pin.js?v=48";
+import { initMachineSchematic } from "./machine-schematic.js?v=48";
+import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=48";
+import { initSections, initActFilms } from "./sections.js?v=48";
+import { initMobileLite } from "./mobile-lite.js?v=48";
+import { initProgressRail } from "./progress-rail.js?v=48";
 
 const DECODED_BUDGET_MB = 600;
 
@@ -177,6 +177,7 @@ async function init() {
           document.getElementById("hero-poster")?.classList.remove("is-hidden");
         }
         initSections({ reducedMotion: false });
+        const filmsCleanup = initActFilms();
         const pill = initStickyPill();
         const railCleanup = initProgressRail({ lenis });
         const cursorCleanup = initCursor();
@@ -184,6 +185,7 @@ async function init() {
         const machineCtl = initMachineSchematic({ reducedMotion: false });
         window.ScrollTrigger.refresh();
         return () => {
+          filmsCleanup?.();
           pill?.kill?.();
           railCleanup?.();
           cursorCleanup?.();
