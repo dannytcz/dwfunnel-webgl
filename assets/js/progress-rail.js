@@ -7,7 +7,6 @@ const ACTS = [
   { trigger: "#machine-pin", target: "#act-machine" },
   { trigger: "#act-proof", target: "#act-proof" },
   { trigger: "#act-method", target: "#act-method" },
-  { trigger: "#act-platforms", target: "#act-platforms" },
   { trigger: "#act-work", target: "#act-work" },
 ];
 

@@ -157,12 +157,14 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
   if (!pin || !svg) return null;
 
   const components = Array.from(document.querySelectorAll(".machine-component"));
+  const stat = document.getElementById("machine-stat");
   const chambers = Array.from(svg.querySelectorAll(".schem-chamber[data-chamber]")).filter(
     (c) => parseInt(c.getAttribute("data-chamber"), 10) >= 0
   );
 
   if (reducedMotion || staticDraw) {
     drawStatic(svg);
+    if (stat) stat.textContent = "120";
     if (particlesCanvas) particlesCanvas.style.display = "none";
     return null;
   }
@@ -228,6 +230,12 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
       const activeIdx = p < 0.25 ? 0 : Math.min(2, Math.floor((p - 0.25) / 0.25));
       for (let i = 0; i < components.length; i++) {
         components[i].classList.toggle("is-active", i === activeIdx);
+      }
+
+      // Live stat: the booked counter fills as the last chamber completes.
+      if (stat) {
+        const t = Math.max(0, Math.min(1, (p - 0.7) / 0.28));
+        stat.textContent = String(Math.round(t * 120));
       }
     },
   });
