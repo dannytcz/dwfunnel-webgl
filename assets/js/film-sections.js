@@ -15,7 +15,7 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=53";
+import { FrameScrubber } from "./frame-scrub.js?v=54";
 
 const SECTION_DECODE_W = 720;
 
@@ -45,8 +45,9 @@ function initOne(pin) {
     (_, i) => `assets/frames/sections/${key}/frame_${String(i + 1).padStart(5, "0")}.webp`
   );
 
+  const decodeW = parseInt(pin.dataset.filmDecode || "", 10) || SECTION_DECODE_W;
   const scrubber = new FrameScrubber(stage, canvas, urls, {
-    decodeWidth: SECTION_DECODE_W,
+    decodeWidth: decodeW,
     priorityIndex: 0,
     debugLabel: key,
   });

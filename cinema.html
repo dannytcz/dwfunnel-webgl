@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=53" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=54" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -291,11 +291,8 @@
           </blockquote>
         </li>
       </ul>
-      <div class="founder-moment">
-        <!-- [PLACEHOLDER] replace monogram with real square portrait of Daphne Wong, minimum 240x240 -->
-        <div class="founder-moment__portrait" aria-hidden="true">
-          <span class="founder-monogram">DW</span>
-        </div>
+      <div class="founder-moment founder-moment--textonly">
+        <!-- [PLACEHOLDER] founder portrait removed for now; reinstate a real square portrait of Daphne Wong (min 240x240) when available -->
         <p>Founded by Daphne Wong, DW Funnel is a studio of designers and funnel engineers who treat every page as a conversion instrument.</p>
       </div>
     </div>
@@ -360,17 +357,16 @@
   </section>
 
   <!-- ACT 06: WORK WITH US — pinned film (the walk into the stance) + rail -->
-  <section id="act-work" class="film-pin act--work" data-film-frames="work" data-film-count="49" data-film-vh="220" aria-labelledby="act-work-heading">
+  <section id="act-work" class="film-pin act--work" data-film-frames="work" data-film-count="49" data-film-vh="220" data-film-decode="1000" aria-labelledby="act-work-heading">
     <div class="film-stage" aria-hidden="true">
       <canvas class="film-canvas" id="work-canvas"></canvas>
-      <div class="film-scrim"></div>
+      <div class="film-scrim film-scrim--center"></div>
     </div>
     <span class="act-watermark film-watermark" aria-hidden="true">06</span>
-    <div class="film-rail">
-      <p class="act__eyebrow film-beat" data-beat-in="0.06,0.18"><span class="act-numeral">06</span> · Work With Us</p>
-      <p class="act__intro film-beat" data-beat-in="0.18,0.32" data-beat-out="0.60,0.70">One twenty minute call. We look at your offer, your page, and the gap, then scope what we would build and whether we are the right fit.</p>
-      <h2 class="act__title film-beat" id="act-work-heading" data-beat-in="0.74,0.88">Ready For A Page That Actually Sells?</h2>
-      <div class="hero__actions film-beat film-beat--actions" data-beat-in="0.86,0.97">
+    <div class="film-rail film-rail--center">
+      <p class="act__eyebrow film-beat" data-beat-in="0.06,0.20"><span class="act-numeral">06</span> · Work With Us</p>
+      <h2 class="work-mega film-beat" id="act-work-heading" data-beat-in="0.42,0.62">Ready For A Page That <em>Actually</em> Sells?</h2>
+      <div class="hero__actions film-beat film-beat--actions" data-beat-in="0.68,0.82">
         <a href="#act-work-detail" class="btn btn--primary magnetic" data-magnetic aria-label="Start Your Build">Start Your Build</a>
         <a href="https://wa.me/0000000000" class="btn btn--ghost magnetic" data-magnetic target="_blank" rel="noopener noreferrer">Message On WhatsApp</a>
       </div>
@@ -411,12 +407,12 @@
     </div>
   </section>
 
-  <script src="assets/js/cdn-manifest.js?v=53"></script>
+  <script src="assets/js/cdn-manifest.js?v=54"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=53"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=54"></script>
 </body>
 </html>

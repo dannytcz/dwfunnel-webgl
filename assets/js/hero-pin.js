@@ -1,17 +1,18 @@
 const HERO_PIN_VH = 260;
 const START_FRAME = 0;
 
-// Founder hero beat map (fractions of pin progress). Words enter in the
-// film's calm pockets and never share a peak with heavy motion.
-const NAME_HOLD_END = 0.3; // giant name owns the opening
-const NAME_OUT_END = 0.42; // name recedes as line one arrives
-const LINE1_IN = [0.14, 0.2];
-const LINE2_IN = [0.34, 0.4];
-const SUB_IN = [0.44, 0.5];
-const ACTIONS_IN = [0.46, 0.52];
-const COPY_EXIT = [0.62, 0.72]; // whole copy leaves before the final stretch
-const RESOLVE_START = 0.85; // final 15%: overlay ramps to page background
-const GRID_START = 0.9; // final 10%: blueprint grid dissolves in with resolve
+// Founder hero beat map (fractions of pin progress). The giant name owns the
+// first half; at the midpoint it swaps to the headline, which holds to the end.
+// Daphne (the scrub) never fades — no resolve/grid overlay covers her.
+const NAME_HOLD_END = 0.48; // giant name owns the first half
+const NAME_OUT_END = 0.56; // name recedes as the headline arrives at midpoint
+const LINE1_IN = [0.5, 0.6];
+const LINE2_IN = [0.6, 0.7];
+const SUB_IN = [0.72, 0.8];
+const ACTIONS_IN = [0.78, 0.86];
+const COPY_EXIT = [1.01, 1.02]; // effectively none: headline holds until the pin releases
+const RESOLVE_START = 2; // disabled: never dim the founder film
+const GRID_START = 2; // disabled
 
 // Progress of p through the band [a, b], clamped 0..1, eased.
 function band(p, [a, b]) {

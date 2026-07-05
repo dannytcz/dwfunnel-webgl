@@ -16,7 +16,7 @@ export function initSections({ reducedMotion }) {
 
   revealLeakHeading();
   revealLeakCards(start);
-  revealProofCards(start);
+  revealProofCards();
   revealMethod(start);
   revealPlatforms(start);
   revealWork(start);
@@ -76,22 +76,23 @@ function revealLeakCards(start) {
   );
 }
 
-function revealProofCards(start) {
+function revealProofCards() {
   const cards = document.querySelectorAll("#act-proof-detail .proof-card");
-  if (!cards.length) return;
-  window.gsap.fromTo(
-    cards,
-    { opacity: 0, y: 24 },
-    {
-      scrollTrigger: { trigger: "#act-proof-detail .proof-cards", start, once: true },
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      stagger: 0.12,
-      ease: "power2.out",
-      clearProps: "transform",
-    }
-  );
+  // Each card reveals on its own as the reader scrolls to it, one by one.
+  cards.forEach((card) => {
+    window.gsap.fromTo(
+      card,
+      { opacity: 0, y: 40 },
+      {
+        scrollTrigger: { trigger: card, start: "top 82%", once: true },
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: "power2.out",
+        clearProps: "transform",
+      }
+    );
+  });
 }
 
 function revealMethod(start) {
