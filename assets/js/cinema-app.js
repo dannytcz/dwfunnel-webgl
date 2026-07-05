@@ -1,11 +1,11 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=49";
-import { initHeroPin } from "./hero-pin.js?v=49";
-import { initMachineSchematic } from "./machine-schematic.js?v=49";
-import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=49";
-import { initSections } from "./sections.js?v=49";
-import { initFilmSections, initFilmSectionsStatic } from "./film-sections.js?v=49";
-import { initMobileLite } from "./mobile-lite.js?v=49";
-import { initProgressRail } from "./progress-rail.js?v=49";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=50";
+import { initHeroPin } from "./hero-pin.js?v=50";
+import { initMachineSchematic } from "./machine-schematic.js?v=50";
+import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=50";
+import { initSections } from "./sections.js?v=50";
+import { initFilmSections, initFilmSectionsStatic } from "./film-sections.js?v=50";
+import { initMobileLite } from "./mobile-lite.js?v=50";
+import { initProgressRail } from "./progress-rail.js?v=50";
 
 const DECODED_BUDGET_MB = 600;
 

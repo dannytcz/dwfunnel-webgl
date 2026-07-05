@@ -14,7 +14,7 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=49";
+import { FrameScrubber } from "./frame-scrub.js?v=50";
 
 const SECTION_DECODE_W = 720;
 
@@ -149,7 +149,8 @@ export function initFilmSections() {
   return () => cleanups.forEach((fn) => fn?.());
 }
 
-/** Reduced motion / mobile: show the poster frame and reveal all copy. */
+/** Reduced motion / mobile: show the poster frame and reveal all copy,
+    un-stacking any rotating slots so every beat is readable in flow. */
 export function initFilmSectionsStatic() {
   document.querySelectorAll(".film-pin").forEach((pin) => {
     const key = pin.dataset.filmFrames;
@@ -158,6 +159,7 @@ export function initFilmSectionsStatic() {
       poster.style.backgroundImage = `url(assets/frames/sections/${key}/frame_00001.webp)`;
       poster.classList.add("is-on");
     }
+    pin.classList.add("is-static");
     pin.querySelectorAll(".film-beat").forEach((el) => {
       el.style.opacity = "1";
       el.style.transform = "none";

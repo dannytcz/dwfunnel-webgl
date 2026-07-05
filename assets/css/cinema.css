@@ -560,6 +560,38 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .film-beat { will-change: opacity, transform; }
 .film-beat--actions { display: flex; flex-wrap: wrap; gap: 16px; }
 
+/* Rotating slot: stacked beats that replace each other in one rail position. */
+.film-slot { position: relative; min-height: 12rem; width: 100%; }
+.film-slot__item { position: absolute; inset: 0; }
+/* Rail-scoped compaction so grids/cards fit the column over the film. */
+.film-rail .stat-row { display: flex; gap: 1.5rem; margin: 0; }
+.film-rail .stat { flex: 0 0 auto; }
+.film-rail .stat__value { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.film-rail .proof-cards { margin: 0; padding: 0; list-style: none; }
+.film-rail .proof-card { margin: 0; }
+.film-rail .proof-card blockquote { margin: 0; }
+.film-rail .proof-card p { font-size: clamp(1rem, 1.6vw, 1.25rem); }
+.film-rail .method-step { display: block; padding: 0; border: 0; }
+.film-rail .method-step h3 { margin: 0.35rem 0 0.25rem; }
+.film-rail .founder-moment { margin: 0; }
+
+/* Static (mobile / reduced motion): un-pin, stack slot items in normal flow. */
+.film-pin.is-static { min-height: auto; display: block; padding: clamp(5rem, 12vh, 8rem) 0; }
+.film-pin.is-static .film-slot { min-height: 0; }
+.film-pin.is-static .film-slot__item { position: relative; inset: auto; margin-bottom: 1.5rem; }
+.film-pin.is-static .film-canvas { display: none; }
+@media (max-width: 899px) {
+  .film-rail {
+    width: auto;
+    margin: 0 auto;
+    max-width: var(--max-w);
+    padding: 0 clamp(1.5rem, 5vw, 4rem);
+  }
+  .film-scrim {
+    background: linear-gradient(to bottom, rgba(5, 9, 13, 0.55) 0%, rgba(5, 9, 13, 0.82) 100%);
+  }
+}
+
 /* Phase 1.7: giant watermark numerals — outlined Space Mono */
 .act-watermark {
   position: absolute;

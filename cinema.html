@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=49" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=50" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -226,13 +226,17 @@
   </div>
 
   <!-- ACT 03: PROOF -->
-  <section id="act-proof" class="act act--proof" aria-labelledby="act-proof-heading">
-    <div class="act-film" aria-hidden="true"><video class="act-film__video" muted loop playsinline preload="none" data-src="assets/video/proof-creator.mp4"></video></div>
-    <span class="act-watermark" aria-hidden="true">03</span>
-    <div class="act__inner">
-      <p class="act__eyebrow"><span class="act-numeral">03</span> · Proof</p>
-      <h2 class="act__title" id="act-proof-heading">Numbers First. Praise Second.</h2>
-      <div class="stat-row" id="stat-row">
+  <section id="act-proof" class="film-pin act--proof" data-film-frames="proof" data-film-count="49" data-film-vh="240" aria-labelledby="act-proof-heading">
+    <div class="film-stage" aria-hidden="true">
+      <div class="film-poster"></div>
+      <canvas class="film-canvas" id="proof-canvas"></canvas>
+      <div class="film-scrim"></div>
+    </div>
+    <span class="act-watermark film-watermark" aria-hidden="true">03</span>
+    <div class="film-rail">
+      <p class="act__eyebrow film-beat" data-beat-in="0.02,0.12"><span class="act-numeral">03</span> · Proof</p>
+      <h2 class="act__title film-beat" id="act-proof-heading" data-beat-in="0.10,0.20">Numbers First. Praise Second.</h2>
+      <div class="stat-row film-beat" id="stat-row" data-beat-in="0.20,0.30" data-beat-out="0.46,0.54">
         <!-- [PLACEHOLDER] all three stat values, replace with real studio numbers -->
         <div class="stat">
           <span class="bp-anno" aria-hidden="true">REF A</span>
@@ -250,9 +254,9 @@
           <span class="stat__label">Average Load Time</span>
         </div>
       </div>
-      <ul class="proof-cards">
+      <ul class="proof-cards film-slot">
         <!-- [PLACEHOLDER] all three testimonials including names, roles, metrics, replace with real client proof -->
-        <li class="proof-card">
+        <li class="proof-card film-beat film-slot__item" data-beat-in="0.50,0.56" data-beat-out="0.66,0.72">
           <span class="bp-anno" aria-hidden="true">LOG 01</span>
           <blockquote>
             <p>I sent traffic to template pages for a year. Two weeks after DW Funnel rebuilt mine, the calendar had real bookings. The page finally matched my price.</p>
@@ -262,7 +266,7 @@
             </footer>
           </blockquote>
         </li>
-        <li class="proof-card">
+        <li class="proof-card film-beat film-slot__item" data-beat-in="0.68,0.74" data-beat-out="0.80,0.86">
           <span class="bp-anno" aria-hidden="true">LOG 02</span>
           <blockquote>
             <p>I needed premium without learning design. They shipped a page I am proud to send in DMs, and the follow up runs itself.</p>
@@ -272,7 +276,7 @@
             </footer>
           </blockquote>
         </li>
-        <li class="proof-card">
+        <li class="proof-card film-beat film-slot__item" data-beat-in="0.82,0.88">
           <span class="bp-anno" aria-hidden="true">LOG 03</span>
           <blockquote>
             <p>The follow up engine alone paid for the build. Bookings show up while I am off the clock.</p>
@@ -283,6 +287,12 @@
           </blockquote>
         </li>
       </ul>
+    </div>
+  </section>
+
+  <!-- ACT 03 detail: founder note -->
+  <section id="act-proof-detail" class="act act--proof" aria-label="About the studio">
+    <div class="act__inner">
       <div class="founder-moment">
         <!-- [PLACEHOLDER] replace monogram with real square portrait of Daphne Wong, minimum 240x240 -->
         <div class="founder-moment__portrait" aria-hidden="true">
@@ -293,13 +303,30 @@
     </div>
   </section>
 
-  <!-- ACT 04: THE METHOD -->
-  <section id="act-method" class="act act--method" aria-labelledby="act-method-heading">
-    <div class="act-film" aria-hidden="true"><video class="act-film__video" muted loop playsinline preload="none" data-src="assets/video/method-builder.mp4"></video></div>
-    <span class="act-watermark" aria-hidden="true">04</span>
+  <!-- ACT 04: THE METHOD — pinned film (builder arc) with the five steps -->
+  <section id="act-method" class="film-pin act--method" data-film-frames="method" data-film-count="49" data-film-vh="260" aria-labelledby="act-method-heading">
+    <div class="film-stage" aria-hidden="true">
+      <div class="film-poster"></div>
+      <canvas class="film-canvas" id="method-canvas"></canvas>
+      <div class="film-scrim"></div>
+    </div>
+    <span class="act-watermark film-watermark" aria-hidden="true">04</span>
+    <div class="film-rail">
+      <p class="act__eyebrow film-beat" data-beat-in="0.02,0.12"><span class="act-numeral">04</span> · The Method</p>
+      <h2 class="act__title film-beat" id="act-method-heading" data-beat-in="0.10,0.20">Six Parts. Five Steps. No Mystery.</h2>
+      <ol class="method-timeline film-slot">
+        <li class="method-step film-beat film-slot__item" data-beat-in="0.20,0.26" data-beat-out="0.34,0.40"><span class="bp-anno" aria-hidden="true">PH 1</span><span class="method-step__num act-numeral">01</span><h3>Discovery</h3><p>Your offer, audience, and what already failed.</p><span class="method-step__dur">Two days.</span></li>
+        <li class="method-step film-beat film-slot__item" data-beat-in="0.36,0.42" data-beat-out="0.50,0.56"><span class="bp-anno" aria-hidden="true">PH 2</span><span class="method-step__num act-numeral">02</span><h3>Strategy</h3><p>Wireframes and proof placement, decided on evidence.</p><span class="method-step__dur">Three days.</span></li>
+        <li class="method-step film-beat film-slot__item" data-beat-in="0.52,0.58" data-beat-out="0.64,0.70"><span class="bp-anno" aria-hidden="true">PH 3</span><span class="method-step__num act-numeral">03</span><h3>Design</h3><p>UI that matches your price point.</p><span class="method-step__dur">Three days.</span></li>
+        <li class="method-step film-beat film-slot__item" data-beat-in="0.66,0.72" data-beat-out="0.78,0.84"><span class="bp-anno" aria-hidden="true">PH 4</span><span class="method-step__num act-numeral">04</span><h3>Build</h3><p>One wired system on your stack.</p><span class="method-step__dur">Five to seven days.</span></li>
+        <li class="method-step film-beat film-slot__item" data-beat-in="0.80,0.86"><span class="bp-anno" aria-hidden="true">PH 5</span><span class="method-step__num act-numeral">05</span><h3>Launch</h3><p>QA, tracking, mobile check, live.</p><span class="method-step__dur">Two days.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ACT 04 detail: the six parts we wire into every build -->
+  <section id="act-method-detail" class="act act--method" aria-label="The six parts">
     <div class="act__inner">
-      <p class="act__eyebrow"><span class="act-numeral">04</span> · The Method</p>
-      <h2 class="act__title" id="act-method-heading">Six Parts. Five Steps. No Mystery.</h2>
       <div class="method-grid">
         <article class="method-item"><span class="bp-anno" aria-hidden="true">SYS 01</span><h3>Offer Clarity</h3><p>One sentence for what you sell, who it is for, and why it matters.</p></article>
         <article class="method-item"><span class="bp-anno" aria-hidden="true">SYS 02</span><h3>Proof Stack</h3><p>Outcomes and named clients placed before the visitor drops off.</p></article>
@@ -308,13 +335,6 @@
         <article class="method-item"><span class="bp-anno" aria-hidden="true">SYS 05</span><h3>Follow Up Engine</h3><p>Three emails and one WhatsApp reminder that turn a maybe into a confirmed call.</p></article>
         <article class="method-item"><span class="bp-anno" aria-hidden="true">SYS 06</span><h3>Tracking</h3><p>Events, source attribution, and one weekly number that tells you what is working.</p></article>
       </div>
-      <ol class="method-timeline" id="method-timeline">
-        <li class="method-step"><span class="bp-anno" aria-hidden="true">PH 1</span><span class="method-step__num act-numeral">01</span><h3>Discovery</h3><p>Your offer, audience, and what already failed.</p><span class="method-step__dur">Two days.</span></li>
-        <li class="method-step"><span class="bp-anno" aria-hidden="true">PH 2</span><span class="method-step__num act-numeral">02</span><h3>Strategy</h3><p>Wireframes and proof placement, decided on evidence.</p><span class="method-step__dur">Three days.</span></li>
-        <li class="method-step"><span class="bp-anno" aria-hidden="true">PH 3</span><span class="method-step__num act-numeral">03</span><h3>Design</h3><p>UI that matches your price point.</p><span class="method-step__dur">Three days.</span></li>
-        <li class="method-step"><span class="bp-anno" aria-hidden="true">PH 4</span><span class="method-step__num act-numeral">04</span><h3>Build</h3><p>One wired system on your stack.</p><span class="method-step__dur">Five to seven days.</span></li>
-        <li class="method-step"><span class="bp-anno" aria-hidden="true">PH 5</span><span class="method-step__num act-numeral">05</span><h3>Launch</h3><p>QA, tracking, mobile check, live.</p><span class="method-step__dur">Two days.</span></li>
-      </ol>
     </div>
   </section>
 
@@ -392,12 +412,12 @@
     </div>
   </section>
 
-  <script src="assets/js/cdn-manifest.js?v=49"></script>
+  <script src="assets/js/cdn-manifest.js?v=50"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=49"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=50"></script>
 </body>
 </html>
