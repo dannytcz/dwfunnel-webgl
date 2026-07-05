@@ -16,6 +16,7 @@ export function initSections({ reducedMotion }) {
 
   revealLeakHeading();
   revealLeakCards(start);
+  revealProofCards(start);
   revealMethod(start);
   revealPlatforms(start);
   revealWork(start);
@@ -65,6 +66,24 @@ function revealLeakCards(start) {
     { opacity: 0, y: 24 },
     {
       scrollTrigger: { trigger: ".leak-cards", start, once: true },
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: "power2.out",
+      clearProps: "transform",
+    }
+  );
+}
+
+function revealProofCards(start) {
+  const cards = document.querySelectorAll("#act-proof-detail .proof-card");
+  if (!cards.length) return;
+  window.gsap.fromTo(
+    cards,
+    { opacity: 0, y: 24 },
+    {
+      scrollTrigger: { trigger: "#act-proof-detail .proof-cards", start, once: true },
       opacity: 1,
       y: 0,
       duration: 0.6,

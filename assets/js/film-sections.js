@@ -15,7 +15,7 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=51";
+import { FrameScrubber } from "./frame-scrub.js?v=52";
 
 const SECTION_DECODE_W = 720;
 
@@ -62,7 +62,7 @@ function initOne(pin) {
   // Beats start hidden; JS drives them. (CSS keeps them visible if JS never runs.)
   beats.forEach((b) => {
     b.el.style.opacity = "0";
-    b.el.style.transform = "translateY(12px)";
+    b.el.style.transform = "translateY(6px)";
   });
 
   // Decode once when the section first approaches, then keep it. Three light
@@ -123,7 +123,7 @@ function initOne(pin) {
         let v = smoothBand(p, b.in[0], b.in[1]);
         if (b.out) v *= 1 - smoothBand(p, b.out[0], b.out[1]);
         b.el.style.opacity = String(v);
-        b.el.style.transform = `translateY(${12 * (1 - v)}px)`;
+        b.el.style.transform = `translateY(${6 * (1 - v)}px)`;
       }
     },
   });
