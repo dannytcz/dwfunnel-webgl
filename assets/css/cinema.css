@@ -1138,6 +1138,10 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transition: opacity 0.3s;
 }
 .method-step.is-lit { opacity: 1; }
+/* The five-step timeline now lives in a normal detail section (revealed by
+   the section stagger), so steps must always be fully legible; the is-lit
+   state only drives the node-dot accent. Scoped to beat any dim rule. */
+#method-timeline .method-step { opacity: 1; }
 .method-step__num {
   display: inline-block;
   font-size: 0.85rem;
