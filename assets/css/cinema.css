@@ -506,6 +506,16 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   background: var(--blueprint);
 }
 
+/* Detail sections: breathing room after film pins, hide repeated eyebrows */
+#act-proof-detail,
+#act-method-detail {
+  padding-top: clamp(6rem, 14vh, 10rem);
+}
+#act-proof-detail .act__eyebrow,
+#act-method-detail .act__eyebrow {
+  display: none;
+}
+
 /* Acts — every post-hero section lives in The Underneath */
 .act {
   position: relative;

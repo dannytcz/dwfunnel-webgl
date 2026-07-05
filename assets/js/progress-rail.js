@@ -2,13 +2,28 @@
  * QA 7: thin vertical progress rail with six act dots (desktop only).
  * Active dot is gold; clicking a dot scrolls to that act via Lenis.
  */
+import { getFilmPinST } from "./film-sections.js?v=59";
+
 const ACTS = [
-  { trigger: "#act-leak", target: "#act-leak" },
-  { trigger: "#machine-pin", target: "#act-machine" },
-  { trigger: "#act-proof", target: "#act-proof" },
-  { trigger: "#act-method", target: "#act-method" },
-  { trigger: "#act-work", target: "#act-work" },
+  { trigger: "#act-leak", pinId: null },
+  { trigger: "#machine-pin", pinId: "machine-pin" },
+  { trigger: "#act-proof", pinId: "act-proof" },
+  { trigger: "#act-method", pinId: "act-method" },
+  { trigger: "#act-work", pinId: "act-work" },
 ];
+
+function resolvePinScrollY(pinId) {
+  const pinEl = document.getElementById(pinId);
+  if (!pinEl) return null;
+
+  let st = pinEl._filmPinST || getFilmPinST(pinId);
+  if (!st && window.ScrollTrigger) {
+    st = window.ScrollTrigger.getAll().find((s) => s.trigger === pinEl && s.pin);
+  }
+  if (!st) return null;
+
+  return st.start + (st.end - st.start) * 0.05;
+}
 
 export function initProgressRail({ lenis } = {}) {
   const rail = document.getElementById("progress-rail");
@@ -36,7 +51,12 @@ export function initProgressRail({ lenis } = {}) {
     const dot = dots[i];
     if (dot) {
       const onClick = () => {
-        const target = document.querySelector(act.target);
+        const pinY = act.pinId ? resolvePinScrollY(act.pinId) : null;
+        if (pinY != null && lenis) {
+          lenis.scrollTo(pinY, { immediate: false });
+          return;
+        }
+        const target = document.querySelector(act.trigger);
         if (!target) return;
         if (lenis) lenis.scrollTo(target, { offset: 0 });
         else target.scrollIntoView({ behavior: "smooth" });

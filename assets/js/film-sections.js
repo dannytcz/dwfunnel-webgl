@@ -9,17 +9,15 @@
  * plus the hero stay well under the decode budget, and re-decoding on scroll-back
  * caused visible scrub stutter.
  *
- * Perf notes mirror the hero/machine pins:
- * - fixed-count loops only, no distance accumulation.
- * - the scrubber ticker runs only while the pin is active (pause/resume).
- * - decode width is a light tier (720) since these sit behind a scrim.
+ * Scene graph: stage gets a short exit dissolve only (tail 6%). Beats are driven
+ * solely by their own in/out bands so late CTAs are not dimmed by a global fade.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=58";
+import { FrameScrubber } from "./frame-scrub.js?v=59";
+import { runStatsCount } from "./sections.js?v=59";
 
-const FILM_SCRUB = 0.22;
-const ENTER_BAND = [0, 0.07];
-const EXIT_BAND = [0.86, 1];
+const FILM_SCRUB = 0.12;
+const EXIT_BAND = [0.94, 1];
 
 const SECTION_DECODE_W = 720;
 
@@ -58,21 +56,18 @@ function initOne(pin) {
   scrubber.bindResize();
   canvas.classList.add("is-active");
 
-  // Precompute beat bands once.
   const beats = Array.from(pin.querySelectorAll(".film-beat")).map((el) => ({
     el,
     in: parseBand(el.dataset.beatIn) || [0, 0.08],
     out: parseBand(el.dataset.beatOut),
   }));
-  // Beats start hidden; JS drives them. (CSS keeps them visible if JS never runs.)
   beats.forEach((b) => {
     b.el.style.opacity = "0";
     b.el.style.transform = "translateY(6px)";
   });
 
-  // Decode once when the section first approaches, then keep it. Three light
-  // sequences (720px) plus the hero stay well under the decode budget, so
-  // releasing/re-decoding is not worth the scrub stutter it caused.
+  const statRowBeat = pin.id === "act-proof" ? beats.find((b) => b.el.id === "stat-row") : null;
+
   let loaded = false;
   let loading = false;
   function ensureLoaded() {
@@ -95,7 +90,27 @@ function initOne(pin) {
       });
   }
 
-  // Preload a full viewport before the pin so every frame is ready to scrub.
+  function applyPinState(p) {
+    scrubber.setTargetFrame(Math.round(p * (count - 1)));
+    scrubber.setFx({ scale: 1 + p * 0.015 });
+
+    const leave = smoothBand(p, EXIT_BAND[0], EXIT_BAND[1]);
+    if (stage) stage.style.opacity = String(1 - leave);
+
+    for (let i = 0; i < beats.length; i++) {
+      const b = beats[i];
+      let v = smoothBand(p, b.in[0], b.in[1]);
+      if (b.out) v *= 1 - smoothBand(p, b.out[0], b.out[1]);
+      b.el.style.opacity = String(v);
+      b.el.style.transform = `translateY(${6 * (1 - v)}px)`;
+    }
+
+    if (statRowBeat) {
+      const rowV = smoothBand(p, statRowBeat.in[0], statRowBeat.in[1]);
+      if (rowV >= 0.5) runStatsCount();
+    }
+  }
+
   const loadST = window.ScrollTrigger.create({
     trigger: pin,
     start: "top bottom+=100%",
@@ -111,41 +126,29 @@ function initOne(pin) {
     pin: true,
     scrub: FILM_SCRUB,
     anticipatePin: 1,
+    invalidateOnRefresh: true,
     onToggle: (self) => {
       if (self.isActive) {
         ensureLoaded();
         scrubber.resumeTicker();
+        applyPinState(self.progress);
       } else {
         scrubber.pauseTicker();
       }
     },
-    onUpdate: (self) => {
-      const p = self.progress;
-      scrubber.setTargetFrame(Math.round(p * (count - 1)));
-      scrubber.setFx({ scale: 1 + p * 0.015 });
-
-      const enter = smoothBand(p, ENTER_BAND[0], ENTER_BAND[1]);
-      const leave = smoothBand(p, EXIT_BAND[0], EXIT_BAND[1]);
-      const scene = 1 - leave;
-      if (stage) stage.style.opacity = String(enter * scene);
-
-      for (let i = 0; i < beats.length; i++) {
-        const b = beats[i];
-        let v = smoothBand(p, b.in[0], b.in[1]);
-        if (b.out) v *= 1 - smoothBand(p, b.out[0], b.out[1]);
-        v *= scene;
-        b.el.style.opacity = String(v);
-        b.el.style.transform = `translateY(${6 * (1 - v)}px)`;
-      }
-    },
+    onEnter: () => applyPinState(pinST.progress),
+    onEnterBack: () => applyPinState(pinST.progress),
+    onUpdate: (self) => applyPinState(self.progress),
   });
 
-  // If the section is already on-screen at init, start loading.
+  pin._filmPinST = pinST;
+
   if (loadST.isActive) ensureLoaded();
 
   return () => {
     pinST.kill();
     loadST.kill();
+    delete pin._filmPinST;
     scrubber.releaseBitmaps();
   };
 }
@@ -172,4 +175,10 @@ export function initFilmSectionsStatic() {
       el.style.transform = "none";
     });
   });
+}
+
+/** Resolve the pinned ScrollTrigger for a film section id (used by progress rail). */
+export function getFilmPinST(id) {
+  const pin = document.getElementById(id);
+  return pin?._filmPinST || null;
 }

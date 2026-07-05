@@ -20,8 +20,32 @@ export function initSections({ reducedMotion }) {
   revealMethod(start);
   revealPlatforms(start);
   revealWork(start);
-  initStats();
   initWatermarks();
+}
+
+/** Run the Proof stat counter once, synced to film pin beat visibility. */
+let statsCounted = false;
+export function runStatsCount() {
+  if (statsCounted) return;
+  const row = document.getElementById("stat-row");
+  if (!row || !window.gsap) return;
+  statsCounted = true;
+
+  row.querySelectorAll(".stat").forEach((el) => el.classList.add("is-drawn"));
+  row.querySelectorAll("[data-count]").forEach((el) => {
+    const target = parseFloat(el.getAttribute("data-count"));
+    const suffix = el.getAttribute("data-suffix") || "";
+    const decimals = parseInt(el.getAttribute("data-decimal") || "0", 10);
+    const obj = { v: 0 };
+    window.gsap.to(obj, {
+      v: target,
+      duration: 1.6,
+      ease: "expo.out",
+      onUpdate: () => {
+        el.textContent = (decimals ? obj.v.toFixed(decimals) : String(Math.round(obj.v))) + suffix;
+      },
+    });
+  });
 }
 
 /* Phase 2.1: subtle parallax drift on the giant act watermark numerals */
@@ -177,33 +201,3 @@ function revealWork(start) {
   });
 }
 
-function initStats() {
-  const row = document.getElementById("stat-row");
-  if (!row) return;
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced) return;
-
-  window.ScrollTrigger.create({
-    trigger: row,
-    start: "top 60%",
-    once: true,
-    onEnter: () => {
-      // Phase 4.1: draw each instrument readout underline on entry.
-      row.querySelectorAll(".stat").forEach((el) => el.classList.add("is-drawn"));
-      row.querySelectorAll("[data-count]").forEach((el) => {
-        const target = parseFloat(el.getAttribute("data-count"));
-        const suffix = el.getAttribute("data-suffix") || "";
-        const decimals = parseInt(el.getAttribute("data-decimal") || "0", 10);
-        const obj = { v: 0 };
-        window.gsap.to(obj, {
-          v: target,
-          duration: 1.6,
-          ease: "expo.out",
-          onUpdate: () => {
-            el.textContent = (decimals ? obj.v.toFixed(decimals) : String(Math.round(obj.v))) + suffix;
-          },
-        });
-      });
-    },
-  });
-}

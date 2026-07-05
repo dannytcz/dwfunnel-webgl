@@ -222,12 +222,11 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
     },
     onUpdate: (self) => {
       const p = self.progress;
-      const enter = p <= 0.06 ? p / 0.06 : 1;
-      const leave = p >= 0.84 ? (p - 0.84) / 0.16 : 0;
-      const scene = (1 - leave) * enter;
-      if (stage) stage.style.opacity = String(scene);
+      const leave = p >= 0.94 ? (p - 0.94) / 0.06 : 0;
+      const sceneOut = 1 - leave;
+      if (stage) stage.style.opacity = String(sceneOut);
       for (const el of [copyWrap, componentsWrap, cta]) {
-        if (el) el.style.opacity = String(scene);
+        if (el) el.style.opacity = String(sceneOut);
       }
       // Fixed 4-iteration loop; each segment draws across its quarter of the pin.
       for (let i = 0; i < SEG_COUNT; i++) {
@@ -253,9 +252,12 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
     },
   });
 
+  pin._filmPinST = st;
+
   return {
     kill: () => {
       st.kill();
+      delete pin._filmPinST;
       particles?.kill();
     },
   };
