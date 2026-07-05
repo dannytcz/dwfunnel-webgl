@@ -4,9 +4,10 @@
  * Each `.film-pin` owns a canvas frame sequence (reusing FrameScrubber) and a
  * left rail of `.film-beat` elements. During a pin the scroll drives the frame
  * and each beat fades+rises in over its own scroll band (data-beat-in) and may
- * exit over data-beat-out. Frames decode lazily when the section approaches and
- * release when it leaves, so only one section film is decoded at a time
- * alongside the hero (keeps total decoded memory well under budget).
+ * exit over data-beat-out. Frames decode once when the section first approaches
+ * (a full viewport ahead of the pin) and are kept: three light 720px sequences
+ * plus the hero stay well under the decode budget, and re-decoding on scroll-back
+ * caused visible scrub stutter.
  *
  * Perf notes mirror the hero/machine pins:
  * - fixed-count loops only, no distance accumulation.
@@ -14,7 +15,7 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=50";
+import { FrameScrubber } from "./frame-scrub.js?v=51";
 
 const SECTION_DECODE_W = 720;
 
@@ -61,19 +62,23 @@ function initOne(pin) {
   // Beats start hidden; JS drives them. (CSS keeps them visible if JS never runs.)
   beats.forEach((b) => {
     b.el.style.opacity = "0";
-    b.el.style.transform = "translateY(26px)";
+    b.el.style.transform = "translateY(12px)";
   });
 
+  // Decode once when the section first approaches, then keep it. Three light
+  // sequences (720px) plus the hero stay well under the decode budget, so
+  // releasing/re-decoding is not worth the scrub stutter it caused.
   let loaded = false;
   let loading = false;
   function ensureLoaded() {
-    if (loaded || loading) {
-      if (loaded) scrubber.resumeTicker();
+    if (loaded) {
+      scrubber.resumeTicker();
       return;
     }
+    if (loading) return;
     loading = true;
     scrubber
-      .reload()
+      .load()
       .then(() => {
         loaded = true;
         loading = false;
@@ -84,23 +89,14 @@ function initOne(pin) {
         loading = false;
       });
   }
-  function release() {
-    scrubber.pauseTicker();
-    if (loaded) {
-      scrubber.releaseBitmaps();
-      loaded = false;
-    }
-  }
 
-  // Lazy load / release as the section moves through the viewport.
+  // Preload a full viewport before the pin so every frame is ready to scrub.
   const loadST = window.ScrollTrigger.create({
     trigger: pin,
-    start: "top bottom",
+    start: "top bottom+=100%",
     end: "bottom top",
     onEnter: ensureLoaded,
     onEnterBack: ensureLoaded,
-    onLeave: release,
-    onLeaveBack: release,
   });
 
   const pinST = window.ScrollTrigger.create({
@@ -127,7 +123,7 @@ function initOne(pin) {
         let v = smoothBand(p, b.in[0], b.in[1]);
         if (b.out) v *= 1 - smoothBand(p, b.out[0], b.out[1]);
         b.el.style.opacity = String(v);
-        b.el.style.transform = `translateY(${26 * (1 - v)}px)`;
+        b.el.style.transform = `translateY(${12 * (1 - v)}px)`;
       }
     },
   });
