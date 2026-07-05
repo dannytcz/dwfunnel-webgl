@@ -1,4 +1,4 @@
-const HERO_PIN_VH = 240;
+const HERO_PIN_VH = 210;
 const HERO_SCRUB = 0.2;
 const START_FRAME = 0;
 
@@ -6,8 +6,8 @@ const START_FRAME = 0;
 // first half; at the midpoint it swaps to the headline, which holds to the end.
 // Daphne (the scrub) never fades — no resolve/grid overlay covers her.
 const NAME_HOLD_END = 0.48;
-const NAME_OUT_END = 0.50;
-const LINE1_IN = [0.52, 0.62];
+const NAME_OUT_END = 0.54;
+const LINE1_IN = [0.50, 0.60];
 const LINE2_IN = [0.62, 0.72];
 const SUB_IN = [0.72, 0.79];
 const ACTIONS_IN = [0.80, 0.88];

@@ -17,7 +17,7 @@
  *   the tick is added to gsap.ticker exactly once and removed when the pin is
  *   inactive, and it is created lazily only after the canvas is laid out.
  */
-const MACHINE_PIN_VH = 175;
+const MACHINE_PIN_VH = 160;
 const MACHINE_SCRUB = 0.22;
 const SEG_COUNT = 4; // 0 intake, 1-3 chambers (+ output on seg 3)
 const MAX_PARTICLES = 40;
