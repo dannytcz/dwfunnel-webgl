@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=48" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=49" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -339,15 +339,29 @@
     </div>
   </section>
 
-  <!-- ACT 06: WORK WITH US -->
-  <section id="act-work" class="act act--work" aria-labelledby="act-work-heading">
-    <div class="act-film" aria-hidden="true"><video class="act-film__video" muted loop playsinline preload="none" data-src="assets/video/work-closer.mp4"></video></div>
-    <span class="act-watermark" aria-hidden="true">06</span>
+  <!-- ACT 06: WORK WITH US — pinned film (the walk into the stance) + rail -->
+  <section id="act-work" class="film-pin act--work" data-film-frames="work" data-film-count="49" data-film-vh="220" aria-labelledby="act-work-heading">
+    <div class="film-stage" aria-hidden="true">
+      <div class="film-poster"></div>
+      <canvas class="film-canvas" id="work-canvas"></canvas>
+      <div class="film-scrim"></div>
+    </div>
+    <span class="act-watermark film-watermark" aria-hidden="true">06</span>
+    <div class="film-rail">
+      <p class="act__eyebrow film-beat" data-beat-in="0.02,0.12"><span class="act-numeral">06</span> · Work With Us</p>
+      <p class="act__intro film-beat" data-beat-in="0.12,0.24" data-beat-out="0.68,0.78">One twenty minute call. We look at your offer, your page, and the gap, then scope what we would build and whether we are the right fit.</p>
+      <p class="qualification-line film-beat" data-beat-in="0.28,0.40" data-beat-out="0.68,0.78"><span class="fit-check" aria-hidden="true">FIT CHECK</span>We take on four builds per month. We work best with founders who already have an offer that sells and traffic to send. If that is you, book the call.</p>
+      <h2 class="act__title film-beat" id="act-work-heading" data-beat-in="0.80,0.90">Start Your Build.</h2>
+      <div class="hero__actions film-beat film-beat--actions" data-beat-in="0.86,0.96">
+        <a href="#act-work-detail" class="btn btn--primary magnetic" data-magnetic aria-label="Start Your Build">Start Your Build</a>
+        <a href="https://wa.me/0000000000" class="btn btn--ghost magnetic" data-magnetic target="_blank" rel="noopener noreferrer">Message On WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 06 detail: the booking options (revealed after the cinematic close) -->
+  <section id="act-work-detail" class="act act--work" aria-label="Book your build">
     <div class="act__inner">
-      <p class="act__eyebrow"><span class="act-numeral">06</span> · Work With Us</p>
-      <h2 class="act__title" id="act-work-heading">Start Your Build.</h2>
-      <p class="act__intro">One twenty minute call. We look at your offer, your page, and the gap, then scope what we would build and whether we are the right fit.</p>
-      <p class="qualification-line"><span class="fit-check" aria-hidden="true">FIT CHECK</span>We take on four builds per month. We work best with founders who already have an offer that sells and traffic to send. If that is you, book the call.</p>
       <p class="risk-reversal">If we are not the right fit, we tell you on the call and point you somewhere better.</p>
       <div class="work-paths">
         <article class="work-path work-path--call">
@@ -378,12 +392,12 @@
     </div>
   </section>
 
-  <script src="assets/js/cdn-manifest.js?v=48"></script>
+  <script src="assets/js/cdn-manifest.js?v=49"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=48"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=49"></script>
 </body>
 </html>

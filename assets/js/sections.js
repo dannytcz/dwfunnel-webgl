@@ -1,30 +1,3 @@
-/* Section background films (desktop only). Lazy: the video src is attached
-   and playback starts only when the section approaches the viewport, and
-   pauses again once it leaves. Returns a cleanup function. */
-export function initActFilms() {
-  const videos = document.querySelectorAll(".act-film__video");
-  if (!videos.length || !("IntersectionObserver" in window)) return () => {};
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const v = entry.target;
-        if (entry.isIntersecting) {
-          if (!v.src && v.dataset.src) v.src = v.dataset.src;
-          v.play().then(() => v.classList.add("is-on")).catch(() => {});
-        } else if (v.src) {
-          v.pause();
-        }
-      });
-    },
-    { rootMargin: "300px 0px" }
-  );
-  videos.forEach((v) => io.observe(v));
-  return () => {
-    io.disconnect();
-    videos.forEach((v) => v.pause());
-  };
-}
-
 export function initSections({ reducedMotion }) {
   if (!window.gsap || !window.ScrollTrigger) return;
 

@@ -1,10 +1,11 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=48";
-import { initHeroPin } from "./hero-pin.js?v=48";
-import { initMachineSchematic } from "./machine-schematic.js?v=48";
-import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=48";
-import { initSections, initActFilms } from "./sections.js?v=48";
-import { initMobileLite } from "./mobile-lite.js?v=48";
-import { initProgressRail } from "./progress-rail.js?v=48";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=49";
+import { initHeroPin } from "./hero-pin.js?v=49";
+import { initMachineSchematic } from "./machine-schematic.js?v=49";
+import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=49";
+import { initSections } from "./sections.js?v=49";
+import { initFilmSections, initFilmSectionsStatic } from "./film-sections.js?v=49";
+import { initMobileLite } from "./mobile-lite.js?v=49";
+import { initProgressRail } from "./progress-rail.js?v=49";
 
 const DECODED_BUDGET_MB = 600;
 
@@ -153,6 +154,7 @@ async function init() {
         document.getElementById("scrub-canvas")?.classList.remove("is-active");
         initSections({ reducedMotion: true });
         initMachineSchematic({ reducedMotion: true });
+        initFilmSectionsStatic();
         setStatsFinal();
         return () => {};
       }
@@ -162,6 +164,7 @@ async function init() {
         initSections({ reducedMotion: false });
         // Mobile: schematic renders fully drawn, static, no scrub/particles.
         initMachineSchematic({ staticDraw: true });
+        initFilmSectionsStatic();
         const pill = initStickyPill();
         window.ScrollTrigger.refresh();
         return () => {
@@ -177,7 +180,7 @@ async function init() {
           document.getElementById("hero-poster")?.classList.remove("is-hidden");
         }
         initSections({ reducedMotion: false });
-        const filmsCleanup = initActFilms();
+        const filmsCleanup = initFilmSections();
         const pill = initStickyPill();
         const railCleanup = initProgressRail({ lenis });
         const cursorCleanup = initCursor();
