@@ -17,7 +17,8 @@
  *   the tick is added to gsap.ticker exactly once and removed when the pin is
  *   inactive, and it is created lazily only after the canvas is laid out.
  */
-const MACHINE_PIN_VH = 200;
+const MACHINE_PIN_VH = 175;
+const MACHINE_SCRUB = 0.22;
 const SEG_COUNT = 4; // 0 intake, 1-3 chambers (+ output on seg 3)
 const MAX_PARTICLES = 40;
 
@@ -199,12 +200,17 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
     chambers[i].classList.toggle("is-lit", lit); // pure class toggle, no filter
   }
 
+  const stage = pin.querySelector(".machine__stage");
+  const copyWrap = pin.querySelector(".machine__copy");
+  const componentsWrap = pin.querySelector(".machine-components");
+  const cta = pin.querySelector(".machine__cta");
+
   const st = window.ScrollTrigger.create({
     trigger: pin,
     start: "top top",
     end: `+=${MACHINE_PIN_VH}%`,
     pin: true,
-    scrub: 0.2,
+    scrub: MACHINE_SCRUB,
     anticipatePin: 1,
     onToggle: (self) => {
       if (self.isActive) {
@@ -216,6 +222,13 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
     },
     onUpdate: (self) => {
       const p = self.progress;
+      const enter = p <= 0.06 ? p / 0.06 : 1;
+      const leave = p >= 0.84 ? (p - 0.84) / 0.16 : 0;
+      const scene = (1 - leave) * enter;
+      if (stage) stage.style.opacity = String(scene);
+      for (const el of [copyWrap, componentsWrap, cta]) {
+        if (el) el.style.opacity = String(scene);
+      }
       // Fixed 4-iteration loop; each segment draws across its quarter of the pin.
       for (let i = 0; i < SEG_COUNT; i++) {
         const local = (p - i * 0.25) / 0.25; // constant divisor, never zero

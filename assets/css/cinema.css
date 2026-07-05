@@ -497,6 +497,15 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   white-space: nowrap;
 }
 
+/* Breathing room between back to back pinned sections */
+.scroll-breather {
+  position: relative;
+  z-index: 1;
+  height: clamp(6rem, 16vh, 12rem);
+  pointer-events: none;
+  background: var(--blueprint);
+}
+
 /* Acts — every post-hero section lives in The Underneath */
 .act {
   position: relative;

@@ -1,4 +1,5 @@
-const HERO_PIN_VH = 260;
+const HERO_PIN_VH = 240;
+const HERO_SCRUB = 0.2;
 const START_FRAME = 0;
 
 // Founder hero beat map (fractions of pin progress). The giant name owns the
@@ -67,7 +68,7 @@ export function initHeroPin({ scrubber, reducedMotion }) {
     start: "top top",
     end: `+=${HERO_PIN_VH}%`,
     pin: true,
-    scrub: reducedMotion ? false : 0.12,
+    scrub: reducedMotion ? false : HERO_SCRUB,
     anticipatePin: 1,
     onToggle: (self) => {
       if (self.isActive) {
@@ -108,9 +109,8 @@ export function initHeroPin({ scrubber, reducedMotion }) {
       setIn(sub, SUB_IN);
       setIn(actions, ACTIONS_IN);
 
-      // Tail: as the hero leaves the viewport, fade the whole scene out (film
-      // + copy) so it dissolves into the page instead of hard-cutting.
-      const leave = band(p, [0.9, 1.0]);
+      // Tail: dissolve the whole scene out so the trust strip lands softly.
+      const leave = band(p, [0.84, 1.0]);
       if (stage) stage.style.opacity = String(1 - leave);
       if (copy) {
         const eased = Math.max(band(p, COPY_EXIT), leave);

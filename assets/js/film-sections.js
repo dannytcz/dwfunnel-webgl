@@ -15,7 +15,11 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=57";
+import { FrameScrubber } from "./frame-scrub.js?v=58";
+
+const FILM_SCRUB = 0.22;
+const ENTER_BAND = [0, 0.07];
+const EXIT_BAND = [0.86, 1];
 
 const SECTION_DECODE_W = 720;
 
@@ -105,7 +109,7 @@ function initOne(pin) {
     start: "top top",
     end: `+=${vh}%`,
     pin: true,
-    scrub: 0.15,
+    scrub: FILM_SCRUB,
     anticipatePin: 1,
     onToggle: (self) => {
       if (self.isActive) {
@@ -118,11 +122,18 @@ function initOne(pin) {
     onUpdate: (self) => {
       const p = self.progress;
       scrubber.setTargetFrame(Math.round(p * (count - 1)));
-      scrubber.setFx({ scale: 1 + p * 0.03 });
+      scrubber.setFx({ scale: 1 + p * 0.015 });
+
+      const enter = smoothBand(p, ENTER_BAND[0], ENTER_BAND[1]);
+      const leave = smoothBand(p, EXIT_BAND[0], EXIT_BAND[1]);
+      const scene = 1 - leave;
+      if (stage) stage.style.opacity = String(enter * scene);
+
       for (let i = 0; i < beats.length; i++) {
         const b = beats[i];
         let v = smoothBand(p, b.in[0], b.in[1]);
         if (b.out) v *= 1 - smoothBand(p, b.out[0], b.out[1]);
+        v *= scene;
         b.el.style.opacity = String(v);
         b.el.style.transform = `translateY(${6 * (1 - v)}px)`;
       }
