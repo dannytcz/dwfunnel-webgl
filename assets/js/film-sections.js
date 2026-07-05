@@ -15,7 +15,7 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=52";
+import { FrameScrubber } from "./frame-scrub.js?v=53";
 
 const SECTION_DECODE_W = 720;
 
@@ -150,10 +150,9 @@ export function initFilmSections() {
 export function initFilmSectionsStatic() {
   document.querySelectorAll(".film-pin").forEach((pin) => {
     const key = pin.dataset.filmFrames;
-    const poster = pin.querySelector(".film-poster");
-    if (poster && key) {
-      poster.style.backgroundImage = `url(assets/frames/sections/${key}/frame_00001.webp)`;
-      poster.classList.add("is-on");
+    const stage = pin.querySelector(".film-stage");
+    if (stage && key) {
+      stage.style.backgroundImage = `url(assets/frames/sections/${key}/frame_00001.webp)`;
     }
     pin.classList.add("is-static");
     pin.querySelectorAll(".film-beat").forEach((el) => {

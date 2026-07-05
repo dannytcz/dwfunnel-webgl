@@ -357,13 +357,23 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   line-height: 0.88;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: rgba(236, 220, 178, 0.9);
   text-align: center;
   pointer-events: none;
   opacity: 0;
 }
 .hero__name-line {
   display: block;
+}
+/* "DW" reads as the mark: solid gold with a soft glow. */
+.hero__name-line--fill {
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(216, 177, 92, 0.45), 0 2px 18px rgba(0, 0, 0, 0.5);
+}
+/* "Funnel" is outline-only so it frames the founder instead of covering her. */
+.hero__name-line--outline {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(236, 220, 178, 0.85);
+  text-stroke: 2px rgba(236, 220, 178, 0.85);
 }
 .hero__name .char {
   display: inline-block;
@@ -521,14 +531,6 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transition: opacity 0.6s ease;
 }
 .film-canvas.is-active { opacity: 1; }
-.film-poster {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-}
-.film-poster.is-on { opacity: 1; }
 /* Left-rail contrast guarantee: heavy black at the left edge, clear by 55%. */
 .film-scrim {
   position: absolute;
@@ -538,6 +540,12 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   background:
     linear-gradient(to right, rgba(5, 9, 13, 0.92) 0%, rgba(5, 9, 13, 0.72) 28%, rgba(5, 9, 13, 0) 58%),
     linear-gradient(to bottom, rgba(5, 9, 13, 0.6) 0%, rgba(5, 9, 13, 0) 22%, rgba(5, 9, 13, 0) 78%, rgba(5, 9, 13, 0.6) 100%);
+}
+/* Bottom-anchored contrast for the full-width numbers strip. */
+.film-scrim--bottom {
+  background:
+    linear-gradient(to top, rgba(5, 9, 13, 0.92) 0%, rgba(5, 9, 13, 0.55) 30%, rgba(5, 9, 13, 0) 62%),
+    linear-gradient(to bottom, rgba(5, 9, 13, 0.55) 0%, rgba(5, 9, 13, 0) 30%);
 }
 .film-watermark {
   position: absolute;
@@ -560,6 +568,25 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .film-beat { will-change: opacity, transform; }
 .film-beat--actions { display: flex; flex-wrap: wrap; gap: 16px; }
 
+/* Full-width numbers strip (Proof), anchored to the lower third like a HUD. */
+.film-rail--numbers {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(3rem, 9vh, 7rem);
+  width: auto;
+  margin: 0;
+  padding: 0 clamp(1.5rem, 6vw, 6rem);
+  gap: 2rem;
+}
+.stat-row--big { display: flex; flex-wrap: wrap; gap: clamp(2rem, 5vw, 5rem); }
+.stat-row--big .stat__value {
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 1;
+  font-weight: 700;
+}
+.stat-row--big .stat__label { font-size: 0.8rem; letter-spacing: 0.14em; }
+
 /* Rotating slot: stacked beats that replace each other in one rail position. */
 .film-slot { position: relative; min-height: 12rem; width: 100%; }
 .film-slot__item { position: absolute; inset: 0; }
@@ -575,11 +602,13 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .film-rail .method-step h3 { margin: 0.35rem 0 0.25rem; }
 .film-rail .founder-moment { margin: 0; }
 
-/* Static (mobile / reduced motion): un-pin, stack slot items in normal flow. */
+/* Static (mobile / reduced motion): un-pin, show the film's first frame as a
+   background on the stage, reveal all copy in normal flow. */
 .film-pin.is-static { min-height: auto; display: block; padding: clamp(5rem, 12vh, 8rem) 0; }
 .film-pin.is-static .film-slot { min-height: 0; }
 .film-pin.is-static .film-slot__item { position: relative; inset: auto; margin-bottom: 1.5rem; }
 .film-pin.is-static .film-canvas { display: none; }
+.film-pin.is-static .film-stage { background-size: cover; background-position: center; }
 @media (max-width: 899px) {
   .film-rail {
     width: auto;
@@ -818,6 +847,25 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 }
 .machine-component p { margin: 0; color: var(--muted); }
 .machine__cta { margin-top: 2rem; display: inline-flex; }
+
+/* Desktop: text lives in a left column, the schematic gets the right side, so
+   the funnel SVG never draws through the heading. */
+@media (min-width: 900px) {
+  .machine__stage { left: auto; right: -4vw; width: 60vw; transform: none; }
+  .machine__scrim {
+    background: radial-gradient(ellipse 60% 55% at 72% 45%, rgba(5, 9, 13, 0.5) 0%, rgba(5, 9, 13, 0) 70%);
+  }
+  .machine__copy, .machine-components, .machine__cta {
+    margin-inline: 0;
+    margin-right: auto;
+    max-width: 44%;
+    padding-left: clamp(1.5rem, 5vw, 4rem);
+    padding-right: 0;
+  }
+  .machine-components::before {
+    background: linear-gradient(90deg, rgba(5, 9, 13, 0.85) 0%, rgba(5, 9, 13, 0.4) 70%, rgba(5, 9, 13, 0) 100%);
+  }
+}
 
 /* Act 03 proof */
 .stat-row {
