@@ -15,7 +15,7 @@
  * - decode width is a light tier (720) since these sit behind a scrim.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=56";
+import { FrameScrubber } from "./frame-scrub.js?v=57";
 
 const SECTION_DECODE_W = 720;
 

@@ -33,6 +33,7 @@ export function initHeroPin({ scrubber, reducedMotion }) {
   const poster = document.getElementById("hero-poster");
   const hint = document.getElementById("scroll-hint");
   const copy = document.querySelector(".hero__copy");
+  const stage = document.querySelector(".hero__stage");
   const resolve = document.getElementById("hero-resolve");
   const grid = document.getElementById("hero-grid");
   const name = document.getElementById("hero-name");
@@ -107,9 +108,12 @@ export function initHeroPin({ scrubber, reducedMotion }) {
       setIn(sub, SUB_IN);
       setIn(actions, ACTIONS_IN);
 
-      // Beat 5: the whole copy block leaves before the final stretch.
+      // Tail: as the hero leaves the viewport, fade the whole scene out (film
+      // + copy) so it dissolves into the page instead of hard-cutting.
+      const leave = band(p, [0.9, 1.0]);
+      if (stage) stage.style.opacity = String(1 - leave);
       if (copy) {
-        const eased = band(p, COPY_EXIT);
+        const eased = Math.max(band(p, COPY_EXIT), leave);
         copy.style.opacity = String(1 - eased);
         copy.style.transform = `translateY(${-40 * eased}px)`;
       }
