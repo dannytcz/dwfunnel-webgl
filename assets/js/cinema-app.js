@@ -1,7 +1,8 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=65";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=66";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
+const SCRAMBLE_CHARS = "01アイウエオカキクケコ代入乱码数据系统追踪构建";
 
 export const appState = {
   hero: null,
@@ -136,6 +137,51 @@ function initReveals() {
         scrollTrigger: { trigger: group, start: "top 84%", once: true },
       }
     );
+  });
+}
+
+function scrambleTo(el, finalText, { duration = 0.65 } = {}) {
+  if (!window.gsap || !finalText) return;
+  const chars = SCRAMBLE_CHARS;
+  const state = { progress: 0 };
+  window.gsap.to(state, {
+    progress: 1,
+    duration,
+    ease: "power3.out",
+    onUpdate: () => {
+      const settled = Math.floor(finalText.length * state.progress);
+      let next = "";
+      for (let i = 0; i < finalText.length; i++) {
+        const ch = finalText[i];
+        if (ch === " ") {
+          next += " ";
+        } else if (i < settled) {
+          next += ch;
+        } else {
+          next += chars[Math.floor(Math.random() * chars.length)];
+        }
+      }
+      el.textContent = next;
+    },
+    onComplete: () => {
+      el.textContent = finalText;
+    },
+  });
+}
+
+function initScrambleText() {
+  document.querySelectorAll("[data-scramble]").forEach((el) => {
+    const finalText = el.textContent.trim();
+    el.dataset.finalText = finalText;
+    el.addEventListener("mouseenter", () => scrambleTo(el, finalText, { duration: 0.42 }));
+    el.addEventListener("focus", () => scrambleTo(el, finalText, { duration: 0.42 }));
+  });
+
+  document.querySelectorAll(".glitch").forEach((el) => {
+    el.addEventListener("mouseenter", () => {
+      el.classList.add("is-glitching");
+      window.setTimeout(() => el.classList.remove("is-glitching"), 420);
+    });
   });
 }
 
@@ -383,8 +429,21 @@ function initStats() {
       duration: 1.2,
       ease: "power3.out",
       scrollTrigger: { trigger: el, start: "top 85%", once: true },
+      onStart: () => {
+        el.classList.add("is-glitching");
+      },
       onUpdate: () => {
-        el.textContent = `${decimals ? obj.value.toFixed(decimals) : Math.round(obj.value)}${suffix}`;
+        const value = `${decimals ? obj.value.toFixed(decimals) : Math.round(obj.value)}${suffix}`;
+        if (Math.random() > 0.72 && obj.value < target * 0.92) {
+          const noise = Array.from({ length: Math.max(2, value.length) }, () => SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]).join("");
+          el.textContent = noise;
+        } else {
+          el.textContent = value;
+        }
+      },
+      onComplete: () => {
+        el.classList.remove("is-glitching");
+        el.textContent = `${decimals ? target.toFixed(decimals) : Math.round(target)}${suffix}`;
       },
     });
   });
@@ -404,6 +463,7 @@ async function init() {
   const loader = initLoader();
   const sections = Array.from(document.querySelectorAll("[data-scrub]"));
   initMagneticCards();
+  initScrambleText();
 
   if (reduced || mobile || saveData) {
     loader.setProgress(0.5);
