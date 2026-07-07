@@ -63,6 +63,35 @@ a { color: inherit; text-decoration: none; }
 img, canvas { display: block; max-width: 100%; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
+.webgl-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.32;
+  mix-blend-mode: screen;
+}
+.scroll-progress {
+  position: fixed;
+  left: 2.4rem;
+  right: 2.4rem;
+  bottom: 1.25rem;
+  z-index: 25;
+  height: 1px;
+  background: rgba(232, 223, 210, 0.16);
+  pointer-events: none;
+}
+.scroll-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  box-shadow: 0 0 18px rgba(201, 68, 45, 0.5);
+  transform-origin: left center;
+}
+
 .loader {
   position: fixed;
   inset: 0;
@@ -129,7 +158,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  transition: background 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: translateX(-120%);
+  transition: transform 0.65s var(--ease);
 }
 .btn--primary {
   background: var(--red);
@@ -140,7 +179,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: rgba(5, 5, 5, 0.2);
   color: var(--ink);
 }
-.btn:hover { border-color: var(--line-hot); }
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-hot);
+}
+.btn:hover::after { transform: translateX(120%); }
 
 .scrub-act {
   position: relative;
@@ -150,6 +193,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   overflow: hidden;
   isolation: isolate;
   background: #050505;
+}
+.scrub-act::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: calc(0.18 + (var(--progress, 0) * 0.18));
+  background:
+    linear-gradient(90deg, transparent 0 49.9%, rgba(217, 168, 77, 0.28) 50%, transparent 50.1%),
+    linear-gradient(transparent 0 49.9%, rgba(201, 68, 45, 0.18) 50%, transparent 50.1%);
 }
 .scrub-stage {
   position: absolute;
@@ -209,6 +263,26 @@ button, a { -webkit-tap-highlight-color: transparent; }
   color: var(--red);
   font-family: var(--font-mono);
   font-size: 0.72rem;
+}
+.scrub-progress {
+  position: absolute;
+  left: 2.4rem;
+  right: 2.4rem;
+  bottom: 2.2rem;
+  z-index: 6;
+  height: 1px;
+  background: rgba(232, 223, 210, 0.18);
+  pointer-events: none;
+}
+.scrub-progress span {
+  display: block;
+  width: calc(var(--progress, 0) * 100%);
+  height: 100%;
+  background: var(--red);
+  box-shadow: 0 0 16px rgba(201, 68, 45, 0.55);
+}
+.scrub-act--hero .scrub-progress {
+  left: 8rem;
 }
 
 .hero-copy,
@@ -387,9 +461,43 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .method-grid article,
 .fit-card,
 .apply-card {
+  position: relative;
+  overflow: hidden;
   border: 1px solid var(--line);
   background: rgba(5, 5, 5, 0.42);
   padding: 1.4rem;
+  transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), background 0.35s var(--ease);
+}
+.diagnostic-grid article::before,
+.proof-grid article::before,
+.method-grid article::before,
+.fit-card::before,
+.apply-card::before,
+.proof-feature::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(217, 168, 77, 0.16), transparent 34%);
+  transition: opacity 0.35s var(--ease);
+}
+.diagnostic-grid article:hover,
+.proof-grid article:hover,
+.method-grid article:hover,
+.fit-card:hover,
+.apply-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(217, 168, 77, 0.42);
+  background: rgba(16, 13, 11, 0.62);
+}
+.diagnostic-grid article:hover::before,
+.proof-grid article:hover::before,
+.method-grid article:hover::before,
+.fit-card:hover::before,
+.apply-card:hover::before,
+.proof-feature:hover::before {
+  opacity: 1;
 }
 .diagnostic-grid span,
 .proof-grid span,
@@ -422,6 +530,38 @@ button, a { -webkit-tap-highlight-color: transparent; }
   margin: 0 auto;
   display: grid;
   gap: 1rem;
+}
+.proof-feature {
+  position: relative;
+  overflow: hidden;
+  width: min(var(--max), 100%);
+  margin: 0 auto 1rem;
+  padding: 2rem;
+  border: 1px solid rgba(217, 168, 77, 0.32);
+  background:
+    linear-gradient(135deg, rgba(201, 68, 45, 0.15), transparent 36%),
+    rgba(5, 5, 5, 0.58);
+}
+.proof-feature span {
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.proof-feature strong {
+  display: block;
+  max-width: 760px;
+  margin-top: 0.9rem;
+  font-size: 2.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.proof-feature p {
+  max-width: 620px;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 .proof-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .proof-grid dl {
@@ -501,6 +641,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
   line-height: 0.9;
   text-transform: uppercase;
 }
+.final-sub {
+  width: min(var(--max), 100%);
+  margin: -2rem auto 3rem;
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
 .apply-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -527,6 +674,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (max-width: 899px) {
+  .webgl-atmosphere {
+    display: none;
+  }
+  .scroll-progress {
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 0.8rem;
+  }
   .site-nav {
     grid-template-columns: 1fr auto;
     padding: 1.2rem;
@@ -579,6 +734,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
     right: 1.2rem;
     bottom: 2rem;
   }
+  .scrub-progress {
+    left: 1.2rem;
+    right: 1.2rem;
+    bottom: 1rem;
+  }
+  .scrub-act--hero .scrub-progress {
+    left: 1.2rem;
+  }
   .hero-actions {
     flex-direction: column;
     align-items: stretch;
@@ -596,6 +759,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
     top: 0.35rem;
     left: -5px;
     transform: none;
+  }
+  .proof-feature {
+    padding: 1.4rem;
+  }
+  .proof-feature strong {
+    font-size: 2rem;
   }
 }
 

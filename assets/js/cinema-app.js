@@ -1,11 +1,14 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=64";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=65";
 
 const SECTION_DECODE_W = 900;
+const KEEP_DECODED_DISTANCE = 1;
 
 export const appState = {
   hero: null,
   scrubbers: [],
+  scrubRecords: [],
   lenis: null,
+  atmosphere: null,
 };
 
 window.__cinemaState = appState;
@@ -64,13 +67,166 @@ function initLoader() {
 
 function initLenis(reduced) {
   if (reduced || !window.Lenis) return null;
-  const lenis = new window.Lenis({ autoRaf: false });
+  const lenis = new window.Lenis({
+    autoRaf: false,
+    duration: 1.15,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+  });
   appState.lenis = lenis;
   window.lenis = lenis;
   lenis.on("scroll", window.ScrollTrigger.update);
   window.gsap.ticker.add((time) => lenis.raf(time * 1000));
   window.gsap.ticker.lagSmoothing(0);
   return lenis;
+}
+
+function initGlobalProgress() {
+  const fill = document.getElementById("scroll-progress-fill");
+  if (!fill) return;
+  window.gsap.to(fill, {
+    width: "100%",
+    ease: "none",
+    scrollTrigger: {
+      trigger: document.body,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.18,
+    },
+  });
+}
+
+function initMagneticCards() {
+  document
+    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .fit-card, .apply-card, .proof-feature")
+    .forEach((card) => {
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+        card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+      });
+    });
+}
+
+function initReveals() {
+  window.gsap.utils.toArray(".section-meta, .section-title, .final-title, .final-sub, .reveal-panel").forEach((el) => {
+    window.gsap.fromTo(
+      el,
+      { autoAlpha: 0, y: 28 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.75,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 86%", once: true },
+      }
+    );
+  });
+
+  window.gsap.utils.toArray(".reveal-group").forEach((group) => {
+    window.gsap.fromTo(
+      Array.from(group.children),
+      { autoAlpha: 0, y: 34 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.75,
+        stagger: 0.08,
+        ease: "power3.out",
+        scrollTrigger: { trigger: group, start: "top 84%", once: true },
+      }
+    );
+  });
+}
+
+function initHeroMotion() {
+  window.gsap.fromTo(
+    ".hero-copy > *",
+    { autoAlpha: 0, y: 24 },
+    { autoAlpha: 1, y: 0, duration: 0.95, stagger: 0.08, ease: "power3.out", delay: 0.2 }
+  );
+  window.gsap.to(".site-nav", {
+    autoAlpha: 0.42,
+    y: -12,
+    ease: "none",
+    scrollTrigger: { trigger: "#hero-pin", start: "top top", end: "bottom top", scrub: true },
+  });
+}
+
+function initThreeAtmosphere({ reduced, mobile, saveData }) {
+  const canvas = document.getElementById("webgl-atmosphere");
+  if (!canvas || reduced || mobile || saveData || !window.THREE) return null;
+
+  const THREE = window.THREE;
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+  camera.position.z = 6;
+
+  const count = 180;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const gold = new THREE.Color(0xd9a84d);
+  const red = new THREE.Color(0xc9442d);
+  for (let i = 0; i < count; i++) {
+    const ix = i * 3;
+    positions[ix] = (Math.random() - 0.5) * 12;
+    positions[ix + 1] = (Math.random() - 0.5) * 7;
+    positions[ix + 2] = (Math.random() - 0.5) * 5;
+    const c = i % 5 === 0 ? red : gold;
+    colors[ix] = c.r;
+    colors[ix + 1] = c.g;
+    colors[ix + 2] = c.b;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const material = new THREE.PointsMaterial({
+    size: 0.025,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.72,
+    depthWrite: false,
+  });
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+
+  function resize() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  const clock = new THREE.Clock();
+  function tick() {
+    const t = clock.getElapsedTime();
+    points.rotation.y = t * 0.045;
+    points.rotation.x = Math.sin(t * 0.2) * 0.045;
+    renderer.render(scene, camera);
+  }
+  window.gsap.ticker.add(tick);
+
+  const atmosphere = {
+    setIntensity(value) {
+      material.opacity = 0.38 + Math.max(0, Math.min(1, value)) * 0.34;
+    },
+    destroy() {
+      window.gsap.ticker.remove(tick);
+      window.removeEventListener("resize", resize);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    },
+  };
+  appState.atmosphere = atmosphere;
+  return atmosphere;
 }
 
 function bindAnchors(lenis) {
@@ -125,26 +281,40 @@ function initScrub(section, { loader, eager = false } = {}) {
   canvas.classList.add("is-active");
   appState.scrubbers.push(scrubber);
   if (isHero) appState.hero = scrubber;
+  const index = appState.scrubRecords.length;
 
   let loaded = false;
   let loading = false;
   let loadPromise = null;
+  let loadGeneration = 0;
   const load = async (onProgress) => {
     if (loaded) return;
     if (loading && loadPromise) return loadPromise;
     loading = true;
+    const generation = loadGeneration;
     loadPromise = scrubber
       .load(onProgress)
       .then(() => {
+        if (generation !== loadGeneration) return;
         loaded = true;
         scrubber.setTargetFrame(0);
         scrubber.renderNow();
       })
       .finally(() => {
-        loading = false;
+        if (generation === loadGeneration) loading = false;
       });
     return loadPromise;
   };
+  const release = () => {
+    loadGeneration++;
+    loaded = false;
+    loading = false;
+    loadPromise = null;
+    scrubber.releaseBitmaps();
+  };
+
+  const record = { section, scrubber, load, release, index };
+  appState.scrubRecords.push(record);
 
   if (eager) {
     loader?.track(() => load((p) => loader.setProgress(0.1 + p * 0.85)));
@@ -168,6 +338,7 @@ function initScrub(section, { loader, eager = false } = {}) {
     invalidateOnRefresh: true,
     onToggle: (self) => {
       if (self.isActive) {
+        manageScrubMemory(index);
         load().then(() => scrubber.resumeTicker());
       } else {
         scrubber.pauseTicker();
@@ -178,6 +349,7 @@ function initScrub(section, { loader, eager = false } = {}) {
       scrubber.setTargetFrame(Math.round(p * (urls.length - 1)));
       scrubber.setFx({ scale: 1 + p * (isHero ? 0.04 : 0.012), offsetY: isHero ? -p * 12 : 0, offsetX: 0 });
       section.style.setProperty("--progress", String(p));
+      appState.atmosphere?.setIntensity(isHero ? p : 0.45 + p * 0.35);
     },
   });
 
@@ -187,8 +359,16 @@ function initScrub(section, { loader, eager = false } = {}) {
   return () => {
     loadST.kill();
     pinST.kill();
-    scrubber.releaseBitmaps();
+    release();
   };
+}
+
+function manageScrubMemory(activeIndex) {
+  appState.scrubRecords.forEach((record) => {
+    if (Math.abs(record.index - activeIndex) > KEEP_DECODED_DISTANCE) {
+      record.release();
+    }
+  });
 }
 
 function initStats() {
@@ -223,6 +403,7 @@ async function init() {
   const saveData = connectionSaveData();
   const loader = initLoader();
   const sections = Array.from(document.querySelectorAll("[data-scrub]"));
+  initMagneticCards();
 
   if (reduced || mobile || saveData) {
     loader.setProgress(0.5);
@@ -230,10 +411,13 @@ async function init() {
     await loader.finish();
     bindAnchors(null);
     initStats();
+    initGlobalProgress();
+    initReveals();
     window.ScrollTrigger.refresh();
     return;
   }
 
+  initThreeAtmosphere({ reduced, mobile, saveData });
   const hero = document.getElementById("hero-pin");
   sections.forEach((section) => initScrub(section, { loader, eager: section === hero }));
 
@@ -241,6 +425,9 @@ async function init() {
   const lenis = initLenis(reduced);
   bindAnchors(lenis);
   initStats();
+  initGlobalProgress();
+  initHeroMotion();
+  initReveals();
   await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }

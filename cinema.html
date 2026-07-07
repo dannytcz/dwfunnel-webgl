@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DW Funnel - Cinematic Pages That Book Calls</title>
-  <meta name="description" content="DW Funnel builds premium landing pages and follow-up systems for founders who want booked calls, not another template." />
+  <title>DW Funnel - Premium Funnel Pages That Book Calls</title>
+  <meta name="description" content="DW Funnel builds cinematic landing pages, tracking, and follow-up systems for founders with validated offers and serious traffic." />
   <meta name="theme-color" content="#050505" />
+  <meta property="og:title" content="DW Funnel - Premium Funnel Pages That Book Calls" />
+  <meta property="og:description" content="Cinematic landing pages, tracking, and follow-up systems for founders who need booked calls, not another template." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://dwfunnel-webgl.vercel.app/" />
+  <meta property="og:image" content="https://dwfunnel-webgl.vercel.app/assets/images/hero/poster-1280.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -13,10 +19,11 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=64" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=65" />
 </head>
 <body>
+  <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
+  <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-fill"></span></div>
   <div id="loader" class="loader" aria-live="polite" aria-busy="true">
     <div class="loader__panel">
       <p class="loader__brand">DW Funnel</p>
@@ -47,17 +54,18 @@
       <div class="hero-copy">
         <p class="kicker">Cinematic landing pages for founders with a real offer</p>
         <h1 class="hero-title"><span>DW</span><span>Funnel</span></h1>
-        <p class="hero-sub">Premium funnel pages that turn paid traffic, DM traffic, and warm referrals into booked calls.</p>
+        <p class="hero-sub">Premium landing pages, tracking, and follow-up systems for offers that need booked calls, not another template.</p>
         <div class="hero-actions">
-          <a href="#apply" class="btn btn--primary">Start Your Build</a>
+          <a href="#apply" class="btn btn--primary">Apply For A Build Window</a>
           <a href="#proof" class="btn btn--ghost">See The Proof</a>
         </div>
       </div>
       <p class="frame-counter">FR 001</p>
+      <div class="scrub-progress" aria-hidden="true"><span></span></div>
     </section>
 
     <section class="plain-section plain-section--stats" aria-label="Studio numbers">
-      <div class="stat-strip">
+      <div class="stat-strip reveal-group">
         <article><strong data-count="47">47</strong><span>Builds shipped</span></article>
         <article><strong data-count="120" data-suffix="+">120+</strong><span>Booked calls tracked monthly</span></article>
         <article><strong data-count="0.9" data-decimal="1" data-suffix="s">0.9s</strong><span>Average load target</span></article>
@@ -71,7 +79,7 @@
         <h2 id="problem-heading">The page is not supposed to look finished. It is supposed to move someone.</h2>
         <p>Most landing pages fail quietly. The headline is vague, proof arrives too late, the CTA feels generic, and follow-up starts after the lead is already gone.</p>
       </div>
-      <div class="diagnostic-grid">
+      <div class="diagnostic-grid reveal-group">
         <article><span>01</span><h3>Message</h3><p>Say who it is for, what changes, and why now.</p></article>
         <article><span>02</span><h3>Mechanism</h3><p>Show the system behind the promise before trust drops.</p></article>
         <article><span>03</span><h3>Motion</h3><p>Use cinema to hold attention, then let the copy close.</p></article>
@@ -95,12 +103,18 @@
         <article><strong>120+</strong><span>Calls booked monthly</span></article>
         <article><strong>0.9s</strong><span>Load target</span></article>
       </div>
+      <div class="scrub-progress" aria-hidden="true"><span></span></div>
     </section>
 
     <section class="plain-section plain-section--proof" aria-label="Client proof">
       <div class="section-meta">004 / Client Logs</div>
       <h2 class="section-title">Before the build, attention leaked. After the build, the next step was obvious.</h2>
-      <div class="proof-grid">
+      <div class="proof-feature reveal-panel">
+        <span>Field Note / Conversion Proof</span>
+        <strong>One premium destination beats ten scattered links.</strong>
+        <p>Every build ships with offer clarity, proof placement, a tracked booking path, and follow-up moments for leads who hesitate after the first click.</p>
+      </div>
+      <div class="proof-grid reveal-group">
         <article>
           <span>LOG 01</span>
           <dl><dt>Before</dt><dd>Paid traffic to a template page.</dd><dt>After</dt><dd>14 booked calls in 21 days.</dd></dl>
@@ -134,12 +148,13 @@
         <p class="kicker">Not a template skin</p>
         <h2 class="mega-title">The Build<br />Behind It.</h2>
       </div>
+      <div class="scrub-progress" aria-hidden="true"><span></span></div>
     </section>
 
     <section class="plain-section plain-section--method" aria-labelledby="method-heading">
       <div class="section-meta">006 / Method</div>
       <h2 id="method-heading" class="section-title">Six parts. Five steps. One page that knows what it is selling.</h2>
-      <div class="method-grid">
+      <div class="method-grid reveal-group">
         <article><span>SYS 01</span><h3>Offer clarity</h3><p>One sentence for the buyer, pain, promise, and next step.</p></article>
         <article><span>SYS 02</span><h3>Proof stack</h3><p>Outcomes placed before doubt has time to build.</p></article>
         <article><span>SYS 03</span><h3>Page rhythm</h3><p>Headline, mechanism, proof, risk reversal, CTA.</p></article>
@@ -167,13 +182,15 @@
       <div class="scrub-copy scrub-copy--center">
         <p class="kicker">The ask</p>
         <h2 class="mega-title">Want A Page<br />That Sells?</h2>
-        <a href="#apply" class="btn btn--primary">Start Your Build</a>
+        <a href="#apply" class="btn btn--primary">Apply For A Build Window</a>
       </div>
+      <div class="scrub-progress" aria-hidden="true"><span></span></div>
     </section>
 
     <section id="apply" class="plain-section plain-section--apply" aria-labelledby="apply-heading">
       <div class="section-meta">008 / Apply</div>
       <h2 id="apply-heading" class="final-title">Let's build.</h2>
+      <p class="final-sub">Four build windows a month. Strategy, cinematic page, tracking, and follow-up shipped as one conversion system.</p>
       <div class="apply-grid">
         <article class="fit-card">
           <span>Good fit</span>
@@ -195,23 +212,24 @@
           <span>Next step</span>
           <h3>Book the fit call.</h3>
           <p>Bring your current page, offer, traffic source, and what you want the page to sell.</p>
-          <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary" target="_blank" rel="noopener noreferrer">Start Your Build</a>
+          <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary" target="_blank" rel="noopener noreferrer">Book The Fit Call</a>
         </article>
         <article class="apply-card">
-          <span>Short version</span>
-          <h3>Message on WhatsApp.</h3>
-          <p>Send your offer, page, traffic source, and the bottleneck you want fixed.</p>
-          <a href="https://wa.me/0000000000" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Message On WhatsApp</a>
+          <span>Build brief</span>
+          <h3>Know the bottleneck?</h3>
+          <p>Use the fit call to share your offer, traffic source, page, and the conversion problem you want solved.</p>
+          <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Send The Brief</a>
         </article>
       </div>
     </section>
   </main>
 
-  <script src="assets/js/cdn-manifest.js?v=64"></script>
+  <script src="assets/js/cdn-manifest.js?v=65"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=64"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=65"></script>
 </body>
 </html>
