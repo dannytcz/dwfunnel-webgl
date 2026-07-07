@@ -159,6 +159,7 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
 
   const components = Array.from(document.querySelectorAll(".machine-component"));
   const stat = document.getElementById("machine-stat");
+  const outputLabels = Array.from(svg.querySelectorAll(".schem-output-label, .schem-stat, .schem-stat-label"));
   const chambers = Array.from(svg.querySelectorAll(".schem-chamber[data-chamber]")).filter(
     (c) => parseInt(c.getAttribute("data-chamber"), 10) >= 0
   );
@@ -166,6 +167,7 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
   if (reducedMotion || staticDraw) {
     drawStatic(svg);
     if (stat) stat.textContent = "120";
+    outputLabels.forEach((el) => (el.style.opacity = "1"));
     if (particlesCanvas) particlesCanvas.style.display = "none";
     return null;
   }
@@ -222,11 +224,9 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
     },
     onUpdate: (self) => {
       const p = self.progress;
-      const leave = p >= 0.94 ? (p - 0.94) / 0.06 : 0;
-      const sceneOut = 1 - leave;
-      if (stage) stage.style.opacity = String(sceneOut);
+      if (stage) stage.style.opacity = "1";
       for (const el of [copyWrap, componentsWrap, cta]) {
-        if (el) el.style.opacity = String(sceneOut);
+        if (el) el.style.opacity = "1";
       }
       // Fixed 4-iteration loop; each segment draws across its quarter of the pin.
       for (let i = 0; i < SEG_COUNT; i++) {
@@ -248,6 +248,7 @@ export function initMachineSchematic({ reducedMotion = false, staticDraw = false
       if (stat) {
         const t = Math.max(0, Math.min(1, (p - 0.7) / 0.28));
         stat.textContent = String(Math.round(t * 120));
+        outputLabels.forEach((el) => (el.style.opacity = t > 0.05 ? "1" : "0"));
       }
     },
   });

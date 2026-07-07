@@ -13,11 +13,10 @@
  * solely by their own in/out bands so late CTAs are not dimmed by a global fade.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=62";
-import { runStatsCount } from "./sections.js?v=62";
+import { FrameScrubber } from "./frame-scrub.js?v=63";
+import { runStatsCount } from "./sections.js?v=63";
 
 const FILM_SCRUB = 0.12;
-const EXIT_BAND = [0.94, 1];
 
 const SECTION_DECODE_W = 720;
 
@@ -94,15 +93,12 @@ function initOne(pin) {
     scrubber.setTargetFrame(Math.round(p * (count - 1)));
     scrubber.setFx({ scale: 1 + p * 0.015 });
 
-    const leave = smoothBand(p, EXIT_BAND[0], EXIT_BAND[1]);
-    const sceneOut = 1 - leave;
-    if (stage) stage.style.opacity = String(sceneOut);
+    if (stage) stage.style.opacity = "1";
 
     for (let i = 0; i < beats.length; i++) {
       const b = beats[i];
       let v = smoothBand(p, b.in[0], b.in[1]);
       if (b.out) v *= 1 - smoothBand(p, b.out[0], b.out[1]);
-      v *= sceneOut;
       b.el.style.opacity = String(v);
       b.el.style.transform = `translateY(${6 * (1 - v)}px)`;
     }

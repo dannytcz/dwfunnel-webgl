@@ -199,7 +199,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 
 /* Nav */
 .site-nav {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -238,7 +238,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   min-height: 44px;
   /* Extra right padding compensates the trailing letter-spacing so the last
      glyph never kisses the pill edge. */
-  padding: 0.9rem 1.9rem 0.9rem 1.82rem;
+  padding: 0.9rem 2.15rem 0.9rem 1.9rem;
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 0.78rem;
@@ -551,6 +551,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 /* ---- Pinned film sections: scroll-scrubbed clip + beat-staged left rail ---- */
 .film-pin {
   position: relative;
+  z-index: 1;
   min-height: 100vh;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -586,9 +587,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 }
 /* Bottom-anchored contrast for the full-width numbers strip. */
 .film-scrim--bottom {
-  background:
-    linear-gradient(to top, rgba(5, 9, 13, 0.92) 0%, rgba(5, 9, 13, 0.55) 30%, rgba(5, 9, 13, 0) 62%),
-    linear-gradient(to bottom, rgba(5, 9, 13, 0.55) 0%, rgba(5, 9, 13, 0) 30%);
+  background: linear-gradient(to top, rgba(5, 9, 13, 0.86) 0%, rgba(5, 9, 13, 0.42) 32%, rgba(5, 9, 13, 0) 68%);
 }
 .film-watermark {
   position: absolute;
@@ -738,9 +737,16 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
    hidden (solid --blueprint) to keep rhythm. */
 .act--leak { background: transparent; }
 .act--proof { background: var(--blueprint); }
-.act--method { background: transparent; }
+.act--method { background: var(--blueprint); }
 .act--platforms { background: var(--blueprint); }
-.act--work { background: transparent; }
+.act--work { background: var(--blueprint); }
+#act-proof-detail,
+#act-method-detail,
+#act-work-detail {
+  position: relative;
+  z-index: 3;
+  background: var(--blueprint);
+}
 .act__title {
   font-family: var(--font-ui);
   font-weight: 600;
@@ -826,14 +832,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   width: 100vw;
   max-width: none;
   transform: translateX(-50%);
-  overflow: hidden;
+  overflow: visible;
   z-index: 0;
 }
 .machine-schematic {
   position: absolute;
-  inset: 0;
+  inset: 2vh 0 4vh;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 6vh);
   pointer-events: none;
 }
 /* particle drift canvas sits over the schematic */
@@ -949,18 +955,26 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   font-weight: 700;
   font-size: 48px;
   fill: var(--gold);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
 }
 .schem-stat-label {
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.14em;
   fill: var(--anno);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
+}
+.schem-output-label {
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
 }
 
 /* Desktop: text lives in a left column, the schematic gets the right side, so
    the funnel SVG never draws through the heading. */
 @media (min-width: 900px) {
-  .machine__stage { left: auto; right: -4vw; width: 60vw; transform: none; }
+  .machine__stage { left: auto; right: 0; width: min(56vw, 780px); transform: none; }
   .machine__scrim {
     background: radial-gradient(ellipse 60% 55% at 72% 45%, rgba(5, 9, 13, 0.5) 0%, rgba(5, 9, 13, 0) 70%);
   }

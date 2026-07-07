@@ -2,7 +2,7 @@
  * QA 7: thin vertical progress rail with six act dots (desktop only).
  * Active dot is gold; clicking a dot scrolls to that act via Lenis.
  */
-import { getFilmPinST } from "./film-sections.js?v=62";
+import { getFilmPinST } from "./film-sections.js?v=63";
 
 const ACTS = [
   { trigger: "#act-leak", pinId: null },
