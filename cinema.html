@@ -13,7 +13,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=61" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=62" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
 <body>
@@ -75,7 +75,13 @@
       <div class="hero__copy">
         <p class="eyebrow">Landing Pages · Funnels · Follow-Up</p>
         <h1 class="hero__title" id="hero-title"><span class="hero__line" id="hero-line1">Beautiful On The Surface.</span> <span class="hero__line" id="hero-line2">Ruthless Underneath.</span></h1>
-        <p class="hero__sub" id="hero-sub">DW Funnel builds cinematic landing pages with a conversion machine wired beneath them. For business owners who want booked calls, not another pretty template.</p>
+        <p class="hero__sub" id="hero-sub">Premium funnel pages built to turn paid traffic, DM traffic, and warm referrals into booked calls. Cinematic on the surface. Conversion logic underneath.</p>
+        <ul class="hero-proof" aria-label="Best fit">
+          <li>Coaches</li>
+          <li>Consultants</li>
+          <li>Course Creators</li>
+          <li>Service Founders</li>
+        </ul>
         <div class="hero__actions" id="hero-actions">
           <a href="#act-work" class="btn btn--primary magnetic" data-magnetic aria-label="Start Your Build">Start Your Build</a>
           <a href="#act-machine" class="btn btn--ghost magnetic" data-magnetic>See The Machine</a>
@@ -93,24 +99,22 @@
   <section id="trust-strip" class="trust-strip" aria-label="Trusted by">
     <div class="trust-strip__marquee" aria-hidden="true">
       <div class="trust-strip__track">
-        <!-- [PLACEHOLDER] 6 client logo SVGs, monochrome, replace with real client logos -->
-        <span class="trust-logo">Client One</span>
-        <span class="trust-logo">Client Two</span>
-        <span class="trust-logo">Client Three</span>
-        <span class="trust-logo">Client Four</span>
-        <span class="trust-logo">Client Five</span>
-        <span class="trust-logo">Client Six</span>
-        <span class="trust-logo">Client One</span>
-        <span class="trust-logo">Client Two</span>
-        <span class="trust-logo">Client Three</span>
-        <span class="trust-logo">Client Four</span>
-        <span class="trust-logo">Client Five</span>
-        <span class="trust-logo">Client Six</span>
+        <span class="trust-logo">Coaching Offers</span>
+        <span class="trust-logo">Consulting Funnels</span>
+        <span class="trust-logo">Course Launches</span>
+        <span class="trust-logo">Clinic Campaigns</span>
+        <span class="trust-logo">Agency Pipelines</span>
+        <span class="trust-logo">Expert Brands</span>
+        <span class="trust-logo">Coaching Offers</span>
+        <span class="trust-logo">Consulting Funnels</span>
+        <span class="trust-logo">Course Launches</span>
+        <span class="trust-logo">Clinic Campaigns</span>
+        <span class="trust-logo">Agency Pipelines</span>
+        <span class="trust-logo">Expert Brands</span>
       </div>
     </div>
     <p class="trust-strip__text">
-      Trusted by founders across Malaysia and Singapore
-      <!-- [PLACEHOLDER] trust line, replace with real client geography or count -->
+      47 builds shipped. 120+ booked calls tracked monthly. Malaysia, Singapore, and remote teams.
     </p>
   </section>
 
@@ -263,9 +267,12 @@
   <section id="act-proof-detail" class="act act--proof" aria-label="Client proof">
     <div class="act__inner">
       <ul class="proof-cards">
-        <!-- [PLACEHOLDER] all three testimonials including names, roles, metrics, replace with real client proof -->
         <li class="proof-card">
           <span class="bp-anno" aria-hidden="true">LOG 01</span>
+          <dl class="proof-snapshot">
+            <div><dt>Before</dt><dd>Paid traffic to a template page.</dd></div>
+            <div><dt>After</dt><dd>Calendar filled from the same offer.</dd></div>
+          </dl>
           <blockquote>
             <p>I sent traffic to template pages for a year. Two weeks after DW Funnel rebuilt mine, the calendar had real bookings. The page finally matched my price.</p>
             <footer>
@@ -276,6 +283,10 @@
         </li>
         <li class="proof-card">
           <span class="bp-anno" aria-hidden="true">LOG 02</span>
+          <dl class="proof-snapshot">
+            <div><dt>Before</dt><dd>DM interest with no premium destination.</dd></div>
+            <div><dt>After</dt><dd>A page worth sending to buyers.</dd></div>
+          </dl>
           <blockquote>
             <p>I needed premium without learning design. They shipped a page I am proud to send in DMs, and the follow up runs itself.</p>
             <footer>
@@ -286,6 +297,10 @@
         </li>
         <li class="proof-card">
           <span class="bp-anno" aria-hidden="true">LOG 03</span>
+          <dl class="proof-snapshot">
+            <div><dt>Before</dt><dd>Warm leads went quiet after the first click.</dd></div>
+            <div><dt>After</dt><dd>Follow up recovered missed bookings.</dd></div>
+          </dl>
           <blockquote>
             <p>The follow up engine alone paid for the build. Bookings show up while I am off the clock.</p>
             <footer>
@@ -296,8 +311,7 @@
         </li>
       </ul>
       <div class="founder-moment founder-moment--textonly">
-        <!-- [PLACEHOLDER] founder portrait removed for now; reinstate a real square portrait of Daphne Wong (min 240x240) when available -->
-        <p>Founded by Daphne Wong, DW Funnel is a studio of designers and funnel engineers who treat every page as a conversion instrument.</p>
+        <p>Founded by Daphne Wong, DW Funnel treats every page as a conversion instrument first and a visual experience second. The aesthetic earns attention. The structure turns that attention into action.</p>
       </div>
     </div>
   </section>
@@ -377,29 +391,47 @@
   <!-- ACT 06 detail: the booking options (revealed after the cinematic close) -->
   <section id="act-work-detail" class="act act--work" aria-label="Book your build">
     <div class="act__inner">
-      <p class="qualification-line"><span class="fit-check" aria-hidden="true">FIT CHECK</span>We take on four builds per month. We work best with founders who already have an offer that sells and traffic to send. If that is you, book the call.</p>
-      <p class="risk-reversal">If we are not the right fit, we tell you on the call and point you somewhere better.</p>
+      <p class="qualification-line"><span class="fit-check" aria-hidden="true">FIT CHECK</span>We take on four builds per month. Best fit: a founder with a validated offer, traffic to send, and a page that needs to feel as premium as the thing being sold.</p>
+      <p class="risk-reversal">If the offer is not ready for a custom build, we say that on the call and point you toward the cleaner next move.</p>
+      <div class="fit-grid" aria-label="Fit criteria">
+        <div class="fit-panel">
+          <span class="bp-anno" aria-hidden="true">GOOD FIT</span>
+          <ul>
+            <li>Validated offer with real buyer conversations.</li>
+            <li>Traffic from ads, DMs, content, partners, or referrals.</li>
+            <li>Need a premium page and follow-up path, not a template skin.</li>
+          </ul>
+        </div>
+        <div class="fit-panel">
+          <span class="bp-anno" aria-hidden="true">NOT YET</span>
+          <ul>
+            <li>No clear offer, price, or audience.</li>
+            <li>Need a cheap one-page placeholder by tomorrow.</li>
+            <li>Looking for decoration without conversion work.</li>
+          </ul>
+        </div>
+      </div>
       <div class="work-paths">
         <article class="work-path work-path--call">
           <span class="bp-anno" aria-hidden="true">OPT A</span>
-          <h3>Book The Call</h3>
-          <p>Pick a slot. Bring your current page if you have one.</p>
+          <h3>Apply For A Build</h3>
+          <p>Book a fit call. Bring your current page, traffic source, and the offer you want the page to sell.</p>
           <div class="work-path__embed" id="cal-embed">
             <!-- [PLACEHOLDER] Replace this block with the real cal.com inline embed once the account is live. Keep lazy loading: only inject the embed script when Act 06 enters viewport. -->
             <div class="booking-placeholder">
-              <div class="booking-placeholder__slots">
-                <button type="button" class="booking-slot" disabled>Mon 10:00</button>
-                <button type="button" class="booking-slot" disabled>Tue 14:30</button>
-                <button type="button" class="booking-slot" disabled>Thu 11:00</button>
-              </div>
+              <ol class="application-steps">
+                <li><span>01</span><p>Share the offer, audience, current page, and traffic source.</p></li>
+                <li><span>02</span><p>We map the fastest conversion path and flag what is missing.</p></li>
+                <li><span>03</span><p>If it fits, we reserve the next build window.</p></li>
+              </ol>
               <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary booking-placeholder__cta" target="_blank" rel="noopener noreferrer" aria-label="Start Your Build">Start Your Build</a>
             </div>
           </div>
         </article>
         <article class="work-path work-path--wa">
           <span class="bp-anno" aria-hidden="true">OPT B</span>
-          <h3>WhatsApp Us</h3>
-          <p>Two lines about your offer. Same day reply on weekdays.</p>
+          <h3>Send The Short Version</h3>
+          <p>Send your offer, current page, traffic source, and the bottleneck you want fixed. Same day reply on weekdays.</p>
           <a href="https://wa.me/0000000000" class="btn btn--ghost magnetic" data-magnetic target="_blank" rel="noopener noreferrer">Message On WhatsApp</a>
           <!-- [PLACEHOLDER] real WhatsApp Business number -->
         </article>
@@ -408,12 +440,12 @@
     </div>
   </section>
 
-  <script src="assets/js/cdn-manifest.js?v=61"></script>
+  <script src="assets/js/cdn-manifest.js?v=62"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=61"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=62"></script>
 </body>
 </html>

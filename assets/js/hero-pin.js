@@ -10,7 +10,8 @@ const NAME_OUT_END = 0.54;
 const LINE1_IN = [0.50, 0.60];
 const LINE2_IN = [0.62, 0.72];
 const SUB_IN = [0.72, 0.79];
-const ACTIONS_IN = [0.80, 0.88];
+const HERO_PROOF_IN = [0.77, 0.84];
+const ACTIONS_IN = [0.82, 0.90];
 const COPY_EXIT = [1.01, 1.02];
 const RESOLVE_START = 0.9;
 const GRID_START = 0.9;
@@ -40,6 +41,7 @@ export function initHeroPin({ scrubber, reducedMotion }) {
   const line1 = document.getElementById("hero-line1");
   const line2 = document.getElementById("hero-line2");
   const sub = document.getElementById("hero-sub");
+  const heroProof = document.querySelector(".hero-proof");
   const actions = document.getElementById("hero-actions");
   const title = document.getElementById("hero-title");
   const frameCount = scrubber.urls.length;
@@ -103,6 +105,7 @@ export function initHeroPin({ scrubber, reducedMotion }) {
       setIn(line1, LINE1_IN);
       setIn(line2, LINE2_IN);
       setIn(sub, SUB_IN);
+      setIn(heroProof, HERO_PROOF_IN);
       setIn(actions, ACTIONS_IN);
 
       const leave = band(p, [0.90, 1.0]);

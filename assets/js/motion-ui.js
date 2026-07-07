@@ -37,6 +37,7 @@ export function initLoader() {
 function animateHeroIntro(reducedMotion) {
   const title = document.getElementById("hero-title");
   const sub = document.getElementById("hero-sub");
+  const heroProof = document.querySelector(".hero-proof");
   const actions = document.getElementById("hero-actions");
   const gsap = window.gsap;
 
@@ -48,7 +49,7 @@ function animateHeroIntro(reducedMotion) {
         c.style.transform = "none";
       });
     }
-    [sub, actions].forEach((el) => {
+    [sub, heroProof, actions].forEach((el) => {
       if (el) {
         el.style.opacity = "1";
         el.style.transform = "none";
@@ -67,7 +68,7 @@ function animateHeroIntro(reducedMotion) {
   if (desktop && name) {
     // Founder hero: the load moment belongs to the giant name. The h1
     // lines, sub, and actions enter later on scroll beats (hero-pin.js).
-    gsap.set([title, sub, actions], { opacity: 0 });
+    gsap.set([title, sub, heroProof, actions], { opacity: 0 });
     const split = new window.SplitText(name, { type: "chars", charsClass: "char" });
     gsap.set(name, { opacity: 1 });
     gsap.set(split.chars, { opacity: 0, yPercent: 60 });
@@ -98,7 +99,7 @@ function animateHeroIntro(reducedMotion) {
     ease: "power3.out",
   });
   tl.to(
-    ["#hero-sub", "#hero-actions"],
+    ["#hero-sub", ".hero-proof", "#hero-actions"],
     { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
     0.3
   );
