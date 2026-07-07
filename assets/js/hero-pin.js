@@ -12,8 +12,8 @@ const LINE2_IN = [0.62, 0.72];
 const SUB_IN = [0.72, 0.79];
 const ACTIONS_IN = [0.80, 0.88];
 const COPY_EXIT = [1.01, 1.02];
-const RESOLVE_START = 2;
-const GRID_START = 2;
+const RESOLVE_START = 0.9;
+const GRID_START = 0.9;
 
 function band(p, [a, b]) {
   const t = Math.max(0, Math.min(1, (p - a) / (b - a)));

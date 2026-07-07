@@ -18,7 +18,6 @@ export function initSections({ reducedMotion }) {
   revealLeakCards(start);
   revealProofCards();
   revealMethod(start);
-  revealPlatforms(start);
   revealWork(start);
   initWatermarks();
 }
@@ -148,34 +147,6 @@ function revealMethod(start) {
       steps.forEach((s, i) => s.classList.toggle("is-lit", i <= lit));
     },
   });
-}
-
-function revealPlatforms(start) {
-  window.gsap.fromTo(
-    ".platform-featured",
-    { opacity: 0, scale: 0.96 },
-    {
-      scrollTrigger: { trigger: "#act-platforms", start, once: true },
-      opacity: 1,
-      scale: 1,
-      duration: 0.6,
-      ease: "power2.out",
-      clearProps: "transform",
-    }
-  );
-  window.gsap.fromTo(
-    ".platform-card",
-    { opacity: 0, y: 20 },
-    {
-      scrollTrigger: { trigger: ".platform-grid", start, once: true },
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      stagger: 0.08,
-      ease: "power2.out",
-      clearProps: "transform",
-    }
-  );
 }
 
 function revealWork(start) {

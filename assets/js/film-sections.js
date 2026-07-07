@@ -13,8 +13,8 @@
  * solely by their own in/out bands so late CTAs are not dimmed by a global fade.
  */
 
-import { FrameScrubber } from "./frame-scrub.js?v=60";
-import { runStatsCount } from "./sections.js?v=60";
+import { FrameScrubber } from "./frame-scrub.js?v=61";
+import { runStatsCount } from "./sections.js?v=61";
 
 const FILM_SCRUB = 0.12;
 const EXIT_BAND = [0.94, 1];
