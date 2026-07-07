@@ -1,46 +1,17 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=63";
-import { initHeroPin } from "./hero-pin.js?v=63";
-import { initMachineSchematic } from "./machine-schematic.js?v=63";
-import { initLoader, initNav, initCursor, initMagnetic, initStickyPill } from "./motion-ui.js?v=63";
-import { initSections } from "./sections.js?v=63";
-import { initFilmSections, initFilmSectionsStatic } from "./film-sections.js?v=63";
-import { initMobileLite } from "./mobile-lite.js?v=63";
-import { initProgressRail } from "./progress-rail.js?v=63";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=64";
 
-const DECODED_BUDGET_MB = 600;
+const SECTION_DECODE_W = 900;
 
 export const appState = {
-  scrubber: null,
+  hero: null,
+  scrubbers: [],
   lenis: null,
 };
 
-// Debug/QA hook: inspect decoded-memory + scrubber state from the console.
 window.__cinemaState = appState;
 
-/* Use every second frame (halve the hero sequence). */
 function halve(arr) {
   return arr.filter((_, i) => i % 2 === 0);
-}
-
-function isLocal() {
-  return (
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.port === "8766"
-  );
-}
-
-function buildUrls(actKey, localDir) {
-  const acts = window.DWF_CDN?.acts ?? {};
-  const count = acts[actKey]?.length ?? 0;
-  if (!count) return [];
-  const full = isLocal()
-    ? Array.from(
-        { length: count },
-        (_, i) => `assets/frames/cinema/${localDir}/frame_${String(i + 1).padStart(5, "0")}.webp`
-      )
-    : acts[actKey];
-  return halve(full);
 }
 
 function connectionSaveData() {
@@ -51,45 +22,191 @@ function connectionSaveData() {
   return et === "slow-2g" || et === "2g" || et === "3g";
 }
 
-function logDecodedMemory(label = "") {
-  const bytes = appState.scrubber?.decodedBytes?.() || 0;
-  const mb = bytes / (1024 * 1024);
-  console.info(
-    `[frames] hero decoded memory ${mb.toFixed(0)}MB / budget ${DECODED_BUDGET_MB}MB${label ? " — " + label : ""}`
+function heroUrls() {
+  return halve(window.DWF_CDN?.acts?.act0 || []);
+}
+
+function sectionUrls(key, count) {
+  return Array.from(
+    { length: count },
+    (_, i) => `assets/frames/sections/${key}/frame_${String(i + 1).padStart(5, "0")}.webp`
   );
 }
 
-function initLenis(reduce) {
-  if (reduce || !window.Lenis) return null;
+function initLoader() {
+  const loader = document.getElementById("loader");
+  const fill = document.getElementById("loader-fill");
+  const pct = document.getElementById("loader-pct");
+  const tasks = [];
+
+  function setProgress(v) {
+    const n = Math.round(Math.max(0, Math.min(1, v)) * 100);
+    if (fill) fill.style.width = `${n}%`;
+    if (pct) pct.textContent = `${n}%`;
+  }
+
+  function track(fn) {
+    tasks.push(fn);
+  }
+
+  async function finish() {
+    await Promise.race([
+      Promise.all(tasks.map((fn) => fn().catch(() => {}))),
+      new Promise((resolve) => setTimeout(resolve, 2600)),
+    ]);
+    setProgress(1);
+    loader?.classList.add("is-done");
+    loader?.setAttribute("aria-busy", "false");
+  }
+
+  return { setProgress, track, finish };
+}
+
+function initLenis(reduced) {
+  if (reduced || !window.Lenis) return null;
   const lenis = new window.Lenis({ autoRaf: false });
-  window.lenis = lenis;
   appState.lenis = lenis;
+  window.lenis = lenis;
   lenis.on("scroll", window.ScrollTrigger.update);
   window.gsap.ticker.add((time) => lenis.raf(time * 1000));
   window.gsap.ticker.lagSmoothing(0);
   return lenis;
 }
 
-function bindAnchorScroll(lenis) {
+function bindAnchors(lenis) {
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
-    a.addEventListener("click", (e) => {
-      const id = a.getAttribute("href");
-      if (!id || id.length < 2) return;
-      const target = document.querySelector(id);
+    a.addEventListener("click", (event) => {
+      const href = a.getAttribute("href");
+      if (!href || href.length < 2) return;
+      const target = document.querySelector(href);
       if (!target) return;
-      e.preventDefault();
+      event.preventDefault();
       if (lenis) lenis.scrollTo(target, { offset: 0 });
       else target.scrollIntoView({ behavior: "smooth" });
     });
   });
 }
 
-function setStatsFinal() {
+function setStaticAct(section) {
+  const stage = section.querySelector(".scrub-stage");
+  const canvas = section.querySelector(".scrub-canvas");
+  const cdnKey = section.dataset.cdnKey;
+  const filmKey = section.dataset.filmFrames;
+  let url = "";
+  if (cdnKey) url = window.DWF_CDN?.acts?.[cdnKey]?.[0] || "";
+  if (filmKey) url = `assets/frames/sections/${filmKey}/frame_00001.webp`;
+  if (stage && url) stage.style.backgroundImage = `url(${url})`;
+  canvas?.classList.remove("is-active");
+  section.classList.add("is-static");
+}
+
+function buildUrls(section) {
+  if (section.dataset.cdnKey) return heroUrls();
+  const key = section.dataset.filmFrames;
+  const count = parseInt(section.dataset.filmCount || "0", 10);
+  if (!key || !count) return [];
+  return sectionUrls(key, count);
+}
+
+function initScrub(section, { loader, eager = false } = {}) {
+  const stage = section.querySelector(".scrub-stage");
+  const canvas = section.querySelector(".scrub-canvas");
+  const urls = buildUrls(section);
+  if (!stage || !canvas || !urls.length) return () => {};
+
+  const isHero = section.id === "hero-pin";
+  const decodeWidth = isHero ? decodeTierWidth() : parseInt(section.dataset.filmDecode || "", 10) || SECTION_DECODE_W;
+  const scrubber = new FrameScrubber(stage, canvas, urls, {
+    decodeWidth,
+    priorityIndex: 0,
+    debugLabel: section.id || section.dataset.filmFrames || "scrub",
+  });
+  scrubber.bindResize();
+  canvas.classList.add("is-active");
+  appState.scrubbers.push(scrubber);
+  if (isHero) appState.hero = scrubber;
+
+  let loaded = false;
+  let loading = false;
+  let loadPromise = null;
+  const load = async (onProgress) => {
+    if (loaded) return;
+    if (loading && loadPromise) return loadPromise;
+    loading = true;
+    loadPromise = scrubber
+      .load(onProgress)
+      .then(() => {
+        loaded = true;
+        scrubber.setTargetFrame(0);
+        scrubber.renderNow();
+      })
+      .finally(() => {
+        loading = false;
+      });
+    return loadPromise;
+  };
+
+  if (eager) {
+    loader?.track(() => load((p) => loader.setProgress(0.1 + p * 0.85)));
+  }
+
+  const loadST = window.ScrollTrigger.create({
+    trigger: section,
+    start: "top bottom+=80%",
+    end: "bottom top",
+    onEnter: () => load(),
+    onEnterBack: () => load(),
+  });
+
+  const pinST = window.ScrollTrigger.create({
+    trigger: section,
+    start: "top top",
+    end: `+=${parseInt(section.dataset.vh || "180", 10)}%`,
+    pin: true,
+    scrub: isHero ? 0.2 : 0.12,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onToggle: (self) => {
+      if (self.isActive) {
+        load().then(() => scrubber.resumeTicker());
+      } else {
+        scrubber.pauseTicker();
+      }
+    },
+    onUpdate: (self) => {
+      const p = self.progress;
+      scrubber.setTargetFrame(Math.round(p * (urls.length - 1)));
+      scrubber.setFx({ scale: 1 + p * (isHero ? 0.04 : 0.012), offsetY: isHero ? -p * 12 : 0, offsetX: 0 });
+      section.style.setProperty("--progress", String(p));
+    },
+  });
+
+  section._scrubST = pinST;
+  if (loadST.isActive || eager) load();
+
+  return () => {
+    loadST.kill();
+    pinST.kill();
+    scrubber.releaseBitmaps();
+  };
+}
+
+function initStats() {
   document.querySelectorAll("[data-count]").forEach((el) => {
     const target = parseFloat(el.getAttribute("data-count"));
+    if (!isFinite(target)) return;
     const suffix = el.getAttribute("data-suffix") || "";
     const decimals = parseInt(el.getAttribute("data-decimal") || "0", 10);
-    el.textContent = (decimals ? target.toFixed(decimals) : String(Math.round(target))) + suffix;
+    const obj = { value: 0 };
+    window.gsap.to(obj, {
+      value: target,
+      duration: 1.2,
+      ease: "power3.out",
+      scrollTrigger: { trigger: el, start: "top 85%", once: true },
+      onUpdate: () => {
+        el.textContent = `${decimals ? obj.value.toFixed(decimals) : Math.round(obj.value)}${suffix}`;
+      },
+    });
   });
 }
 
@@ -98,109 +215,32 @@ async function init() {
     console.error("GSAP ScrollTrigger required");
     return;
   }
+
   window.gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
-  if (window.SplitText) window.gsap.registerPlugin(window.SplitText);
 
-  const heroCanvas = document.getElementById("scrub-canvas");
-  const hero = document.getElementById("hero");
-
-  const heroUrls = buildUrls("act0", "act0");
-  const tier = decodeTierWidth();
-
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobile = window.matchMedia("(max-width: 899px)").matches;
   const saveData = connectionSaveData();
-
   const loader = initLoader();
-  initNav();
+  const sections = Array.from(document.querySelectorAll("[data-scrub]"));
 
-  // The loader gates only on the hero sequence + fonts. The machine is now a
-  // pure SVG schematic, so no machine frame assets are ever requested.
-  const wantFullHero = !reduce && !mobile && heroCanvas && hero && heroUrls.length;
-  if (wantFullHero) {
-    const scrubber = new FrameScrubber(hero, heroCanvas, heroUrls, {
-      decodeWidth: tier,
-      priorityIndex: 0,
-    });
-    appState.scrubber = scrubber;
-    scrubber.bindResize();
-    loader.track(async () => {
-      await scrubber.load((p) => loader.setProgress(0.1 + p * 0.85));
-      scrubber.setTargetFrame(0);
-      logDecodedMemory("hero loaded");
-    });
-  } else {
+  if (reduced || mobile || saveData) {
     loader.setProgress(0.5);
+    sections.forEach(setStaticAct);
+    await loader.finish();
+    bindAnchors(null);
+    initStats();
+    window.ScrollTrigger.refresh();
+    return;
   }
 
+  const hero = document.getElementById("hero-pin");
+  sections.forEach((section) => initScrub(section, { loader, eager: section === hero }));
+
   await loader.finish();
-
-  const lenis = initLenis(reduce);
-  bindAnchorScroll(lenis);
-
-  // A single gsap.matchMedia() block, three contexts.
-  const mm = window.gsap.matchMedia();
-  mm.add(
-    {
-      desktop: "(min-width: 900px) and (prefers-reduced-motion: no-preference)",
-      mobileCtx: "(max-width: 899px) and (prefers-reduced-motion: no-preference)",
-      reduced: "(prefers-reduced-motion: reduce)",
-    },
-    (ctx) => {
-      const { desktop, mobileCtx, reduced } = ctx.conditions;
-
-      if (reduced) {
-        document.getElementById("hero-poster")?.classList.remove("is-hidden");
-        document.getElementById("scrub-canvas")?.classList.remove("is-active");
-        initSections({ reducedMotion: true });
-        initMachineSchematic({ reducedMotion: true });
-        initFilmSectionsStatic();
-        setStatsFinal();
-        return () => {};
-      }
-
-      if (mobileCtx) {
-        const liteCleanup = initMobileLite({ heroUrls, saveData });
-        initSections({ reducedMotion: false });
-        // Mobile: schematic renders fully drawn, static, no scrub/particles.
-        initMachineSchematic({ staticDraw: true });
-        initFilmSectionsStatic();
-        const pill = initStickyPill();
-        window.ScrollTrigger.refresh();
-        return () => {
-          liteCleanup?.();
-          pill?.kill?.();
-        };
-      }
-
-      if (desktop) {
-        if (appState.scrubber) {
-          initHeroPin({ scrubber: appState.scrubber, reducedMotion: false });
-        } else {
-          document.getElementById("hero-poster")?.classList.remove("is-hidden");
-        }
-        initSections({ reducedMotion: false });
-        const filmsCleanup = initFilmSections();
-        const pill = initStickyPill();
-        const railCleanup = initProgressRail({ lenis });
-        const cursorCleanup = initCursor();
-        const magneticCleanup = initMagnetic();
-        const machineCtl = initMachineSchematic({ reducedMotion: false });
-        window.ScrollTrigger.refresh();
-        return () => {
-          filmsCleanup?.();
-          pill?.kill?.();
-          railCleanup?.();
-          cursorCleanup?.();
-          magneticCleanup?.();
-          machineCtl?.kill?.();
-        };
-      }
-
-      return () => {};
-    }
-  );
-
+  const lenis = initLenis(reduced);
+  bindAnchors(lenis);
+  initStats();
   await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }
