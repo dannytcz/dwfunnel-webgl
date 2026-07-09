@@ -19,6 +19,9 @@ function halve(arr) {
 }
 
 function connectionSaveData() {
+  // QA escape hatch: ?motion forces the full experience on throttled
+  // connections (headless test environments report 3g and go static).
+  if (new URLSearchParams(location.search).has("motion")) return false;
   const c = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
   if (!c) return false;
   if (c.saveData) return true;
@@ -453,6 +456,71 @@ function manageScrubMemory(activeIndex) {
   });
 }
 
+/* Award pass: masked line reveals on the big titles, a self-drawing leak
+   schematic, a scrubbed timeline progress line, and gentle parallax on the
+   stat numerals. Desktop only (called from the full-motion path). */
+function initAwardMotion() {
+  const gsap = window.gsap;
+
+  if (window.SplitText) {
+    gsap.registerPlugin(window.SplitText);
+    document
+      .querySelectorAll(".split-copy h2, .section-title, .final-title, .proof-feature strong")
+      .forEach((el) => {
+        const split = new window.SplitText(el, { type: "lines", mask: "lines", linesClass: "st-line" });
+        gsap.from(split.lines, {
+          yPercent: 115,
+          duration: 0.9,
+          stagger: 0.09,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 80%", once: true },
+        });
+      });
+  }
+
+  const leak = document.querySelector(".leak-svg");
+  if (leak) {
+    const paths = leak.querySelectorAll(".leak-draw");
+    window.ScrollTrigger.create({
+      trigger: "#problem",
+      start: "top 75%",
+      end: "center center",
+      scrub: 0.4,
+      onUpdate: (self) => {
+        const p = self.progress;
+        paths.forEach((path, i) => {
+          const local = Math.max(0, Math.min(1, p * paths.length - i));
+          path.style.strokeDashoffset = String(1 - local);
+        });
+        leak.classList.toggle("is-labeled", p > 0.85);
+      },
+    });
+  }
+
+  const timeline = document.querySelector(".timeline");
+  if (timeline) {
+    window.ScrollTrigger.create({
+      trigger: timeline,
+      start: "top 85%",
+      end: "top 40%",
+      scrub: 0.4,
+      onUpdate: (self) => timeline.style.setProperty("--tl-progress", String(self.progress)),
+    });
+  }
+
+  document.querySelectorAll(".stat-strip strong").forEach((el, i) => {
+    gsap.fromTo(
+      el,
+      { y: 26 + i * 8 },
+      {
+        y: -(26 + i * 8),
+        ease: "none",
+        scrollTrigger: { trigger: ".plain-section--stats", start: "top bottom", end: "bottom top", scrub: true },
+      }
+    );
+  });
+}
+
 function initStats() {
   document.querySelectorAll("[data-count]").forEach((el) => {
     const target = parseFloat(el.getAttribute("data-count"));
@@ -524,6 +592,7 @@ async function init() {
   initGlobalProgress();
   initHeroMotion();
   initReveals();
+  initAwardMotion();
   await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }

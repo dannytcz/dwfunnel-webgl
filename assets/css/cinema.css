@@ -727,15 +727,144 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .tech-marquee div {
   display: flex;
   width: max-content;
-  gap: 2rem;
   padding: 1rem 0;
-  animation: marquee 24s linear infinite;
+  animation: marquee 26s linear infinite;
+}
+/* Two identical groups, no flex gap: each item carries its own spacing so the
+   -50% wrap point is seamless (no jump at the loop seam). */
+.tech-marquee__group {
+  display: flex;
+  width: max-content;
+}
+.tech-marquee__group i,
+.tech-marquee__group b {
+  font-style: normal;
+  padding-right: 2rem;
 }
 .tech-marquee b {
   color: var(--red);
 }
 @keyframes marquee {
   to { transform: translateX(-50%); }
+}
+
+/* ---- Award pass: full-viewport plain sections, mega type, drawn SVG ---- */
+.plain-section--stats,
+.plain-section--split,
+.plain-section--proof,
+.plain-section--method {
+  min-height: 100dvh;
+  display: grid;
+  align-content: center;
+}
+.plain-section--split { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); }
+.stat-strip strong { font-size: clamp(4.4rem, 8.5vw, 7.6rem); }
+.section-title { font-size: clamp(3.2rem, 5.6vw, 5rem); }
+.split-copy h2 { font-size: clamp(3.2rem, 5vw, 4.6rem); }
+
+/* Self-drawing conversion-leak schematic behind the problem section. */
+.leak-svg {
+  position: absolute;
+  top: 50%;
+  right: clamp(0.5rem, 4vw, 4rem);
+  height: min(78vh, 760px);
+  transform: translateY(-50%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.leak-draw {
+  stroke: var(--gold);
+  stroke-width: 1.4;
+  fill: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.leak-draw--drip { stroke: var(--red); }
+.leak-label {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  fill: rgba(232, 223, 210, 0.55);
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.leak-label--hot { fill: var(--red); }
+.leak-svg.is-labeled .leak-label { opacity: 1; }
+/* Keep the cards readable above the schematic. */
+.plain-section--split .diagnostic-grid { position: relative; z-index: 1; }
+
+/* Timeline progress line that draws across as you scroll. */
+.timeline { position: relative; }
+.timeline::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(var(--tl-progress, 0));
+  transform-origin: left;
+}
+
+/* Work scrub CTA breathing room under the mega headline. */
+.scrub-copy .btn { margin-top: 2rem; }
+
+/* Apply hierarchy: qualification above, one dominant action panel below. */
+.apply-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.apply-panel {
+  position: relative;
+  overflow: hidden;
+  width: min(var(--max), 100%);
+  margin: 1rem auto 0;
+  padding: clamp(1.8rem, 4vw, 3.2rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 2rem;
+  align-items: center;
+  border: 1px solid rgba(217, 168, 77, 0.4);
+  background:
+    linear-gradient(135deg, rgba(201, 68, 45, 0.16), transparent 40%),
+    rgba(5, 5, 5, 0.6);
+}
+.apply-panel__copy span {
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.apply-panel__copy h3 {
+  margin: 0.7rem 0 0.8rem;
+  font-family: var(--font-tech);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.apply-panel__copy p { margin: 0; color: var(--muted); line-height: 1.6; max-width: 46ch; }
+.apply-panel__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+}
+.btn--xl {
+  padding: 1.3rem 2.2rem;
+  font-size: 0.92rem;
+  text-align: center;
+  justify-content: center;
+}
+.apply-panel__alt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.apply-panel__alt:hover { color: var(--ink); }
+@media (max-width: 899px) {
+  .apply-panel { grid-template-columns: 1fr; }
+  .leak-svg { display: none; }
 }
 
 .glitch {
