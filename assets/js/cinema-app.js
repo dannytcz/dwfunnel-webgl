@@ -1,4 +1,4 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=66";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=67";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
@@ -27,7 +27,7 @@ function connectionSaveData() {
 }
 
 function heroUrls() {
-  return halve(window.DWF_CDN?.acts?.act0 || []);
+  return window.DWF_CDN?.acts?.act0 || [];
 }
 
 function sectionUrls(key, count) {

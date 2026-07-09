@@ -1,4 +1,4 @@
-/* Hero act0: founder orbit frames, served from site static until CDN upload. */
+/* Hero act0: generated from assets/videos/scrub 1.mp4. */
 window.DWF_CDN = {
   "generated": true,
   "acts": {
@@ -122,32 +122,7 @@ window.DWF_CDN = {
       "assets/frames/cinema/act0/frame_00117.webp",
       "assets/frames/cinema/act0/frame_00118.webp",
       "assets/frames/cinema/act0/frame_00119.webp",
-      "assets/frames/cinema/act0/frame_00120.webp",
-      "assets/frames/cinema/act0/frame_00121.webp",
-      "assets/frames/cinema/act0/frame_00122.webp",
-      "assets/frames/cinema/act0/frame_00123.webp",
-      "assets/frames/cinema/act0/frame_00124.webp",
-      "assets/frames/cinema/act0/frame_00125.webp",
-      "assets/frames/cinema/act0/frame_00126.webp",
-      "assets/frames/cinema/act0/frame_00127.webp",
-      "assets/frames/cinema/act0/frame_00128.webp",
-      "assets/frames/cinema/act0/frame_00129.webp",
-      "assets/frames/cinema/act0/frame_00130.webp",
-      "assets/frames/cinema/act0/frame_00131.webp",
-      "assets/frames/cinema/act0/frame_00132.webp",
-      "assets/frames/cinema/act0/frame_00133.webp",
-      "assets/frames/cinema/act0/frame_00134.webp",
-      "assets/frames/cinema/act0/frame_00135.webp",
-      "assets/frames/cinema/act0/frame_00136.webp",
-      "assets/frames/cinema/act0/frame_00137.webp",
-      "assets/frames/cinema/act0/frame_00138.webp",
-      "assets/frames/cinema/act0/frame_00139.webp",
-      "assets/frames/cinema/act0/frame_00140.webp",
-      "assets/frames/cinema/act0/frame_00141.webp",
-      "assets/frames/cinema/act0/frame_00142.webp",
-      "assets/frames/cinema/act0/frame_00143.webp",
-      "assets/frames/cinema/act0/frame_00144.webp",
-      "assets/frames/cinema/act0/frame_00145.webp"
+      "assets/frames/cinema/act0/frame_00120.webp"
     ]
   }
 };
