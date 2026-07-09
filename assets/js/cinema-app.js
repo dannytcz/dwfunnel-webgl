@@ -1,7 +1,7 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=68";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
 
 const SECTION_DECODE_W = 900;
-const KEEP_DECODED_DISTANCE = 0;
+const KEEP_DECODED_DISTANCE = 1;
 const SCRAMBLE_CHARS = "01アイウエオカキクケコ代入乱码数据系统追踪构建";
 
 export const appState = {
@@ -374,7 +374,7 @@ function initScrub(section, { loader, eager = false } = {}) {
 
   const loadST = window.ScrollTrigger.create({
     trigger: section,
-    start: "top bottom+=80%",
+    start: "top bottom+=160%",
     end: "bottom top",
     onEnter: () => load(),
     onEnterBack: () => load(),

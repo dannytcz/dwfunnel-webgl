@@ -39,6 +39,7 @@ export class FrameScrubber {
     this._lastFx = {};
     this._released = false;
     this._loaded = false;
+    this._pending = new Map();
     this.debugLabel = opts.debugLabel ?? "";
   }
 
@@ -76,6 +77,37 @@ export class FrameScrubber {
     });
   }
 
+  requestFrame(index) {
+    if (!this.urls.length || this._released) return Promise.resolve();
+    const i = Math.max(0, Math.min(this.urls.length - 1, Math.round(index)));
+    if (this.bitmaps[i]) return Promise.resolve(this.bitmaps[i]);
+    if (this._pending.has(i)) return this._pending.get(i);
+
+    const promise = this._fetchBitmap(this.urls[i])
+      .then((bitmap) => {
+        this._pending.delete(i);
+        if (this._released) {
+          if (bitmap && typeof bitmap.close === "function") bitmap.close();
+          return null;
+        }
+        this.bitmaps[i] = bitmap;
+        if (i === this.targetFrame) this.renderNow();
+        return bitmap;
+      })
+      .catch(() => {
+        this._pending.delete(i);
+        return null;
+      });
+    this._pending.set(i, promise);
+    return promise;
+  }
+
+  requestTargetNeighborhood(index = this.targetFrame) {
+    this.requestFrame(index);
+    this.requestFrame(index - 1);
+    this.requestFrame(index + 1);
+  }
+
   /** Preload every frame; loader progress tied to decode count. */
   async load(onProgress) {
     this._onProgress = onProgress ?? this._onProgress;
@@ -87,11 +119,7 @@ export class FrameScrubber {
     // Decode the first visible frame first, then paint immediately so the scene
     // is never a black void while the rest of the sequence streams in.
     const priority = Math.max(0, Math.min(total - 1, this.priorityIndex ?? 0));
-    try {
-      this.bitmaps[priority] = await this._fetchBitmap(this.urls[priority]);
-    } catch {
-      this.bitmaps[priority] = null;
-    }
+    await this.requestFrame(priority);
     this.resize();
     this.renderNow();
 
@@ -106,11 +134,7 @@ export class FrameScrubber {
         const i = next++;
         if (i === priority) continue;
         if (this._released) return;
-        try {
-          this.bitmaps[i] = await this._fetchBitmap(this.urls[i]);
-        } catch {
-          this.bitmaps[i] = null;
-        }
+        await this.requestFrame(i);
         done++;
         this._onProgress?.(done / total);
       }
@@ -139,6 +163,7 @@ export class FrameScrubber {
       if (b && typeof b.close === "function") b.close();
       this.bitmaps[i] = null;
     }
+    this._pending.clear();
     this.lastDrawnFrame = -1;
     this._lastPaintKey = null;
   }
@@ -164,6 +189,7 @@ export class FrameScrubber {
   setTargetFrame(index) {
     if (!this.urls.length) return;
     this.targetFrame = Math.max(0, Math.min(this.urls.length - 1, Math.round(index)));
+    this.requestTargetNeighborhood(this.targetFrame);
   }
 
   setFx(fx = {}) {
@@ -207,7 +233,10 @@ export class FrameScrubber {
     if (!this.urls.length) return;
     const target = this.targetFrame;
     const bmp = this._nearestBitmap(target);
-    if (!bmp) return;
+    if (!bmp) {
+      this.requestTargetNeighborhood(target);
+      return;
+    }
 
     const fxKey = `${target}|${this.fx.scale}|${this.fx.offsetY}|${this.fx.offsetX}`;
     if (fxKey === this._lastPaintKey) return;
@@ -265,6 +294,7 @@ export class FrameScrubber {
     this.canvas.height = Math.max(1, Math.round(h * renderScale));
     // Draw in identity space; _paint computes everything in backing pixels.
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this._pending.clear();
     this.lastDrawnFrame = -1;
     this._lastPaintKey = null;
   }
