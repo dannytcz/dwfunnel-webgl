@@ -1,7 +1,7 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=67";
+import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=68";
 
 const SECTION_DECODE_W = 900;
-const KEEP_DECODED_DISTANCE = 1;
+const KEEP_DECODED_DISTANCE = 0;
 const SCRAMBLE_CHARS = "01アイウエオカキクケコ代入乱码数据系统追踪构建";
 
 export const appState = {
@@ -28,6 +28,13 @@ function connectionSaveData() {
 
 function heroUrls() {
   return window.DWF_CDN?.acts?.act0 || [];
+}
+
+function scrubDecodeWidth(section, urls) {
+  const isHero = section.id === "hero-pin";
+  const requested = isHero ? decodeTierWidth() : parseInt(section.dataset.filmDecode || "", 10) || SECTION_DECODE_W;
+  if (urls.length >= 100) return Math.min(requested, isHero ? 1280 : 820);
+  return requested;
 }
 
 function sectionUrls(key, count) {
@@ -317,7 +324,7 @@ function initScrub(section, { loader, eager = false } = {}) {
   if (!stage || !canvas || !urls.length) return () => {};
 
   const isHero = section.id === "hero-pin";
-  const decodeWidth = isHero ? decodeTierWidth() : parseInt(section.dataset.filmDecode || "", 10) || SECTION_DECODE_W;
+  const decodeWidth = scrubDecodeWidth(section, urls);
   const scrubber = new FrameScrubber(stage, canvas, urls, {
     decodeWidth,
     priorityIndex: 0,
@@ -343,7 +350,6 @@ function initScrub(section, { loader, eager = false } = {}) {
       .then(() => {
         if (generation !== loadGeneration) return;
         loaded = true;
-        scrubber.setTargetFrame(0);
         scrubber.renderNow();
       })
       .finally(() => {
@@ -385,7 +391,8 @@ function initScrub(section, { loader, eager = false } = {}) {
     onToggle: (self) => {
       if (self.isActive) {
         manageScrubMemory(index);
-        load().then(() => scrubber.resumeTicker());
+        scrubber.resumeTicker();
+        load().then(() => scrubber.renderNow());
       } else {
         scrubber.pauseTicker();
       }
