@@ -4,8 +4,8 @@
     {
       "name": "cinema",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8767"],
-      "port": 8767
+      "runtimeArgs": ["-m", "http.server", "8768"],
+      "port": 8768
     }
   ]
 }

@@ -336,6 +336,34 @@ function initScrub(section, { loader, eager = false } = {}) {
   if (isHero) appState.hero = scrubber;
   const index = appState.scrubRecords.length;
 
+  // Beat choreography: any element inside the pin with data-beat="a,b" fades
+  // and rises in over that band of pin progress; optional data-beat-out="a,b"
+  // fades it back out. Keeps every stretch of a scrub carrying information.
+  const smooth = (p, a, b) => {
+    if (b <= a) return p >= b ? 1 : 0;
+    const t = Math.max(0, Math.min(1, (p - a) / (b - a)));
+    return t * t * (3 - 2 * t);
+  };
+  const parseBand = (v) => {
+    if (!v) return null;
+    const [a, b] = v.split(",").map(Number);
+    return isFinite(a) && isFinite(b) ? [a, b] : null;
+  };
+  const beats = Array.from(section.querySelectorAll("[data-beat]")).map((el) => {
+    el.style.opacity = "0";
+    el.style.transform = "translateY(10px)";
+    el.style.willChange = "opacity, transform";
+    return { el, in: parseBand(el.dataset.beat) || [0, 0.1], out: parseBand(el.dataset.beatOut) };
+  });
+  const applyBeats = (p) => {
+    for (const b of beats) {
+      let v = smooth(p, b.in[0], b.in[1]);
+      if (b.out) v *= 1 - smooth(p, b.out[0], b.out[1]);
+      b.el.style.opacity = String(v);
+      b.el.style.transform = `translateY(${10 * (1 - v)}px)`;
+    }
+  };
+
   let loaded = false;
   let loading = false;
   let loadPromise = null;
@@ -402,6 +430,7 @@ function initScrub(section, { loader, eager = false } = {}) {
       scrubber.setTargetFrame(Math.round(p * (urls.length - 1)));
       scrubber.setFx({ scale: 1 + p * (isHero ? 0.04 : 0.012), offsetY: isHero ? -p * 12 : 0, offsetX: 0 });
       section.style.setProperty("--progress", String(p));
+      applyBeats(p);
       appState.atmosphere?.setIntensity(isHero ? p : 0.45 + p * 0.35);
     },
   });
