@@ -655,9 +655,12 @@ async function init() {
   initGlobalProgress();
   initHeroMotion();
   initReveals();
+  initFaq();
+  // SplitText measures line boxes, so it must wait for Orbitron to load or
+  // lines get split at fallback-font widths and clip once the wide font lands.
+  await document.fonts.ready;
   initAwardMotion();
   initMethodStack();
-  initFaq();
   await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }

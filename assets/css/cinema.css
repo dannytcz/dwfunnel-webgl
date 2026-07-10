@@ -31,7 +31,7 @@
   --font-mono: "Space Mono", ui-monospace, monospace;
   --font-tech: "Orbitron", "Space Grotesk", system-ui, sans-serif;
   --font-cinzel: "Cinzel", serif;
-  --max: 1180px;
+  --max: 1340px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -759,8 +759,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .plain-section--split { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); }
 .stat-strip strong { font-size: clamp(4.4rem, 8.5vw, 7.6rem); }
-.section-title { font-size: clamp(3.2rem, 5.6vw, 5rem); }
-.split-copy h2 { font-size: clamp(3.2rem, 5vw, 4.6rem); }
+.section-title { font-size: clamp(2.8rem, 4vw, 4.1rem); }
+.split-copy h2 { font-size: clamp(2.8rem, 3.8vw, 4rem); }
 
 /* Self-drawing conversion-leak schematic behind the problem section. */
 .leak-svg {
@@ -1323,3 +1323,50 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .method-card { min-height: 38vh; }
   .site-footer__inner { grid-template-columns: 1fr; }
 }
+
+/* ---- Round 2 polish ---- */
+/* Method card schematic: faint module glyph so cards never feel empty. */
+.method-card__svg {
+  position: absolute;
+  top: 50%;
+  left: clamp(1.2rem, 3vw, 2.4rem);
+  width: clamp(110px, 12vw, 170px);
+  height: auto;
+  transform: translateY(-70%);
+  stroke: rgba(242, 168, 74, 0.34);
+  stroke-width: 1.2;
+  fill: none;
+  pointer-events: none;
+}
+
+/* Stat strip: editorial data columns instead of four names sitting in a row.
+   Left rules, mono indices, staggered baselines, generous spread. */
+.stat-strip {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 5rem);
+  counter-reset: stat;
+}
+.stat-strip article {
+  border-top: 0;
+  border-left: 1px solid var(--line-hot);
+  padding: 0.4rem 0 0.4rem clamp(1.1rem, 2vw, 1.8rem);
+  counter-increment: stat;
+}
+.stat-strip article:nth-child(even) { margin-top: clamp(2.5rem, 6vh, 5rem); }
+.stat-strip article::before {
+  content: "ST.0" counter(stat);
+  display: block;
+  margin-bottom: 1.1rem;
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+}
+.stat-strip strong { font-size: clamp(4.6rem, 8vw, 8rem); }
+.stat-strip span {
+  margin-top: 1rem;
+  letter-spacing: 0.18em;
+}
+/* Method headline sits in the narrower sticky column; cap it lower so no
+   Orbitron word ever exceeds the line mask. */
+.method-sticky .section-title { font-size: clamp(2.3rem, 2.9vw, 3.3rem); }

@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=72" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=73" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -74,7 +74,13 @@
     </section>
 
     <div class="tech-marquee" aria-hidden="true">
+      <!-- six identical groups so content always spans over 2x any viewport;
+           the animation wraps at -50% (three groups), which is seamless -->
       <div>
+        <span class="tech-marquee__group"><i>TRAFFIC IN</i><b>+</b><i>STORY TOLD</i><b>+</b><i>TRUST EARNED</i><b>+</b><i>CALLS BOOKED</i><b>+</b><i>DW FUNNEL</i><b>+</b></span>
+        <span class="tech-marquee__group"><i>TRAFFIC IN</i><b>+</b><i>STORY TOLD</i><b>+</b><i>TRUST EARNED</i><b>+</b><i>CALLS BOOKED</i><b>+</b><i>DW FUNNEL</i><b>+</b></span>
+        <span class="tech-marquee__group"><i>TRAFFIC IN</i><b>+</b><i>STORY TOLD</i><b>+</b><i>TRUST EARNED</i><b>+</b><i>CALLS BOOKED</i><b>+</b><i>DW FUNNEL</i><b>+</b></span>
+        <span class="tech-marquee__group"><i>TRAFFIC IN</i><b>+</b><i>STORY TOLD</i><b>+</b><i>TRUST EARNED</i><b>+</b><i>CALLS BOOKED</i><b>+</b><i>DW FUNNEL</i><b>+</b></span>
         <span class="tech-marquee__group"><i>TRAFFIC IN</i><b>+</b><i>STORY TOLD</i><b>+</b><i>TRUST EARNED</i><b>+</b><i>CALLS BOOKED</i><b>+</b><i>DW FUNNEL</i><b>+</b></span>
         <span class="tech-marquee__group"><i>TRAFFIC IN</i><b>+</b><i>STORY TOLD</i><b>+</b><i>TRUST EARNED</i><b>+</b><i>CALLS BOOKED</i><b>+</b><i>DW FUNNEL</i><b>+</b></span>
       </div>
@@ -194,12 +200,12 @@
           </ol>
         </div>
         <div class="method-stack">
-          <article class="method-card"><span class="method-card__sys">SYS 01</span><em class="method-card__index">01</em><h3 data-scramble>Offer OS</h3><p>Buyer, pain, promise, mechanism, and one next step.</p></article>
-          <article class="method-card"><span class="method-card__sys">SYS 02</span><em class="method-card__index">02</em><h3 data-scramble>Proof Stack</h3><p>Outcomes placed before doubt has time to build.</p></article>
-          <article class="method-card"><span class="method-card__sys">SYS 03</span><em class="method-card__index">03</em><h3 data-scramble>Page Rhythm</h3><p>Headline, mechanism, proof, risk reversal, CTA.</p></article>
-          <article class="method-card"><span class="method-card__sys">SYS 04</span><em class="method-card__index">04</em><h3 data-scramble>Booking Path</h3><p>One calendar or form from intent to action.</p></article>
-          <article class="method-card"><span class="method-card__sys">SYS 05</span><em class="method-card__index">05</em><h3 data-scramble>Recovery Loop</h3><p>Email and WhatsApp nudges for leads who hesitate.</p></article>
-          <article class="method-card"><span class="method-card__sys">SYS 06</span><em class="method-card__index">06</em><h3 data-scramble>Attribution</h3><p>Events and source tags so you know what worked.</p></article>
+          <article class="method-card"><svg class="method-card__svg" viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="26" width="88" height="88" rx="10" /><path d="M70 26 V8 M70 132 V114 M26 70 H8 M132 70 H114" /><path d="M26 44 H14 M26 96 H14 M114 44 h12 M114 96 h12" /><circle cx="70" cy="70" r="20" /><circle cx="70" cy="70" r="4" /><path d="M70 50 v-9 M70 99 v-9 M50 70 h-9 M99 70 h-9" /></svg><span class="method-card__sys">SYS 01</span><em class="method-card__index">01</em><h3 data-scramble>Offer OS</h3><p>Buyer, pain, promise, mechanism, and one next step.</p></article>
+          <article class="method-card"><svg class="method-card__svg" viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="26" width="88" height="88" rx="10" /><path d="M70 26 V8 M70 132 V114 M26 70 H8 M132 70 H114" /><path d="M26 44 H14 M26 96 H14 M114 44 h12 M114 96 h12" /><circle cx="70" cy="70" r="20" /><circle cx="70" cy="70" r="4" /><path d="M70 50 v-9 M70 99 v-9 M50 70 h-9 M99 70 h-9" /></svg><span class="method-card__sys">SYS 02</span><em class="method-card__index">02</em><h3 data-scramble>Proof Stack</h3><p>Outcomes placed before doubt has time to build.</p></article>
+          <article class="method-card"><svg class="method-card__svg" viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="26" width="88" height="88" rx="10" /><path d="M70 26 V8 M70 132 V114 M26 70 H8 M132 70 H114" /><path d="M26 44 H14 M26 96 H14 M114 44 h12 M114 96 h12" /><circle cx="70" cy="70" r="20" /><circle cx="70" cy="70" r="4" /><path d="M70 50 v-9 M70 99 v-9 M50 70 h-9 M99 70 h-9" /></svg><span class="method-card__sys">SYS 03</span><em class="method-card__index">03</em><h3 data-scramble>Page Rhythm</h3><p>Headline, mechanism, proof, risk reversal, CTA.</p></article>
+          <article class="method-card"><svg class="method-card__svg" viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="26" width="88" height="88" rx="10" /><path d="M70 26 V8 M70 132 V114 M26 70 H8 M132 70 H114" /><path d="M26 44 H14 M26 96 H14 M114 44 h12 M114 96 h12" /><circle cx="70" cy="70" r="20" /><circle cx="70" cy="70" r="4" /><path d="M70 50 v-9 M70 99 v-9 M50 70 h-9 M99 70 h-9" /></svg><span class="method-card__sys">SYS 04</span><em class="method-card__index">04</em><h3 data-scramble>Booking Path</h3><p>One calendar or form from intent to action.</p></article>
+          <article class="method-card"><svg class="method-card__svg" viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="26" width="88" height="88" rx="10" /><path d="M70 26 V8 M70 132 V114 M26 70 H8 M132 70 H114" /><path d="M26 44 H14 M26 96 H14 M114 44 h12 M114 96 h12" /><circle cx="70" cy="70" r="20" /><circle cx="70" cy="70" r="4" /><path d="M70 50 v-9 M70 99 v-9 M50 70 h-9 M99 70 h-9" /></svg><span class="method-card__sys">SYS 05</span><em class="method-card__index">05</em><h3 data-scramble>Recovery Loop</h3><p>Email and WhatsApp nudges for leads who hesitate.</p></article>
+          <article class="method-card"><svg class="method-card__svg" viewBox="0 0 140 140" aria-hidden="true"><rect x="26" y="26" width="88" height="88" rx="10" /><path d="M70 26 V8 M70 132 V114 M26 70 H8 M132 70 H114" /><path d="M26 44 H14 M26 96 H14 M114 44 h12 M114 96 h12" /><circle cx="70" cy="70" r="20" /><circle cx="70" cy="70" r="4" /><path d="M70 50 v-9 M70 99 v-9 M50 70 h-9 M99 70 h-9" /></svg><span class="method-card__sys">SYS 06</span><em class="method-card__index">06</em><h3 data-scramble>Attribution</h3><p>Events and source tags so you know what worked.</p></article>
         </div>
       </div>
     </section>
@@ -267,7 +273,7 @@
           <details class="faq-item" open>
             <summary><span class="faq-item__num">Q.01</span><span class="faq-item__q">What does a build cost?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
             <!-- [PLACEHOLDER] confirm real pricing bands -->
-            <div class="faq-item__a"><p>Every build is scoped on the fit call. Flagship cinematic builds are a five figure engagement; platform builds on your existing stack start in the four figures. You leave the call with a fixed quote, not an estimate.</p></div>
+            <div class="faq-item__a"><p>Every build is scoped on the fit call. Flagship cinematic builds are a five figure engagement; platform builds on your existing stack start in the four figures. After the call we prepare a full proposal for your project.</p></div>
           </details>
           <details class="faq-item">
             <summary><span class="faq-item__num">Q.02</span><span class="faq-item__q">How long from brief to launch?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
@@ -311,7 +317,7 @@
     </div>
   </footer>
 
-  <script src="assets/js/cdn-manifest.js?v=72"></script>
+  <script src="assets/js/cdn-manifest.js?v=73"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
@@ -319,6 +325,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=72"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=73"></script>
 </body>
 </html>
