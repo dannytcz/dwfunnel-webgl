@@ -456,6 +456,68 @@ function manageScrubMemory(activeIndex) {
   });
 }
 
+/* FAQ accordion: one open at a time, height tweened; native details as
+   fallback when GSAP is absent. Runs in both static and motion paths. */
+function initFaq() {
+  const items = Array.from(document.querySelectorAll(".faq-item"));
+  if (!items.length || !window.gsap) return;
+  items.forEach((item) => {
+    const summary = item.querySelector("summary");
+    const body = item.querySelector(".faq-item__a");
+    if (!summary || !body) return;
+    summary.addEventListener("click", (e) => {
+      e.preventDefault();
+      const isOpen = item.hasAttribute("open");
+      if (isOpen) {
+        window.gsap.to(body, {
+          height: 0,
+          duration: 0.45,
+          ease: "power2.inOut",
+          onComplete: () => item.removeAttribute("open"),
+        });
+        return;
+      }
+      items.forEach((other) => {
+        if (other !== item && other.hasAttribute("open")) {
+          const ob = other.querySelector(".faq-item__a");
+          window.gsap.to(ob, {
+            height: 0,
+            duration: 0.45,
+            ease: "power2.inOut",
+            onComplete: () => other.removeAttribute("open"),
+          });
+        }
+      });
+      item.setAttribute("open", "");
+      window.gsap.fromTo(
+        body,
+        { height: 0 },
+        { height: "auto", duration: 0.55, ease: "power3.out", clearProps: "height" }
+      );
+    });
+  });
+}
+
+/* Method stack: earlier cards recede (scale + dim) as the next card slides
+   over them, selling the physical pile. */
+function initMethodStack() {
+  const cards = Array.from(document.querySelectorAll(".method-card"));
+  cards.forEach((card, i) => {
+    const next = cards[i + 1];
+    if (!next) return;
+    window.gsap.fromTo(
+      card,
+      { scale: 1, filter: "brightness(1)" },
+      {
+        scale: 0.94,
+        filter: "brightness(0.55)",
+        ease: "none",
+        scrollTrigger: { trigger: next, start: "top 95%", end: "top 25%", scrub: true },
+      }
+    );
+  });
+}
+
 /* Award pass: masked line reveals on the big titles, a self-drawing leak
    schematic, a scrubbed timeline progress line, and gentle parallax on the
    stat numerals. Desktop only (called from the full-motion path). */
@@ -577,6 +639,7 @@ async function init() {
     initStats();
     initGlobalProgress();
     initReveals();
+    initFaq();
     window.ScrollTrigger.refresh();
     return;
   }
@@ -593,6 +656,8 @@ async function init() {
   initHeroMotion();
   initReveals();
   initAwardMotion();
+  initMethodStack();
+  initFaq();
   await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }

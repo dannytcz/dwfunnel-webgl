@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=71" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=72" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -181,23 +181,27 @@
     </section>
 
     <section class="plain-section plain-section--method" aria-labelledby="method-heading">
-      <div class="section-meta">006 / Method</div>
-      <h2 id="method-heading" class="section-title">Six modules. Five phases. One deployable conversion machine.</h2>
-      <div class="method-grid reveal-group">
-        <article><span>SYS 01</span><h3 data-scramble>Offer OS</h3><p>Buyer, pain, promise, mechanism, and one next step.</p></article>
-        <article><span>SYS 02</span><h3 data-scramble>Proof Stack</h3><p>Outcomes placed before doubt has time to build.</p></article>
-        <article><span>SYS 03</span><h3 data-scramble>Page Rhythm</h3><p>Headline, mechanism, proof, risk reversal, CTA.</p></article>
-        <article><span>SYS 04</span><h3 data-scramble>Booking Path</h3><p>One calendar or form from intent to action.</p></article>
-        <article><span>SYS 05</span><h3 data-scramble>Recovery Loop</h3><p>Email and WhatsApp nudges for leads who hesitate.</p></article>
-        <article><span>SYS 06</span><h3 data-scramble>Attribution</h3><p>Events and source tags so you know what worked.</p></article>
+      <div class="method-split">
+        <div class="method-sticky">
+          <div class="section-meta">006 / Method</div>
+          <h2 id="method-heading" class="section-title">Six modules. Five phases. One deployable conversion machine.</h2>
+          <ol class="timeline timeline--vert">
+            <li><strong>01</strong><span>Discovery</span></li>
+            <li><strong>02</strong><span>Strategy</span></li>
+            <li><strong>03</strong><span>Design</span></li>
+            <li><strong>04</strong><span>Build</span></li>
+            <li><strong>05</strong><span>Launch</span></li>
+          </ol>
+        </div>
+        <div class="method-stack">
+          <article class="method-card"><span class="method-card__sys">SYS 01</span><em class="method-card__index">01</em><h3 data-scramble>Offer OS</h3><p>Buyer, pain, promise, mechanism, and one next step.</p></article>
+          <article class="method-card"><span class="method-card__sys">SYS 02</span><em class="method-card__index">02</em><h3 data-scramble>Proof Stack</h3><p>Outcomes placed before doubt has time to build.</p></article>
+          <article class="method-card"><span class="method-card__sys">SYS 03</span><em class="method-card__index">03</em><h3 data-scramble>Page Rhythm</h3><p>Headline, mechanism, proof, risk reversal, CTA.</p></article>
+          <article class="method-card"><span class="method-card__sys">SYS 04</span><em class="method-card__index">04</em><h3 data-scramble>Booking Path</h3><p>One calendar or form from intent to action.</p></article>
+          <article class="method-card"><span class="method-card__sys">SYS 05</span><em class="method-card__index">05</em><h3 data-scramble>Recovery Loop</h3><p>Email and WhatsApp nudges for leads who hesitate.</p></article>
+          <article class="method-card"><span class="method-card__sys">SYS 06</span><em class="method-card__index">06</em><h3 data-scramble>Attribution</h3><p>Events and source tags so you know what worked.</p></article>
+        </div>
       </div>
-      <ol class="timeline">
-        <li><strong>01</strong><span>Discovery</span></li>
-        <li><strong>02</strong><span>Strategy</span></li>
-        <li><strong>03</strong><span>Design</span></li>
-        <li><strong>04</strong><span>Build</span></li>
-        <li><strong>05</strong><span>Launch</span></li>
-      </ol>
     </section>
 
     <section id="work" class="scrub-act scrub-act--work" data-scrub data-film-frames="work" data-film-count="120" data-film-decode="1000" data-vh="190" aria-label="Final video scrub">
@@ -251,9 +255,63 @@
         </div>
       </article>
     </section>
+
+    <section id="faq" class="plain-section plain-section--faq" aria-labelledby="faq-heading">
+      <div class="faq-frame">
+        <div class="faq-side">
+          <div class="section-meta">009 / Intel</div>
+          <h2 id="faq-heading" class="section-title">Asked before the call.</h2>
+          <p class="faq-side__note">Everything buyers usually want to know before booking. If yours is not here, bring it to the call.</p>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary><span class="faq-item__num">Q.01</span><span class="faq-item__q">What does a build cost?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
+            <!-- [PLACEHOLDER] confirm real pricing bands -->
+            <div class="faq-item__a"><p>Every build is scoped on the fit call. Flagship cinematic builds are a five figure engagement; platform builds on your existing stack start in the four figures. You leave the call with a fixed quote, not an estimate.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-item__num">Q.02</span><span class="faq-item__q">How long from brief to launch?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
+            <div class="faq-item__a"><p>Fifteen days on a typical build: two for discovery, three for strategy, three for design, five to seven for the build, and two for QA and launch. You see progress at every phase.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-item__num">Q.03</span><span class="faq-item__q">Which platforms do you build on?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
+            <div class="faq-item__a"><p>GoHighLevel, ClickFunnels, Webflow, Framer, Shopify, Kajabi, WordPress, and fully custom code, like this page. We recommend the stack that fits your operation, not the one that fits our habits.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-item__num">Q.04</span><span class="faq-item__q">Who writes the copy?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
+            <div class="faq-item__a"><p>We do. Conversion copy is the spine of every build, drawn from your offer, your buyer conversations, and your proof. You review and approve every line before launch.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-item__num">Q.05</span><span class="faq-item__q">Do I own everything?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
+            <div class="faq-item__a"><p>Yes. The page, the assets, the tracking, and the automations all live on your accounts from day one. If we part ways, everything keeps running without us.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-item__num">Q.06</span><span class="faq-item__q">I already have a page. Rebuild or repair?</span><span class="faq-item__mark" aria-hidden="true"></span></summary>
+            <div class="faq-item__a"><p>We audit it on the fit call. If the structure is sound we repair and rewire; if the foundation leaks we rebuild. Either way the decision comes with the reasoning, not just the invoice.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <script src="assets/js/cdn-manifest.js?v=71"></script>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__brand">
+        <span class="site-footer__logo">DW Funnel</span>
+        <p>Cinematic pages with a conversion machine wired beneath them.</p>
+      </div>
+      <div class="site-footer__links">
+        <a href="https://cal.com/daphne-wong-funnel/20min" target="_blank" rel="noopener noreferrer">Book a call</a>
+        <!-- [PLACEHOLDER] real WhatsApp Business number -->
+        <a href="https://wa.me/0000000000" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="legal.html">Privacy</a>
+        <a href="legal.html#terms">Terms</a>
+      </div>
+      <p class="site-footer__fine">© 2026 DW Funnel. Built in-house, the way we build for clients.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/cdn-manifest.js?v=72"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
@@ -261,6 +319,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=71"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=72"></script>
 </body>
 </html>
