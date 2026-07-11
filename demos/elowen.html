@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Elowen | Stays In Wild, Unhurried Places</title>
+    <meta name="description" content="Elowen is a concept nature-escape brand built by DW Funnel. A small collection of stays hidden in wild places." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --background: #ffffff;
+        --foreground: #14231a;
+        --muted: #6f7d72;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100%;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: Inter, sans-serif;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100vh;
+        width: 100%;
+        overflow: hidden;
+        background: var(--background);
+      }
+
+      .video-layer {
+        position: absolute;
+        z-index: 0;
+        top: 300px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      .video-layer video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+      }
+
+      .video-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(to bottom, var(--background), transparent, var(--background));
+      }
+
+      .nav {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 1.5rem 2rem;
+      }
+
+      .logo {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.875rem;
+        line-height: 2.25rem;
+        letter-spacing: -0.025em;
+        color: var(--foreground);
+      }
+
+      .logo sup {
+        margin-left: 0.125rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
+        vertical-align: super;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: color 200ms ease;
+      }
+
+      .nav-links a.active,
+      .nav-links a:hover {
+        color: var(--foreground);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: var(--foreground);
+        color: #ffffff;
+        transition: transform 300ms ease;
+      }
+
+      .button:hover {
+        transform: scale(1.03);
+      }
+
+      .nav-cta {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+      }
+
+      .hero {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: calc(8rem - 75px) 1.5rem 10rem;
+        text-align: center;
+      }
+
+      h1 {
+        max-width: 80rem;
+        margin: 0;
+        color: var(--foreground);
+        font-family: "Instrument Serif", serif;
+        font-size: 3rem;
+        font-weight: 400;
+        letter-spacing: -2.46px;
+        line-height: 0.95;
+      }
+
+      h1 em {
+        color: var(--muted);
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .description {
+        max-width: 42rem;
+        margin: 2rem 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.625;
+      }
+
+      .hero-cta {
+        margin-top: 3rem;
+        padding: 1.25rem 3.5rem;
+        font-size: 1rem;
+        line-height: 1.5rem;
+      }
+
+      .studio-badge {
+        position: absolute;
+        left: 2rem;
+        bottom: 1.5rem;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        color: var(--muted);
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        transition: color 200ms ease;
+      }
+
+      .studio-badge:hover {
+        color: var(--foreground);
+      }
+
+      .studio-badge strong {
+        color: var(--foreground);
+        font-size: 0.68rem;
+      }
+
+      .fade-rise {
+        animation: fade-rise 0.8s ease-out both;
+      }
+
+      .fade-rise-delay {
+        animation: fade-rise 0.8s ease-out 0.2s both;
+      }
+
+      .fade-rise-delay-2 {
+        animation: fade-rise 0.8s ease-out 0.4s both;
+      }
+
+      @keyframes fade-rise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (min-width: 640px) {
+        h1 {
+          font-size: 4.5rem;
+        }
+
+        .description {
+          font-size: 1.125rem;
+        }
+      }
+
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 6rem;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .nav-links {
+          display: none;
+        }
+
+        .nav {
+          padding-inline: 1.25rem;
+        }
+
+        .nav-cta {
+          padding-inline: 1.125rem;
+        }
+
+        .studio-badge {
+          left: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="video-layer">
+        <video
+          id="heroVideo"
+          src="/assets/demos/elowen/hero.mp4"
+          poster="/assets/demos/elowen/poster.webp"
+          muted
+          playsinline
+          preload="auto"
+        ></video>
+      </div>
+      <div class="video-overlay"></div>
+
+      <nav class="nav">
+        <a class="logo" href="#" aria-label="Elowen home">Elowen<sup>&reg;</sup></a>
+
+        <div class="nav-links" aria-label="Primary navigation">
+          <a class="active" href="#">Home</a>
+          <a href="#">Stays</a>
+          <a href="#">The Valley</a>
+          <a href="#">Journal</a>
+          <a href="#">Contact</a>
+        </div>
+
+        <a class="button nav-cta" href="#">Book A Stay</a>
+      </nav>
+
+      <section class="hero">
+        <h1 class="fade-rise">
+          Escape into <em>the quiet</em> of <em>somewhere real.</em>
+        </h1>
+
+        <p class="description fade-rise-delay">
+          Elowen is a small collection of stays hidden in wild, unhurried places. No screens to fight, no crowds to
+          beat. Just a valley, a river, and room to breathe.
+        </p>
+
+        <a class="button hero-cta fade-rise-delay-2" href="#">Find Your Stay</a>
+      </section>
+
+      <a class="studio-badge" href="/" target="_blank" rel="noopener">
+        <strong>Concept build by DW Funnel</strong>
+        <span>See how we build pages like this</span>
+      </a>
+    </main>
+
+    <script>
+      const video = document.getElementById('heroVideo');
+      const fadeDuration = 0.5;
+      let animationFrame = 0;
+      let endedTimer = 0;
+
+      function setVideoOpacity(value) {
+        video.style.opacity = String(Math.max(0, Math.min(1, value)));
+      }
+
+      function monitorPlayback() {
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+
+        if (Number.isFinite(duration) && duration > 0) {
+          if (currentTime < fadeDuration) {
+            setVideoOpacity(currentTime / fadeDuration);
+          } else if (duration - currentTime < fadeDuration) {
+            setVideoOpacity((duration - currentTime) / fadeDuration);
+          } else {
+            setVideoOpacity(1);
+          }
+        }
+
+        animationFrame = requestAnimationFrame(monitorPlayback);
+      }
+
+      function restartVideo() {
+        setVideoOpacity(0);
+        endedTimer = window.setTimeout(() => {
+          video.currentTime = 0;
+          video.play().catch(() => {});
+        }, 100);
+      }
+
+      video.addEventListener('ended', restartVideo);
+      video.play().catch(() => {});
+      animationFrame = requestAnimationFrame(monitorPlayback);
+
+      window.addEventListener('beforeunload', () => {
+        cancelAnimationFrame(animationFrame);
+        window.clearTimeout(endedTimer);
+      });
+    </script>
+  </body>
+</html>
