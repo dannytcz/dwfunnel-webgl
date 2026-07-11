@@ -1663,9 +1663,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 @keyframes ws-float { 50% { transform: translateY(-12px) rotate(-4deg); } }
 
-/* Scene 08 VANDL: the clickable collectible-drop demo, toon figure on a bold panel. */
-.ws--vandl { background: radial-gradient(circle at 50% 120%, #f79b7f, #f4845f 70%); color: #fff; overflow: hidden; }
-.ws--vandl .ws-ghost {
+/* Scene 08 TOYBOMB: the clickable collectible-drop demo, toon figure on a bold panel. */
+.ws--toybomb { background: radial-gradient(circle at 50% 120%, #f79b7f, #f4845f 70%); color: #fff; overflow: hidden; }
+.ws--toybomb .ws-ghost {
   position: absolute;
   top: 8%;
   left: 50%;
@@ -1677,7 +1677,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   white-space: nowrap;
   pointer-events: none;
 }
-.ws--vandl .ws-fig {
+.ws--toybomb .ws-fig {
   position: relative;
   z-index: 2;
   height: 96%;
@@ -1687,7 +1687,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.4));
   animation: ws-fig-bob 5s ease-in-out infinite;
 }
-.ws--vandl .ws-sub {
+.ws--toybomb .ws-sub {
   position: absolute;
   bottom: 7%;
   left: 50%;
