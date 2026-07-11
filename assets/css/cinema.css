@@ -1652,24 +1652,50 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-.ws--verde { background: radial-gradient(circle at 50% 45%, #0b8a78, #011411 76%); color: #eafff8; }
-.ws--verde .ws-can {
-  position: relative;
-  z-index: 2;
-  height: 68%;
-  width: auto;
-  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55));
-  animation: ws-float 5s ease-in-out infinite;
+/* Verde card previews the demo's flavor switch: the can and the world
+   cross-fade green to blue and back on a loop. */
+.ws--verde { color: #eafff8; overflow: hidden; background-color: #0b8a78; animation: ws-verde-bg 8s ease-in-out infinite; }
+.ws--verde::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 42%, transparent 32%, rgba(0, 0, 0, 0.55));
 }
-@keyframes ws-float { 50% { transform: translateY(-12px) rotate(-4deg); } }
+.ws--verde .ws-can {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  height: 82%;
+  width: auto;
+  z-index: 2;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55));
+}
+.ws--verde .ws-can--a { animation: ws-fade-a 8s ease-in-out infinite; }
+.ws--verde .ws-can--b { opacity: 0; animation: ws-fade-b 8s ease-in-out infinite; }
+.ws--verde .ws-sub {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+@keyframes ws-verde-bg { 0%, 20% { background-color: #0b8a78; } 50%, 70% { background-color: #0e5f9c; } 100% { background-color: #0b8a78; } }
+@keyframes ws-fade-a { 0%, 42% { opacity: 1; } 50%, 92% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes ws-fade-b { 0%, 42% { opacity: 0; } 50%, 92% { opacity: 1; } 100% { opacity: 0; } }
 
-/* Scene 08 TOYBOMB: the clickable collectible-drop demo, toon figure on a bold panel. */
-.ws--toybomb { background: radial-gradient(circle at 50% 120%, #f79b7f, #f4845f 70%); color: #fff; overflow: hidden; }
+/* Scene 08 TOYBOMB: previews the demo cycling the four figures while the
+   world recolors to match each one. */
+.ws--toybomb { color: #fff; overflow: hidden; background-color: #f4845f; animation: ws-toy-bg 10s ease-in-out infinite; }
 .ws--toybomb .ws-ghost {
   position: absolute;
   top: 8%;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 1;
   font-family: var(--font-tech);
   font-size: clamp(3.4rem, 7vw, 6rem);
   letter-spacing: -0.02em;
@@ -1678,15 +1704,23 @@ button, a { -webkit-tap-highlight-color: transparent; }
   pointer-events: none;
 }
 .ws--toybomb .ws-fig {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
   z-index: 2;
   height: 96%;
   width: auto;
   object-fit: contain;
   object-position: bottom center;
   filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.4));
-  animation: ws-fig-bob 5s ease-in-out infinite;
+  opacity: 0;
+  animation: ws-toy-fade 10s ease-in-out infinite;
 }
+.ws--toybomb .ws-fig--1 { animation-delay: 0s; }
+.ws--toybomb .ws-fig--2 { animation-delay: -2.5s; }
+.ws--toybomb .ws-fig--3 { animation-delay: -5s; }
+.ws--toybomb .ws-fig--4 { animation-delay: -7.5s; }
 .ws--toybomb .ws-sub {
   position: absolute;
   bottom: 7%;
@@ -1699,9 +1733,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.85);
 }
-@keyframes ws-fig-bob { 50% { transform: translateY(-10px); } }
+@keyframes ws-toy-bg {
+  0%, 18% { background-color: #f4845f; }
+  25%, 43% { background-color: #6bbf7a; }
+  50%, 68% { background-color: #e882b4; }
+  75%, 93% { background-color: #6eb5ff; }
+  100% { background-color: #f4845f; }
+}
+@keyframes ws-toy-fade { 0% { opacity: 0; } 3% { opacity: 1; } 22% { opacity: 1; } 25% { opacity: 0; } 100% { opacity: 0; } }
 
 /* Scene 09 Elowen: the clickable nature-escape demo, scenic still under a serif mark. */
+/* Elowen card plays the demo's actual ambient hero film on loop. */
 .ws--elowen { background: #eef2ec; color: #14231a; }
 .ws--elowen .ws-scenic {
   position: absolute;
@@ -1709,8 +1751,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.04);
-  animation: ws-scenic-drift 12s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 .ws--elowen .ws-scene {
   position: absolute;
@@ -1726,7 +1767,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   color: #14231a;
 }
 .ws-sub--dark { color: rgba(20, 35, 26, 0.7); }
-@keyframes ws-scenic-drift { to { transform: scale(1.12); } }
 
 @media (max-width: 899px) {
   .work-card { width: min(78vw, 420px); }
