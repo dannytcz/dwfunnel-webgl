@@ -498,6 +498,16 @@ function initFaq() {
   });
 }
 
+/* Selected Work rail: clone the card set once so the CSS marquee can wrap
+   at -50% without a visible seam. Runs in both static and motion paths. */
+function initWorkRail() {
+  const track = document.querySelector(".work-rail__track");
+  const set = track ? track.querySelector(".work-rail__set") : null;
+  const clone = track ? track.querySelector("[data-rail-clone]") : null;
+  if (!set || !clone || clone.children.length) return;
+  clone.innerHTML = set.innerHTML;
+}
+
 /* Method stack: earlier cards recede (scale + dim) as the next card slides
    over them, selling the physical pile. */
 function initMethodStack() {
@@ -640,6 +650,7 @@ async function init() {
     initGlobalProgress();
     initReveals();
     initFaq();
+    initWorkRail();
     window.ScrollTrigger.refresh();
     return;
   }
@@ -656,6 +667,7 @@ async function init() {
   initHeroMotion();
   initReveals();
   initFaq();
+  initWorkRail();
   // SplitText measures line boxes, so it must wait for Orbitron to load or
   // lines get split at fallback-font widths and clip once the wide font lands.
   await document.fonts.ready;
