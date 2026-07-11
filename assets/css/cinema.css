@@ -1663,6 +1663,44 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 @keyframes ws-float { 50% { transform: translateY(-12px) rotate(-4deg); } }
 
+/* Scene 08 VANDL: the clickable collectible-drop demo, toon figure on a bold panel. */
+.ws--vandl { background: radial-gradient(circle at 50% 120%, #f79b7f, #f4845f 70%); color: #fff; overflow: hidden; }
+.ws--vandl .ws-ghost {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-tech);
+  font-size: clamp(3.4rem, 7vw, 6rem);
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.ws--vandl .ws-fig {
+  position: relative;
+  z-index: 2;
+  height: 96%;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.4));
+  animation: ws-fig-bob 5s ease-in-out infinite;
+}
+.ws--vandl .ws-sub {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+@keyframes ws-fig-bob { 50% { transform: translateY(-10px); } }
+
 @media (max-width: 899px) {
   .work-card { width: min(78vw, 420px); }
 }

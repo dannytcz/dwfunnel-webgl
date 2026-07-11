@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>VANDL | Vinyl Drops For The Street</title>
+    <meta name="description" content="VANDL is a concept collectible-drop brand built by DW Funnel. Limited vinyl figures, one release at a time." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100vh;
+        overflow: hidden;
+        background: #f4845f;
+        color: #fff;
+        font-family: "Inter", sans-serif;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .hero {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        background: #f4845f;
+        transition: background-color 650ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .stage {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .grain {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        opacity: 0.4;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+        background-size: 200px 200px;
+        background-repeat: repeat;
+      }
+
+      .ghost-text {
+        pointer-events: none;
+        position: absolute;
+        top: 18%;
+        inset-inline: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+      }
+
+      .ghost-text span {
+        color: #fff;
+        font-family: "Anton", sans-serif;
+        font-size: clamp(90px, 28vw, 380px);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        opacity: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transition: opacity 300ms ease;
+      }
+
+      .brand {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        z-index: 60;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        color: #fff;
+        font-family: "Anton", sans-serif;
+        font-size: 22px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .brand small {
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.24em;
+        opacity: 0.85;
+      }
+
+      .drop-meta {
+        position: absolute;
+        top: 26px;
+        right: 24px;
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0.92;
+      }
+
+      .drop-meta .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .carousel {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+      }
+
+      .carousel-item {
+        position: absolute;
+        aspect-ratio: 0.6 / 1;
+        transform: translateX(-50%) scale(1);
+        transition:
+          transform 650ms cubic-bezier(0.4, 0, 0.2, 1),
+          filter 650ms cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 650ms cubic-bezier(0.4, 0, 0.2, 1),
+          left 650ms cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, filter, opacity;
+      }
+
+      .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom center;
+        user-select: none;
+      }
+
+      .carousel-item.center {
+        left: 50%;
+        bottom: 0;
+        z-index: 20;
+        height: 92%;
+        filter: blur(0);
+        opacity: 1;
+        transform: translateX(-50%) scale(1.68);
+      }
+
+      .carousel-item.left,
+      .carousel-item.right {
+        bottom: 12%;
+        z-index: 10;
+        height: 28%;
+        filter: blur(2px);
+        opacity: 0.85;
+      }
+
+      .carousel-item.left {
+        left: 30%;
+      }
+
+      .carousel-item.right {
+        left: 70%;
+      }
+
+      .carousel-item.back {
+        left: 50%;
+        bottom: 12%;
+        z-index: 5;
+        height: 22%;
+        filter: blur(4px);
+        opacity: 1;
+      }
+
+      .copy {
+        position: absolute;
+        bottom: 80px;
+        left: 96px;
+        z-index: 60;
+        max-width: 340px;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        opacity: 0.9;
+        text-transform: uppercase;
+      }
+
+      .figure-name {
+        margin: 0 0 14px;
+        font-family: "Anton", sans-serif;
+        font-size: 40px;
+        letter-spacing: 0.01em;
+        line-height: 0.95;
+        text-transform: uppercase;
+      }
+
+      .description {
+        margin: 0 0 22px;
+        color: #fff;
+        font-size: 14px;
+        line-height: 1.6;
+        opacity: 0.88;
+      }
+
+      .nav-buttons {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .circle-button {
+        display: flex;
+        width: 60px;
+        height: 60px;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+        border-radius: 999px;
+        background: transparent;
+        color: #fff;
+        cursor: pointer;
+        transition:
+          transform 150ms,
+          background-color 150ms;
+      }
+
+      .circle-button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: scale(1.08);
+      }
+
+      .counter {
+        margin-left: 6px;
+        font-family: "Anton", sans-serif;
+        font-size: 15px;
+        letter-spacing: 0.12em;
+        opacity: 0.9;
+      }
+
+      .discover {
+        position: absolute;
+        right: 40px;
+        bottom: 80px;
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #fff;
+        font-family: "Anton", sans-serif;
+        font-size: clamp(20px, 4vw, 56px);
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        opacity: 0.95;
+        text-transform: uppercase;
+        transition: opacity 200ms;
+      }
+
+      .discover:hover {
+        opacity: 1;
+      }
+
+      .discover svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .studio-badge {
+        position: absolute;
+        left: 24px;
+        bottom: 24px;
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        opacity: 0.75;
+        transition: opacity 200ms;
+      }
+
+      .studio-badge:hover {
+        opacity: 1;
+      }
+
+      .studio-badge strong {
+        font-size: 11px;
+      }
+
+      @media (max-width: 639px) {
+        .carousel-item.center {
+          bottom: 22%;
+          height: 60%;
+          transform: translateX(-50%) scale(1.25);
+        }
+
+        .carousel-item.left,
+        .carousel-item.right {
+          bottom: 32%;
+          height: 16%;
+        }
+
+        .carousel-item.left {
+          left: 20%;
+        }
+
+        .carousel-item.right {
+          left: 80%;
+        }
+
+        .carousel-item.back {
+          bottom: 32%;
+          height: 13%;
+        }
+
+        .copy {
+          bottom: 64px;
+          left: 16px;
+        }
+
+        .figure-name {
+          font-size: 30px;
+        }
+
+        .description {
+          display: none;
+        }
+
+        .nav-buttons {
+          gap: 12px;
+        }
+
+        .circle-button {
+          width: 48px;
+          height: 48px;
+        }
+
+        .discover {
+          right: 16px;
+          bottom: 64px;
+          gap: 8px;
+        }
+
+        .discover svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .studio-badge {
+          left: 16px;
+          bottom: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="hero" id="hero">
+      <div class="stage">
+        <div class="grain"></div>
+
+        <div class="ghost-text" aria-hidden="true">
+          <span id="ghostText">BLAZE</span>
+        </div>
+
+        <a class="brand" href="#" aria-label="VANDL home">
+          VANDL <small>VINYL DROPS</small>
+        </a>
+
+        <div class="drop-meta">
+          <span class="dot"></span>
+          <span id="dropStatus">Drop 01 live now</span>
+        </div>
+
+        <div class="carousel" id="carousel"></div>
+
+        <section class="copy">
+          <p class="eyebrow" id="eyebrow">Drop 01 / Street Series</p>
+          <h1 class="figure-name" id="figureName">Blaze</h1>
+          <p class="description" id="description">
+            Molded in reactive orange resin with a hand-finished grime wash. 300 pieces, numbered, sealed, gone when
+            they are gone.
+          </p>
+          <div class="nav-buttons">
+            <button class="circle-button" type="button" id="prevButton" aria-label="Previous figure">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m12 19-7-7 7-7" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M19 12H5" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <button class="circle-button" type="button" id="nextButton" aria-label="Next figure">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="m12 5 7 7-7 7" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <span class="counter" id="counter">01 / 04</span>
+          </div>
+        </section>
+
+        <a class="discover" href="#">
+          COP THE DROP
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="m12 5 7 7-7 7" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+
+        <a class="studio-badge" href="/" target="_blank" rel="noopener">
+          <strong>Concept build by DW Funnel</strong>
+          <span>See how we build pages like this</span>
+        </a>
+      </div>
+    </main>
+
+    <script>
+      const IMAGES = [
+        {
+          src: "/assets/demos/toonhub/fig-1.webp",
+          bg: "#F4845F",
+          name: "Blaze",
+          eyebrow: "Drop 01 / Street Series",
+          status: "Drop 01 live now",
+          description:
+            "Molded in reactive orange resin with a hand-finished grime wash. 300 pieces, numbered, sealed, gone when they are gone.",
+        },
+        {
+          src: "/assets/demos/toonhub/fig-2.webp",
+          bg: "#6BBF7A",
+          name: "Sage",
+          eyebrow: "Drop 02 / Street Series",
+          status: "Drop 02 live now",
+          description:
+            "Fleece-textured sculpt with a peace-sign pose and a matte varnish. 250 pieces, each one boxed with a signed art card.",
+        },
+        {
+          src: "/assets/demos/toonhub/fig-3.webp",
+          bg: "#E882B4",
+          name: "Roze",
+          eyebrow: "Drop 03 / Street Series",
+          status: "Drop 03 live now",
+          description:
+            "Bubblegum colorway with a chain-detail cargo and soft-touch finish. 200 pieces, our smallest run to date.",
+        },
+        {
+          src: "/assets/demos/toonhub/fig-4.webp",
+          bg: "#6EB5FF",
+          name: "Cobalt",
+          eyebrow: "Drop 04 / Street Series",
+          status: "Drop 04 live now",
+          description:
+            "Cobalt splatter finish with a pointed-stance sculpt and a metal waist chain. 300 pieces, numbered on the base.",
+        },
+      ];
+
+      const hero = document.getElementById("hero");
+      const carousel = document.getElementById("carousel");
+      const prevButton = document.getElementById("prevButton");
+      const nextButton = document.getElementById("nextButton");
+      const ghostText = document.getElementById("ghostText");
+      const eyebrow = document.getElementById("eyebrow");
+      const figureName = document.getElementById("figureName");
+      const description = document.getElementById("description");
+      const dropStatus = document.getElementById("dropStatus");
+      const counter = document.getElementById("counter");
+
+      let activeIndex = 0;
+      let isAnimating = false;
+
+      IMAGES.forEach((image, index) => {
+        const preload = new Image();
+        preload.src = image.src;
+
+        const item = document.createElement("div");
+        item.className = "carousel-item";
+        item.dataset.index = String(index);
+
+        const img = document.createElement("img");
+        img.src = image.src;
+        img.alt = `VANDL figure: ${image.name}`;
+        img.draggable = false;
+
+        item.appendChild(img);
+        carousel.appendChild(item);
+      });
+
+      function getRoles() {
+        return {
+          center: activeIndex,
+          left: (activeIndex + 3) % IMAGES.length,
+          right: (activeIndex + 1) % IMAGES.length,
+          back: (activeIndex + 2) % IMAGES.length,
+        };
+      }
+
+      function getRole(index) {
+        const roles = getRoles();
+        if (index === roles.center) return "center";
+        if (index === roles.left) return "left";
+        if (index === roles.right) return "right";
+        return "back";
+      }
+
+      function render() {
+        const active = IMAGES[activeIndex];
+        hero.style.backgroundColor = active.bg;
+
+        ghostText.style.opacity = "0";
+        window.setTimeout(() => {
+          ghostText.textContent = active.name.toUpperCase();
+          ghostText.style.opacity = "1";
+        }, 200);
+
+        eyebrow.textContent = active.eyebrow;
+        figureName.textContent = active.name;
+        description.textContent = active.description;
+        dropStatus.textContent = active.status;
+        counter.textContent = `0${activeIndex + 1} / 0${IMAGES.length}`;
+
+        document.querySelectorAll(".carousel-item").forEach((item) => {
+          const index = Number(item.dataset.index);
+          item.className = `carousel-item ${getRole(index)}`;
+        });
+      }
+
+      function navigate(direction) {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        activeIndex = direction === "next" ? (activeIndex + 1) % IMAGES.length : (activeIndex + 3) % IMAGES.length;
+        render();
+
+        window.setTimeout(() => {
+          isAnimating = false;
+        }, 650);
+      }
+
+      prevButton.addEventListener("click", () => navigate("prev"));
+      nextButton.addEventListener("click", () => navigate("next"));
+
+      render();
+    </script>
+  </body>
+</html>
