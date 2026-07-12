@@ -391,11 +391,10 @@
             .main-title { font-size: 3.6rem; }
             .description { font-size: 0.95rem; max-width: 320px; }
             .award-badge { display: none; }
-            .main-product-3d { width: 100vw; height: 58vh; top: 52%; }
-            .b1, .b4, .b5 { display: none; }
-            .b3 { width: 150px; height: 150px; left: 70%; }
-            .b6 { width: 110px; height: 110px; }
-            .l1 { display: none; }
+            .main-product-3d { width: 100vw; height: 52vh; top: 42%; }
+            /* Floating berries and leaves are decorative and get clipped
+               against the stacked mobile layout, so drop them on small screens. */
+            .berry, .leaf { display: none; }
             .hero-right { width: 100%; padding: 0 0 5.5rem; align-items: center; justify-content: flex-end; }
             .side-title { display: none; }
             .product-carousel { align-items: center; }
@@ -480,9 +479,9 @@
                 <div class="product-carousel">
                     <div class="carousel-cards">
                         <div class="card active" data-flavor="classic">
-                            <img src="/assets/demos/verde/can-green.png" alt="Verde Lime">
+                            <img src="/assets/demos/verde/can-green.png" alt="Verde Cherry">
                             <div class="card-info">
-                                <span>Verde Lime</span>
+                                <span>Verde Cherry</span>
                                 <span>$2.99</span>
                             </div>
                         </div>

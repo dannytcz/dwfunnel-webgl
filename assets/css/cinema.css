@@ -1642,40 +1642,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-/* Verde card previews the demo's flavor switch: the can and the world
-   cross-fade green to blue and back on a loop. */
-.ws--verde { color: #eafff8; overflow: hidden; background-color: #0b8a78; animation: ws-verde-bg 8s ease-in-out infinite; }
-.ws--verde::after {
-  content: "";
+/* Verde card shows 100% of the real site via a scaled live iframe: the
+   frame renders at 4x the card, then scales to 0.25 to fit. */
+.ws--embed { background: #06110e; overflow: hidden; }
+.ws-embed-frame {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: radial-gradient(circle at 50% 42%, transparent 32%, rgba(0, 0, 0, 0.55));
+  top: 0;
+  left: 0;
+  width: 400%;
+  height: 400%;
+  border: 0;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
 }
-.ws--verde .ws-can {
-  position: absolute;
-  left: 50%;
-  top: 47%;
-  transform: translate(-50%, -50%);
-  height: 82%;
-  width: auto;
-  z-index: 2;
-  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55));
-}
-.ws--verde .ws-can--a { animation: ws-fade-a 8s ease-in-out infinite; }
-.ws--verde .ws-can--b { opacity: 0; animation: ws-fade-b 8s ease-in-out infinite; }
-.ws--verde .ws-sub {
-  position: absolute;
-  bottom: 7%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  white-space: nowrap;
-  opacity: 0.85;
-}
-@keyframes ws-verde-bg { 0%, 20% { background-color: #0b8a78; } 50%, 70% { background-color: #0e5f9c; } 100% { background-color: #0b8a78; } }
-@keyframes ws-fade-a { 0%, 42% { opacity: 1; } 50%, 92% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes ws-fade-b { 0%, 42% { opacity: 0; } 50%, 92% { opacity: 1; } 100% { opacity: 0; } }
 
 /* Scene 08 TOYBOMB: previews the demo cycling the four figures while the
    world recolors to match each one. */
