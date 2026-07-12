@@ -328,8 +328,9 @@ textarea{min-height:112px;resize:vertical}
   const canvas = document.getElementById("particles");
   const ctx = canvas.getContext("2d", { alpha:true });
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const particleCount = innerWidth < 760 ? 650 : 1800;
-  const lineCount = innerWidth < 760 ? 90 : 260;
+  const embed = new URLSearchParams(location.search).has("embed");
+  const particleCount = embed ? 520 : (innerWidth < 760 ? 650 : 1800);
+  const lineCount = embed ? 70 : (innerWidth < 760 ? 90 : 260);
   let w=0,h=0,dpr=1,cx=0,cy=0;
   let mouseX=0,mouseY=0,mouseActive=false;
   const particles=[];
