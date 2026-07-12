@@ -80,9 +80,13 @@
     }
     .header-left { display: flex; align-items: center; gap: 48px; }
     .logo {
+      display: inline-flex;
+      align-items: center;
+      height: 44px;
       font-family: var(--manrope);
       font-size: 24px;
       font-weight: 600;
+      line-height: 1;
       letter-spacing: -.04em;
       color: var(--sintra-dark);
     }
@@ -485,7 +489,7 @@
           ];
           return e('header', { className: 'header' },
             e('div', { className: 'header-left' },
-              e('a', { href: '#home', className: 'logo' }, 'kairo'),
+              e('a', { href: '#home', className: 'logo' }, 'Kairo'),
               e('nav', { className: 'desktop-nav' }, nav.map(function (item) { return e('a', { key: item[0], href: item[1] }, item[0]); }))
             ),
             e('div', { className: 'desktop-actions' },
