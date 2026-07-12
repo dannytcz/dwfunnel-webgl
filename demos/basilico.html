@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070707" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Basilico, a cinematic fine-dining experience by Chef Alexander Thorne." />
+  <title>Basilico · Exceptional Culinary Experiences</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #070707;
+      --panel: rgba(255,255,255,.045);
+      --panel-strong: rgba(18,18,18,.78);
+      --text: #ffffff;
+      --muted: #bdbdbd;
+      --gold: #d9a35f;
+      --orange: #c97a2b;
+      --line: rgba(255,255,255,.10);
+      --max: 1280px;
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: "Inter", Arial, sans-serif;
+      --ease: cubic-bezier(.16,1,.3,1);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: auto; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    body.modal-open { overflow: hidden; }
+    a, button, input, select, textarea { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; }
+    img, video { display: block; max-width: 100%; }
+    ::selection { background: rgba(217,163,95,.35); color: #fff; }
+
+    .site-shell {
+      position: relative;
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      background: var(--bg);
+      box-shadow: 0 0 80px rgba(0,0,0,.5);
+      overflow: clip;
+    }
+
+    .container {
+      width: min(100% - 64px, 1160px);
+      margin-inline: auto;
+    }
+
+    .section {
+      position: relative;
+      padding: 120px 0;
+      background: var(--bg);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 36px;
+      height: 1px;
+      background: currentColor;
+      opacity: .8;
+    }
+
+    .display {
+      margin: 18px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(44px, 6vw, 82px);
+      font-weight: 500;
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+
+    .section-title {
+      margin: 16px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(38px, 4.8vw, 64px);
+      font-weight: 500;
+      line-height: 1.03;
+      letter-spacing: -.035em;
+    }
+
+    .muted { color: var(--muted); }
+    .gold-gradient {
+      color: var(--gold);
+      background: linear-gradient(115deg, #f4d29f 0%, #d9a35f 42%, #c97a2b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .button {
+      min-height: 48px;
+      padding: 0 24px;
+      border: 1px solid rgba(217,163,95,.55);
+      background: transparent;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 400;
+      cursor: none;
+      transition: background .5s var(--ease), color .5s var(--ease), border-color .5s var(--ease), transform .5s var(--ease);
+    }
+    .button:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #070707;
+      transform: translateY(-2px);
+    }
+    .button .arrow {
+      font-size: 17px;
+      line-height: 1;
+      transition: transform .4s var(--ease);
+    }
+    .button:hover .arrow { transform: translateX(4px); }
+
+    /* Cursor */
+    .cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 24px rgba(217,163,95,.45);
+      will-change: transform, width, height, opacity;
+      transition: width .28s var(--ease), height .28s var(--ease), background .28s var(--ease), opacity .28s;
+    }
+    .cursor.is-hovering {
+      width: 34px;
+      height: 34px;
+      background: rgba(217,163,95,.24);
+      border: 1px solid rgba(217,163,95,.7);
+      backdrop-filter: blur(3px);
+    }
+
+    /* Navbar */
+    .nav-wrap {
+      position: fixed;
+      left: 50%;
+      top: 18px;
+      z-index: 100;
+      width: min(calc(100% - 40px), 1180px);
+      transform: translateX(-50%);
+    }
+    .navbar {
+      height: 68px;
+      padding: 0 20px 0 24px;
+      border: 1px solid var(--line);
+      background: rgba(7,7,7,.58);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 0 30px rgba(217,163,95,.08);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+    .brand {
+      font-family: var(--serif);
+      font-size: 27px;
+      letter-spacing: -.04em;
+    }
+    .brand-dot { color: var(--gold); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      color: rgba(255,255,255,.72);
+      font-size: 12px;
+    }
+    .nav-links a {
+      position: relative;
+      padding: 12px 0;
+      transition: color .3s;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 7px;
+      width: 100%;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform .45s var(--ease);
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .nav-action { justify-self: end; }
+    .nav-action .button { min-height: 40px; padding: 0 18px; }
+    .menu-toggle {
+      display: none;
+      justify-self: end;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      cursor: pointer;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 18px;
+      height: 1px;
+      margin: 5px auto;
+      background: #fff;
+      transition: transform .35s, opacity .35s;
+    }
+    .menu-toggle.active span:first-child { transform: translateY(3px) rotate(45deg); }
+    .menu-toggle.active span:last-child { transform: translateY(-3px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      margin-top: 8px;
+      border: 1px solid var(--line);
+      background: rgba(7,7,7,.92);
+      backdrop-filter: blur(20px);
+      padding: 12px;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 15px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      color: rgba(255,255,255,.78);
+      font-size: 14px;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: 900px;
+      height: 100vh;
+      max-height: 1080px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .9;
+      z-index: -4;
+      transform: scale(1.025);
+    }
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 50% 48%, transparent 28%, rgba(7,7,7,.12) 58%, rgba(7,7,7,.9) 100%),
+        linear-gradient(90deg, rgba(7,7,7,.66) 0%, rgba(7,7,7,.18) 42%, transparent 72%);
+      pointer-events: none;
+    }
+    .hero-noise {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      opacity: .05;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+    }
+    .hero-content {
+      width: min(100% - 64px, 1160px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, .72fr);
+      align-items: center;
+      gap: 72px;
+      padding-top: 90px;
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 3;
+      max-width: 650px;
+    }
+    .hero-kicker {
+      margin-bottom: 26px;
+      color: rgba(255,255,255,.68);
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(52px, 5.2vw, 72px);
+      font-weight: 500;
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+    .hero-line {
+      display: block;
+      overflow: hidden;
+      padding-bottom: .09em;
+    }
+    .hero-line-inner { display: block; }
+    .hero-intro {
+      max-width: 490px;
+      margin: 30px 0 0;
+      color: rgba(255,255,255,.72);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 36px;
+    }
+    .hero-meta {
+      color: rgba(255,255,255,.48);
+      font-size: 11px;
+      line-height: 1.55;
+      letter-spacing: .05em;
+    }
+
+    .hero-card-wrap {
+      justify-self: end;
+      width: min(100%, 450px);
+      position: relative;
+      z-index: 2;
+    }
+    .hero-card-glow {
+      position: absolute;
+      inset: 8% -10% -8% 12%;
+      background: radial-gradient(circle, rgba(217,163,95,.23), transparent 68%);
+      filter: blur(30px);
+      z-index: -1;
+    }
+    .hero-video-card {
+      position: relative;
+      aspect-ratio: 4/5;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.14);
+      background: #111;
+      box-shadow: 0 28px 80px rgba(0,0,0,.52), 0 0 30px rgba(217,163,95,.08);
+    }
+    .hero-video-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 50%, rgba(7,7,7,.82) 100%);
+    }
+    .hero-video-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-tag {
+      position: absolute;
+      z-index: 2;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      padding: 16px 18px;
+      border: 1px solid rgba(255,255,255,.13);
+      background: rgba(7,7,7,.36);
+      backdrop-filter: blur(14px);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    .video-tag small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--gold);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+    }
+    .video-tag strong {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .video-tag .index {
+      color: rgba(255,255,255,.45);
+      font-family: var(--serif);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .hero-scroll {
+      position: absolute;
+      left: 32px;
+      bottom: 38px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,.45);
+      font-size: 9px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      transform: rotate(-90deg) translateX(100%);
+      transform-origin: left bottom;
+    }
+    .hero-scroll span {
+      width: 48px;
+      height: 1px;
+      background: rgba(255,255,255,.35);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-scroll span::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      animation: scrollLine 2.5s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0% { transform: translateX(-100%); }
+      55%,100% { transform: translateX(100%); }
+    }
+
+    /* Dishes */
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 54px;
+    }
+    .section-heading-copy { max-width: 700px; }
+    .dishes-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .dish-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 30px rgba(217,163,95,.04);
+      overflow: hidden;
+      transition: transform .7s var(--ease), border-color .7s var(--ease), box-shadow .7s var(--ease);
+    }
+    .dish-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(217,163,95,.28);
+      box-shadow: 0 20px 50px rgba(0,0,0,.28), 0 0 30px rgba(217,163,95,.08);
+    }
+    .dish-image {
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #111;
+    }
+    .dish-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s var(--ease), filter .7s var(--ease);
+    }
+    .dish-card:hover img { transform: scale(1.055); }
+    .dish-body { padding: 22px 20px 24px; }
+    .dish-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .dish-name {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 500;
+    }
+    .dish-price {
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 18px;
+      white-space: nowrap;
+    }
+    .dish-body p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* Menu Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(18px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .6s var(--ease), visibility .6s;
+    }
+    .modal.open { opacity: 1; visibility: visible; }
+    .modal-panel {
+      position: relative;
+      width: min(1040px, 100%);
+      max-height: calc(100vh - 56px);
+      overflow: auto;
+      border: 1px solid rgba(255,255,255,.13);
+      background: rgba(9,9,9,.85);
+      box-shadow: 0 0 80px rgba(217,163,95,.13);
+      padding: 60px;
+      transform: translateY(28px) scale(.985);
+      transition: transform .7s var(--ease);
+    }
+    .modal.open .modal-panel { transform: translateY(0) scale(1); }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: #fff;
+      font-size: 22px;
+      cursor: none;
+      transition: background .3s, transform .3s;
+    }
+    .modal-close:hover { background: rgba(217,163,95,.15); transform: rotate(90deg); }
+    .menu-modal-head {
+      text-align: center;
+      padding: 4px 52px 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .menu-modal-head .brand { font-size: 42px; }
+    .menu-modal-head p {
+      margin: 14px auto 0;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .menu-categories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 42px;
+      margin-top: 42px;
+    }
+    .menu-category h3 {
+      margin: 0 0 25px;
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 500;
+    }
+    .menu-item { margin-bottom: 19px; }
+    .menu-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .menu-row .dots {
+      flex: 1;
+      border-bottom: 1px dashed rgba(255,255,255,.23);
+      transform: translateY(-3px);
+    }
+    .menu-row .price { color: var(--gold); }
+    .menu-item p {
+      margin: 6px 0 0;
+      color: rgba(189,189,189,.65);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      align-items: center;
+      gap: 110px;
+    }
+    .about-copy p {
+      margin: 28px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.9;
+      max-width: 540px;
+    }
+    .signature {
+      margin-top: 35px;
+      font-family: var(--serif);
+      font-size: 40px;
+      font-style: italic;
+      color: var(--muted);
+      opacity: .8;
+    }
+    .about-visual {
+      position: relative;
+      min-height: 580px;
+      display: grid;
+      place-items: center;
+    }
+    .about-orbit {
+      position: absolute;
+      width: 88%;
+      aspect-ratio: 1;
+      border: 1px solid rgba(217,163,95,.17);
+      border-radius: 50%;
+    }
+    .about-orbit::before,
+    .about-orbit::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(217,163,95,.8);
+    }
+    .about-orbit::before { left: 8%; top: 23%; }
+    .about-orbit::after { right: 7%; bottom: 25%; }
+    .about-image {
+      position: relative;
+      width: 72%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 45px rgba(217,163,95,.08);
+    }
+    .about-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.08);
+    }
+    .about-note {
+      position: absolute;
+      left: 0;
+      bottom: 12%;
+      width: 200px;
+      padding: 17px 18px;
+      border: 1px solid var(--line);
+      background: rgba(7,7,7,.52);
+      backdrop-filter: blur(14px);
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: .08em;
+      line-height: 1.65;
+      text-transform: uppercase;
+    }
+    .about-note strong {
+      color: #fff;
+      display: block;
+      font-family: var(--serif);
+      font-size: 20px;
+      letter-spacing: 0;
+      text-transform: none;
+      margin-bottom: 4px;
+    }
+
+    /* Tasting */
+    .tasting {
+      border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .tasting-intro {
+      display: grid;
+      grid-template-columns: .85fr 1.15fr;
+      gap: 70px;
+      align-items: end;
+      margin-bottom: 65px;
+    }
+    .tasting-intro p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 14px;
+      max-width: 520px;
+      justify-self: end;
+    }
+    .tasting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+    }
+    .tasting-col {
+      min-height: 405px;
+      padding: 40px 34px 38px;
+      border-right: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .tasting-col:last-child { border-right: none; }
+    .tasting-col::before {
+      content: attr(data-number);
+      position: absolute;
+      right: -8px;
+      top: -30px;
+      color: rgba(255,255,255,.025);
+      font-family: var(--serif);
+      font-size: 180px;
+      line-height: 1;
+    }
+    .tasting-col .course {
+      color: var(--gold);
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .tasting-col h3 {
+      margin: 22px 0 16px;
+      max-width: 260px;
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+    .tasting-col p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.85;
+    }
+    .course-list {
+      position: absolute;
+      left: 34px;
+      bottom: 38px;
+      color: rgba(255,255,255,.38);
+      font-size: 10px;
+      letter-spacing: .08em;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    /* Experience */
+    .experience {
+      padding: 50px 0;
+      min-height: 850px;
+      display: flex;
+      align-items: center;
+    }
+    .experience-card {
+      position: relative;
+      min-height: 730px;
+      width: calc(100% - 64px);
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      isolation: isolate;
+    }
+    .experience-bg {
+      position: absolute;
+      inset: -12% 0;
+      width: 100%;
+      height: 124%;
+      object-fit: cover;
+      z-index: -3;
+      will-change: transform;
+    }
+    .experience-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(90deg, rgba(7,7,7,.85) 0%, rgba(7,7,7,.38) 48%, rgba(7,7,7,.12) 100%),
+        linear-gradient(0deg, rgba(7,7,7,.6), transparent 50%);
+    }
+    .experience-content {
+      min-height: 730px;
+      display: flex;
+      align-items: center;
+      padding: 70px;
+    }
+    .experience-copy { width: min(560px, 100%); }
+    .experience-copy p {
+      margin: 26px 0 0;
+      color: rgba(255,255,255,.72);
+      line-height: 1.9;
+      font-size: 14px;
+    }
+    .experience-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 34px;
+    }
+    .experience-pill {
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(7,7,7,.36);
+      backdrop-filter: blur(10px);
+      padding: 12px 14px;
+      color: rgba(255,255,255,.78);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    /* Testimonials */
+    .testimonials { overflow: hidden; }
+    .testimonial-stage {
+      position: relative;
+      margin-top: 60px;
+      min-height: 310px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      align-items: center;
+    }
+    .testimonial {
+      grid-area: 1/1;
+      opacity: 0;
+      transform: translateY(22px);
+      pointer-events: none;
+      transition: opacity .8s var(--ease), transform .8s var(--ease);
+      padding: 56px 100px 58px;
+      text-align: center;
+    }
+    .testimonial.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .testimonial blockquote {
+      margin: 0 auto;
+      max-width: 860px;
+      font-family: var(--serif);
+      font-size: clamp(28px, 3.4vw, 46px);
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: -.025em;
+    }
+    .testimonial cite {
+      display: block;
+      margin-top: 28px;
+      color: var(--gold);
+      font-size: 10px;
+      font-style: normal;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .testimonial-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .testi-btn {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #fff;
+      cursor: none;
+      transition: border-color .3s, background .3s;
+    }
+    .testi-btn:hover {
+      border-color: rgba(217,163,95,.45);
+      background: rgba(217,163,95,.08);
+    }
+    .testi-index {
+      min-width: 62px;
+      color: var(--muted);
+      font-family: var(--serif);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* Reservations */
+    .reservations {
+      overflow: hidden;
+    }
+    .reservation-glow {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 850px;
+      height: 580px;
+      transform: translate(-50%,-50%);
+      background: radial-gradient(circle, rgba(217,163,95,.14) 0%, rgba(201,122,43,.05) 30%, transparent 70%);
+      filter: blur(12px);
+      pointer-events: none;
+    }
+    .reservation-head {
+      position: relative;
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 50px;
+    }
+    .reservation-head .eyebrow::before { display: none; }
+    .reservation-head p {
+      max-width: 540px;
+      margin: 24px auto 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+    .reservation-form {
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.045);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 0 50px rgba(217,163,95,.07);
+      padding: 42px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 9px; }
+    .form-group.full { grid-column: 1/-1; margin-top: 4px; }
+    .form-group label {
+      color: rgba(255,255,255,.6);
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .field {
+      width: 100%;
+      min-height: 56px;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 0;
+      outline: none;
+      background: #121212;
+      color: #fff;
+      padding: 0 16px;
+      transition: border-color .35s, box-shadow .35s;
+      color-scheme: dark;
+    }
+    textarea.field {
+      min-height: 130px;
+      padding: 16px;
+      resize: vertical;
+    }
+    .field:focus {
+      border-color: rgba(217,163,95,.6);
+      box-shadow: 0 0 0 3px rgba(217,163,95,.08);
+    }
+    .field option { background: #121212; color: #fff; }
+    .form-submit {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      margin-top: 26px;
+    }
+    .form-note {
+      color: rgba(255,255,255,.42);
+      font-size: 10px;
+      line-height: 1.65;
+      max-width: 430px;
+    }
+    .success-message {
+      display: none;
+      color: #f4d29f;
+      font-family: var(--serif);
+      font-size: 17px;
+    }
+    .success-message.show { display: block; }
+
+    /* Gallery */
+    .gallery-head {
+      display: grid;
+      grid-template-columns: 1fr .72fr;
+      gap: 80px;
+      align-items: end;
+      margin-bottom: 52px;
+    }
+    .gallery-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.85;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .75fr 1fr;
+      grid-template-rows: 300px 200px 320px;
+      gap: 14px;
+    }
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      background: #111;
+    }
+    .gallery-item:nth-child(1) { grid-row: 1 / 3; }
+    .gallery-item:nth-child(2) { grid-column: 2; grid-row: 1; }
+    .gallery-item:nth-child(3) { grid-column: 3; grid-row: 1 / 3; }
+    .gallery-item:nth-child(4) { grid-column: 2; grid-row: 2 / 4; }
+    .gallery-item:nth-child(5) { grid-column: 1; grid-row: 3; }
+    .gallery-item:nth-child(6) { grid-column: 3; grid-row: 3; }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.25s var(--ease), filter .7s;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-caption {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 24px 20px 18px;
+      background: linear-gradient(transparent, rgba(7,7,7,.82));
+      color: rgba(255,255,255,.75);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .5s, transform .5s;
+    }
+    .gallery-item:hover .gallery-caption { opacity: 1; transform: translateY(0); }
+
+    /* Footer */
+    .footer {
+      padding: 86px 0 30px;
+      border-top: 1px solid var(--line);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.3fr .65fr .65fr 1.2fr;
+      gap: 55px;
+    }
+    .footer .brand { font-size: 38px; }
+    .footer-about p {
+      max-width: 310px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    .footer h4 {
+      margin: 8px 0 21px;
+      color: var(--gold);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .footer-list {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 2.1;
+    }
+    .footer-list a { transition: color .3s; }
+    .footer-list a:hover { color: #fff; }
+    .newsletter {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,.25);
+      margin-top: 8px;
+    }
+    .newsletter input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      padding: 13px 0;
+      font-size: 12px;
+    }
+    .newsletter button {
+      border: 0;
+      background: transparent;
+      color: var(--gold);
+      padding: 0 6px 0 16px;
+      cursor: none;
+    }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 70px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      color: rgba(255,255,255,.35);
+      font-size: 9px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* GSAP initial states only when JS confirms */
+    .js .reveal-section { opacity: 0; transform: translateY(46px); }
+
+    @media (max-width: 1024px) {
+      .container,
+      .hero-content { width: min(100% - 44px, 920px); }
+      .navbar { grid-template-columns: 1fr auto; }
+      .nav-links, .nav-action { display: none; }
+      .menu-toggle { display: block; }
+      .hero {
+        min-height: 800px;
+        height: auto;
+        padding: 130px 0 90px;
+      }
+      .hero-content {
+        grid-template-columns: 1fr .72fr;
+        gap: 36px;
+      }
+      .hero h1 { font-size: clamp(48px, 7vw, 67px); }
+      .dishes-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid { gap: 50px; }
+      .about-visual { min-height: 500px; }
+      .tasting-intro { gap: 40px; }
+      .experience-card { width: calc(100% - 44px); }
+      .footer-grid { grid-template-columns: 1.2fr .8fr .8fr; }
+      .footer-grid > div:last-child { grid-column: 1/-1; max-width: 540px; }
+    }
+
+    @media (max-width: 760px) {
+      body { cursor: auto; }
+      .cursor { display: none; }
+      .container,
+      .hero-content { width: min(100% - 36px, 680px); }
+      .section { padding: 88px 0; }
+      .nav-wrap { top: 10px; width: calc(100% - 20px); }
+      .navbar { height: 60px; padding-inline: 17px 12px; }
+      .brand { font-size: 24px; }
+
+      .hero {
+        min-height: auto;
+        padding: 115px 0 75px;
+        align-items: start;
+      }
+      .hero-content {
+        grid-template-columns: 1fr;
+        gap: 44px;
+        padding-top: 0;
+      }
+      .hero-bg { object-position: 61% center; }
+      .hero-vignette {
+        background:
+          radial-gradient(circle at 55% 42%, transparent 20%, rgba(7,7,7,.18) 48%, rgba(7,7,7,.94) 100%),
+          linear-gradient(180deg, rgba(7,7,7,.18), rgba(7,7,7,.6) 70%, rgba(7,7,7,.9));
+      }
+      .hero h1 { font-size: clamp(46px, 13vw, 66px); }
+      .hero-intro { font-size: 14px; }
+      .hero-actions { align-items: flex-start; flex-direction: column; }
+      .hero-card-wrap { justify-self: center; width: min(88%, 420px); }
+      .hero-scroll { display: none; }
+
+      .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 38px;
+      }
+      .dishes-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .dish-body { padding: 17px 14px 19px; }
+      .dish-name { font-size: 17px; }
+      .dish-price { font-size: 15px; }
+      .dish-body p { font-size: 11px; }
+      .modal { padding: 10px; }
+      .modal-panel { max-height: calc(100vh - 20px); padding: 55px 22px 30px; }
+      .menu-categories { grid-template-columns: 1fr; gap: 30px; }
+      .menu-modal-head { padding-inline: 30px; }
+
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .about-copy p { font-size: 14px; }
+      .signature { font-size: 34px; }
+      .about-visual { min-height: 430px; }
+      .about-image { width: 70%; }
+      .about-orbit { width: 86%; }
+      .about-note { width: 170px; bottom: 4%; }
+
+      .tasting-intro { grid-template-columns: 1fr; gap: 28px; }
+      .tasting-intro p { justify-self: start; }
+      .tasting-grid { grid-template-columns: 1fr; }
+      .tasting-col {
+        min-height: 345px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .tasting-col:last-child { border-bottom: 0; }
+
+      .experience { min-height: auto; padding: 20px 0; }
+      .experience-card { width: calc(100% - 24px); min-height: 680px; }
+      .experience-bg { object-position: 60% center; }
+      .experience-content {
+        min-height: 680px;
+        padding: 42px 28px;
+        align-items: end;
+      }
+      .experience-card::before {
+        background: linear-gradient(0deg, rgba(7,7,7,.94) 0%, rgba(7,7,7,.54) 55%, rgba(7,7,7,.1) 100%);
+      }
+
+      .testimonial { padding: 46px 18px 50px; }
+      .testimonial-stage { min-height: 350px; }
+
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: auto; }
+      .reservation-form { padding: 28px 20px; }
+      .form-submit { align-items: flex-start; flex-direction: column; }
+
+      .gallery-head { grid-template-columns: 1fr; gap: 26px; }
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 300px 210px 250px 280px;
+      }
+      .gallery-item:nth-child(1) { grid-column: 1; grid-row: 1 / 3; }
+      .gallery-item:nth-child(2) { grid-column: 2; grid-row: 1; }
+      .gallery-item:nth-child(3) { grid-column: 2; grid-row: 2; }
+      .gallery-item:nth-child(4) { grid-column: 1 / 3; grid-row: 3; }
+      .gallery-item:nth-child(5) { grid-column: 1; grid-row: 4; }
+      .gallery-item:nth-child(6) { grid-column: 2; grid-row: 4; }
+
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px 28px; }
+      .footer-grid > div:last-child { grid-column: 1/-1; }
+      .footer-about { grid-column: 1/-1; }
+      .footer-bottom { flex-direction: column; margin-top: 50px; }
+    }
+
+    @media (max-width: 520px) {
+      .dishes-grid { grid-template-columns: 1fr; }
+      .dish-image { aspect-ratio: 4/4.6; }
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(6, 290px);
+      }
+      .gallery-item:nth-child(n) { grid-column: 1; grid-row: auto; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-about, .footer-grid > div:last-child { grid-column: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+      .cursor { display: none; }
+      body { cursor: auto; }
+      .js .reveal-section { opacity: 1; transform: none; }
+    }
+  </style>
+  <script>document.documentElement.classList.add('js');</script>
+
+  <script>
+  (function () {
+    if (!new URLSearchParams(location.search).has('embed')) return;
+    document.documentElement.classList.add('is-embed');
+    var st = document.createElement('style');
+    st.textContent = 'html.is-embed,html.is-embed body{cursor:auto!important}.is-embed .cursor,.is-embed .cursor-dot,.is-embed .cursor-ring,.is-embed .custom-cursor{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none;scroll-behavior:auto!important}';
+    document.head.appendChild(st);
+    // Gentle autoscroll for the preview clip
+    var DUR = 22000, HOLD = 1200, phase = 'down', anchor = null, holdUntil = 0;
+    function tick() {
+      var now = performance.now();
+      var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if (max < 8) return;
+      if (anchor === null) anchor = now;
+      if (now < holdUntil) return;
+      var t = Math.min((now - anchor) / DUR, 1);
+      var p = phase === 'down' ? t : 1 - t;
+      window.scrollTo(0, p * max);
+      if (t >= 1) { phase = phase === 'down' ? 'up' : 'down'; anchor = now; holdUntil = now + HOLD; }
+    }
+    window.addEventListener('load', function () { setTimeout(function () { setInterval(tick, 16); }, 1800); });
+  })();
+  </script>
+
+</head>
+<body>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <div class="nav-wrap">
+    <header class="navbar">
+      <a class="brand interactive" href="#home" aria-label="Basilico home">Basilico<span class="brand-dot">.</span></a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a class="interactive" href="#menu">Menu</a>
+        <a class="interactive" href="#story">Our Story</a>
+        <a class="interactive" href="#experience">Experience</a>
+        <a class="interactive" href="#gallery">Gallery</a>
+      </nav>
+
+      <div class="nav-action">
+        <a class="button interactive" href="#reserve">Reserve Table <span class="arrow">↗</span></a>
+      </div>
+
+      <button class="menu-toggle interactive" id="menuToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+      <a class="interactive" href="#menu">Menu</a>
+      <a class="interactive" href="#story">Our Story</a>
+      <a class="interactive" href="#experience">Experience</a>
+      <a class="interactive" href="#gallery">Gallery</a>
+      <a class="interactive" href="#reserve">Reserve Table</a>
+    </nav>
+  </div>
+
+  <main class="site-shell">
+    <section class="hero" id="home">
+      <img class="hero-bg" src="/assets/demos/basilico/bg.webp" alt="" fetchpriority="high" />
+      <div class="hero-vignette"></div>
+      <div class="hero-noise"></div>
+
+      <div class="hero-content">
+        <div class="hero-copy">
+          <div class="hero-kicker hero-reveal">Modern European Dining · No. 17</div>
+
+          <h1 aria-label="Crafting Exceptional Culinary Experiences">
+            <span class="hero-line"><span class="hero-line-inner">Crafting</span></span>
+            <span class="hero-line"><span class="hero-line-inner gold-gradient">Exceptional</span></span>
+            <span class="hero-line"><span class="hero-line-inner">Culinary Experiences</span></span>
+          </h1>
+
+          <p class="hero-intro hero-reveal">
+            A tasting-led dining room where fire, season and memory meet. Each plate is composed with restraint, precision and a quiet sense of theatre.
+          </p>
+
+          <div class="hero-actions hero-reveal">
+            <a class="button interactive" href="#reserve">Reserve an Evening <span class="arrow">↗</span></a>
+            <div class="hero-meta">Dinner Tue to Sun<br />5:30 PM to Late</div>
+          </div>
+        </div>
+
+        <div class="hero-card-wrap" id="floatingCard">
+          <div class="hero-card-glow"></div>
+          <div class="hero-video-card">
+            <video
+              src="/assets/demos/basilico/hero.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              poster="/assets/demos/basilico/steak.webp"
+            ></video>
+            <div class="video-tag">
+              <div>
+                <small>Chef's Special</small>
+                <strong>Truffle Wagyu Ribeye</strong>
+              </div>
+              <span class="index">01 / 07</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-scroll">Scroll to discover <span></span></div>
+    </section>
+
+    <section class="section reveal-section" id="menu">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-heading-copy">
+            <span class="eyebrow">Featured plates</span>
+            <h2 class="section-title">Four expressions of the <span class="gold-gradient">Basilico kitchen.</span></h2>
+          </div>
+          <button class="button interactive" id="openMenu">View Full Menu <span class="arrow">↗</span></button>
+        </div>
+
+        <div class="dishes-grid">
+          <article class="dish-card interactive">
+            <div class="dish-image">
+              <img src="/assets/demos/basilico/wine.webp" alt="Sommelier-selected wine pairing" loading="lazy" />
+            </div>
+            <div class="dish-body">
+              <div class="dish-top">
+                <h3 class="dish-name">Smoked Beet &amp; Fig</h3>
+                <span class="dish-price">$28</span>
+              </div>
+              <p>Whipped chèvre, aged balsamic, black walnut and fig leaf oil.</p>
+            </div>
+          </article>
+
+          <article class="dish-card interactive">
+            <div class="dish-image">
+              <img src="/assets/demos/basilico/interior.webp" alt="Elegant fine dining interior and table" loading="lazy" />
+            </div>
+            <div class="dish-body">
+              <div class="dish-top">
+                <h3 class="dish-name">Hokkaido Scallop</h3>
+                <span class="dish-price">$34</span>
+              </div>
+              <p>Brown butter dashi, white asparagus, citrus kosho and dill.</p>
+            </div>
+          </article>
+
+          <article class="dish-card interactive">
+            <div class="dish-image">
+              <img src="/assets/demos/basilico/ambiance.webp" alt="Luxury restaurant ambiance" loading="lazy" />
+            </div>
+            <div class="dish-body">
+              <div class="dish-top">
+                <h3 class="dish-name">Dry-Aged Duck</h3>
+                <span class="dish-price">$56</span>
+              </div>
+              <p>Burnt orange lacquer, endive, cacao jus and fermented plum.</p>
+            </div>
+          </article>
+
+          <article class="dish-card interactive">
+            <div class="dish-image">
+              <img src="/assets/demos/basilico/steak.webp" alt="Premium steak course" loading="lazy" />
+            </div>
+            <div class="dish-body">
+              <div class="dish-top">
+                <h3 class="dish-name">Truffle Wagyu</h3>
+                <span class="dish-price">$78</span>
+              </div>
+              <p>Charred allium, pomme pavé, Madeira and winter truffle.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal-section" id="story">
+      <div class="container about-grid">
+        <div class="about-copy">
+          <span class="eyebrow">The vision</span>
+          <h2 class="section-title">Cooking that begins with <span class="gold-gradient">clarity.</span></h2>
+          <p>
+            Chef Alexander Thorne built Basilico around a simple conviction: luxury should never need to shout. His menus begin with the best expression of an ingredient, then strip away everything that distracts from it.
+          </p>
+          <p>
+            Raised between coastal kitchens and European dining rooms, Thorne brings fire-led technique, classical discipline and a deeply seasonal point of view to every service.
+          </p>
+          <div class="signature">Alexander Thorne</div>
+        </div>
+
+        <div class="about-visual">
+          <div class="about-orbit" aria-hidden="true"></div>
+          <div class="about-image">
+            <img src="/assets/demos/basilico/ambiance.webp" alt="Chef Alexander Thorne working in a refined kitchen" loading="lazy" />
+          </div>
+          <div class="about-note">
+            <strong>18 Years</strong>
+            in kitchens shaped by fire, season and quiet precision.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section tasting reveal-section" id="tasting">
+      <div class="container">
+        <div class="tasting-intro">
+          <div>
+            <span class="eyebrow">Seven courses</span>
+            <h2 class="section-title">The tasting menu is a <span class="gold-gradient">slow unfolding.</span></h2>
+          </div>
+          <p>
+            A sequence of seven compositions moving from delicacy to depth, guided by the micro-season and completed with a tableside finale. Optional wine pairing available.
+          </p>
+        </div>
+
+        <div class="tasting-grid" id="tastingGrid">
+          <article class="tasting-col" data-number="1">
+            <span class="course">Movement I · Arrival</span>
+            <h3>Brightness before richness.</h3>
+            <p>Raw, chilled and delicately smoked plates sharpen the palate and set the first rhythm of the evening.</p>
+            <div class="course-list">01 Amuse<br />02 Scallop<br />03 Garden</div>
+          </article>
+          <article class="tasting-col" data-number="2">
+            <span class="course">Movement II · Fire</span>
+            <h3>Smoke, char and slow heat.</h3>
+            <p>The menu deepens around embers, concentrated sauces and richly textured ingredients chosen at their peak.</p>
+            <div class="course-list">04 Ocean<br />05 Duck<br />06 Wagyu</div>
+          </article>
+          <article class="tasting-col" data-number="3">
+            <span class="course">Movement III · Memory</span>
+            <h3>A final note that lingers.</h3>
+            <p>Dessert arrives restrained rather than sweet, built around aroma, temperature and a familiar flavour seen anew.</p>
+            <div class="course-list">07 Cacao &amp; Fig<br />Petit Fours<br />Nightcap</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="experience reveal-section" id="experience">
+      <div class="experience-card">
+        <img class="experience-bg" id="experienceBg" src="/assets/demos/basilico/bg.webp" alt="Cinematic Basilico dining room atmosphere" loading="lazy" />
+        <div class="experience-content">
+          <div class="experience-copy">
+            <span class="eyebrow">Beyond the plate</span>
+            <h2 class="section-title">An evening composed around <span class="gold-gradient">how it feels.</span></h2>
+            <p>
+              Low light, warm timber and the quiet cadence of open-kitchen service. For private evenings, our cellar room seats twelve around a single table with a menu written exclusively for the occasion.
+            </p>
+            <div class="experience-pills">
+              <span class="experience-pill">Private dining</span>
+              <span class="experience-pill">1,200-label cellar</span>
+              <span class="experience-pill">Sommelier pairing</span>
+              <span class="experience-pill">Chef's counter</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section testimonials reveal-section" aria-labelledby="critic-title">
+      <div class="container">
+        <span class="eyebrow">The critics</span>
+        <h2 class="section-title" id="critic-title">Words from the <span class="gold-gradient">other side of the table.</span></h2>
+
+        <div class="testimonial-stage">
+          <article class="testimonial active">
+            <blockquote>“Basilico understands the rarest luxury in modern dining: knowing exactly when to stop.”</blockquote>
+            <cite>Elena Marlow · The Continental Review</cite>
+          </article>
+          <article class="testimonial">
+            <blockquote>“Thorne cooks with the control of a classicist and the instincts of someone who still enjoys breaking rules.”</blockquote>
+            <cite>James Lorne · Table Quarterly</cite>
+          </article>
+          <article class="testimonial">
+            <blockquote>“An atmospheric, deeply assured restaurant where every detail feels intentional, never ornamental.”</blockquote>
+            <cite>Clara Voss · Epicure Journal</cite>
+          </article>
+        </div>
+
+        <div class="testimonial-controls">
+          <button class="testi-btn interactive" id="prevTestimonial" aria-label="Previous testimonial">←</button>
+          <span class="testi-index" id="testiIndex">01 / 03</span>
+          <button class="testi-btn interactive" id="nextTestimonial" aria-label="Next testimonial">→</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reservations reveal-section" id="reserve">
+      <div class="reservation-glow" aria-hidden="true"></div>
+      <div class="container">
+        <div class="reservation-head">
+          <span class="eyebrow">Reservations</span>
+          <h2 class="section-title">Your table is <span class="gold-gradient">being imagined.</span></h2>
+          <p>Select your preferred evening. Our reservations team will confirm availability and any details required for your experience.</p>
+        </div>
+
+        <form class="reservation-form" id="reservationForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input class="field interactive" id="date" name="date" type="date" required />
+            </div>
+            <div class="form-group">
+              <label for="time">Time</label>
+              <select class="field interactive" id="time" name="time" required>
+                <option value="">Select time</option>
+                <option>5:30 PM</option>
+                <option>6:00 PM</option>
+                <option>6:30 PM</option>
+                <option>7:00 PM</option>
+                <option>7:30 PM</option>
+                <option>8:00 PM</option>
+                <option>8:30 PM</option>
+                <option>9:00 PM</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="guests">Guests</label>
+              <select class="field interactive" id="guests" name="guests" required>
+                <option value="">Party size</option>
+                <option>1 Guest</option>
+                <option>2 Guests</option>
+                <option>3 Guests</option>
+                <option>4 Guests</option>
+                <option>5 Guests</option>
+                <option>6 Guests</option>
+                <option>7+ Guests</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="requests">Special requests</label>
+              <textarea class="field interactive" id="requests" name="requests" placeholder="Dietary requirements, occasion, seating preferences…"></textarea>
+            </div>
+          </div>
+
+          <div class="form-submit">
+            <div>
+              <div class="form-note" id="formNote">Reservations are requests until confirmed by our team. For parties of 7 or more, our private dining team will contact you directly.</div>
+              <div class="success-message" id="successMessage">Thank you. Your reservation request has been received.</div>
+            </div>
+            <button class="button interactive" type="submit">Request Table <span class="arrow">↗</span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section reveal-section" id="gallery">
+      <div class="container">
+        <div class="gallery-head">
+          <div>
+            <span class="eyebrow">Visual story</span>
+            <h2 class="section-title">Between fire, hands and <span class="gold-gradient">midnight service.</span></h2>
+          </div>
+          <p>A glimpse into the ingredients, rituals and rooms that shape Basilico before the first guest arrives and long after the final plate leaves the pass.</p>
+        </div>
+
+        <div class="gallery-grid">
+          <figure class="gallery-item interactive">
+            <img src="/assets/demos/basilico/steak.webp" alt="Chef plating a refined dish" loading="lazy" />
+            <figcaption class="gallery-caption">The pass · 8:42 PM</figcaption>
+          </figure>
+          <figure class="gallery-item interactive">
+            <img src="/assets/demos/basilico/interior.webp" alt="Seasonal ingredients and fine dining plates" loading="lazy" />
+            <figcaption class="gallery-caption">Seasonal composition</figcaption>
+          </figure>
+          <figure class="gallery-item interactive">
+            <img src="/assets/demos/basilico/ambiance.webp" alt="Dark luxury restaurant interior" loading="lazy" />
+            <figcaption class="gallery-caption">Main dining room</figcaption>
+          </figure>
+          <figure class="gallery-item interactive">
+            <img src="/assets/demos/basilico/wine.webp" alt="Curated wine cellar bottles" loading="lazy" />
+            <figcaption class="gallery-caption">The cellar collection</figcaption>
+          </figure>
+          <figure class="gallery-item interactive">
+            <img src="/assets/demos/basilico/interior.webp" alt="Vibrant premium ingredients" loading="lazy" />
+            <figcaption class="gallery-caption">Morning delivery</figcaption>
+          </figure>
+          <figure class="gallery-item interactive">
+            <img src="/assets/demos/basilico/wine.webp" alt="Atmospheric evening dining table" loading="lazy" />
+            <figcaption class="gallery-caption">The cellar room</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-about">
+            <a class="brand interactive" href="#home">Basilico<span class="brand-dot">.</span></a>
+            <p>A modern European dining room shaped by season, fire and quiet precision. Dinner, Tuesday through Sunday.</p>
+          </div>
+
+          <div>
+            <h4>Visit</h4>
+            <div class="footer-list">
+              17 Bellrose Lane<br />
+              London W1<br />
+              +44 20 7946 0317<br />
+              <a class="interactive" href="mailto:table@basilico.example">table@basilico.example</a>
+            </div>
+          </div>
+
+          <div>
+            <h4>Explore</h4>
+            <div class="footer-list">
+              <a class="interactive" href="#menu">Menu</a><br />
+              <a class="interactive" href="#story">Our Story</a><br />
+              <a class="interactive" href="#experience">Private Dining</a><br />
+              <a class="interactive" href="#reserve">Reservations</a>
+            </div>
+          </div>
+
+          <div>
+            <h4>Notes from the kitchen</h4>
+            <div class="footer-list">Seasonal menus, cellar releases and occasional invitations.</div>
+            <form class="newsletter" id="newsletterForm">
+              <input class="interactive" type="email" aria-label="Email address" placeholder="Your email address" required />
+              <button class="interactive" type="submit" aria-label="Subscribe">↗</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>© 2026 Basilico Restaurant · Concept build by <a href="/" style="color:var(--gold)">DW Funnel</a></span>
+          <span>Season · Fire · Memory</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <div class="modal" id="menuModal" role="dialog" aria-modal="true" aria-labelledby="menuModalTitle">
+    <div class="modal-panel">
+      <button class="modal-close interactive" id="closeMenu" aria-label="Close menu">×</button>
+      <div class="menu-modal-head">
+        <div class="brand" id="menuModalTitle">Basilico<span class="brand-dot">.</span></div>
+        <p>Our à la carte menu changes with the market. The selection below reflects the current season and may shift quietly from one evening to the next.</p>
+      </div>
+
+      <div class="menu-categories">
+        <section class="menu-category">
+          <h3>Starters</h3>
+          <div class="menu-item">
+            <div class="menu-row"><span>Smoked Beet &amp; Fig</span><span class="dots"></span><span class="price">$28</span></div>
+            <p>Chèvre, aged balsamic, black walnut</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Hokkaido Scallop</span><span class="dots"></span><span class="price">$34</span></div>
+            <p>Brown butter dashi, asparagus, kosho</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Bluefin Crudo</span><span class="dots"></span><span class="price">$32</span></div>
+            <p>Green strawberry, shiso, smoked roe</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Charred Leek</span><span class="dots"></span><span class="price">$25</span></div>
+            <p>Hazelnut miso, pear, cultured cream</p>
+          </div>
+        </section>
+
+        <section class="menu-category">
+          <h3>Mains</h3>
+          <div class="menu-item">
+            <div class="menu-row"><span>Dry-Aged Duck</span><span class="dots"></span><span class="price">$56</span></div>
+            <p>Burnt orange, endive, cacao jus</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Truffle Wagyu</span><span class="dots"></span><span class="price">$78</span></div>
+            <p>Pomme pavé, Madeira, winter truffle</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Wild Turbot</span><span class="dots"></span><span class="price">$62</span></div>
+            <p>Saffron, mussel, fennel pollen</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Salt-Baked Celeriac</span><span class="dots"></span><span class="price">$44</span></div>
+            <p>Black garlic, barley, preserved lemon</p>
+          </div>
+        </section>
+
+        <section class="menu-category">
+          <h3>Desserts</h3>
+          <div class="menu-item">
+            <div class="menu-row"><span>Cacao &amp; Fig</span><span class="dots"></span><span class="price">$22</span></div>
+            <p>70% cacao, fig leaf, olive oil</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Burnt Honey</span><span class="dots"></span><span class="price">$20</span></div>
+            <p>Chamomile, buckwheat, cultured milk</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>White Peach</span><span class="dots"></span><span class="price">$21</span></div>
+            <p>Verbena, almond, sparkling rosé</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-row"><span>Artisan Cheese</span><span class="dots"></span><span class="price">$26</span></div>
+            <p>Seasonal selection, fruit bread, quince</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js"></script>
+
+  <script>
+    (() => {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const cursor = document.getElementById("cursor");
+      const menuToggle = document.getElementById("menuToggle");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const openMenu = document.getElementById("openMenu");
+      const closeMenu = document.getElementById("closeMenu");
+      const menuModal = document.getElementById("menuModal");
+      const reservationForm = document.getElementById("reservationForm");
+      const newsletterForm = document.getElementById("newsletterForm");
+
+      // Smooth scrolling (disabled in embed so preview autoscroll can drive the page)
+      const isEmbed = document.documentElement.classList.contains("is-embed");
+      let lenis = null;
+      if (!reduceMotion && !isEmbed && window.Lenis) {
+        lenis = new Lenis({
+          duration: 1.25,
+          smoothWheel: true,
+          wheelMultiplier: 0.9,
+          touchMultiplier: 1.1
+        });
+
+        const raf = (time) => {
+          lenis && lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+      }
+
+      // Anchor scrolling
+      document.querySelectorAll('a[href^="#"]').forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const target = document.querySelector(link.getAttribute("href"));
+          if (!target) return;
+          event.preventDefault();
+          mobileMenu.classList.remove("open");
+          menuToggle.classList.remove("active");
+          menuToggle.setAttribute("aria-expanded", "false");
+          if (lenis) lenis.scrollTo(target, { offset: -70, duration: 1.4 });
+          else target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+        });
+      });
+
+      // Cursor
+      if (!reduceMotion && cursor && window.matchMedia("(pointer: fine)").matches) {
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let currentX = mouseX;
+        let currentY = mouseY;
+
+        window.addEventListener("mousemove", (event) => {
+          mouseX = event.clientX;
+          mouseY = event.clientY;
+          cursor.style.opacity = "1";
+        }, { passive: true });
+
+        document.documentElement.addEventListener("mouseleave", () => cursor.style.opacity = "0");
+        document.documentElement.addEventListener("mouseenter", () => cursor.style.opacity = "1");
+
+        const follow = () => {
+          currentX += (mouseX - currentX) * 0.18;
+          currentY += (mouseY - currentY) * 0.18;
+          cursor.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
+          requestAnimationFrame(follow);
+        };
+        follow();
+
+        const bindCursorTargets = () => {
+          document.querySelectorAll("a, button, input, select, textarea, .interactive").forEach((element) => {
+            if (element.dataset.cursorBound) return;
+            element.dataset.cursorBound = "true";
+            element.addEventListener("mouseenter", () => cursor.classList.add("is-hovering"));
+            element.addEventListener("mouseleave", () => cursor.classList.remove("is-hovering"));
+          });
+        };
+        bindCursorTargets();
+      }
+
+      // Mobile menu
+      menuToggle.addEventListener("click", () => {
+        const open = mobileMenu.classList.toggle("open");
+        menuToggle.classList.toggle("active", open);
+        menuToggle.setAttribute("aria-expanded", String(open));
+      });
+
+      // Full menu modal
+      const setModal = (open) => {
+        menuModal.classList.toggle("open", open);
+        document.body.classList.toggle("modal-open", open);
+        menuModal.setAttribute("aria-hidden", String(!open));
+        if (lenis) open ? lenis.stop() : lenis.start();
+        if (open) closeMenu.focus();
+        else openMenu.focus();
+      };
+
+      openMenu.addEventListener("click", () => setModal(true));
+      closeMenu.addEventListener("click", () => setModal(false));
+      menuModal.addEventListener("click", (event) => {
+        if (event.target === menuModal) setModal(false);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && menuModal.classList.contains("open")) setModal(false);
+      });
+
+      // Testimonials
+      const testimonials = Array.from(document.querySelectorAll(".testimonial"));
+      const testiIndex = document.getElementById("testiIndex");
+      let activeTestimonial = 0;
+
+      const showTestimonial = (index) => {
+        activeTestimonial = (index + testimonials.length) % testimonials.length;
+        testimonials.forEach((item, i) => item.classList.toggle("active", i === activeTestimonial));
+        testiIndex.textContent = `${String(activeTestimonial + 1).padStart(2, "0")} / ${String(testimonials.length).padStart(2, "0")}`;
+      };
+
+      document.getElementById("prevTestimonial").addEventListener("click", () => showTestimonial(activeTestimonial - 1));
+      document.getElementById("nextTestimonial").addEventListener("click", () => showTestimonial(activeTestimonial + 1));
+
+      let testimonialTimer = setInterval(() => showTestimonial(activeTestimonial + 1), 6500);
+      document.querySelector(".testimonial-stage").addEventListener("mouseenter", () => clearInterval(testimonialTimer));
+      document.querySelector(".testimonial-stage").addEventListener("mouseleave", () => {
+        testimonialTimer = setInterval(() => showTestimonial(activeTestimonial + 1), 6500);
+      });
+
+      // Forms
+      const dateInput = document.getElementById("date");
+      const today = new Date();
+      const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+      dateInput.min = localDate;
+
+      reservationForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!reservationForm.checkValidity()) {
+          reservationForm.reportValidity();
+          return;
+        }
+        document.getElementById("formNote").style.display = "none";
+        document.getElementById("successMessage").classList.add("show");
+        const submitButton = reservationForm.querySelector('button[type="submit"]');
+        submitButton.textContent = "Request Received ✓";
+        submitButton.disabled = true;
+      });
+
+      newsletterForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const input = newsletterForm.querySelector("input");
+        if (!newsletterForm.checkValidity()) {
+          newsletterForm.reportValidity();
+          return;
+        }
+        input.value = "";
+        input.placeholder = "You're on the list.";
+      });
+
+      // GSAP
+      if (!reduceMotion && window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.set(".hero-line-inner", { yPercent: 110 });
+        gsap.set(".hero-reveal", { y: 35, opacity: 0 });
+        gsap.set("#floatingCard", { y: 45, opacity: 0, scale: 0.97 });
+
+        const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
+        heroTl
+          .to(".hero-line-inner", { yPercent: 0, duration: 1.35, stagger: 0.12 }, 0.2)
+          .to(".hero-reveal", { y: 0, opacity: 1, duration: 1.15, stagger: 0.13 }, 0.55)
+          .to("#floatingCard", { y: 0, opacity: 1, scale: 1, duration: 1.6 }, 0.45);
+
+        gsap.to("#floatingCard", {
+          y: -14,
+          duration: 3.4,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+          delay: 2
+        });
+
+        gsap.utils.toArray(".reveal-section").forEach((section) => {
+          gsap.to(section, {
+            opacity: 1,
+            y: 0,
+            duration: 1.45,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 82%",
+              once: true
+            }
+          });
+        });
+
+        gsap.from(".dish-card", {
+          y: 60,
+          opacity: 0,
+          scale: 0.98,
+          duration: 1.3,
+          stagger: 0.13,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".dishes-grid",
+            start: "top 83%",
+            once: true
+          }
+        });
+
+        gsap.from(".about-image", {
+          scale: 0.86,
+          opacity: 0,
+          duration: 1.7,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: ".about-visual",
+            start: "top 78%",
+            once: true
+          }
+        });
+
+        gsap.from(".about-orbit", {
+          rotate: -28,
+          scale: 0.85,
+          opacity: 0,
+          duration: 2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".about-visual",
+            start: "top 78%",
+            once: true
+          }
+        });
+
+        gsap.from("#tastingGrid .tasting-col", {
+          y: 70,
+          opacity: 0,
+          duration: 1.35,
+          stagger: 0.22,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: "#tastingGrid",
+            start: "top 82%",
+            once: true
+          }
+        });
+
+        gsap.to("#experienceBg", {
+          yPercent: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".experience-card",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true
+          }
+        });
+
+        gsap.from(".gallery-item", {
+          y: 50,
+          opacity: 0,
+          scale: 0.985,
+          duration: 1.2,
+          stagger: 0.09,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".gallery-grid",
+            start: "top 83%",
+            once: true
+          }
+        });
+
+        if (lenis) {
+          lenis.on("scroll", ScrollTrigger.update);
+        }
+      } else {
+        document.querySelectorAll(".reveal-section").forEach((section) => {
+          section.style.opacity = "1";
+          section.style.transform = "none";
+        });
+      }
+
+      // Basic hero image failure guard
+      document.querySelectorAll("img").forEach((img) => {
+        img.addEventListener("error", () => {
+          img.style.background = "linear-gradient(135deg, #17120e, #070707)";
+          img.alt = img.alt || "Basilico visual";
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

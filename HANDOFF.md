@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Selected Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **9 cards**: 8 live demos plus 1 CSS placeholder (Ember).
+Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **9 cards**, all live demos (Ember placeholder replaced by Basilico).
 
 Each live card is:
 ```html
@@ -85,7 +85,7 @@ The 8 live demos and what each replaced:
 - **TOYBOMB** designer collectibles (carousel), original
 - **Elowen** boutique stays (ambient video hero), original
 - **LEXIS** performance footwear (Vite storefront, cursor X-ray), replaced Orbit
-- **Ember** fine dining, still a CSS placeholder, the only slot left to fill.
+- **Basilico** fine dining reservations (`/demos/basilico.html`), replaced the Ember placeholder.
 
 ## 6. How to add a new demo ("make it ours")
 
@@ -130,8 +130,8 @@ The `mcp__Claude_Browser__*` screenshot / `computer` actions time out this whole
 
 ## 10. Current state and what is likely next
 
-- Grid is 4 wide, 8 live demos plus the Ember placeholder, all previews are animated WebP imgs (about 2 MB total for all loops and posters). Cache at v=85. Local master may be ahead of origin; push after each iteration.
-- **The obvious next task:** fill the **Ember** (fine dining) placeholder when Danny sends a restaurant template, same recipe.
+- Grid is 4 wide, 9 live demos, H.264 30fps preview mp4s + posters. Cache at v=89+. Push after each iteration.
+- **The obvious next task:** next template Danny sends, same make-ours recipe; optional grid pagination when the set grows.
 - Deferred by Danny or still open: pagination or a "see more" second page for when the grid gets large (video previews keep it light for now, so not urgent); optional seamless looping of clips (boomerang); favicon and OG image; real content on the main page (a real WhatsApp number, real stats, a real founder portrait, currently placeholders); custom domain and analytics (Danny maps these himself later).
 - Code protection question came up: you cannot truly stop front end copying, disabling right click is not real protection and hurts UX. The agreed direction if pursued is minify plus obfuscate the demo code, a copyright and terms page, not right click blocking.
 
