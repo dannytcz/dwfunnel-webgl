@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Lumeo Dental Studio, a concept cosmetic and family dentistry brand built by DW Funnel." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumeo Dental Studio, Sydney Cosmetic and Family Dentistry</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:400;font-display:swap;src:url('/assets/demos/lumeo/open-sauce-one-400.woff2') format('woff2');}
+    @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:700;font-display:swap;src:url('/assets/demos/lumeo/open-sauce-one-700.woff2') format('woff2');}
+    .studio-badge{position:fixed;z-index:60;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.14);border-radius:999px;font:600 10px/1 'Open Sauce One',sans-serif;letter-spacing:.05em;color:#111;text-decoration:none;transition:.2s}
+    .studio-badge:hover{background:#111;color:#fff;border-color:#111}
+    html, body, #root {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Open Sauce One', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #fff;
+    }
+
+    * { box-sizing: border-box; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <a class="studio-badge" href="/" target="_blank" rel="noopener">Concept build by DW Funnel</a>
+
+  <script type="text/babel">
+    const { useEffect, useLayoutEffect, useRef, useState } = React;
+
+    const HERO_IMAGE = '/assets/demos/lumeo/hero.webp';
+    const SECTION2_IMAGE = '/assets/demos/lumeo/section2.webp';
+    const SECTION3_IMG1 = '/assets/demos/lumeo/s3img1.webp';
+    const SECTION3_IMG2 = '/assets/demos/lumeo/s3img2.webp';
+    const SECTION3_BG = '/assets/demos/lumeo/s3bg.webp';
+
+    const featureBars = ['Cosmetic Dentistry', 'Digital Smile Planning', 'Warm Australian Care'];
+    const services = [
+      { name: 'Porcelain\nVeneers', num: '01', active: true },
+      { name: 'Ceramic\nCrowns', num: '02', active: false },
+      { name: 'Teeth\nWhitening', num: '03', active: false },
+      { name: 'Dental\nImplants', num: null, active: false },
+    ];
+
+    function useIsMobile() {
+      const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches);
+
+      useEffect(() => {
+        const media = window.matchMedia('(max-width: 767px)');
+        const onChange = (event) => setIsMobile(event.matches);
+        setIsMobile(media.matches);
+        media.addEventListener?.('change', onChange);
+        return () => media.removeEventListener?.('change', onChange);
+      }, []);
+
+      return isMobile;
+    }
+
+    function useMaskPositions(sectionRef, cardRefs, count) {
+      const [positions, setPositions] = useState(() =>
+        Array.from({ length: count }, () => ({ x: 0, y: 0, sw: 0, sh: 0 }))
+      );
+
+      useLayoutEffect(() => {
+        const section = sectionRef.current;
+        if (!section) return;
+
+        let raf = 0;
+        const update = () => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => {
+            const sectionRect = section.getBoundingClientRect();
+            const next = Array.from({ length: count }, (_, index) => {
+              const card = cardRefs.current[index];
+              if (!card) return { x: 0, y: 0, sw: sectionRect.width, sh: sectionRect.height };
+              const rect = card.getBoundingClientRect();
+              return {
+                x: rect.left - sectionRect.left,
+                y: rect.top - sectionRect.top,
+                sw: sectionRect.width,
+                sh: sectionRect.height,
+              };
+            });
+            setPositions(next);
+          });
+        };
+
+        const observer = new ResizeObserver(update);
+        observer.observe(section);
+        update();
+        window.addEventListener('load', update);
+
+        return () => {
+          cancelAnimationFrame(raf);
+          observer.disconnect();
+          window.removeEventListener('load', update);
+        };
+      }, [sectionRef, cardRefs, count]);
+
+      return positions;
+    }
+
+    function useImageWidth(imageUrl, sectionRef) {
+      const [imageWidth, setImageWidth] = useState(0);
+
+      useEffect(() => {
+        const section = sectionRef.current;
+        if (!section) return;
+
+        const img = new Image();
+        let naturalWidth = 0;
+        let naturalHeight = 0;
+        let raf = 0;
+
+        const calculate = () => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => {
+            if (!naturalWidth || !naturalHeight || !sectionRef.current) return;
+            const sectionHeight = sectionRef.current.getBoundingClientRect().height;
+            setImageWidth(naturalWidth * (sectionHeight / naturalHeight));
+          });
+        };
+
+        img.onload = () => {
+          naturalWidth = img.naturalWidth;
+          naturalHeight = img.naturalHeight;
+          calculate();
+        };
+        img.src = imageUrl;
+
+        const observer = new ResizeObserver(calculate);
+        observer.observe(section);
+
+        return () => {
+          cancelAnimationFrame(raf);
+          observer.disconnect();
+          img.onload = null;
+        };
+      }, [imageUrl, sectionRef]);
+
+      return imageWidth;
+    }
+
+    function useStaggeredReveal(count, threshold = 0.15) {
+      const containerRef = useRef(null);
+      const [visible, setVisible] = useState(false);
+
+      useEffect(() => {
+        const node = containerRef.current;
+        if (!node || visible) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          setVisible(true);
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              setVisible(true);
+              observer.disconnect();
+            }
+          },
+          { threshold }
+        );
+
+        observer.observe(node);
+        return () => observer.disconnect();
+      }, [threshold, visible]);
+
+      const getAnimStyle = (index) => ({
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(24px)',
+        transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms, transform 0.6s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms`,
+      });
+
+      return { containerRef, getAnimStyle, count };
+    }
+
+    function MaskedCard({ bgImage, position, imageWidth, focalX, className, children, cardRef, style }) {
+      const safePosition = position || { x: 0, y: 0, sw: 0, sh: 0 };
+      const overflow = imageWidth > safePosition.sw ? imageWidth - safePosition.sw : 0;
+      const focalOffset = overflow * focalX;
+
+      return (
+        <div
+          ref={cardRef}
+          className={className}
+          style={{
+            backgroundImage: `url("${bgImage}")`,
+            backgroundSize: safePosition.sh > 0 ? `auto ${safePosition.sh}px` : 'cover',
+            backgroundPosition: safePosition.sh > 0
+              ? `-${safePosition.x + focalOffset}px -${safePosition.y}px`
+              : 'center center',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: '#e5e5e5',
+            ...style,
+          }}
+        >
+          {children}
+        </div>
+      );
+    }
+
+    function SplashScreen({ onComplete }) {
+      const [count, setCount] = useState(0);
+      const [exiting, setExiting] = useState(false);
+
+      useEffect(() => {
+        let current = 0;
+        let exitTimer;
+        let completeTimer;
+        const interval = setInterval(() => {
+          current += 1;
+          setCount(current);
+          if (current >= 100) {
+            clearInterval(interval);
+            exitTimer = setTimeout(() => setExiting(true), 200);
+            completeTimer = setTimeout(onComplete, 900);
+          }
+        }, 20);
+
+        return () => {
+          clearInterval(interval);
+          clearTimeout(exitTimer);
+          clearTimeout(completeTimer);
+        };
+      }, [onComplete]);
+
+      return (
+        <div className={`fixed inset-0 z-[100] bg-white flex items-end justify-start transition-opacity duration-700 ${exiting ? 'opacity-0' : 'opacity-100'}`}>
+          <div className="text-7xl md:text-9xl font-bold tabular-nums p-6 md:p-10 leading-none text-black">
+            {count}
+          </div>
+        </div>
+      );
+    }
+
+    function Navbar() {
+      const [open, setOpen] = useState(false);
+      const navLinks = [
+        ['Home', '#home'],
+        ['Services', '#services'],
+        ['About', '#implants'],
+        ['Gallery', '#gallery'],
+        ['Contact', '#contact'],
+      ];
+
+      useEffect(() => {
+        document.body.style.overflow = open ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+      }, [open]);
+
+      return (
+        <>
+          <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-6 py-2 md:py-3 bg-white/80 backdrop-blur-md">
+            <a href="#home" className="flex items-center text-black" aria-label="Lumeo Dental Studio home">
+              <span className="text-2xl md:text-3xl font-bold tracking-tight leading-none">Lumeo<span className="text-neutral-400 font-medium"> Dental</span></span>
+            </a>
+
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#services" className="px-6 py-3 bg-white rounded-full border border-black text-sm font-semibold hover:bg-black hover:text-white transition-colors duration-200">Services</a>
+              <span className="text-sm font-semibold text-black">Emergency Dental Care</span>
+            </div>
+
+            <button
+              type="button"
+              className="md:hidden w-10 h-10 flex items-center justify-center relative"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
+              onClick={() => setOpen((value) => !value)}
+            >
+              <span className={`absolute h-0.5 w-6 bg-black rounded-full transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? 'rotate-45 translate-y-0' : '-translate-y-2'}`} />
+              <span className={`absolute h-0.5 w-6 bg-black rounded-full transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? 'opacity-0 scale-x-0' : 'opacity-100 scale-x-100'}`} />
+              <span className={`absolute h-0.5 w-6 bg-black rounded-full transition-all duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? '-rotate-45 translate-y-0' : 'translate-y-2'}`} />
+            </button>
+          </nav>
+
+          <div className={`md:hidden fixed inset-0 z-40 ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+            <button
+              type="button"
+              aria-label="Close menu backdrop"
+              className={`absolute inset-0 w-full h-full bg-black/20 backdrop-blur-sm transition-opacity duration-500 ${open ? 'opacity-100' : 'opacity-0'}`}
+              onClick={() => setOpen(false)}
+            />
+            <aside className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+              <div className="flex flex-col justify-center h-full px-8 gap-1">
+                <span className="text-3xl font-bold tracking-tight text-black mb-8">Lumeo<span className="text-neutral-400 font-medium"> Dental</span></span>
+                {navLinks.map(([label, href], index) => (
+                  <a
+                    key={label}
+                    href={href}
+                    onClick={() => setOpen(false)}
+                    className={`text-4xl font-bold text-black hover:text-neutral-500 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
+                    style={{ transitionDelay: open ? `${100 + index * 60}ms` : '0ms' }}
+                  >
+                    {label}
+                  </a>
+                ))}
+
+                <div
+                  className={`mt-8 pt-8 border-t border-neutral-200 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                  style={{ transitionDelay: open ? '450ms' : '0ms' }}
+                >
+                  <p className="text-sm font-semibold text-black mb-4">Emergency Dental Care</p>
+                  <a href="#contact" onClick={() => setOpen(false)} className="block text-center w-full px-6 py-4 bg-black rounded-full text-white text-sm font-semibold hover:bg-neutral-800 transition-colors duration-200">
+                    Book Consultation
+                  </a>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </>
+      );
+    }
+
+    function ArrowIcon({ white = false }) {
+      return (
+        <span className={`self-end w-9 h-9 md:w-12 md:h-12 rounded-full border ${white ? 'border-white text-white' : 'border-black text-black'} flex items-center justify-center`}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="rotate-[-45deg]" aria-hidden="true">
+            <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      );
+    }
+
+    function App() {
+      const [showSplash, setShowSplash] = useState(true);
+      const isMobile = useIsMobile();
+
+      const section1Ref = useRef(null);
+      const section2Ref = useRef(null);
+      const s1Cards = useRef([]);
+      const s2Cards = useRef([]);
+
+      const s1Reveal = useStaggeredReveal(4);
+      const s2Reveal = useStaggeredReveal(4);
+      const s3Reveal = useStaggeredReveal(4);
+
+      const s1Positions = useMaskPositions(section1Ref, s1Cards, 4);
+      const s2Positions = useMaskPositions(section2Ref, s2Cards, 4);
+      const s1ImageWidth = useImageWidth(HERO_IMAGE, section1Ref);
+      const s2ImageWidth = useImageWidth(SECTION2_IMAGE, section2Ref);
+
+      const setSection1 = (node) => {
+        section1Ref.current = node;
+        s1Reveal.containerRef.current = node;
+      };
+      const setSection2 = (node) => {
+        section2Ref.current = node;
+        s2Reveal.containerRef.current = node;
+      };
+
+      const s1FocalX = isMobile ? 0.7 : 0.8;
+      const s2FocalX = isMobile ? 0.65 : 0.8;
+
+      return (
+        <div className="bg-white">
+          {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+          <Navbar />
+
+          <section id="home" ref={setSection1} className="h-screen w-full overflow-hidden flex flex-col pt-24 md:pt-24 px-3 md:px-5 pb-1.5 md:pb-2 gap-1.5 md:gap-2">
+            {featureBars.map((feature, index) => (
+              <MaskedCard
+                key={feature}
+                bgImage={HERO_IMAGE}
+                position={s1Positions[index]}
+                imageWidth={s1ImageWidth}
+                focalX={s1FocalX}
+                className="w-full h-14 md:h-20 shrink-0 rounded-xl md:rounded-2xl overflow-hidden relative"
+                cardRef={(node) => { s1Cards.current[index] = node; }}
+                style={s1Reveal.getAnimStyle(index)}
+              >
+                <span className="flex items-center justify-center h-full text-black text-lg md:text-3xl font-bold text-center relative z-10">
+                  {feature}
+                </span>
+              </MaskedCard>
+            ))}
+
+            <MaskedCard
+              bgImage={HERO_IMAGE}
+              position={s1Positions[3]}
+              imageWidth={s1ImageWidth}
+              focalX={s1FocalX}
+              className="w-full flex-1 min-h-0 rounded-xl md:rounded-2xl overflow-hidden relative"
+              cardRef={(node) => { s1Cards.current[3] = node; }}
+              style={s1Reveal.getAnimStyle(3)}
+            >
+              <p className="absolute top-4 left-4 md:top-7 md:left-7 text-black text-xs md:text-sm font-semibold leading-4 md:leading-5 max-w-[220px] md:max-w-[320px] z-10">
+                Boutique dental care designed for modern Australians,<br />with advanced technology and a genuinely caring team.
+              </p>
+
+              <div className="absolute bottom-5 left-3 md:bottom-8 md:left-4 z-10">
+                <span className="block text-black text-xs md:text-sm font-semibold mb-1 md:mb-2">Trusted Dentist in Sydney, Australia</span>
+                <h1 className="text-black text-[clamp(3rem,11vw,11rem)] font-bold leading-[0.79] tracking-tight">Smile<br />Beautifully</h1>
+              </div>
+
+              <span className="absolute bottom-6 right-4 md:bottom-10 md:right-8 text-white text-xs md:text-sm font-semibold z-10">Book Consultation</span>
+            </MaskedCard>
+          </section>
+
+          <section id="gallery" ref={setSection2} className="min-h-screen md:h-screen w-full overflow-hidden flex flex-col pt-1.5 md:pt-2 px-3 md:px-5 pb-1.5 md:pb-2 gap-1.5 md:gap-2">
+            <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 grid-rows-[auto_auto_auto_auto] md:grid-rows-[1fr_1fr_0.8fr] gap-1.5 md:gap-2">
+              <MaskedCard
+                bgImage={SECTION2_IMAGE}
+                position={s2Positions[0]}
+                imageWidth={s2ImageWidth}
+                focalX={s2FocalX}
+                className="rounded-xl md:rounded-2xl overflow-hidden relative min-h-[160px] md:min-h-0"
+                cardRef={(node) => { s2Cards.current[0] = node; }}
+                style={s2Reveal.getAnimStyle(0)}
+              >
+                <h2 className="absolute top-4 left-5 md:top-6 md:left-7 text-white md:text-black text-2xl md:text-3xl font-bold z-10">Smile Gallery</h2>
+                <p className="absolute bottom-4 left-5 md:bottom-6 md:left-7 text-white md:text-black text-xs md:text-sm font-semibold z-10">Natural-looking cosmetic results</p>
+              </MaskedCard>
+
+              <MaskedCard
+                bgImage={SECTION2_IMAGE}
+                position={s2Positions[1]}
+                imageWidth={s2ImageWidth}
+                focalX={s2FocalX}
+                className="md:row-span-2 rounded-xl md:rounded-2xl overflow-hidden relative min-h-[200px] md:min-h-0"
+                cardRef={(node) => { s2Cards.current[1] = node; }}
+                style={s2Reveal.getAnimStyle(1)}
+              >
+                <p className="absolute bottom-16 left-5 md:bottom-20 md:left-7 text-white text-xs md:text-sm font-semibold leading-4 md:leading-5 z-10 max-w-[260px]">
+                  Thinking about refreshing your smile?<br />Chat with our Sydney team about veneers, whitening and tailored treatment plans.
+                </p>
+                <a href="#contact" className="absolute bottom-4 right-4 md:bottom-6 md:right-6 px-5 py-3 md:px-8 md:py-5 bg-white rounded-full text-black text-base md:text-xl font-bold z-10 hover:scale-105 transition-transform">Enquire Now</a>
+              </MaskedCard>
+
+              <MaskedCard
+                bgImage={SECTION2_IMAGE}
+                position={s2Positions[2]}
+                imageWidth={s2ImageWidth}
+                focalX={s2FocalX}
+                className="rounded-xl md:rounded-2xl overflow-hidden relative min-h-[160px] md:min-h-0"
+                cardRef={(node) => { s2Cards.current[2] = node; }}
+                style={s2Reveal.getAnimStyle(2)}
+              >
+                <h2 className="absolute top-4 left-5 md:top-6 md:left-7 text-white md:text-black text-[clamp(3rem,7vw,6rem)] font-bold leading-[0.9] z-10">Smile<br />Design</h2>
+              </MaskedCard>
+
+              <MaskedCard
+                bgImage={SECTION2_IMAGE}
+                position={s2Positions[3]}
+                imageWidth={s2ImageWidth}
+                focalX={s2FocalX}
+                className="col-span-1 md:col-span-2 rounded-xl md:rounded-2xl overflow-hidden relative min-h-[200px] md:min-h-0"
+                cardRef={(node) => { s2Cards.current[3] = node; }}
+                style={s2Reveal.getAnimStyle(3)}
+              >
+                <div id="services" className="absolute inset-0 z-10 flex flex-wrap md:flex-nowrap gap-1.5 md:gap-2 p-2 md:p-3">
+                  {services.map((svc) => (
+                    <div key={svc.name} className={`flex-1 min-w-[calc(50%-4px)] md:min-w-0 rounded-xl md:rounded-2xl p-3 md:p-5 flex flex-col justify-between ${svc.active ? 'bg-white/90 backdrop-blur-md' : 'bg-white/20 backdrop-blur-xl'}`}>
+                      <h3 className={`text-xl md:text-4xl font-bold leading-[1.05] whitespace-pre-line ${svc.active ? 'text-black' : 'text-white'}`}>{svc.name}</h3>
+                      {svc.num && (
+                        <span className={`self-end w-8 h-8 md:w-12 md:h-12 rounded-full border flex items-center justify-center text-xs md:text-sm font-semibold ${svc.active ? 'border-black text-black' : 'border-white text-white'}`}>{svc.num}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </MaskedCard>
+            </div>
+          </section>
+
+          <section id="implants" ref={s3Reveal.containerRef} className="min-h-screen md:h-screen w-full overflow-hidden flex flex-col pt-1.5 md:pt-2 px-3 md:px-5 pb-1.5 md:pb-2 gap-1.5 md:gap-2">
+            <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-1.5 md:gap-2">
+              <div className="flex flex-col gap-1.5 md:gap-2">
+                <div className="rounded-xl md:rounded-2xl bg-stone-50 p-5 md:p-7 flex flex-col justify-between flex-[1.2] min-h-[180px] md:min-h-0" style={s3Reveal.getAnimStyle(0)}>
+                  <h2 className="text-[clamp(3rem,7vw,6.5rem)] font-bold leading-[0.95] text-black">Implant<br />Dentistry</h2>
+                  <p className="text-xs md:text-sm font-semibold text-black">Replace missing teeth with confidence</p>
+                </div>
+
+                <div className="flex gap-1.5 md:gap-2 flex-1 min-h-[140px] md:min-h-0" style={s3Reveal.getAnimStyle(1)}>
+                  <div className="flex-1 rounded-xl md:rounded-2xl overflow-hidden"><img src={SECTION3_IMG1} alt="Dental implant procedure" className="w-full h-full object-cover" /></div>
+                  <div className="flex-1 rounded-xl md:rounded-2xl overflow-hidden"><img src={SECTION3_IMG2} alt="Dental restoration" className="w-full h-full object-cover" /></div>
+                </div>
+
+                <div id="contact" className="rounded-xl md:rounded-2xl bg-zinc-200 p-5 md:p-7 flex items-end justify-between flex-[0.8] min-h-[160px] md:min-h-0" style={s3Reveal.getAnimStyle(2)}>
+                  <div>
+                    <p className="text-xs md:text-sm font-semibold text-black mb-2 md:mb-3">Consultation</p>
+                    <h3 className="text-xl md:text-3xl font-bold text-black leading-6 md:leading-8">Implant<br />and Restorative<br />Care</h3>
+                  </div>
+                  <button type="button" className="px-5 py-3 md:px-8 md:py-5 bg-white rounded-full text-black text-base md:text-xl font-bold hover:scale-105 transition-transform">Book Online</button>
+                </div>
+              </div>
+
+              <div className="rounded-xl md:rounded-2xl overflow-hidden relative min-h-[350px] md:min-h-0" style={s3Reveal.getAnimStyle(3)}>
+                <img src={SECTION3_BG} alt="Smiling patient" className="w-full h-full object-cover" />
+                <div className="absolute bottom-3 left-3 right-3 md:bottom-5 md:left-5 md:right-5 flex gap-1.5 md:gap-2">
+                  <div className="flex-1 bg-white rounded-xl md:rounded-2xl p-3 md:p-5 flex flex-col justify-between h-36 md:h-52">
+                    <h4 className="text-lg md:text-2xl font-bold text-black leading-5 md:leading-7">Your Implant<br />Treatment<br />Journey</h4>
+                    <ArrowIcon />
+                  </div>
+                  <div className="flex-1 bg-white/20 backdrop-blur-xl rounded-xl md:rounded-2xl p-3 md:p-5 flex flex-col justify-between h-36 md:h-52">
+                    <h4 className="text-lg md:text-2xl font-bold text-white leading-5 md:leading-7">Looking After<br />Your New<br />Implants</h4>
+                    <ArrowIcon white />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
