@@ -17,3 +17,7 @@ swoosh.log
 typography.log
 perf.log
 assets/ref/
+
+# DW Funnel demo preview clips are shipped assets, keep them tracked
+!assets/demos/previews/
+!assets/demos/previews/**

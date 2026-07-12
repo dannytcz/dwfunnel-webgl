@@ -1642,9 +1642,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-/* Verde card shows 100% of the real site via a scaled live iframe: the
-   frame renders at 4x the card, then scales to 0.25 to fit. */
+/* Selected Work previews: a lightweight captured video of the real site loops
+   in the card (poster shows first), and the card links through to the live demo. */
 .ws--embed { background: #06110e; overflow: hidden; }
+.ws-embed-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+  display: block;
+  pointer-events: none;
+}
 .ws-embed-frame {
   position: absolute;
   top: 0;
