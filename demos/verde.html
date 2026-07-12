@@ -6,6 +6,9 @@
     <title>Verde | Botanical Soda, Zero Sugar</title>
     <meta name="description" content="Verde is a concept beverage build by DW Funnel. Zero sugar, full botanical bite.">
     <meta name="robots" content="noindex">
+    <!-- When embedded as a preview card (?embed=1), drop the floating 3D
+         berries and leaves: they clip and scatter at the scaled-down size. -->
+    <script>if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("is-embed");</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Manrope:wght@400;700&family=Galada&display=swap" rel="stylesheet">
@@ -400,6 +403,10 @@
             .product-carousel { align-items: center; }
             .studio-badge { left: 50%; transform: translateX(-50%); bottom: 0.9rem; text-align: center; }
         }
+
+        /* Embedded preview card: hide floating berries and leaves at any size. */
+        .is-embed .berries-container,
+        .is-embed .leaves-container { display: none !important; }
     </style>
 </head>
 <body>
