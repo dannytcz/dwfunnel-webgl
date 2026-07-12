@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Selected Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **23 cards**, all live demos.
+Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **25 cards**, all live demos.
 
 Each live card is:
 ```html
@@ -100,6 +100,8 @@ The 8 live demos and what each replaced:
 - **STRETCH** ethical beauty (`/demos/stretch.html`), sustainable skincare commerce.
 - **WebPal** smart website builder (`/demos/webpal.html`), rebranded from Weblex with builder-fit copy.
 - **Picocore** network operations (`/demos/picocore.html`), rebranded from Datacore.
+- **LionTech** intelligent security (`/demos/liontech.html`), rebranded from Akor.
+- **Tarismo** transport (`/demos/tarismo.html`), rebranded from Targo.
 
 ## 6. How to add a new demo ("make it ours")
 

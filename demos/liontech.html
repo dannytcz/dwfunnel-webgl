@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a1a">
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="LionTech delivers intelligent security, automation, and AI for businesses and smart infrastructure. A concept build by DW Funnel." />
+  <title>LionTech · Intelligent Security Systems</title>
+  <meta name="description" content="LionTech delivers intelligent security, automation, and AI for businesses and smart infrastructure.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --background: 0 0% 10%;
+      --foreground: 0 0% 96%;
+      --primary: 119 99% 46%;
+      --primary-foreground: 0 0% 4%;
+      --muted-foreground: 0 0% 60%;
+      --border: 0 0% 20%;
+      --hero-bg: 0 0% 8%;
+      --nav-button: 0 0% 18%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: hsl(var(--background));
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: "Sora", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    img,
+    video {
+      display: block;
+      max-width: 100%;
+    }
+
+    ::selection {
+      color: hsl(var(--primary-foreground));
+      background: hsl(var(--primary));
+    }
+
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-up {
+      opacity: 1;
+      transform: translateY(0);
+      animation: fade-up 600ms ease-out forwards;
+    }
+
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-450 { animation-delay: 0.45s; }
+    .delay-650 { animation-delay: 0.65s; }
+
+    .container-pad {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+
+    .navbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      display: grid;
+      place-items: center;
+      color: hsl(var(--primary-foreground));
+      background: hsl(var(--primary));
+    }
+
+    .brand-icon svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: hsl(var(--foreground));
+    }
+
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      align-items: center;
+      gap: 2.25rem;
+    }
+
+    .nav-link {
+      white-space: nowrap;
+      color: hsl(var(--muted-foreground));
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 180ms ease;
+    }
+
+    .nav-link:hover {
+      color: hsl(var(--foreground));
+    }
+
+    .button {
+      height: 2.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: transform 160ms ease, background-color 180ms ease, color 180ms ease;
+    }
+
+    .button:active,
+    .text-link:active {
+      transform: scale(0.97);
+    }
+
+    .button-green {
+      padding: 0 2rem;
+      font-weight: 600;
+      color: hsl(var(--primary-foreground));
+      background: hsl(var(--primary));
+    }
+
+    .button-green:hover {
+      background: hsl(119 99% 42%);
+    }
+
+    .button-nav {
+      display: none;
+      padding: 0 1.5rem;
+      font-weight: 500;
+      color: hsl(var(--foreground));
+      background: hsl(var(--nav-button));
+    }
+
+    .button-nav:hover {
+      background: hsl(0 0% 23%);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 74% 42%, hsl(0 0% 17%) 0%, transparent 42%),
+        hsl(var(--hero-bg));
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      padding: 8rem 2rem 5rem;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 72rem;
+      white-space: pre-line;
+      color: hsl(var(--foreground));
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy {
+      max-width: 36rem;
+      margin: 2rem 0 2.5rem;
+      color: hsl(var(--muted-foreground));
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .text-link {
+      display: inline-block;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid hsl(var(--primary));
+      color: hsl(var(--foreground));
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 180ms ease, transform 160ms ease;
+    }
+
+    .text-link:hover {
+      color: hsl(var(--primary));
+    }
+
+    .section-label {
+      margin: 0 0 2rem;
+      color: hsl(0 0% 60% / 0.6);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      margin-bottom: 4rem;
+      background: hsl(0 0% 60% / 0.2);
+    }
+
+    .services {
+      padding: 6rem 2rem 8rem;
+      background: hsl(var(--foreground));
+      color: hsl(var(--background));
+    }
+
+    .services-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+    }
+
+    .services-intro h2,
+    .about-content h2 {
+      margin: 0;
+      font-size: clamp(1.875rem, 4vw, 2.25rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.035em;
+    }
+
+    .services-intro h2 {
+      max-width: 38rem;
+      color: hsl(var(--background));
+    }
+
+    .services-intro .button {
+      margin-top: 2.5rem;
+    }
+
+    .services-grid-wrap {
+      position: relative;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .service-card {
+      min-width: 0;
+      padding: 0 0 2.75rem 2rem;
+      border-left: 1px solid hsl(var(--border) / 0.2);
+    }
+
+    .service-card + .service-card {
+      padding-top: 2.75rem;
+    }
+
+    .service-icon {
+      width: 4rem;
+      height: 4rem;
+      margin-bottom: 2rem;
+      object-fit: contain;
+    }
+
+    .service-number {
+      display: block;
+      color: hsl(0 0% 60% / 0.4);
+      font-size: 0.75rem;
+    }
+
+    .service-card h3 {
+      margin: 1rem 0 0;
+      white-space: pre-line;
+      color: hsl(var(--background));
+      font-size: 1.25rem;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+
+    .service-card p {
+      margin: 1.25rem 0 0;
+      color: hsl(0 0% 38%);
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+
+    .about {
+      padding: 3rem 2rem 6rem;
+      background: #000;
+    }
+
+    .about-layout {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 3rem;
+    }
+
+    .about-media video {
+      width: 100%;
+      height: auto;
+      border-radius: 0.125rem;
+    }
+
+    .vertical-divider {
+      display: none;
+      width: 1px;
+      margin: 2rem 2.5rem 0;
+      background: hsl(0 0% 60% / 0.2);
+    }
+
+    .about-content {
+      min-height: 31.25rem;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .about-content h2 {
+      max-width: 42rem;
+      color: hsl(var(--foreground));
+    }
+
+    .about-bottom {
+      max-width: 36rem;
+      margin-top: 5rem;
+    }
+
+    .about-bottom p {
+      margin: 0;
+      color: hsl(var(--muted-foreground));
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    .about-bottom .button {
+      margin-top: 2.5rem;
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .hero h1 {
+        font-size: 3.75rem;
+      }
+
+      .services-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .services-grid-wrap::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: hsl(0 0% 60% / 0.2);
+        pointer-events: none;
+      }
+
+      .service-card {
+        padding-bottom: 3rem;
+      }
+
+      .service-card:nth-child(3),
+      .service-card:nth-child(4) {
+        padding-top: 3rem;
+        padding-bottom: 0;
+      }
+
+      .service-card:nth-child(2) {
+        padding-top: 0;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container-pad,
+      .navbar {
+        padding-left: 4rem;
+        padding-right: 4rem;
+      }
+
+      .nav-links,
+      .button-nav {
+        display: flex;
+      }
+
+      .hero-content {
+        padding: 8rem 4rem 7rem;
+      }
+
+      .hero h1 {
+        font-size: 5.5rem;
+      }
+
+      .hero-copy {
+        font-size: 1.125rem;
+      }
+
+      .services {
+        padding: 8rem 4rem;
+      }
+
+      .services-layout {
+        flex-direction: row;
+        gap: 6rem;
+      }
+
+      .services-intro {
+        width: 38%;
+        display: flex;
+        align-items: center;
+      }
+
+      .services-grid-wrap {
+        width: 62%;
+      }
+
+      .about {
+        padding: 4rem 4rem 8rem;
+      }
+
+      .about-layout {
+        flex-direction: row;
+        gap: 0;
+      }
+
+      .about-media {
+        width: 45%;
+      }
+
+      .vertical-divider {
+        display: block;
+      }
+
+      .about-content {
+        min-height: 37.5rem;
+      }
+
+      .about-bottom {
+        margin-top: auto;
+      }
+
+      .about-bottom p {
+        font-size: 1.125rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .animate-fade-up {
+        opacity: 1;
+        animation: none;
+        transform: none;
+      }
+
+      * {
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+
+<body>
+  <nav class="navbar" aria-label="Primary navigation">
+    <a class="brand" href="#home" aria-label="LIONTECH home">
+      <span class="brand-icon">
+        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M16 3.6 26.7 9.8v12.4L16 28.4 5.3 22.2V9.8L16 3.6Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M10.6 18.8 16 9.3l5.4 9.5H10.6Z" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="brand-name">LIONTECH</span>
+    </a>
+
+    <div class="nav-links">
+      <a class="nav-link" href="#services">Services</a>
+      <a class="nav-link" href="#about">About Us</a>
+      <a class="nav-link" href="#projects">Projects</a>
+      <a class="nav-link" href="#team">Team</a>
+      <a class="nav-link" href="#contacts">Contacts</a>
+    </div>
+
+    <a class="button button-nav" href="#contacts">Get Quote</a>
+  </nav>
+
+  <main>
+    <section class="hero" id="home">
+      <video class="hero-video" autoplay loop muted playsinline preload="metadata" aria-hidden="true">
+        <source src="/assets/demos/liontech/clip-2.mp4" type="video/mp4">
+      </video>
+
+      <div class="hero-content">
+        <h1 class="animate-fade-up delay-200">Intelligent
+Security Systems</h1>
+
+        <p class="hero-copy animate-fade-up delay-450">
+          Innovative security, automation, and AI solutions for businesses and smart cities
+        </p>
+
+        <div class="hero-actions animate-fade-up delay-650">
+          <a class="button button-green" href="#contacts">Get Consultation</a>
+          <a class="text-link" href="#services">Learn More</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="services" id="services">
+      <p class="section-label">Services</p>
+      <div class="divider"></div>
+
+      <div class="services-layout">
+        <div class="services-intro">
+          <div>
+            <h2>Security, automation, and AI that help teams run tighter operations</h2>
+            <a class="button button-green" href="#contacts">Get Consultation</a>
+          </div>
+        </div>
+
+        <div class="services-grid-wrap">
+          <div class="services-grid">
+            <article class="service-card">
+              <img class="service-icon" src="/assets/demos/liontech/img-direct-1.webp" alt="" loading="lazy">
+              <span class="service-number">01</span>
+              <h3>AI-Driven
+Security Solutions</h3>
+              <p>Intelligent monitoring and threat detection systems that help teams identify risk faster and respond with confidence.</p>
+            </article>
+
+            <article class="service-card">
+              <img class="service-icon" src="/assets/demos/liontech/img-3.webp" alt="" loading="lazy">
+              <span class="service-number">02</span>
+              <h3>Smart Building
+Automation</h3>
+              <p>Connected infrastructure that coordinates access, energy, devices, and building operations from one intelligent system.</p>
+            </article>
+
+            <article class="service-card">
+              <img class="service-icon" src="/assets/demos/liontech/img-1.webp" alt="" loading="lazy">
+              <span class="service-number">03</span>
+              <h3>AI Consulting
+and Integration</h3>
+              <p>Practical AI strategy and system integration designed around existing operations, data, and measurable business outcomes.</p>
+            </article>
+
+            <article class="service-card">
+              <img class="service-icon" src="/assets/demos/liontech/img-2.webp" alt="" loading="lazy">
+              <span class="service-number">04</span>
+              <h3>Training
+and Support</h3>
+              <p>Hands-on enablement, system support, and continuous improvement so your team can operate technology with clarity.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <p class="section-label">About Us</p>
+      <div class="divider"></div>
+
+      <div class="about-layout">
+        <div class="about-media">
+          <video autoplay loop muted playsinline preload="metadata">
+            <source src="/assets/demos/liontech/clip-1.mp4" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="vertical-divider" aria-hidden="true"></div>
+
+        <div class="about-content">
+          <h2>AI-powered security and automation for businesses and smart infrastructure</h2>
+
+          <div class="about-bottom" id="contacts">
+            <p>
+              Our mission is to make complex technology work quietly, intelligently, and reliably in the real world. LIONTECH brings together security engineering, automation, and AI to build connected systems that help organisations protect people, simplify operations, and make better decisions.
+            </p>
+            <a class="button button-green" href="mailto:hello@liontech.systems">Get Quote</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="projects" hidden></div>
+      <div id="team" hidden></div>
+    </section>
+  </main>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>

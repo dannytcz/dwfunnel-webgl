@@ -75,7 +75,7 @@ const RECIPES = {
   valence:  { url:'/demos/valence.html?embed=1',    wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
   elyra:    { url:'/demos/elyra.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
   alto:     { url:'/demos/alto.html?embed=1',       wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
-  petalform:{ url:'/demos/petalform.html?embed=1', wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  petalform:{ url:'/demos/petalform.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, viewport:{width:1680,height:1050}, act: p => hold(p,8000) },
   genova:   { url:'/demos/genova.html?embed=1',    wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   cerebralkinetics:{ url:'/demos/cerebralkinetics.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
@@ -84,6 +84,8 @@ const RECIPES = {
   stretch:  { url:'/demos/stretch.html?embed=1',  wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   webpal:   { url:'/demos/webpal.html?embed=1',   wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   picocore: { url:'/demos/picocore.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  liontech:{ url:'/demos/liontech.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
+  tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
 };
 
 (async () => {
@@ -95,7 +97,13 @@ const RECIPES = {
   });
   for (const key of only) {
     const r = RECIPES[key]; if (!r) { console.log('no recipe:', key); continue; }
-    const ctx = await browser.newContext({ viewport:{width:W,height:H}, recordVideo:{ dir:tmp, size:{width:W,height:H} } });
+    const vw = (r.viewport && r.viewport.width) || W;
+    const vh = (r.viewport && r.viewport.height) || H;
+    const ctx = await browser.newContext({
+      viewport: { width: vw, height: vh },
+      deviceScaleFactor: 1,
+      recordVideo: { dir: tmp, size: { width: vw, height: vh } }
+    });
     const page = await ctx.newPage();
     await page.goto(BASE + r.url, { waitUntil:'load', timeout:20000 }).catch(e=>console.log('goto warn', e.message));
     await page.evaluate(() => document.fonts.ready).catch(()=>{});
@@ -107,11 +115,14 @@ const RECIPES = {
     const mp4 = path.join(OUT, key + '.mp4');
     const poster = path.join(OUT, key + '-poster.webp');
     const dur = Math.min(r.trim.dur, MAX_DUR);
+    // Cover-scale then center-crop so non-default viewports never stretch.
+    const vf = `scale=${SCALE}:force_original_aspect_ratio=increase,crop=${SCALE},fps=${FPS}`;
+    const vfPoster = `scale=${SCALE}:force_original_aspect_ratio=increase,crop=${SCALE}`;
     execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start),'-t',String(dur),'-i',webm,
-      '-vf',`scale=${SCALE}:flags=lanczos,fps=${FPS}`,'-an',
+      '-vf',vf,'-an',
       '-c:v','libx264','-crf',String(CRF),'-preset','slow','-pix_fmt','yuv420p','-movflags','+faststart', mp4]);
     execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start + (r.posterAt || 0.5)),'-i',webm,
-      '-vf',`scale=${SCALE}:flags=lanczos`,'-frames:v','1','-c:v','libwebp','-q:v','72', poster]);
+      '-vf',vfPoster,'-frames:v','1','-c:v','libwebp','-q:v','72', poster]);
     // Drop legacy animated WebP so the grid never picks it up.
     const legacyWebp = path.join(OUT, key + '.webp');
     if (fs.existsSync(legacyWebp)) fs.unlinkSync(legacyWebp);
