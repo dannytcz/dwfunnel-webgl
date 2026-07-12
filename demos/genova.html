@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Genova Biosciences develops innovative biotechnology solutions to advance science and transform lives."
+  />
+  <meta name="theme-color" content="#f8fafc" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Genova Biosciences, a concept biotechnology brand advancing life science solutions. Built by DW Funnel." />
+  <title>Genova Biosciences · Advancing Science</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --primary: #1a56db;
+      --primary-light: #eff6ff;
+      --text-primary: #0a192f;
+      --text-secondary: #475569;
+      --chip-bg: #e0f2fe;
+      --chip-text: #0369a1;
+      --button-primary: #0c2b64;
+      --button-primary-hover: #133a80;
+      --button-secondary: rgba(255, 255, 255, 0.4);
+      --button-secondary-hover: rgba(255, 255, 255, 0.6);
+      --button-secondary-border: rgba(0, 0, 0, 0.1);
+      --divider: rgba(0, 0, 0, 0.1);
+      --background: #f8fafc;
+      --font: "Inter", sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: light;
+      background: var(--background);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text-primary);
+      background: var(--background);
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      border: 0;
+    }
+
+    .app {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      min-height: 100svh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--background);
+    }
+
+    .background-video {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      background: #dce8f6;
+    }
+
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(240, 248, 255, 1) 0%,
+          rgba(240, 248, 255, 0.85) 40%,
+          rgba(240, 248, 255, 0) 100%
+        );
+    }
+
+    .ambient-wash {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(248, 250, 252, 0.2) 0%, transparent 22%),
+        linear-gradient(0deg, rgba(248, 250, 252, 0.08) 0%, transparent 20%);
+    }
+
+    .navbar {
+      width: 100%;
+      padding: 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .brand {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      min-width: max-content;
+    }
+
+    .brand-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      border-radius: 0.9rem;
+      background: rgba(239, 246, 255, 0.78);
+      border: 1px solid rgba(26, 86, 219, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .brand-icon svg {
+      width: 1.55rem;
+      height: 1.55rem;
+    }
+
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.22rem;
+    }
+
+    .brand-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-subtext {
+      color: var(--text-secondary);
+      font-size: 0.65rem;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+      color: var(--primary);
+    }
+
+    .nav-link svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      stroke-width: 2;
+    }
+
+    .nav-cta-wrap {
+      justify-self: end;
+    }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 2rem;
+      padding: 0 4rem;
+    }
+
+    .hero-chip,
+    .hero-title,
+    .hero-description,
+    .hero-actions {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeInUp 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .hero-chip {
+      animation-delay: 0s;
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.4rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 9999px;
+      color: var(--chip-text);
+      background: rgba(224, 242, 254, 0.86);
+      border: 1px solid rgba(3, 105, 161, 0.07);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      flex: 0 0 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.08);
+    }
+
+    .hero-title {
+      animation-delay: 0.1s;
+      margin: 0 0 1.5rem;
+      max-width: 780px;
+      color: var(--text-primary);
+      font-size: clamp(3.8rem, 5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+    }
+
+    .hero-description {
+      animation-delay: 0.2s;
+      margin: 0 0 2.5rem;
+      max-width: 650px;
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      animation-delay: 0.3s;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 4rem;
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.2;
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .button svg {
+      width: 1rem;
+      height: 1rem;
+      flex: 0 0 auto;
+      stroke-width: 2;
+    }
+
+    .button-primary {
+      color: #fff;
+      background: var(--button-primary);
+      box-shadow: 0 10px 28px rgba(12, 43, 100, 0.18);
+    }
+
+    .button-primary:hover,
+    .button-primary:focus-visible {
+      transform: translateY(-1px);
+      background: var(--button-primary-hover);
+      box-shadow: 0 14px 32px rgba(12, 43, 100, 0.22);
+    }
+
+    .button-secondary {
+      color: var(--text-primary);
+      background: var(--button-secondary);
+      border: 1px solid var(--button-secondary-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .button-secondary:hover,
+    .button-secondary:focus-visible {
+      background: var(--button-secondary-hover);
+      border-color: rgba(0, 0, 0, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .play-circle {
+      width: 1.45rem;
+      height: 1.45rem;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(10, 25, 47, 0.34);
+      border-radius: 50%;
+    }
+
+    .play-circle svg {
+      width: 0.7rem;
+      height: 0.7rem;
+      fill: currentColor;
+      stroke-width: 1.8;
+      transform: translateX(0.5px);
+    }
+
+    .button:focus-visible,
+    .nav-link:focus-visible,
+    .brand:focus-visible {
+      outline: 3px solid rgba(26, 86, 219, 0.3);
+      outline-offset: 4px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .navbar {
+        padding-inline: 3rem;
+      }
+
+      .nav-links {
+        gap: 1.65rem;
+      }
+
+      .hero-content {
+        padding-inline: 3rem;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .navbar {
+        grid-template-columns: 1fr auto;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+        max-width: 650px;
+      }
+
+      .hero-content {
+        max-width: 720px;
+      }
+
+      .video-overlay {
+        background:
+          linear-gradient(
+            90deg,
+            rgba(240, 248, 255, 1) 0%,
+            rgba(240, 248, 255, 0.9) 52%,
+            rgba(240, 248, 255, 0.18) 100%
+          );
+      }
+    }
+
+    @media (max-width: 767px) {
+      .navbar {
+        padding: 1rem 2rem;
+        gap: 1rem;
+      }
+
+      .brand {
+        gap: 0.65rem;
+      }
+
+      .brand-icon {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 0.75rem;
+      }
+
+      .brand-icon svg {
+        width: 1.3rem;
+        height: 1.3rem;
+      }
+
+      .brand-name {
+        font-size: 1.25rem;
+      }
+
+      .brand-subtext {
+        font-size: 0.55rem;
+        letter-spacing: 1.6px;
+      }
+
+      .nav-cta-wrap .button {
+        min-height: 42px;
+        padding: 0.65rem 1rem;
+      }
+
+      .hero {
+        align-items: center;
+      }
+
+      .hero-content {
+        max-width: 100%;
+        margin-top: 1rem;
+        padding: 2rem 2rem 0;
+      }
+
+      .hero-chip {
+        margin-bottom: 1.1rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.68rem;
+      }
+
+      .hero-title {
+        max-width: 520px;
+        margin-bottom: 1.25rem;
+        font-size: 2.5rem;
+        line-height: 1.08;
+      }
+
+      .hero-description {
+        max-width: 520px;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .hero-actions {
+        gap: 0.7rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .video-overlay {
+        background:
+          linear-gradient(
+            90deg,
+            rgba(240, 248, 255, 0.98) 0%,
+            rgba(240, 248, 255, 0.9) 68%,
+            rgba(240, 248, 255, 0.55) 100%
+          );
+      }
+
+      .background-video {
+        object-position: 60% center;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .navbar {
+        padding-inline: 1.25rem;
+      }
+
+      .brand-icon {
+        width: 2.2rem;
+        height: 2.2rem;
+      }
+
+      .brand-name {
+        font-size: 1.1rem;
+      }
+
+      .brand-subtext {
+        font-size: 0.5rem;
+        letter-spacing: 1.3px;
+      }
+
+      .nav-cta-wrap .button span {
+        display: none;
+      }
+
+      .nav-cta-wrap .button {
+        width: 42px;
+        padding: 0;
+        border-radius: 50%;
+      }
+
+      .hero-content {
+        padding-inline: 1.25rem;
+        padding-top: 1.5rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2.2rem, 11vw, 2.5rem);
+      }
+
+      .hero-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .hero-actions .button {
+        width: 100%;
+      }
+    }
+
+    @media (max-height: 720px) and (min-width: 768px) {
+      .hero {
+        align-items: flex-start;
+      }
+
+      .hero-content {
+        margin-top: 3rem;
+      }
+
+      .hero-title {
+        font-size: 3.3rem;
+      }
+
+      .hero-description {
+        margin-bottom: 1.75rem;
+      }
+
+      .hero-actions {
+        margin-bottom: 2rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .hero-chip,
+      .hero-title,
+      .hero-description,
+      .hero-actions {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+
+<body>
+  <div class="app">
+    <video
+      class="background-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+    >
+      <source
+        src="/assets/demos/genova/hero.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support HTML5 video.
+    </video>
+
+    <div class="video-overlay" aria-hidden="true"></div>
+    <div class="ambient-wash" aria-hidden="true"></div>
+
+    <nav class="navbar" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="Genova Biosciences home">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m10 16 1.5 1.5"/>
+            <path d="m14 8-1.5-1.5"/>
+            <path d="M15 2c-1.35 2.48-1.35 4.48 0 6s1.35 3.52 0 6-1.35 4.48 0 6"/>
+            <path d="M9 2c1.35 2.48 1.35 4.48 0 6s-1.35 3.52 0 6-1.35 4.48 0 6"/>
+            <path d="m8 4 8 0"/>
+            <path d="m8 20 8 0"/>
+          </svg>
+        </span>
+
+        <span class="brand-copy">
+          <span class="brand-name">Genova</span>
+          <span class="brand-subtext">Biosciences</span>
+        </span>
+      </a>
+
+      <ul class="nav-links">
+        <li>
+          <a class="nav-link" href="#solutions">
+            Solutions
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </a>
+        </li>
+        <li><a class="nav-link" href="#technology">Technology</a></li>
+        <li><a class="nav-link" href="#research">Research</a></li>
+        <li><a class="nav-link" href="#about">About Us</a></li>
+        <li><a class="nav-link" href="#careers">Careers</a></li>
+      </ul>
+
+      <div class="nav-cta-wrap">
+        <a class="button button-primary" href="#contact" aria-label="Contact Genova Biosciences">
+          <span>Contact Us</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14"/>
+            <path d="m13 6 6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+    </nav>
+
+    <main class="hero">
+      <section class="hero-content" aria-labelledby="hero-title">
+        <div class="hero-chip">
+          <span class="chip-dot" aria-hidden="true"></span>
+          Life science, engineered
+        </div>
+
+        <h1 class="hero-title" id="hero-title">
+          Advancing science.<br />
+          <span>Transforming</span> lives.
+        </h1>
+
+        <p class="hero-description">
+          Genova Biosciences is at the forefront of biotechnology, developing innovative
+          solutions for a healthier tomorrow.
+        </p>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#solutions">
+            Explore Our Solutions
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14"/>
+              <path d="m13 6 6 6-6 6"/>
+            </svg>
+          </a>
+
+          <a class="button button-secondary" href="#story">
+            <span class="play-circle" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m8 5 11 7-11 7z"/>
+              </svg>
+            </span>
+            Watch Our Story
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Petalform, an AI floral design studio for generative botanics and spatial compositions. A concept build by DW Funnel." />
+  <title>Petalform · AI Floral Design Studio</title>
+  <meta name="description" content="Petalform is an AI floral design studio for generating original botanical concepts, sculptural arrangements, and spatial plant forms." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Source+Serif+4:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --background: 0 0% 0%;
+      --foreground: 0 0% 100%;
+      --muted: 0 0% 65%;
+      --muted-foreground: 0 0% 78%;
+      --card: 0 0% 8%;
+      --card-foreground: 0 0% 100%;
+      --primary: 0 0% 100%;
+      --primary-foreground: 0 0% 0%;
+      --secondary: 0 0% 20%;
+      --secondary-foreground: 0 0% 100%;
+      --radius: 1rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: "Poppins", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-weight: 500;
+    }
+
+    h1 em,
+    h1 i,
+    h1 .italic,
+    h2 em,
+    h2 i,
+    h2 .italic,
+    h3 em,
+    h3 i,
+    h3 .italic {
+      font-family: "Source Serif 4", serif;
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .app {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      isolation: isolate;
+      background: #000;
+    }
+
+    .video-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      pointer-events: none;
+    }
+
+    .video-shade {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 28% 42%, rgba(255,255,255,0.035), transparent 34%),
+        linear-gradient(90deg, rgba(0,0,0,0.12), rgba(0,0,0,0.02) 46%, rgba(0,0,0,0.12));
+    }
+
+    .stage {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    .liquid-glass,
+    .liquid-glass-strong {
+      position: relative;
+      overflow: hidden;
+      border: none;
+      background: rgba(255,255,255,0.01);
+      background-blend-mode: luminosity;
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+
+    .liquid-glass-strong {
+      -webkit-backdrop-filter: blur(50px);
+      backdrop-filter: blur(50px);
+      box-shadow:
+        4px 4px 4px rgba(0,0,0,0.05),
+        inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .liquid-glass::before,
+    .liquid-glass-strong::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1.4px;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.45) 0%,
+        rgba(255,255,255,0.15) 20%,
+        transparent 40%,
+        transparent 60%,
+        rgba(255,255,255,0.15) 80%,
+        rgba(255,255,255,0.45) 100%
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+    }
+
+    .liquid-glass-strong::before {
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.5) 0%,
+        rgba(255,255,255,0.2) 20%,
+        transparent 40%,
+        transparent 60%,
+        rgba(255,255,255,0.2) 80%,
+        rgba(255,255,255,0.5) 100%
+      );
+    }
+
+    .interactive {
+      cursor: pointer;
+      transition:
+        transform 260ms cubic-bezier(.2,.8,.2,1),
+        color 220ms ease,
+        background 220ms ease;
+      will-change: transform;
+    }
+
+    .interactive:hover {
+      transform: scale(1.05);
+    }
+
+    .interactive:active {
+      transform: scale(.95);
+    }
+
+    .left {
+      position: relative;
+      display: flex;
+      width: 52%;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .left-shell {
+      position: absolute;
+      inset: 24px;
+      border-radius: 1.5rem;
+    }
+
+    .left-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex: 1;
+      min-height: calc(100vh - 48px);
+      flex-direction: column;
+      padding: 22px 28px 26px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .brand-mark svg,
+    .hero-mark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .brand-name {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.045em;
+    }
+
+    .menu-button,
+    .social-pill,
+    .account-button,
+    .icon-button,
+    .feature-card,
+    .community-card,
+    .detail-card,
+    .pill,
+    .cta {
+      isolation: isolate;
+    }
+
+    .menu-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 15px;
+      border-radius: 999px;
+      background-color: transparent;
+    }
+
+    .menu-button span {
+      font-size: 13px;
+      color: rgba(255,255,255,.8);
+    }
+
+    .hero {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 42px 26px 34px;
+      text-align: center;
+    }
+
+    .hero-mark {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 25px;
+      opacity: .96;
+      filter: drop-shadow(0 10px 28px rgba(0,0,0,.18));
+    }
+
+    .hero h1 {
+      max-width: 720px;
+      font-size: clamp(3.5rem, 5.4vw, 5.4rem);
+      line-height: .95;
+      letter-spacing: -0.05em;
+      text-wrap: balance;
+    }
+
+    .hero h1 em {
+      color: rgba(255,255,255,.8);
+    }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 34px;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 11px 10px 20px;
+      border-radius: 999px;
+      background-color: transparent;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .cta-icon {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255,255,255,.15);
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .pill {
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: rgba(255,255,255,.8);
+    }
+
+    .quote-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0 0;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+    }
+
+    .quote {
+      margin-top: 9px;
+      font-size: clamp(1.2rem, 1.65vw, 1.7rem);
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+      color: rgba(255,255,255,.92);
+    }
+
+    .quote em {
+      font-family: "Source Serif 4", serif;
+      font-style: italic;
+      color: rgba(255,255,255,.75);
+    }
+
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 10px;
+      letter-spacing: .18em;
+      color: rgba(255,255,255,.5);
+    }
+
+    .author::before,
+    .author::after {
+      content: "";
+      width: 44px;
+      height: 1px;
+      background: rgba(255,255,255,.26);
+    }
+
+    .right {
+      display: flex;
+      width: 48%;
+      min-height: 100vh;
+      flex-direction: column;
+      padding: 24px 24px 24px 0;
+    }
+
+    .right-inner {
+      display: flex;
+      flex: 1;
+      min-height: calc(100vh - 48px);
+      flex-direction: column;
+      padding: 0 0 0 24px;
+    }
+
+    .right-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 2px;
+    }
+
+    .social-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 6px;
+      border-radius: 999px;
+    }
+
+    .social-link,
+    .round-icon,
+    .plus-button {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+    }
+
+    .social-link {
+      color: #fff;
+      transition: color 220ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .social-link:hover {
+      color: rgba(255,255,255,.8);
+      transform: scale(1.05);
+    }
+
+    .social-arrow {
+      margin-left: 2px;
+    }
+
+    .account-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .account-button {
+      padding: 12px 17px;
+      border-radius: 999px;
+      background-color: transparent;
+      font-size: 13px;
+      color: rgba(255,255,255,.85);
+    }
+
+    .icon-button {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 999px;
+      background-color: transparent;
+    }
+
+    .community-card {
+      width: 224px;
+      margin-top: 38px;
+      margin-left: auto;
+      padding: 17px;
+      border-radius: 1.4rem;
+    }
+
+    .community-card h3 {
+      font-size: 15px;
+      letter-spacing: -.03em;
+    }
+
+    .community-card p {
+      margin-top: 8px;
+      font-size: 11px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.6);
+    }
+
+    .feature-panel {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: 2.5rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .feature-card {
+      min-height: 146px;
+      padding: 17px;
+      border-radius: 1.5rem;
+    }
+
+    .feature-card h3 {
+      margin-top: 34px;
+      font-size: 17px;
+      letter-spacing: -.035em;
+    }
+
+    .feature-card p {
+      margin-top: 6px;
+      max-width: 240px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.55);
+    }
+
+    .detail-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 1.65rem;
+    }
+
+    .flower-thumb {
+      position: relative;
+      width: 96px;
+      height: 64px;
+      flex: 0 0 96px;
+      overflow: hidden;
+      border-radius: 1.1rem;
+      background:
+        radial-gradient(circle at 34% 52%, rgba(255,255,255,.55) 0 6%, transparent 7%),
+        radial-gradient(ellipse at 34% 33%, rgba(255,255,255,.26) 0 15%, transparent 16%),
+        radial-gradient(ellipse at 49% 47%, rgba(255,255,255,.20) 0 18%, transparent 19%),
+        radial-gradient(ellipse at 23% 57%, rgba(255,255,255,.18) 0 16%, transparent 17%),
+        radial-gradient(ellipse at 63% 26%, rgba(255,255,255,.15) 0 14%, transparent 15%),
+        linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.015));
+    }
+
+    .flower-thumb::before,
+    .flower-thumb::after {
+      content: "";
+      position: absolute;
+      width: 56px;
+      height: 14px;
+      border-radius: 100%;
+      background: rgba(255,255,255,.16);
+      filter: blur(.2px);
+      transform-origin: left center;
+    }
+
+    .flower-thumb::before {
+      left: 30px;
+      top: 40px;
+      transform: rotate(-28deg);
+    }
+
+    .flower-thumb::after {
+      left: 40px;
+      top: 30px;
+      transform: rotate(20deg);
+    }
+
+    .detail-copy {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .detail-copy h3 {
+      font-size: 15px;
+      letter-spacing: -.035em;
+    }
+
+    .detail-copy p {
+      margin-top: 5px;
+      max-width: 390px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: rgba(255,255,255,.55);
+    }
+
+    .plus-button {
+      flex: 0 0 34px;
+      border: none;
+      color: #fff;
+    }
+
+    .lucide {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.8;
+    }
+
+    .round-icon .lucide {
+      width: 15px;
+      height: 15px;
+    }
+
+    .feature-icon {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+    }
+
+    @media (max-width: 1180px) {
+      .hero h1 {
+        font-size: clamp(3.25rem, 5.2vw, 4.6rem);
+      }
+
+      .right-inner {
+        padding-left: 16px;
+      }
+
+      .feature-card {
+        min-height: 140px;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      body {
+        overflow-y: auto;
+      }
+
+      .stage {
+        min-height: 100svh;
+      }
+
+      .left {
+        width: 100%;
+        min-height: 100svh;
+        padding: 16px;
+      }
+
+      .left-shell {
+        inset: 16px;
+      }
+
+      .left-inner {
+        min-height: calc(100svh - 32px);
+        padding: 18px 20px 22px;
+      }
+
+      .right {
+        display: none;
+      }
+
+      .hero {
+        padding: 34px 18px 28px;
+      }
+
+      .hero h1 {
+        max-width: 620px;
+        font-size: clamp(3.15rem, 9vw, 5.2rem);
+      }
+
+      .quote-block {
+        padding-bottom: 4px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .left {
+        padding: 12px;
+      }
+
+      .left-shell {
+        inset: 12px;
+        border-radius: 1.4rem;
+      }
+
+      .left-inner {
+        min-height: calc(100svh - 24px);
+        padding: 17px 16px 20px;
+      }
+
+      .brand-name {
+        font-size: 21px;
+      }
+
+      .menu-button {
+        padding: 9px 12px;
+      }
+
+      .menu-button span {
+        display: none;
+      }
+
+      .hero {
+        padding: 26px 8px 24px;
+      }
+
+      .hero-mark {
+        width: 66px;
+        height: 66px;
+        margin-bottom: 21px;
+      }
+
+      .hero h1 {
+        max-width: 440px;
+        font-size: clamp(2.8rem, 13.5vw, 4rem);
+        line-height: .94;
+      }
+
+      .cta-row {
+        margin-top: 28px;
+      }
+
+      .pills {
+        max-width: 360px;
+        gap: 6px;
+        margin-top: 17px;
+      }
+
+      .pill {
+        padding: 8px 10px;
+        font-size: 10px;
+      }
+
+      .quote {
+        max-width: 300px;
+        font-size: 1.15rem;
+      }
+
+      .author {
+        gap: 9px;
+        font-size: 9px;
+      }
+
+      .author::before,
+      .author::after {
+        width: 27px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+
+<body>
+  <main class="app">
+    <video
+      class="video-bg"
+      autoplay
+      loop
+      muted
+      playsinline
+      preload="auto"
+      poster=""
+      aria-hidden="true"
+    >
+      <source src="/assets/demos/petalform/hero.mp4" type="video/mp4" />
+    </video>
+
+    <div class="video-shade" aria-hidden="true"></div>
+
+    <div class="stage">
+      <section class="left">
+        <div class="left-shell liquid-glass-strong" aria-hidden="true"></div>
+
+        <div class="left-inner">
+          <nav class="nav" aria-label="Primary navigation">
+            <a class="brand interactive" href="#" aria-label="Petalform home">
+              <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none">
+                  <path d="M32 7C42 14 46 22 32 32C18 22 22 14 32 7Z" fill="rgba(255,255,255,.96)"/>
+                  <path d="M57 32C50 42 42 46 32 32C42 18 50 22 57 32Z" fill="rgba(255,255,255,.74)"/>
+                  <path d="M32 57C22 50 18 42 32 32C46 42 42 50 32 57Z" fill="rgba(255,255,255,.52)"/>
+                  <path d="M7 32C14 22 22 18 32 32C22 46 14 42 7 32Z" fill="rgba(255,255,255,.34)"/>
+                  <circle cx="32" cy="32" r="4" fill="white"/>
+                </svg>
+              </span>
+              <span class="brand-name">petalform</span>
+            </a>
+
+            <button class="menu-button liquid-glass interactive" type="button" aria-label="Open menu">
+              <span>Menu</span>
+              <i data-lucide="menu" aria-hidden="true"></i>
+            </button>
+          </nav>
+
+          <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-mark" aria-hidden="true">
+              <svg viewBox="0 0 100 100" fill="none">
+                <path d="M50 8C66 19 73 33 50 50C27 33 34 19 50 8Z" fill="rgba(255,255,255,.96)"/>
+                <path d="M92 50C81 66 67 73 50 50C67 27 81 34 92 50Z" fill="rgba(255,255,255,.74)"/>
+                <path d="M50 92C34 81 27 67 50 50C73 67 66 81 50 92Z" fill="rgba(255,255,255,.52)"/>
+                <path d="M8 50C19 34 33 27 50 50C33 73 19 66 8 50Z" fill="rgba(255,255,255,.34)"/>
+                <circle cx="50" cy="50" r="6.5" fill="white"/>
+              </svg>
+            </div>
+
+            <h1 id="hero-title">
+              Create floral worlds<br />
+              <em>that never existed.</em>
+            </h1>
+
+            <div class="cta-row">
+              <a class="cta liquid-glass-strong interactive" href="#features">
+                <span>Open the Studio</span>
+                <span class="cta-icon">
+                  <i data-lucide="download" aria-hidden="true"></i>
+                </span>
+              </a>
+            </div>
+
+            <div class="pills" aria-label="Petalform capabilities">
+              <span class="pill liquid-glass">Concept Studio</span>
+              <span class="pill liquid-glass">Generative Flora</span>
+              <span class="pill liquid-glass">Spatial Botanics</span>
+            </div>
+          </section>
+
+          <section class="quote-block" aria-label="Petalform vision">
+            <div class="eyebrow">Beyond the Bouquet</div>
+            <p class="quote">
+              We do not arrange flowers. <em>We invent new forms of nature.</em>
+            </p>
+            <div class="author">PETALFORM / AI FLORAL STUDIO</div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="right" aria-label="Petalform platform features">
+        <div class="right-inner">
+          <div class="right-top">
+            <div class="social-pill liquid-glass">
+              <a class="social-link" href="#" aria-label="Petalform on Twitter">
+                <i data-lucide="twitter" aria-hidden="true"></i>
+              </a>
+              <a class="social-link" href="#" aria-label="Petalform on LinkedIn">
+                <i data-lucide="linkedin" aria-hidden="true"></i>
+              </a>
+              <a class="social-link" href="#" aria-label="Petalform on Instagram">
+                <i data-lucide="instagram" aria-hidden="true"></i>
+              </a>
+              <span class="round-icon social-arrow" aria-hidden="true">
+                <i data-lucide="arrow-right"></i>
+              </span>
+            </div>
+
+            <div class="account-group">
+              <button class="account-button liquid-glass interactive" type="button">
+                Studio
+              </button>
+              <button class="icon-button liquid-glass interactive" type="button" aria-label="AI tools">
+                <i data-lucide="sparkles" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <article class="community-card liquid-glass">
+            <h3>Enter the next growth cycle</h3>
+            <p>
+              Build original floral concepts with AI, then evolve them into sculptural and spatial designs.
+            </p>
+          </article>
+
+          <section id="features" class="feature-panel liquid-glass">
+            <div class="feature-grid">
+              <article class="feature-card liquid-glass interactive">
+                <span class="feature-icon">
+                  <i data-lucide="wand-2" aria-hidden="true"></i>
+                </span>
+                <h3>Generate</h3>
+                <p>Turn a mood, material, or reference into an original botanical direction in seconds.</p>
+              </article>
+
+              <article class="feature-card liquid-glass interactive">
+                <span class="feature-icon">
+                  <i data-lucide="book-open" aria-hidden="true"></i>
+                </span>
+                <h3>Species Library</h3>
+                <p>Save every generated form, variation and visual study in one evolving creative library.</p>
+              </article>
+            </div>
+
+            <article class="detail-card liquid-glass">
+              <div class="flower-thumb" role="img" aria-label="Abstract monochrome flower sculpture thumbnail"></div>
+
+              <div class="detail-copy">
+                <h3>Spatial Botanical Design</h3>
+                <p>
+                  Move beyond flat moodboards and explore floral structures as full spatial compositions.
+                </p>
+              </div>
+
+              <button class="plus-button interactive" type="button" aria-label="Open spatial botanical design">
+                <span aria-hidden="true">+</span>
+              </button>
+            </article>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      const video = document.querySelector(".video-bg");
+      if (video) {
+        video.muted = true;
+        const playVideo = () => video.play().catch(() => {});
+        playVideo();
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) playVideo();
+        });
+      }
+    });
+  </script>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#111;text-decoration:none;background:rgba(255,255,255,.9);padding:8px 12px;border:1px solid rgba(0,0,0,.14);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>

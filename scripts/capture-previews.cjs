@@ -75,6 +75,8 @@ const RECIPES = {
   valence:  { url:'/demos/valence.html?embed=1',    wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
   elyra:    { url:'/demos/elyra.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
   alto:     { url:'/demos/alto.html?embed=1',       wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  petalform:{ url:'/demos/petalform.html?embed=1', wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  genova:   { url:'/demos/genova.html?embed=1',    wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
 };
 
 (async () => {
