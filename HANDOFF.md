@@ -8,7 +8,7 @@ You are taking over an in progress build. Read this whole file before touching a
 
 Live: **https://dwfunnel-webgl.vercel.app** (the root rewrites to `cinema.html`).
 
-The most active surface right now is the **Our Work** section (formerly Selected Work), a grid of concept builds. Each card is a small looping video preview of a real, self hosted demo site, and clicking a card opens that live demo in a new tab. Live demos boot with a shared DW Funnel branded loader (`assets/js/dwf-loader.js`, skipped on `?embed=1`). Danny keeps sending purchased HTML templates that you "make ours" and add to the grid.
+The most active surface right now is the **Studio Bench** section (formerly Our Work / Selected Work), a grid of concept builds. Each card is a small looping video preview of a real, self hosted demo site, and clicking a card opens that live demo in a new tab. Live demos boot with a shared DW Funnel branded loader (`assets/js/dwf-loader.js`, skipped on `?embed=1`). Danny keeps sending purchased HTML templates that you "make ours" and add to the grid.
 
 ## 2. Environment and setup
 
@@ -53,9 +53,9 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 `cinema.css` and `cinema-app.js` are loaded with `?v=NN`. **Whenever you change either file, bump its version** in `cinema.html` (currently both at `v=89`). The HTML itself is not cache busted, so in the local browser add a throwaway `&cb=NN` to force fresh HTML while testing.
 
-## 5. The Our Work grid, how it works
+## 5. The Studio Bench grid, how it works
 
-Section meta is `005 / Our Work`, headline **This Is Our Work.**, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **27 cards**, all live demos.
+Section meta is `005 / Studio Bench`, headline **Built On The Bench.**, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **27 cards**, all live demos.
 
 Each live card is:
 ```html
@@ -74,7 +74,7 @@ Each live card is:
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): getlayers-style smooth H.264 preview mp4s at 30fps. Cards start on a poster, then EVERY visible card plays its loop together while Selected Work is on screen. Three.js + the testimonial wall freeze via `html.is-work-focus` so concurrent videos stay silky. Offscreen cards unload back to posters. Data-saver leaves posters forever.
+Performance model (this is deliberate, keep it): getlayers-style smooth H.264 preview mp4s at 30fps. Cards start on a poster, then EVERY visible card plays its loop together while Studio Bench is on screen. Three.js + the testimonial wall freeze via `html.is-work-focus` so concurrent videos stay silky. Offscreen cards unload back to posters. Data-saver leaves posters forever.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum
@@ -102,7 +102,7 @@ The 8 live demos and what each replaced:
 - **Picocore** network operations (`/demos/picocore.html`), rebranded from Datacore.
 - **LionTech** intelligent security (`/demos/liontech.html`), rebranded from Akor.
 - **Tarismo** transport (`/demos/tarismo.html`), rebranded from Targo.
-- **Briefline** newsletter (`/demos/briefline.html`), rebranded from NewShift; AI and culture briefings.
+- **NewShift** newsletter (`/demos/newshift.html`), AI and culture briefings (brand kept from source).
 - **Autonex** industrial automation (`/demos/autonex.html`), rebranded from Automation Machines; Spline 3D machine hero.
 
 ## 6. How to add a new demo ("make it ours")
@@ -113,7 +113,7 @@ Danny hands you a purchased single file template. The recipe, proven 5 times:
 2. **Self host every brand asset.** Images to webp (PIL, keep dimensions if any canvas math depends on them). Video compressed with ffmpeg (`scale=1280, crf 30, -an, +faststart`). Fonts: if the source used an attribution heavy host, self host the real OFL font instead (Fontsource on jsdelivr, e.g. `cdn.jsdelivr.net/fontsource/fonts/<font>@latest/latin-400-normal.woff2`). Put assets in `assets/demos/<key>/`.
 3. **Keep library CDNs** (gsap, lenis, lucide, react, tailwind, Google Fonts). Only brand assets get self hosted.
 4. **Rebrand only when the name is a real person or real business risk.** Fabricated concept brands (Aurelia, AUREN) are fine to keep. A personal name (the original "Marcus Vance") got renamed to a fabricated one (Kane Voss). If Danny says he made the brand, preserve it and his logo.
-5. **House style pass:** remove dashes used as punctuation (see rules below), add `<meta name="robots" content="noindex">`, add a "Concept build by DW Funnel" credit (footer for scroll sites, small fixed badge for single screen ones) linking to `/`.
+5. **House style pass:** remove dashes used as punctuation (see rules below), add `<meta name="robots" content="noindex">`, add a "Built by DW Funnel" credit (footer for scroll sites, small fixed badge for single screen ones) linking to `/`.
 6. **Wire a card** (replace a placeholder) and **capture a preview clip** (section 8).
 
 ## 7. Hard rules (these are Danny's, follow exactly)
