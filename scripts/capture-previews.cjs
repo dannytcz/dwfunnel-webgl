@@ -77,6 +77,8 @@ const RECIPES = {
   alto:     { url:'/demos/alto.html?embed=1',       wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   petalform:{ url:'/demos/petalform.html?embed=1', wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   genova:   { url:'/demos/genova.html?embed=1',    wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  cerebralkinetics:{ url:'/demos/cerebralkinetics.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
 };
 
 (async () => {
