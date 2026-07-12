@@ -1371,10 +1371,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
    Orbitron word ever exceeds the line mask. */
 .method-sticky .section-title { font-size: clamp(2.3rem, 2.9vw, 3.3rem); }
 
-/* ---- 005 Selected Work: auto-drifting rail of live concept builds ---- */
+/* ---- 005 Our Work: centered header + grid of live concept builds ---- */
+.plain-section--gallery .section-meta,
+.plain-section--gallery .section-title,
+.plain-section--gallery .gallery-note {
+  width: min(980px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
 .gallery-note {
-  max-width: 52ch;
-  margin: 1.4rem 0 0;
+  max-width: 42ch;
+  margin: 1.4rem auto 0;
   color: var(--muted);
   font-size: clamp(1rem, 1.2vw, 1.15rem);
   line-height: 1.6;
