@@ -8,7 +8,7 @@ You are taking over an in progress build. Read this whole file before touching a
 
 Live: **https://dwfunnel-webgl.vercel.app** (the root rewrites to `cinema.html`).
 
-The most active surface right now is the **Selected Work** section, a grid of concept builds. Each card is a small looping video preview of a real, self hosted demo site, and clicking a card opens that live demo in a new tab. Danny keeps sending purchased HTML templates that you "make ours" and add to the grid.
+The most active surface right now is the **Our Work** section (formerly Selected Work), a grid of concept builds. Each card is a small looping video preview of a real, self hosted demo site, and clicking a card opens that live demo in a new tab. Live demos boot with a shared DW Funnel branded loader (`assets/js/dwf-loader.js`, skipped on `?embed=1`). Danny keeps sending purchased HTML templates that you "make ours" and add to the grid.
 
 ## 2. Environment and setup
 
@@ -53,9 +53,9 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 `cinema.css` and `cinema-app.js` are loaded with `?v=NN`. **Whenever you change either file, bump its version** in `cinema.html` (currently both at `v=89`). The HTML itself is not cache busted, so in the local browser add a throwaway `&cb=NN` to force fresh HTML while testing.
 
-## 5. The Selected Work grid, how it works
+## 5. The Our Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **25 cards**, all live demos.
+Section meta is `005 / Our Work`, headline **This Is Our Work.**, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **25 cards**, all live demos.
 
 Each live card is:
 ```html
