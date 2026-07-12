@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Kane Voss, self-discipline coach helping ambitious people build control, consistency, and unbreakable standards.">
+<meta name="theme-color" content="#030014">
+<title>Kane Voss, Self-Discipline Coach</title>
+<style>
+:root {
+  --bg:#030014;
+  --drawer:#333;
+  --acid:#CCFF00;
+  --white:#fff;
+  --muted:rgba(255,255,255,.56);
+  --line:#88AAFF;
+  --display:"Arial Black",Impact,sans-serif;
+  --sans:Inter,Arial,sans-serif;
+  --mono:"Courier New",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:white}
+body{font-family:var(--sans);min-height:100dvh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+::selection{background:var(--acid);color:#000}
+a{color:inherit;text-decoration:none}
+#app{position:relative;min-height:100dvh;overflow:hidden;background:var(--bg)}
+#particles{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:none}
+.vignette{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(circle at 50% 45%,transparent 25%,rgba(3,0,20,.08) 58%,rgba(3,0,20,.72) 100%)}
+.scan{position:absolute;z-index:6;left:0;right:0;top:-2px;height:1px;background:linear-gradient(90deg,transparent,rgba(136,170,255,.65),transparent);filter:blur(.5px);animation:scan 8s linear infinite}
+@keyframes scan{0%{transform:translateY(-10vh);opacity:0}20%{opacity:.3}100%{transform:translateY(110vh);opacity:0}}
+header{position:absolute;inset:0 0 auto 0;z-index:30;height:88px;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.logo{display:flex;align-items:center;gap:12px;background:none;border:0;color:white;padding:0}
+.logo-word{font-family:var(--display);font-size:28px;letter-spacing:.19em}
+.logo-star{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--acid);color:#000;font-size:19px;transition:transform .5s}
+.logo:hover .logo-star{transform:rotate(180deg)}
+.center-nav{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:44px;font:12px var(--mono);color:rgba(255,255,255,.8)}
+.center-nav a{position:relative;padding:6px 0}
+.center-nav a:after{content:"";position:absolute;left:0;right:auto;bottom:0;width:0;height:1px;background:var(--acid);transition:.3s}
+.center-nav a:hover:after{width:100%}
+.head-actions{display:flex;gap:10px}
+.commission{border:0;background:var(--acid);color:#000;padding:14px 22px;font:700 11px var(--mono);letter-spacing:.14em}
+.menu-btn{width:46px;height:46px;border:1px solid rgba(255,255,255,.18);background:transparent;color:white;display:grid;place-items:center}
+.menu-lines,.menu-lines:before,.menu-lines:after{display:block;width:22px;height:1.5px;background:currentColor;content:"";position:relative}
+.menu-lines:before{position:absolute;top:-7px}
+.menu-lines:after{position:absolute;top:7px}
+.hero{position:relative;z-index:20;min-height:100dvh;display:flex;justify-content:center;align-items:flex-start;padding:8vh 24px 0}
+.hero-inner{width:min(1380px,100%);text-align:center;position:relative}
+h1{margin:0;display:flex;flex-direction:column;align-items:center;text-transform:uppercase;line-height:.88}
+.design-with{font-family:var(--display);font-size:clamp(46px,7vw,110px);letter-spacing:.01em;color:var(--acid);-webkit-text-stroke:0 rgba(255,255,255,0)}
+.hero-word{font-family:var(--display);font-size:clamp(86px,15vw,230px);letter-spacing:-.025em;color:transparent;-webkit-text-stroke:1.6px rgba(255,255,255,.95);min-height:.88em}
+.bio{margin:12px auto 0;max-width:780px;padding:0 18px;font:13px/1.75 var(--mono);color:rgba(255,255,255,.8)}
+.bio span{display:inline-block;opacity:0;transform:translateY(3px);filter:blur(3px);animation:typeIn .08s forwards}
+@keyframes typeIn{to{opacity:1;transform:none;filter:none}}
+.acid-glow{position:absolute;left:50%;top:43%;transform:translateX(-50%);width:62vw;max-width:900px;height:21vh;border-radius:999px;background:radial-gradient(circle,rgba(204,255,0,.12),transparent 68%);filter:blur(55px);pointer-events:none;animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.5;transform:translateX(-50%) scale(1.08)}}
+.hero-image-wrap{position:absolute;z-index:10;left:0;right:0;bottom:-2vh;height:80vh;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+.hero-image{height:100%;max-width:none;object-fit:contain;object-position:center bottom;filter:grayscale(1) brightness(1.02) contrast(1.18) drop-shadow(0 25px 50px rgba(0,0,0,.58));transform:translateX(0);transition:transform .7s ease;pointer-events:auto;user-select:none}
+.hero-image:hover{transform:translateX(0) scale(1.04)}
+.marquee{position:absolute;z-index:30;left:0;right:0;bottom:max(8px,env(safe-area-inset-bottom));overflow:hidden;pointer-events:none}
+.marquee-track{display:flex;width:max-content;white-space:nowrap;animation:marquee 24s linear infinite;font-family:var(--display);font-size:clamp(44px,5.8vw,96px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.15)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.overlay{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.52);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;z-index:50;top:0;right:0;bottom:0;width:min(680px,100vw);background:var(--drawer);border-left:1px solid rgba(255,255,255,.06);transform:translateX(100%);transition:transform .55s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:-30px 0 80px rgba(0,0,0,.45)}
+.drawer.open{transform:translateX(0)}
+.drawer-head{height:80px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(51,51,51,.92);backdrop-filter:blur(14px)}
+.drawer-head button{border:0;background:none;color:white}
+.back{font:10px var(--mono);letter-spacing:.14em;display:flex;gap:12px;align-items:center}
+.back[disabled]{cursor:default;opacity:.75}
+.close{font-size:32px;font-weight:200}
+.drawer-scroll{overflow:auto;padding:24px 40px 60px;scrollbar-width:thin;scrollbar-color:rgba(204,255,0,.55) transparent}
+.drawer-menu-label{font:10px var(--mono);letter-spacing:.18em;color:rgba(255,255,255,.46);margin-bottom:16px}
+.drawer-link{width:100%;border:0;border-bottom:1px solid rgba(255,255,255,.16);background:none;color:white;display:flex;align-items:center;justify-content:space-between;padding:17px 0;font-family:var(--display);font-size:clamp(30px,4vw,52px);text-align:left}
+.drawer-link:hover,.drawer-link.work{color:var(--acid)}
+.drawer-link.work{border-bottom-color:rgba(204,255,0,.7)}
+.arrow{font-family:var(--mono);font-size:26px;transition:transform .25s}
+.drawer-link:hover .arrow{transform:translateX(8px)}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);margin-top:34px}
+.meta{background:var(--drawer);padding:17px}
+.meta small{font:9px var(--mono);letter-spacing:.14em;color:rgba(255,255,255,.42)}
+.meta p{margin:8px 0 0;font:11px var(--mono);color:rgba(255,255,255,.86)}
+.work-view{display:none}
+.drawer.work-mode .menu-view{display:none}
+.drawer.work-mode .work-view{display:block}
+.kicker{font:10px var(--mono);letter-spacing:.18em;color:var(--acid)}
+.work-title{font-family:var(--display);font-size:clamp(42px,5.8vw,72px);line-height:.88;margin:15px 0 30px;text-transform:uppercase;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.work-title span{color:var(--acid)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+label{display:block;font:9px var(--mono);letter-spacing:.13em;color:rgba(255,255,255,.72)}
+input,select,textarea{width:100%;border:0;border-bottom:1px solid rgba(255,255,255,.46);background:transparent;color:white;outline:none;padding:12px 0;margin-top:3px;font:14px var(--sans)}
+input:focus,select:focus,textarea:focus{border-bottom-color:var(--acid)}
+select option{background:#333}
+textarea{min-height:112px;resize:vertical}
+.full{grid-column:1/-1}
+.send{width:100%;min-height:56px;border:0;background:var(--acid);color:#000;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font:700 11px var(--mono);letter-spacing:.15em;margin-top:6px}
+.email-line{font:9px var(--mono);color:rgba(255,255,255,.46)}
+.email-line b{color:var(--acid);font-weight:400}
+.success{display:none;border:1px solid rgba(204,255,0,.55);background:rgba(204,255,0,.05);padding:28px}
+.success.show{display:block}
+.success h2{font:44px var(--display);margin:12px 0 14px}
+.success p{color:rgba(255,255,255,.65);font-size:14px;line-height:1.6}
+@media(max-width:760px){
+  .work-title{font-size:clamp(38px,13vw,60px);line-height:.9}
+
+  header{height:78px;padding:0 16px}
+  .logo-word{font-size:23px}
+  .logo-star{width:36px;height:36px}
+  .center-nav,.commission{display:none}
+  .hero{padding:13vh 10px 0}
+  .design-with{font-size:clamp(38px,12vw,62px)}
+  .hero-word{font-size:clamp(75px,22vw,125px)}
+  .bio{font-size:10px;line-height:1.75;max-width:94vw}
+  .hero-image-wrap{height:63vh}
+  .hero-image{height:90%}
+  .drawer-scroll{padding:22px 24px 50px}
+  .drawer-head{padding:0 20px}
+  .form-grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+.studio-badge{position:fixed;z-index:40;right:16px;bottom:14px;display:inline-flex;align-items:center;gap:8px;padding:9px 13px;background:rgba(3,0,20,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);font:600 10px/1 var(--mono);letter-spacing:.13em;color:rgba(255,255,255,.72);text-transform:uppercase;transition:.3s;pointer-events:auto}
+.studio-badge b{color:var(--acid);font-weight:700}
+.studio-badge:hover{color:#000;background:var(--acid);border-color:var(--acid)}
+.studio-badge:hover b{color:#000}
+@media(max-width:760px){.studio-badge{right:12px;bottom:calc(10px + env(safe-area-inset-bottom));padding:7px 10px;font-size:9px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="particles" aria-hidden="true"></canvas>
+  <div class="scan" aria-hidden="true"></div>
+
+  <header>
+    <button class="logo" aria-label="Kane Voss coaching home">
+      <span class="logo-word">KANE VOSS</span>
+      <span class="logo-star" aria-hidden="true">✦</span>
+    </button>
+    <nav class="center-nav" aria-label="Primary navigation">
+      <a href="#method">METHOD</a>
+      <a href="#results">RESULTS</a>
+      <a href="#mindset">MINDSET</a>
+    </nav>
+    <div class="head-actions">
+      <button class="commission" id="commissionBtn">START NOW</button>
+      <button class="menu-btn" id="menuBtn" aria-label="Open coaching menu"><span class="menu-lines"></span></button>
+    </div>
+  </header>
+
+  <main class="hero">
+    <section class="hero-inner">
+      <div class="acid-glow" aria-hidden="true"></div>
+      <h1>
+        <span class="design-with">MASTER YOUR</span>
+        <span class="hero-word" id="heroWord" aria-live="polite">SELF</span>
+      </h1>
+      <p class="bio" id="bio"></p>
+    </section>
+  </main>
+
+  <div class="hero-image-wrap">
+    <img class="hero-image" src="/assets/demos/kanevoss/hero.webp" alt="Kane Voss, self-discipline coach" width="853" height="1280" decoding="async">
+  </div>
+
+  <footer class="marquee" aria-label="Kane Voss, Self-Discipline Coach">
+    <div class="marquee-track" aria-hidden="true">
+      <span>KANE VOSS // SELF-DISCIPLINE COACH // KANE VOSS // BUILD STRONGER STANDARDS //&nbsp;</span>
+      <span>KANE VOSS // SELF-DISCIPLINE COACH // KANE VOSS // BUILD STRONGER STANDARDS //&nbsp;</span>
+    </div>
+  </footer>
+
+  <div class="vignette" aria-hidden="true"></div>
+
+  <a class="studio-badge" href="/" target="_blank" rel="noopener"><b>Concept build by DW Funnel</b></a>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Coaching menu">
+  <div class="drawer-head">
+    <button class="back" id="backBtn" disabled><span id="backIcon">☰</span><span id="backText">MENU</span></button>
+    <button class="close" id="closeBtn" aria-label="Close coaching menu">×</button>
+  </div>
+
+  <div class="drawer-scroll">
+    <section class="menu-view">
+      <div class="drawer-menu-label">CHOOSE YOUR NEXT MOVE</div>
+      <nav aria-label="Drawer navigation">
+        <button class="drawer-link"><span>COACHING</span><span class="arrow">→</span></button>
+        <button class="drawer-link"><span>METHOD</span><span class="arrow">→</span></button>
+        <button class="drawer-link"><span>MY STORY</span><span class="arrow">→</span></button>
+        <button class="drawer-link"><span>RESULTS</span><span class="arrow">→</span></button>
+        <button class="drawer-link work" id="workBtn"><span>START COACHING</span><span class="arrow">→</span></button>
+      </nav>
+      <div class="meta-grid">
+        <div class="meta"><small>COACHING STYLE</small><p>DIRECT / PRACTICAL</p></div>
+        <div class="meta"><small>FOCUS</small><p>DISCIPLINE / HABITS</p></div>
+        <div class="meta"><small>FORMAT</small><p>ONLINE / 1 TO 1</p></div>
+        <div class="meta"><small>IDEAL FOR</small><p>AMBITIOUS PEOPLE</p></div>
+      </div>
+    </section>
+
+    <section class="work-view">
+      <div class="kicker">05 / START COACHING</div>
+      <h2 class="work-title">STOP NEGOTIATING <span>WITH YOURSELF.</span></h2>
+      <form id="contactForm">
+        <div class="form-grid">
+          <label>NAME<input name="name" placeholder="Your name" autocomplete="name" required></label>
+          <label>EMAIL<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
+          <label>COACHING FOCUS
+            <select name="service" required>
+              <option value="" selected disabled>Choose your coaching focus</option>
+              <option>1-to-1 Discipline Coaching</option>
+              <option>Habit Reset Intensive</option>
+              <option>Accountability Coaching</option>
+              <option>Performance Mindset Session</option>
+            </select>
+          </label>
+          <label>BIGGEST CHALLENGE
+            <select name="budget" required>
+              <option value="" selected disabled>Choose your biggest challenge</option>
+              <option>I need structure</option>
+              <option>I keep procrastinating</option>
+              <option>I start but never stay consistent</option>
+              <option>I need serious accountability</option>
+            </select>
+          </label>
+          <label class="full">WHAT NEEDS TO CHANGE<textarea name="message" placeholder="What keeps breaking your discipline right now?" required></textarea></label>
+          <button class="send full" type="submit"><span>APPLY FOR COACHING</span><span>→</span></button>
+          <p class="email-line full">Prefer email? Reach me at <b>coach@kanevoss.co</b></p>
+        </div>
+      </form>
+      <div class="success" id="success" role="status">
+        <div class="kicker">APPLICATION CAPTURED</div>
+        <h2>YOUR RESET STARTS HERE.</h2>
+        <p>Your coaching application has been captured in this prototype. Connect the form to your CRM, Supabase, or booking workflow for production use.</p>
+      </div>
+    </section>
+  </div>
+</aside>
+
+<script>
+(() => {
+  "use strict";
+
+  const words = ["SELF","MIND","HABITS"];
+  const glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?#%";
+  const heroWord = document.getElementById("heroWord");
+  const bioEl = document.getElementById("bio");
+  const bioText = "I'm Kane Voss, a self-discipline coach helping ambitious people stop procrastinating, build stronger habits, and become someone who follows through.";
+  let wordIndex = 0;
+
+  function scramble(target) {
+    let frame = 0;
+    const total = 25;
+    const timer = setInterval(() => {
+      frame++;
+      const settled = Math.floor(target.length * Math.min(frame / total, 1));
+      heroWord.textContent = target.split("").map((c,i) => c === " " ? " " : i < settled ? c : glyphs[Math.floor(Math.random()*glyphs.length)]).join("");
+      if(frame >= total) {
+        clearInterval(timer);
+        heroWord.textContent = target;
+      }
+    }, 38);
+  }
+
+  function typeBio() {
+    bioEl.innerHTML = "";
+    [...bioText].forEach((char,i) => {
+      const span = document.createElement("span");
+      span.textContent = char === " " ? "\u00A0" : char;
+      span.style.animationDelay = `${i * .02}s`;
+      bioEl.appendChild(span);
+    });
+  }
+
+  typeBio();
+  setInterval(() => {
+    wordIndex = (wordIndex + 1) % words.length;
+    scramble(words[wordIndex]);
+  }, 4000);
+  setInterval(typeBio, 7000);
+
+  const drawer = document.getElementById("drawer");
+  const overlay = document.getElementById("overlay");
+  const backBtn = document.getElementById("backBtn");
+  const backIcon = document.getElementById("backIcon");
+  const backText = document.getElementById("backText");
+
+  function setWorkMode(work) {
+    drawer.classList.toggle("work-mode", work);
+    backBtn.disabled = !work;
+    backIcon.textContent = work ? "←" : "☰";
+    backText.textContent = work ? "BACK" : "MENU";
+    drawer.setAttribute("aria-label", work ? "Apply for coaching with Kane Voss" : "Coaching menu");
+  }
+
+  function openDrawer(work = false) {
+    setWorkMode(work);
+    drawer.classList.add("open");
+    overlay.classList.add("open");
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove("open");
+    overlay.classList.remove("open");
+  }
+
+  document.getElementById("menuBtn").addEventListener("click", () => openDrawer(false));
+  document.getElementById("commissionBtn").addEventListener("click", () => openDrawer(true));
+  document.getElementById("workBtn").addEventListener("click", () => setWorkMode(true));
+  document.getElementById("closeBtn").addEventListener("click", closeDrawer);
+  overlay.addEventListener("click", closeDrawer);
+  backBtn.addEventListener("click", () => setWorkMode(false));
+  window.addEventListener("keydown", e => { if(e.key === "Escape") closeDrawer(); });
+
+  const contactForm = document.getElementById("contactForm");
+  const success = document.getElementById("success");
+  contactForm.addEventListener("submit", e => {
+    e.preventDefault();
+    contactForm.style.display = "none";
+    success.classList.add("show");
+  });
+
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d", { alpha:true });
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const particleCount = innerWidth < 760 ? 650 : 1800;
+  const lineCount = innerWidth < 760 ? 90 : 260;
+  let w=0,h=0,dpr=1,cx=0,cy=0;
+  let mouseX=0,mouseY=0,mouseActive=false;
+  const particles=[];
+  const lines=[];
+
+  function makeParticle() {
+    const a=Math.random()*Math.PI*2;
+    const r=20+Math.pow(Math.random(),.55)*Math.max(innerWidth,innerHeight)*.62;
+    return {
+      a,r,
+      x:Math.cos(a)*r,
+      y:Math.sin(a)*r*.62,
+      z:Math.random(),
+      baseX:Math.cos(a)*r,
+      baseY:Math.sin(a)*r*.62,
+      size:.25+Math.random()*1.35,
+      speed:.0006+Math.random()*.0018
+    };
+  }
+
+  function makeLine() {
+    const a=Math.random()*Math.PI*2;
+    return {
+      a,
+      r:20+Math.pow(Math.random(),.65)*Math.max(innerWidth,innerHeight)*.62,
+      z:Math.random(),
+      len:20+Math.random()*160,
+      speed:.002+Math.random()*.004
+    };
+  }
+
+  function resize() {
+    dpr=Math.min(devicePixelRatio||1,1.7);
+    w=innerWidth;h=innerHeight;cx=w/2;cy=h*.48;
+    canvas.width=Math.floor(w*dpr);
+    canvas.height=Math.floor(h*dpr);
+    canvas.style.width=w+"px";
+    canvas.style.height=h+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  resize();
+  addEventListener("resize",resize,{passive:true});
+  addEventListener("pointermove",e=>{mouseX=e.clientX;mouseY=e.clientY;mouseActive=true;},{passive:true});
+  addEventListener("blur",()=>mouseActive=false);
+
+  for(let i=0;i<particleCount;i++) particles.push(makeParticle());
+  for(let i=0;i<lineCount;i++) lines.push(makeLine());
+
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+
+    ctx.globalCompositeOperation="lighter";
+    for(const l of lines) {
+      if(!reduced) {
+        l.z+=l.speed;
+        if(l.z>1) l.z=0;
+      }
+      const scale=.12+l.z*1.55;
+      const x=cx+Math.cos(l.a)*l.r*scale;
+      const y=cy+Math.sin(l.a)*l.r*.62*scale;
+      const ex=cx+Math.cos(l.a)*(l.r+l.len)*scale;
+      const ey=cy+Math.sin(l.a)*(l.r+l.len)*.62*scale;
+      const alpha=.018+l.z*.13;
+      ctx.beginPath();
+      ctx.moveTo(x,y);ctx.lineTo(ex,ey);
+      ctx.strokeStyle=`rgba(136,170,255,${alpha})`;
+      ctx.lineWidth=Math.max(.25,l.z*.85);
+      ctx.stroke();
+    }
+
+    for(const p of particles) {
+      if(!reduced) {
+        p.z+=p.speed;
+        if(p.z>1) p.z=0;
+      }
+      const scale=.08+p.z*1.8;
+      let x=cx+p.x*scale;
+      let y=cy+p.y*scale;
+
+      let acid=0;
+      if(mouseActive) {
+        const dx=x-mouseX,dy=y-mouseY;
+        const dist=Math.hypot(dx,dy);
+        if(dist<120) {
+          const force=(120-dist)*.04;
+          p.x+=dx/(dist||1)*force;
+          p.y+=dy/(dist||1)*force;
+          acid=Math.min((1-dist/120)*.4,.4);
+        }
+      }
+      p.x+=(p.baseX-p.x)*.028;
+      p.y+=(p.baseY-p.y)*.028;
+
+      x=cx+p.x*scale;
+      y=cy+p.y*scale;
+      const radius=p.size*(.35+p.z*1.45);
+      const alpha=.08+p.z*.45;
+      if(acid>0) {
+        ctx.fillStyle=`rgba(204,255,0,${Math.min(alpha+acid,.72)})`;
+      } else {
+        ctx.fillStyle=`rgba(82,151,255,${alpha})`;
+      }
+      ctx.beginPath();
+      ctx.arc(x,y,radius,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation="source-over";
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
