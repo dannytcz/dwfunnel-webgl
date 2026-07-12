@@ -1382,14 +1382,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Selected Work grid: every build shown at once, all animating in place. */
 .work-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 1.6vw, 1.9rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.8rem, 1.3vw, 1.5rem);
   margin-top: clamp(2.5rem, 5vh, 4rem);
 }
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .work-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
   .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 620px) {
+@media (max-width: 560px) {
   .work-grid { grid-template-columns: 1fr; }
 }
 .work-card {

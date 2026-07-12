@@ -514,7 +514,31 @@ function initTestimonialWall() {
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
-  grid.querySelectorAll("video").forEach((v) => v.play().catch(() => {}));
+  const vids = Array.from(grid.querySelectorAll("video"));
+  if (!vids.length) return;
+  // Data-saver: leave the posters, never fetch the clips.
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (saveData || !("IntersectionObserver" in window)) {
+    if (!saveData) vids.forEach((v) => v.play().catch(() => {}));
+    return;
+  }
+  // Only the cards on screen decode video; the rest stay on their poster and
+  // load nothing until they scroll into view. Keeps the grid light at any count.
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        const v = e.target;
+        if (e.isIntersecting) {
+          if (v.preload === "none") v.preload = "auto";
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      });
+    },
+    { rootMargin: "150px 0px", threshold: 0.15 }
+  );
+  vids.forEach((v) => io.observe(v));
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides
