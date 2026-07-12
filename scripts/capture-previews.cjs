@@ -72,6 +72,7 @@ const RECIPES = {
   thebrew:  { url:'/demos/thebrew.html?embed=1',     wait:2000, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   unwritten:{ url:'/demos/unwritten.html?embed=1',  wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
   kairo:    { url:'/demos/kairo.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
+  valence:  { url:'/demos/valence.html?embed=1',    wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
 };
 
 (async () => {
