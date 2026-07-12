@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="robots" content="noindex" />
-  <meta name="description" content="Lumeo Dental Studio, a concept cosmetic and family dentistry brand built by DW Funnel." />
+  <meta name="description" content="Harbour Smile Dental Studio, a concept cosmetic and family dentistry brand built by DW Funnel." />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lumeo Dental Studio, Sydney Cosmetic and Family Dentistry</title>
+  <title>Harbour Smile Dental Studio, Sydney Cosmetic and Family Dentistry</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:400;font-display:swap;src:url('/assets/demos/lumeo/open-sauce-one-400.woff2') format('woff2');}
-    @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:700;font-display:swap;src:url('/assets/demos/lumeo/open-sauce-one-700.woff2') format('woff2');}
+    @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:400;font-display:swap;src:url('/assets/demos/harbour/open-sauce-one-400.woff2') format('woff2');}
+    @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:700;font-display:swap;src:url('/assets/demos/harbour/open-sauce-one-700.woff2') format('woff2');}
     .studio-badge{position:fixed;z-index:60;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.14);border-radius:999px;font:600 10px/1 'Open Sauce One',sans-serif;letter-spacing:.05em;color:#111;text-decoration:none;transition:.2s}
     .studio-badge:hover{background:#111;color:#fff;border-color:#111}
     html, body, #root {
@@ -45,11 +45,12 @@
   <script type="text/babel">
     const { useEffect, useLayoutEffect, useRef, useState } = React;
 
-    const HERO_IMAGE = '/assets/demos/lumeo/hero.webp';
-    const SECTION2_IMAGE = '/assets/demos/lumeo/section2.webp';
-    const SECTION3_IMG1 = '/assets/demos/lumeo/s3img1.webp';
-    const SECTION3_IMG2 = '/assets/demos/lumeo/s3img2.webp';
-    const SECTION3_BG = '/assets/demos/lumeo/s3bg.webp';
+    const HERO_IMAGE = '/assets/demos/harbour/hero.webp';
+    const SECTION2_IMAGE = '/assets/demos/harbour/section2.webp';
+    const SECTION3_IMG1 = '/assets/demos/harbour/s3img1.webp';
+    const SECTION3_IMG2 = '/assets/demos/harbour/s3img2.webp';
+    const SECTION3_BG = '/assets/demos/harbour/s3bg.webp';
+    const BRAND_LOGO = '/assets/demos/harbour/logo.webp';
 
     const featureBars = ['Cosmetic Dentistry', 'Digital Smile Planning', 'Warm Australian Care'];
     const services = [
@@ -271,8 +272,8 @@
       return (
         <>
           <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-6 py-2 md:py-3 bg-white/80 backdrop-blur-md">
-            <a href="#home" className="flex items-center text-black" aria-label="Lumeo Dental Studio home">
-              <span className="text-2xl md:text-3xl font-bold tracking-tight leading-none">Lumeo<span className="text-neutral-400 font-medium"> Dental</span></span>
+            <a href="#home" className="flex items-center text-black" aria-label="Harbour Smile Dental Studio home">
+              <img src={BRAND_LOGO} alt="Harbour Smile Dental Studio" className="h-9 md:h-12 w-auto" />
             </a>
 
             <div className="hidden md:flex items-center gap-8">
@@ -302,7 +303,7 @@
             />
             <aside className={`absolute top-0 right-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${open ? 'translate-x-0' : 'translate-x-full'}`}>
               <div className="flex flex-col justify-center h-full px-8 gap-1">
-                <span className="text-3xl font-bold tracking-tight text-black mb-8">Lumeo<span className="text-neutral-400 font-medium"> Dental</span></span>
+                <img src={BRAND_LOGO} alt="Harbour Smile Dental Studio" className="h-10 w-auto mb-8" />
                 {navLinks.map(([label, href], index) => (
                   <a
                     key={label}
@@ -342,7 +343,7 @@
     }
 
     function App() {
-      const [showSplash, setShowSplash] = useState(true);
+      const [showSplash, setShowSplash] = useState(() => !new URLSearchParams(window.location.search).has('embed'));
       const isMobile = useIsMobile();
 
       const section1Ref = useRef(null);
