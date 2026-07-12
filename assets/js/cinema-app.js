@@ -515,51 +515,52 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: motionsite-smooth path.
-   When the gallery is on screen we freeze the page's heavy continuous work
-   (Three.js atmosphere + drifting testimonial wall) so animated WebP cards
-   get a clean GPU budget, same idea as motionsite.ai's light gallery page.
-   Cards start as posters; visible ones swap to loops, hover wins priority. */
+/* Selected Work grid: getlayers model.
+   Smooth H.264 preview loops (30fps) play on EVERY visible card together.
+   Silky feel comes from freezing Three.js + the testimonial wall while the
+   gallery is focused, and from proper preview encodes, not from limiting to
+   one player. Offscreen cards drop back to their poster. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
   const section = grid.closest("section") || grid;
-  const imgs = Array.from(grid.querySelectorAll("img.ws-embed-preview"));
-  if (!imgs.length) return;
+  const vids = Array.from(grid.querySelectorAll("video.ws-embed-preview"));
+  if (!vids.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
   if (!("IntersectionObserver" in window)) {
-    imgs.forEach((img) => {
-      const anim = img.getAttribute("data-anim");
-      if (anim) img.src = anim;
+    vids.forEach((v) => {
+      const src = v.getAttribute("data-src");
+      if (!src) return;
+      v.src = src;
+      v.play().catch(() => {});
     });
     return;
   }
 
-  // With WebGL paused, several loops are fine. Without it, keep one.
-  const MAX_LIVE_FOCUS = 6;
-  const MAX_LIVE_IDLE = 1;
   const visible = new Set();
   const live = new Set();
   let workFocus = false;
-  let hovered = null;
 
-  function posterOf(img) {
-    return img.getAttribute("data-poster") || img.currentSrc;
+  function stop(v) {
+    if (!v) return;
+    v.pause();
+    if (v.getAttribute("src")) {
+      v.removeAttribute("src");
+      v.load(); // snap back to poster
+    }
+    live.delete(v);
   }
-  function animOf(img) {
-    return img.getAttribute("data-anim");
-  }
-  function showPoster(img) {
-    const p = posterOf(img);
-    if (p && img.getAttribute("src") !== p) img.src = p;
-    live.delete(img);
-  }
-  function showAnim(img) {
-    const a = animOf(img);
-    if (!a) return;
-    if (img.getAttribute("src") !== a) img.src = a;
-    live.add(img);
+  function play(v) {
+    if (!v) return;
+    const src = v.getAttribute("data-src");
+    if (!src) return;
+    if (v.getAttribute("src") !== src) {
+      v.src = src;
+      v.load();
+    }
+    live.add(v);
+    if (v.paused) v.play().catch(() => {});
   }
   function setWorkFocus(on) {
     workFocus = on;
@@ -568,27 +569,22 @@ function initWorkGrid() {
     syncLive();
   }
   function syncLive() {
-    const mid = window.innerHeight * 0.45;
-    const ranked = Array.from(visible).sort((a, b) => {
-      if (hovered && a === hovered) return -1;
-      if (hovered && b === hovered) return 1;
-      const ra = a.getBoundingClientRect();
-      const rb = b.getBoundingClientRect();
-      return Math.abs(ra.top + ra.height / 2 - mid) - Math.abs(rb.top + rb.height / 2 - mid);
+    if (!workFocus) {
+      Array.from(live).forEach(stop);
+      return;
+    }
+    // All visible cards play together, same as getlayers.ai gallery cards.
+    visible.forEach((v) => play(v));
+    live.forEach((v) => {
+      if (!visible.has(v)) stop(v);
     });
-    const cap = workFocus ? MAX_LIVE_FOCUS : MAX_LIVE_IDLE;
-    const keep = new Set(ranked.slice(0, cap));
-    live.forEach((img) => {
-      if (!keep.has(img)) showPoster(img);
-    });
-    keep.forEach((img) => showAnim(img));
   }
 
   const sectionIo = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => setWorkFocus(e.isIntersecting));
     },
-    { rootMargin: "0px", threshold: 0.2 }
+    { rootMargin: "0px", threshold: 0.15 }
   );
   sectionIo.observe(section);
 
@@ -598,27 +594,14 @@ function initWorkGrid() {
         if (e.isIntersecting) visible.add(e.target);
         else {
           visible.delete(e.target);
-          showPoster(e.target);
-          if (hovered === e.target) hovered = null;
+          stop(e.target);
         }
       });
       syncLive();
     },
-    { rootMargin: "40px 0px", threshold: 0.2 }
+    { rootMargin: "80px 0px", threshold: 0.2 }
   );
-  imgs.forEach((img) => {
-    cardIo.observe(img);
-    const card = img.closest(".work-card");
-    if (!card) return;
-    card.addEventListener("pointerenter", () => {
-      hovered = img;
-      syncLive();
-    });
-    card.addEventListener("pointerleave", () => {
-      if (hovered === img) hovered = null;
-      syncLive();
-    });
-  });
+  vids.forEach((v) => cardIo.observe(v));
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides

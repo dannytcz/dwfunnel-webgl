@@ -1645,8 +1645,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-/* Selected Work previews: animated WebP of the real site loops in the card
-   via <img> (image-path decode, not a video element), then links to the live demo. */
+/* Selected Work previews: getlayers-style smooth H.264 loops. All visible
+   cards play together; poster shows until a card is activated. */
 .ws--embed { background: #06110e; overflow: hidden; }
 .ws-embed-preview {
   position: absolute;
@@ -1657,10 +1657,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   border: 0;
   display: block;
   pointer-events: none;
-  content-visibility: auto;
 }
-/* Gallery focus: freeze continuous page chrome so preview loops stay silky
-   (motionsite.ai is smooth because its gallery page has no competing WebGL). */
+/* Gallery focus: freeze continuous page chrome so many preview videos stay silky. */
 html.is-work-focus .webgl-atmosphere {
   opacity: 0 !important;
   visibility: hidden !important;
