@@ -769,7 +769,8 @@
   var lenis = null;
 
   /* ---------- Lenis smooth scroll ---------- */
-  if (window.Lenis) {
+  var isEmbed = new URLSearchParams(location.search).has("embed");
+  if (window.Lenis && !isEmbed) {
     lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     if (hasGSAP && window.ScrollTrigger) {
       gsap.registerPlugin(ScrollTrigger);
@@ -950,5 +951,26 @@
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });
 })();
 </script>
+  <script>
+  (function(){
+    if(!new URLSearchParams(location.search).has('embed')) return;
+    var st=document.createElement('style');
+    st.textContent='::-webkit-scrollbar{width:0;height:0;display:none}html{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:auto!important}';
+    document.head.appendChild(st);
+    var DUR=24000, HOLD=1400, phase='down', anchor=null, holdUntil=0;
+    function tick(){
+      var now=performance.now();
+      var max=Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if(max<8) return;
+      if(anchor===null) anchor=now;
+      if(now<holdUntil) return;
+      var t=Math.min((now-anchor)/DUR,1);
+      var p=(phase==='down')?t:1-t;
+      window.scrollTo(0, p*max);
+      if(t>=1){ phase=(phase==='down')?'up':'down'; anchor=now; holdUntil=now+HOLD; }
+    }
+    window.addEventListener('load', function(){ setTimeout(function(){ setInterval(tick, 16); }, 1800); });
+  })();
+  </script>
 </body>
 </html>
