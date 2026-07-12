@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#070707" />
   <meta name="robots" content="noindex" />
-  <meta name="description" content="Basilico, a cinematic fine-dining experience by Chef Alexander Thorne." />
-  <title>Basilico · Exceptional Culinary Experiences</title>
+  <meta name="description" content="Basilico, a Mayfair tasting room by Chef Alexander Thorne. Thirty-two seats, one open kitchen, dinner worth dressing for." />
+  <title>Basilico · Mayfair</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,7 +22,6 @@
       --gold: #d9a35f;
       --orange: #c97a2b;
       --line: rgba(255,255,255,.10);
-      --max: 1280px;
       --serif: "Playfair Display", Georgia, serif;
       --sans: "Inter", Arial, sans-serif;
       --ease: cubic-bezier(.16,1,.3,1);
@@ -48,15 +47,14 @@
 
     .site-shell {
       position: relative;
-      width: min(100%, var(--max));
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       background: var(--bg);
-      box-shadow: 0 0 80px rgba(0,0,0,.5);
       overflow: clip;
     }
 
     .container {
-      width: min(100% - 64px, 1160px);
+      width: min(100% - 64px, 1240px);
       margin-inline: auto;
     }
 
@@ -171,7 +169,7 @@
       left: 50%;
       top: 18px;
       z-index: 100;
-      width: min(calc(100% - 40px), 1180px);
+      width: min(calc(100% - 48px), 1320px);
       transform: translateX(-50%);
     }
     .navbar {
@@ -299,7 +297,7 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
     }
     .hero-content {
-      width: min(100% - 64px, 1160px);
+      width: min(100% - 80px, 1240px);
       margin: 0 auto;
       display: grid;
       grid-template-columns: minmax(0, 1.05fr) minmax(340px, .72fr);
@@ -777,10 +775,10 @@
     .experience-card {
       position: relative;
       min-height: 730px;
-      width: calc(100% - 64px);
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       overflow: hidden;
-      border: 1px solid var(--line);
+      border-block: 1px solid var(--line);
       isolation: isolate;
     }
     .experience-bg {
@@ -1141,7 +1139,7 @@
       .about-grid { gap: 50px; }
       .about-visual { min-height: 500px; }
       .tasting-intro { gap: 40px; }
-      .experience-card { width: calc(100% - 44px); }
+      .experience-card { width: 100%; }
       .footer-grid { grid-template-columns: 1.2fr .8fr .8fr; }
       .footer-grid > div:last-child { grid-column: 1/-1; max-width: 540px; }
     }
@@ -1212,7 +1210,7 @@
       .tasting-col:last-child { border-bottom: 0; }
 
       .experience { min-height: auto; padding: 20px 0; }
-      .experience-card { width: calc(100% - 24px); min-height: 680px; }
+      .experience-card { width: 100%; min-height: 680px; }
       .experience-bg { object-position: 60% center; }
       .experience-content {
         min-height: 680px;
@@ -1340,21 +1338,21 @@
 
       <div class="hero-content">
         <div class="hero-copy">
-          <div class="hero-kicker hero-reveal">Modern European Dining · No. 17</div>
+          <div class="hero-kicker hero-reveal">Mayfair · Thirty-Two Seats</div>
 
-          <h1 aria-label="Crafting Exceptional Culinary Experiences">
-            <span class="hero-line"><span class="hero-line-inner">Crafting</span></span>
-            <span class="hero-line"><span class="hero-line-inner gold-gradient">Exceptional</span></span>
-            <span class="hero-line"><span class="hero-line-inner">Culinary Experiences</span></span>
+          <h1 aria-label="Where the evening takes its time">
+            <span class="hero-line"><span class="hero-line-inner">Where the</span></span>
+            <span class="hero-line"><span class="hero-line-inner gold-gradient">Evening</span></span>
+            <span class="hero-line"><span class="hero-line-inner">Takes Its Time</span></span>
           </h1>
 
           <p class="hero-intro hero-reveal">
-            A tasting-led dining room where fire, season and memory meet. Each plate is composed with restraint, precision and a quiet sense of theatre.
+            A tasting-led dining room in Mayfair. Open kitchen, low light, and a menu that follows the market more closely than the calendar.
           </p>
 
           <div class="hero-actions hero-reveal">
-            <a class="button interactive" href="#reserve">Reserve an Evening <span class="arrow">↗</span></a>
-            <div class="hero-meta">Dinner Tue to Sun<br />5:30 PM to Late</div>
+            <a class="button interactive" href="#reserve">Book a Table <span class="arrow">↗</span></a>
+            <div class="hero-meta">Dinner Tue to Sun<br />From 5:30 PM</div>
           </div>
         </div>
 
@@ -1454,12 +1452,12 @@
       <div class="container about-grid">
         <div class="about-copy">
           <span class="eyebrow">The vision</span>
-          <h2 class="section-title">Cooking that begins with <span class="gold-gradient">clarity.</span></h2>
+          <h2 class="section-title">A kitchen that cooks with <span class="gold-gradient">restraint.</span></h2>
           <p>
-            Chef Alexander Thorne built Basilico around a simple conviction: luxury should never need to shout. His menus begin with the best expression of an ingredient, then strip away everything that distracts from it.
+            Chef Alexander Thorne opened Basilico on the belief that luxury should never need to announce itself. Find the best expression of an ingredient, then remove everything that gets in its way.
           </p>
           <p>
-            Raised between coastal kitchens and European dining rooms, Thorne brings fire-led technique, classical discipline and a deeply seasonal point of view to every service.
+            Raised between coastal kitchens and European dining rooms, Thorne brings fire-led technique and a tightly seasonal point of view to every service.
           </p>
           <div class="signature">Alexander Thorne</div>
         </div>
@@ -1467,11 +1465,11 @@
         <div class="about-visual">
           <div class="about-orbit" aria-hidden="true"></div>
           <div class="about-image">
-            <img src="/assets/demos/basilico/ambiance.webp" alt="Chef Alexander Thorne working in a refined kitchen" loading="lazy" />
+            <img src="/assets/demos/basilico/ambiance.webp" alt="Chef Alexander Thorne at the pass" loading="lazy" />
           </div>
           <div class="about-note">
             <strong>18 Years</strong>
-            in kitchens shaped by fire, season and quiet precision.
+            across kitchens shaped by fire, season and quiet precision.
           </div>
         </div>
       </div>
@@ -1485,7 +1483,7 @@
             <h2 class="section-title">The tasting menu is a <span class="gold-gradient">slow unfolding.</span></h2>
           </div>
           <p>
-            A sequence of seven compositions moving from delicacy to depth, guided by the micro-season and completed with a tableside finale. Optional wine pairing available.
+            Seven compositions from brightness to depth, paced by the micro-season and closed with a tableside finale. Wine pairing available on request.
           </p>
         </div>
 
@@ -1514,13 +1512,13 @@
 
     <section class="experience reveal-section" id="experience">
       <div class="experience-card">
-        <img class="experience-bg" id="experienceBg" src="/assets/demos/basilico/bg.webp" alt="Cinematic Basilico dining room atmosphere" loading="lazy" />
+        <img class="experience-bg" id="experienceBg" src="/assets/demos/basilico/bg.webp" alt="Basilico dining room in Mayfair" loading="lazy" />
         <div class="experience-content">
           <div class="experience-copy">
             <span class="eyebrow">Beyond the plate</span>
-            <h2 class="section-title">An evening composed around <span class="gold-gradient">how it feels.</span></h2>
+            <h2 class="section-title">Built around how the night <span class="gold-gradient">should feel.</span></h2>
             <p>
-              Low light, warm timber and the quiet cadence of open-kitchen service. For private evenings, our cellar room seats twelve around a single table with a menu written exclusively for the occasion.
+              Warm timber, low light, and the quiet cadence of an open kitchen. Private evenings take the cellar room: twelve seats, one table, a menu written only for that night.
             </p>
             <div class="experience-pills">
               <span class="experience-pill">Private dining</span>
@@ -1536,7 +1534,7 @@
     <section class="section testimonials reveal-section" aria-labelledby="critic-title">
       <div class="container">
         <span class="eyebrow">The critics</span>
-        <h2 class="section-title" id="critic-title">Words from the <span class="gold-gradient">other side of the table.</span></h2>
+        <h2 class="section-title" id="critic-title">From the <span class="gold-gradient">other side of the table.</span></h2>
 
         <div class="testimonial-stage">
           <article class="testimonial active">
@@ -1544,11 +1542,11 @@
             <cite>Elena Marlow · The Continental Review</cite>
           </article>
           <article class="testimonial">
-            <blockquote>“Thorne cooks with the control of a classicist and the instincts of someone who still enjoys breaking rules.”</blockquote>
+            <blockquote>“Thorne cooks with the control of a classicist and the instincts of someone who still enjoys breaking a rule.”</blockquote>
             <cite>James Lorne · Table Quarterly</cite>
           </article>
           <article class="testimonial">
-            <blockquote>“An atmospheric, deeply assured restaurant where every detail feels intentional, never ornamental.”</blockquote>
+            <blockquote>“Atmospheric, assured, and never ornamental. Every detail earns its place.”</blockquote>
             <cite>Clara Voss · Epicure Journal</cite>
           </article>
         </div>
@@ -1566,8 +1564,8 @@
       <div class="container">
         <div class="reservation-head">
           <span class="eyebrow">Reservations</span>
-          <h2 class="section-title">Your table is <span class="gold-gradient">being imagined.</span></h2>
-          <p>Select your preferred evening. Our reservations team will confirm availability and any details required for your experience.</p>
+          <h2 class="section-title">Request your <span class="gold-gradient">evening.</span></h2>
+          <p>Choose a date and we will confirm availability, seating, and any details your table needs.</p>
         </div>
 
         <form class="reservation-form" id="reservationForm">
@@ -1611,8 +1609,8 @@
 
           <div class="form-submit">
             <div>
-              <div class="form-note" id="formNote">Reservations are requests until confirmed by our team. For parties of 7 or more, our private dining team will contact you directly.</div>
-              <div class="success-message" id="successMessage">Thank you. Your reservation request has been received.</div>
+              <div class="form-note" id="formNote">Requests are held until confirmed. Parties of 7 or more are handled by our private dining team.</div>
+              <div class="success-message" id="successMessage">Thank you. Your reservation request is with the team.</div>
             </div>
             <button class="button interactive" type="submit">Request Table <span class="arrow">↗</span></button>
           </div>
@@ -1627,7 +1625,7 @@
             <span class="eyebrow">Visual story</span>
             <h2 class="section-title">Between fire, hands and <span class="gold-gradient">midnight service.</span></h2>
           </div>
-          <p>A glimpse into the ingredients, rituals and rooms that shape Basilico before the first guest arrives and long after the final plate leaves the pass.</p>
+          <p>A look at the ingredients, rituals and rooms that shape the night before the first guest sits down.</p>
         </div>
 
         <div class="gallery-grid">
@@ -1664,15 +1662,15 @@
         <div class="footer-grid">
           <div class="footer-about">
             <a class="brand interactive" href="#home">Basilico<span class="brand-dot">.</span></a>
-            <p>A modern European dining room shaped by season, fire and quiet precision. Dinner, Tuesday through Sunday.</p>
+            <p>A Mayfair tasting room shaped by season, fire and quiet precision. Dinner, Tuesday through Sunday.</p>
           </div>
 
           <div>
             <h4>Visit</h4>
             <div class="footer-list">
-              17 Bellrose Lane<br />
-              London W1<br />
-              +44 20 7946 0317<br />
+              14 Mount Street<br />
+              Mayfair, London W1K 2RR<br />
+              +44 20 7491 6620<br />
               <a class="interactive" href="mailto:table@basilico.example">table@basilico.example</a>
             </div>
           </div>
