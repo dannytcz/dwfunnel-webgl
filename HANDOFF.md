@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Selected Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **18 cards**, all live demos.
+Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **21 cards**, all live demos.
 
 Each live card is:
 ```html
@@ -95,6 +95,9 @@ The 8 live demos and what each replaced:
 - **Genova** biosciences (`/demos/genova.html`), biotech brand hero.
 - **CerebralKinetics** adaptive systems (`/demos/cerebralkinetics.html`), rebranded from NeuralKinetics; bionics + cognitive AI hero.
 - **Mallee & Paw** Australian pet living (`/demos/malleepaw.html`), considered comfort commerce hero.
+- **Lumenix** 3D motion studio (`/demos/lumenix.html`), rebranded from Framelix; cinematic brand motion.
+- **Reverie** immersive storyworld (`/demos/reverie.html`), go where maps end.
+- **STRETCH** ethical beauty (`/demos/stretch.html`), sustainable skincare commerce.
 
 ## 6. How to add a new demo ("make it ours")
 

@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="STRETCH, ethical beauty with sustainable impact. A concept build by DW Funnel." />
+  <title>STRETCH · Ethical Beauty</title>
+  <style>
+    :root {
+      --cream: #F9F4F0;
+      --ink: #1a1a1a;
+      --gold: #C8A45C;
+      --muted: #8b8b8b;
+      --nav-h: 66px;
+      --announce-h: 42px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    body.menu-open { overflow: hidden; }
+    button, a { font: inherit; }
+    button { border: 0; }
+    a { color: inherit; text-decoration: none; }
+    img, video, svg { display: block; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+    .icon-sm { width: 16px; height: 16px; }
+    .icon-xs { width: 14px; height: 14px; }
+
+    .announcement {
+      position: absolute;
+      inset: 0 0 auto 0;
+      z-index: 35;
+      height: var(--announce-h);
+      background: var(--cream);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+    }
+    .announcement-inner {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 13px;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: .005em;
+    }
+
+    .nav {
+      position: absolute;
+      top: var(--announce-h);
+      left: 0;
+      right: 0;
+      z-index: 30;
+      height: var(--nav-h);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 clamp(18px, 3vw, 48px);
+      color: white;
+    }
+    .logo {
+      justify-self: start;
+      font-size: 20px;
+      font-weight: 750;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: clamp(24px, 3vw, 44px);
+    }
+    .nav-link {
+      position: relative;
+      display: inline-flex;
+      padding: 8px 0;
+      font-size: 14px;
+      text-transform: lowercase;
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 3px;
+      width: 0;
+      height: 1px;
+      background: currentColor;
+      transition: width .3s ease;
+    }
+    .nav-link:hover::after, .nav-link:focus-visible::after { width: 100%; }
+    .nav-right {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .currency {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      text-transform: lowercase;
+    }
+    .flag {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: 24px;
+      height: 16px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+    }
+    .flag span:nth-child(1){ background:#1d4ed8; }
+    .flag span:nth-child(2){ background:#fff; }
+    .flag span:nth-child(3){ background:#dc2626; }
+    .divider { width: 1px; height: 20px; background: rgba(255,255,255,.3); }
+    .icon-button {
+      width: 34px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      color: inherit;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: background-color .25s ease, transform .25s ease;
+    }
+    .icon-button:hover { background: rgba(255,255,255,.12); }
+    .icon-button:active { transform: scale(.95); }
+    .menu-toggle { display: none; position: relative; z-index: 52; }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: grid;
+      place-items: center;
+      background: rgba(0,0,0,.95);
+      color: white;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .5s ease;
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: auto; }
+    .mobile-menu-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .mobile-menu a {
+      font-size: clamp(30px, 8vw, 44px);
+      font-weight: 300;
+      letter-spacing: -.025em;
+      transform: translateY(14px);
+      opacity: 0;
+      transition: transform .5s ease, opacity .5s ease;
+    }
+    .mobile-menu.open a { transform: translateY(0); opacity: 1; }
+    .mobile-menu.open a:nth-child(1){ transition-delay: 80ms; }
+    .mobile-menu.open a:nth-child(2){ transition-delay: 130ms; }
+    .mobile-menu.open a:nth-child(3){ transition-delay: 180ms; }
+    .mobile-menu.open a:nth-child(4){ transition-delay: 230ms; }
+
+    .hero {
+      min-height: 100svh;
+      display: flex;
+      background: #111;
+      color: white;
+    }
+    .hero-half {
+      position: relative;
+      width: 50%;
+      min-height: 100svh;
+      overflow: hidden;
+    }
+    .hero-media, .hero-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-left .hero-media { object-position: center center; }
+    .hero-left::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(90deg, rgba(0,0,0,.38) 0%, rgba(0,0,0,.19) 58%, rgba(0,0,0,.07) 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: min(780px, 100%);
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: calc(var(--announce-h) + var(--nav-h) + 36px) clamp(28px, 5vw, 84px) clamp(42px, 5vw, 76px);
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .hero-content.visible { opacity: 1; transform: translateY(0); }
+    .hero h1 {
+      margin: 0 0 24px;
+      font-weight: 300;
+      font-size: clamp(3.25rem, 5vw, 6rem);
+      line-height: 1.05;
+      letter-spacing: -.055em;
+      max-width: 760px;
+    }
+    .impact-word { position: relative; display: inline-block; }
+    .impact-underline {
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      height: 16px;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .hero-copy {
+      margin: 0 0 40px;
+      max-width: 430px;
+      color: rgba(255,255,255,.8);
+      font-size: clamp(14px, 1.2vw, 16px);
+      line-height: 1.55;
+    }
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 14px 40px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .btn-primary::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(0,0,0,.06) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform .5s ease;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+    .btn-primary:hover::before { transform: translateX(100%); }
+    .btn-primary:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+
+    .hero-right { background: #2a2725; }
+    .hero-slide {
+      opacity: 0;
+      transition: opacity .7s ease;
+      background: #2a2725;
+    }
+    .hero-slide.active { opacity: 1; }
+    .hero-controls {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dots { display: flex; align-items: center; gap: 8px; }
+    .dot {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,.5);
+      cursor: pointer;
+      transition: background-color .25s ease, transform .25s ease;
+    }
+    .dot.active { background: #fff; transform: scale(1.25); }
+    .play-toggle {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.5);
+      color: white;
+      background: rgba(0,0,0,.08);
+      cursor: pointer;
+      transition: background-color .25s ease, transform .25s ease;
+    }
+    .play-toggle:hover { background: rgba(0,0,0,.26); }
+    .play-toggle:active { transform: scale(.95); }
+
+    .best-sellers {
+      background: var(--cream);
+      color: #000;
+      padding: clamp(48px, 6vw, 72px) clamp(16px, 3vw, 40px);
+      overflow: hidden;
+    }
+    .section-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .section-reveal.visible { opacity: 1; transform: translateY(0); }
+    .tabs {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: clamp(20px, 4vw, 54px);
+      margin-bottom: clamp(30px, 4vw, 54px);
+    }
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0;
+      background: transparent;
+      color: #9ca3af;
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: -.045em;
+      cursor: pointer;
+      transition: color .25s ease;
+    }
+    .tab:hover { color: #4b5563; }
+    .tab.active { color: var(--ink); }
+    .tab-dot {
+      width: clamp(20px, 2vw, 24px);
+      height: clamp(20px, 2vw, 24px);
+      border-radius: 999px;
+      background: var(--ink);
+      animation: scale-in .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes scale-in {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .product-carousel {
+      display: flex;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 2px;
+    }
+    .product-carousel::-webkit-scrollbar { display: none; }
+    .product-card {
+      flex: 0 0 300px;
+      width: 300px;
+      border: 1px solid #e5e7eb;
+      margin-left: -1px;
+      padding: 16px 0 24px;
+      scroll-snap-align: start;
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .product-card:first-child { margin-left: 0; }
+    .product-card.visible { opacity: 1; transform: translateY(0); }
+    .product-labels {
+      height: 48px;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .product-category, .product-subcategory {
+      text-transform: uppercase;
+      font-size: 11px;
+      line-height: 1.3;
+    }
+    .product-category { font-weight: 600; letter-spacing: .09em; }
+    .product-subcategory { color: #6b7280; margin-top: 2px; }
+    .product-image-wrap {
+      position: relative;
+      margin: 0 16px;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      border-radius: 8px;
+      background: var(--cream);
+    }
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease;
+    }
+    .product-card:hover .product-image { transform: scale(1.05); }
+    .product-info { padding: 20px 16px 0; text-align: center; }
+    .product-name { margin: 0 0 8px; font-size: 14px; line-height: 1.4; }
+    .product-price { display: flex; justify-content: center; gap: 8px; font-size: 13px; }
+    .old-price { color: #9ca3af; text-decoration: line-through; }
+
+    .progress-wrap { margin: 36px auto 0; max-width: 280px; }
+    .progress-track {
+      height: 2px;
+      background: #d1d5db;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-thumb {
+      width: 30%;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--ink);
+      transform: translateX(0);
+      will-change: transform;
+    }
+
+    .categories {
+      background: #000;
+      color: #fff;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: hidden;
+    }
+    .categories.section-reveal {
+      transform: translateY(48px);
+      transition-duration: 1s;
+    }
+    .categories.section-reveal.visible { transform: translateY(0); }
+    .category-card {
+      position: relative;
+      min-height: 750px;
+      padding: 48px;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+    .category-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .7s ease;
+      background: #1d1d1d;
+    }
+    .category-card:hover .category-video { transform: scale(1.05); }
+    .category-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.1);
+      transition: background-color .5s ease;
+    }
+    .category-card:hover .category-overlay { background: rgba(0,0,0,.2); }
+    .category-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .vertical-title {
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      margin: 0;
+      font-size: clamp(72px, 6.5vw, 112px);
+      font-weight: 500;
+      line-height: .88;
+      letter-spacing: -.06em;
+      transition: translate .35s ease;
+    }
+    .category-card:hover .vertical-title { translate: 0 -2px; }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0,0,0,0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+    :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+    @media (max-width: 1023px) {
+      .hero { flex-direction: column; min-height: auto; }
+      .hero-half { width: 100%; }
+      .hero-left { min-height: 60svh; }
+      .hero-right { min-height: 40svh; }
+      .hero-content { min-height: 60svh; padding-inline: clamp(28px, 7vw, 72px); }
+      .hero h1 { font-size: clamp(3.25rem, 8vw, 5.5rem); }
+      .product-card { flex-basis: 300px; width: 300px; }
+    }
+
+    @media (max-width: 767px) {
+      :root { --announce-h: 38px; --nav-h: 62px; }
+      .announcement { padding-block: 10px; }
+      .announcement-inner { font-size: 12px; gap: 12px; }
+      .nav { grid-template-columns: 1fr auto; padding-inline: 18px; }
+      .nav-center, .currency, .divider { display: none; }
+      .logo { font-size: 18px; }
+      .nav-right { gap: 6px; }
+      .menu-toggle { display: inline-grid; }
+      .categories { grid-template-columns: 1fr; }
+      .category-card { min-height: 500px; padding: 32px; }
+      .vertical-title { font-size: clamp(58px, 15vw, 86px); }
+      .product-card { flex-basis: 280px; width: 280px; }
+    }
+
+    @media (max-width: 479px) {
+      .hide-xs { display: none; }
+      .hero-left { min-height: 64svh; }
+      .hero-right { min-height: 40svh; }
+      .hero-content {
+        min-height: 64svh;
+        padding: calc(var(--announce-h) + var(--nav-h) + 28px) 24px 44px;
+      }
+      .hero h1 { font-size: clamp(2.85rem, 13vw, 4rem); margin-bottom: 22px; }
+      .hero-copy { margin-bottom: 30px; }
+      .btn-primary { padding-inline: 32px; }
+      .tab { font-size: 28px; gap: 10px; }
+      .tabs { gap: 18px; }
+      .product-card { flex-basis: 260px; width: 260px; }
+      .category-card { min-height: 400px; padding: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+<body>
+  <header class="announcement" aria-label="Store announcement">
+    <div class="announcement-inner">
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#chevron-left"></use></svg>
+      <span>free shipping for orders over 50€</span>
+      <svg class="icon icon-sm" aria-hidden="true"><use href="#chevron-right"></use></svg>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Main navigation">
+    <a class="logo" href="#top" aria-label="STRETCH home">STRETCH</a>
+    <div class="nav-center">
+      <a class="nav-link" href="#shop">shop</a>
+      <a class="nav-link" href="#learn">learn</a>
+      <a class="nav-link" href="#journal">journal</a>
+      <a class="nav-link" href="#theme">theme</a>
+    </div>
+    <div class="nav-right">
+      <button class="currency" type="button" aria-label="Select currency">
+        <span class="flag" aria-label="French flag"><span></span><span></span><span></span></span>
+        <span>eur €</span>
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#chevron-down"></use></svg>
+      </button>
+      <span class="divider" aria-hidden="true"></span>
+      <button class="icon-button hide-xs" type="button" aria-label="Account"><svg class="icon" aria-hidden="true"><use href="#user"></use></svg></button>
+      <button class="icon-button" type="button" aria-label="Search"><svg class="icon" aria-hidden="true"><use href="#search"></use></svg></button>
+      <button class="icon-button" type="button" aria-label="Shopping bag"><svg class="icon" aria-hidden="true"><use href="#bag"></use></svg></button>
+      <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <svg class="icon menu-icon" aria-hidden="true"><use href="#menu"></use></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="mobile-menu-inner">
+      <a href="#shop">shop</a>
+      <a href="#learn">learn</a>
+      <a href="#journal">journal</a>
+      <a href="#theme">theme</a>
+    </div>
+  </div>
+
+  <main id="top">
+    <section class="hero" aria-label="STRETCH beauty introduction">
+      <div class="hero-half hero-left">
+        <img class="hero-media" src="/assets/demos/stretch/img-1.webp" alt="STRETCH skincare ritual" fetchpriority="high" />
+        <div class="hero-content" id="heroContent">
+          <h1>ethical beauty,<br />sustainable <span class="impact-word">impact.<svg class="impact-underline" viewBox="0 0 250 16" preserveAspectRatio="none" aria-hidden="true"><path d="M2 5 C35 1 64 12 98 6 S160 2 248 7" fill="none" stroke="#C8A45C" stroke-width="2"/><path d="M4 9 C43 5 68 14 112 9 S180 4 247 11" fill="none" stroke="#C8A45C" stroke-width="1.5"/><path d="M2 13 C41 9 74 17 120 12 S188 8 246 14" fill="none" stroke="#C8A45C" stroke-width="1"/></svg></span></h1>
+          <p class="hero-copy">Committed to sustainable beauty, and to reducing our impact on the planet.</p>
+          <a class="btn-primary" href="#learn">about us</a>
+        </div>
+      </div>
+
+      <div class="hero-half hero-right" aria-label="Beauty film carousel">
+        <video class="hero-slide active" data-slide="0" autoplay loop muted playsinline preload="metadata" aria-hidden="false">
+          <source src="/assets/demos/stretch/clip-1.mp4" type="video/mp4" />
+        </video>
+        <video class="hero-slide" data-slide="1" autoplay loop muted playsinline preload="metadata" aria-hidden="true">
+          <source src="/assets/demos/stretch/clip-2.mp4" type="video/mp4" />
+        </video>
+        <video class="hero-slide" data-slide="2" autoplay loop muted playsinline preload="metadata" aria-hidden="true">
+          <source src="/assets/demos/stretch/clip-3.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-controls">
+          <div class="dots" role="group" aria-label="Select video slide">
+            <button class="dot active" type="button" data-dot="0" aria-label="Show slide 1" aria-pressed="true"></button>
+            <button class="dot" type="button" data-dot="1" aria-label="Show slide 2" aria-pressed="false"></button>
+            <button class="dot" type="button" data-dot="2" aria-label="Show slide 3" aria-pressed="false"></button>
+          </div>
+          <button class="play-toggle" id="playToggle" type="button" aria-label="Pause slideshow" aria-pressed="false">
+            <svg class="icon icon-xs" aria-hidden="true"><use href="#pause"></use></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="best-sellers" id="shop">
+      <div class="section-reveal" data-reveal>
+        <div class="tabs" role="tablist" aria-label="Product collections">
+          <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="best sellers"><span class="tab-label">best sellers</span><span class="tab-dot" aria-hidden="true"></span></button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="sets"><span class="tab-label">sets</span></button>
+        </div>
+      </div>
+
+      <div class="product-carousel" id="productCarousel" aria-label="Best selling products">
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">ILLUMINATE</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-2.webp" alt="Illuminating cleansing gel" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Illuminating cleansing gel</h2><div class="product-price"><span>€36,00</span></div></div>
+        </article>
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">UNIFY</span><span class="product-subcategory">TIGHTEN PORES</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-3.webp" alt="Unifying serum spray" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Unifying serum spray</h2><div class="product-price"><span>€34,00</span></div></div>
+        </article>
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">NATURAL GLOW</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-4.webp" alt="Super glow set" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Super glow set</h2><div class="product-price"><span>€92,00</span><span class="old-price">€99,00</span></div></div>
+        </article>
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">PROTECT</span><span class="product-subcategory">ILLUMINATE</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-5.webp" alt="Radiance day oil" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Radiance day oil</h2><div class="product-price"><span>€59,00</span></div></div>
+        </article>
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">HYDRATE</span><span class="product-subcategory">NOURISH</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-2.webp" alt="Deep moisture cream" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Deep moisture cream</h2><div class="product-price"><span>€48,00</span></div></div>
+        </article>
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">RENEW</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-3.webp" alt="Night repair elixir" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Night repair elixir</h2><div class="product-price"><span>€72,00</span><span class="old-price">€79,00</span></div></div>
+        </article>
+        <article class="product-card" data-product-card>
+          <div class="product-labels"><span class="product-category">SMOOTH</span><span class="product-subcategory">REFINE</span></div>
+          <div class="product-image-wrap"><img class="product-image" src="/assets/demos/stretch/img-4.webp" alt="Gentle exfoliating toner" loading="lazy" /></div>
+          <div class="product-info"><h2 class="product-name">Gentle exfoliating toner</h2><div class="product-price"><span>€42,00</span></div></div>
+        </article>
+      </div>
+
+      <div class="progress-wrap" aria-hidden="true"><div class="progress-track"><div class="progress-thumb" id="progressThumb"></div></div></div>
+    </section>
+
+    <section class="categories section-reveal" id="learn" data-reveal>
+      <article class="category-card">
+        <video class="category-video" autoplay loop muted playsinline preload="metadata"><source src="/assets/demos/stretch/clip-4.mp4" type="video/mp4" /></video>
+        <div class="category-overlay"></div>
+        <div class="category-content"><h2 class="vertical-title">face</h2><a class="btn-primary" href="#shop">shop face</a></div>
+      </article>
+      <article class="category-card" id="journal">
+        <video class="category-video" autoplay loop muted playsinline preload="metadata"><source src="/assets/demos/stretch/clip-6.mp4" type="video/mp4" /></video>
+        <div class="category-overlay"></div>
+        <div class="category-content"><h2 class="vertical-title">beauty tools</h2><a class="btn-primary" href="#shop">shop beauty tools</a></div>
+      </article>
+      <article class="category-card" id="theme">
+        <video class="category-video" autoplay loop muted playsinline preload="metadata"><source src="/assets/demos/stretch/clip-5.mp4" type="video/mp4" /></video>
+        <div class="category-overlay"></div>
+        <div class="category-content"><h2 class="vertical-title">body</h2><a class="btn-primary" href="#shop">shop body</a></div>
+      </article>
+    </section>
+  </main>
+
+  <svg class="sr-only" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="user" viewBox="0 0 24 24"><path d="M19 21a7 7 0 0 0-14 0"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="bag" viewBox="0 0 24 24"><path d="M6 8h12l1 13H5L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/></symbol>
+    <symbol id="pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+    <symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+    <symbol id="menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <div id="selftest" class="sr-only" aria-hidden="true"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const heroContent = document.getElementById('heroContent');
+      const slides = [...document.querySelectorAll('.hero-slide')];
+      const dots = [...document.querySelectorAll('.dot')];
+      const playToggle = document.getElementById('playToggle');
+      const productCarousel = document.getElementById('productCarousel');
+      const progressThumb = document.getElementById('progressThumb');
+      const menuToggle = document.getElementById('menuToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const productCards = [...document.querySelectorAll('[data-product-card]')];
+      const tabs = [...document.querySelectorAll('.tab')];
+
+      let activeSlide = 0;
+      let slideshowPaused = false;
+      let slideTimer = null;
+
+      const iconMarkup = (id) => `<svg class="icon ${id === 'pause' || id === 'play' ? 'icon-xs' : ''}" aria-hidden="true"><use href="#${id}"></use></svg>`;
+
+      function showSlide(index) {
+        activeSlide = (index + slides.length) % slides.length;
+        slides.forEach((slide, i) => {
+          const active = i === activeSlide;
+          slide.classList.toggle('active', active);
+          slide.setAttribute('aria-hidden', String(!active));
+          if (active && !slideshowPaused) slide.play().catch(() => {});
+        });
+        dots.forEach((dot, i) => {
+          const active = i === activeSlide;
+          dot.classList.toggle('active', active);
+          dot.setAttribute('aria-pressed', String(active));
+        });
+      }
+
+      function startSlideshow() {
+        clearInterval(slideTimer);
+        if (slideshowPaused || prefersReducedMotion) return;
+        slideTimer = window.setInterval(() => showSlide(activeSlide + 1), 5000);
+      }
+
+      function setPaused(paused) {
+        slideshowPaused = paused;
+        slides.forEach(video => {
+          if (paused) video.pause();
+          else video.play().catch(() => {});
+        });
+        playToggle.innerHTML = iconMarkup(paused ? 'play' : 'pause');
+        playToggle.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
+        playToggle.setAttribute('aria-pressed', String(paused));
+        startSlideshow();
+      }
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          showSlide(i);
+          startSlideshow();
+        });
+      });
+      playToggle.addEventListener('click', () => setPaused(!slideshowPaused));
+      startSlideshow();
+
+      function setMenu(open) {
+        mobileMenu.classList.toggle('open', open);
+        mobileMenu.setAttribute('aria-hidden', String(!open));
+        menuToggle.setAttribute('aria-expanded', String(open));
+        menuToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        menuToggle.innerHTML = iconMarkup(open ? 'x' : 'menu');
+        document.body.classList.toggle('menu-open', open);
+      }
+      menuToggle.addEventListener('click', () => setMenu(!mobileMenu.classList.contains('open')));
+      mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && mobileMenu.classList.contains('open')) setMenu(false);
+      });
+
+      function updateProgress() {
+        const maxScroll = Math.max(1, productCarousel.scrollWidth - productCarousel.clientWidth);
+        const progress = Math.max(0, Math.min(1, productCarousel.scrollLeft / maxScroll));
+        const trackTravelPercent = (100 - 30) / 30;
+        progressThumb.style.transform = `translateX(${progress * trackTravelPercent * 100}%)`;
+      }
+      productCarousel.addEventListener('scroll', updateProgress, { passive: true });
+      productCarousel.addEventListener('wheel', event => {
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        const maxScroll = productCarousel.scrollWidth - productCarousel.clientWidth;
+        const movingForward = event.deltaY > 0 && productCarousel.scrollLeft < maxScroll - 1;
+        const movingBack = event.deltaY < 0 && productCarousel.scrollLeft > 1;
+        if (movingForward || movingBack) {
+          event.preventDefault();
+          productCarousel.scrollLeft += event.deltaY;
+        }
+      }, { passive: false });
+      window.addEventListener('resize', updateProgress, { passive: true });
+      updateProgress();
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(item => {
+            item.classList.remove('active');
+            item.setAttribute('aria-selected', 'false');
+            item.querySelector('.tab-dot')?.remove();
+          });
+          tab.classList.add('active');
+          tab.setAttribute('aria-selected', 'true');
+          const dot = document.createElement('span');
+          dot.className = 'tab-dot';
+          dot.setAttribute('aria-hidden', 'true');
+          tab.appendChild(dot);
+        });
+      });
+
+      if ('IntersectionObserver' in window && !prefersReducedMotion) {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+        const cardObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const index = productCards.indexOf(entry.target);
+            entry.target.style.transitionDelay = `${200 + Math.max(0, index) * 80}ms`;
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: 0.08 });
+        productCards.forEach(card => cardObserver.observe(card));
+      } else {
+        document.querySelectorAll('[data-reveal], [data-product-card]').forEach(el => el.classList.add('visible'));
+      }
+
+      requestAnimationFrame(() => requestAnimationFrame(() => heroContent.classList.add('visible')));
+
+      // Lightweight browser self-test; runs only with ?selftest=1.
+      if (new URLSearchParams(location.search).get('selftest') === '1') {
+        const testNode = document.getElementById('selftest');
+        const checks = [];
+        const check = (name, condition) => checks.push({ name, pass: Boolean(condition) });
+        check('three sections', document.querySelectorAll('main > section').length === 3);
+        check('seven product cards', productCards.length === 7);
+        check('three hero videos', slides.length === 3);
+        check('three category videos', document.querySelectorAll('.category-video').length === 3);
+        check('mobile menu initially closed', !mobileMenu.classList.contains('open'));
+        menuToggle.click();
+        check('menu toggle opens', mobileMenu.classList.contains('open') && document.body.classList.contains('menu-open'));
+        menuToggle.click();
+        check('menu toggle closes', !mobileMenu.classList.contains('open') && !document.body.classList.contains('menu-open'));
+        const beforePaused = slideshowPaused;
+        playToggle.click();
+        check('pause toggle changes state', slideshowPaused !== beforePaused);
+        playToggle.click();
+        const setsTab = tabs[1];
+        setsTab.click();
+        check('tabs switch', setsTab.classList.contains('active') && setsTab.getAttribute('aria-selected') === 'true');
+        tabs[0].click();
+        showSlide(2);
+        check('dot selects slide', slides[2].classList.contains('active') && dots[2].classList.contains('active'));
+        showSlide(0);
+        updateProgress();
+        const failed = checks.filter(item => !item.pass);
+        testNode.textContent = JSON.stringify({ status: failed.length ? 'FAIL' : 'PASS', checks, failed });
+        document.documentElement.dataset.selftest = failed.length ? 'fail' : 'pass';
+      }
+    })();
+  </script>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#111;text-decoration:none;background:rgba(255,255,255,.9);padding:8px 12px;border:1px solid rgba(0,0,0,.14);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>

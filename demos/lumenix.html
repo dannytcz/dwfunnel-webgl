@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Lumenix crafts high-impact 3D visuals and motion for brands that need to move people. A concept build by DW Funnel." />
+  <title>Lumenix · Motion Studios</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif']
+          },
+          keyframes: {
+            marquee: {
+              '0%': { transform: 'translateX(0)' },
+              '100%': { transform: 'translateX(-50%)' }
+            }
+          },
+          animation: {
+            marquee: 'marquee 20s linear infinite'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --background: 0 0% 0%;
+      --foreground: 0 0% 100%;
+      --primary: 0 0% 100%;
+      --primary-foreground: 0 0% 0%;
+      --radius: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: #000;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: #000;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      will-change: transform;
+      animation: marquee 20s linear infinite;
+    }
+
+    .marquee-group {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 60px;
+      padding-right: 60px;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .video-fallback {
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.12), transparent 22%),
+        radial-gradient(circle at 70% 60%, rgba(166,164,255,.18), transparent 25%),
+        #000;
+    }
+
+    .shipping-video-fallback {
+      background:
+        radial-gradient(circle at 50% 50%, rgba(0,0,0,.10), transparent 30%),
+        #eaeaea;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      .marquee-track {
+        animation-play-state: paused;
+      }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+
+<body>
+  <div id="root">
+    <header class="relative z-30 bg-black px-5 pb-5 pt-8 sm:px-9">
+      <div class="mx-auto flex w-full items-start justify-between">
+        <a href="#" class="inline-flex items-center" aria-label="Lumenix home">
+          <svg class="h-9 w-auto" width="190" height="46" viewBox="0 0 190 46" fill="none" aria-label="Lumenix">
+            <rect x="1" y="1" width="44" height="44" rx="11" fill="white"/>
+            <path d="M11 12h24v7H18v5h15v7H18v10h-7V12Z" fill="black"/>
+            <text x="57" y="31" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="white">LUMENIX</text>
+          </svg>
+        </a>
+
+        <nav class="hidden items-start gap-16 md:flex" aria-label="Primary navigation">
+          <div class="flex min-w-[92px] flex-col gap-2">
+            <a href="#" class="text-[14px] font-medium text-white">Work</a>
+            <a href="#" class="text-[14px] font-medium text-white">Services</a>
+          </div>
+          <div class="flex min-w-[92px] flex-col gap-2">
+            <a href="#" class="text-[14px] font-medium text-white">Projects</a>
+            <a href="#" class="text-[14px] font-medium text-white">Pipeline</a>
+          </div>
+          <div class="flex min-w-[92px] flex-col gap-2">
+            <a href="#" class="text-[14px] font-medium text-white">Careers</a>
+            <a href="#contact" class="text-[14px] font-medium text-white">Contact</a>
+          </div>
+        </nav>
+
+        <button type="button" class="relative flex h-[30px] w-[27px] items-center justify-center text-white" aria-label="Open cart">
+          <svg width="27" height="30" viewBox="0 0 27 30" fill="none" aria-hidden="true">
+            <path d="M4.5 1H22.5V4.25C20.55 4.25 19 5.81 19 7.75C19 9.69 20.55 11.25 22.5 11.25V18.75C20.55 18.75 19 20.31 19 22.25C19 24.19 20.55 25.75 22.5 25.75V29H4.5V25.75C6.45 25.75 8 24.19 8 22.25C8 20.31 6.45 18.75 4.5 18.75V11.25C6.45 11.25 8 9.69 8 7.75C8 5.81 6.45 4.25 4.5 4.25V1Z" stroke="currentColor" stroke-width="1.4"/>
+          </svg>
+          <span class="absolute inset-0 flex items-center justify-center text-[11px] font-medium">0</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="video-fallback relative min-h-screen w-full overflow-hidden bg-black">
+      <video class="absolute inset-0 h-full w-full object-cover"
+        src="/assets/demos/lumenix/hero.mp4"
+        autoplay loop muted playsinline preload="auto" aria-hidden="true"></video>
+      <div class="pointer-events-none absolute inset-0 bg-black/10"></div>
+
+      <div class="absolute left-1/2 top-[50px] z-10 w-full -translate-x-1/2 px-6 text-center">
+        <div class="mb-2 text-[26px] font-medium leading-none text-white">Lumenix<sup class="ml-1 align-super text-[11px]">3D</sup></div>
+        <h1 class="mx-auto max-w-[1100px] text-[clamp(2rem,5.5vw,68px)] font-medium leading-[0.98] tracking-[-0.055em] text-white">Motion Studios for Brands That Move</h1>
+      </div>
+
+      <div class="absolute bottom-[12%] left-1/2 z-10 flex -translate-x-1/2 flex-col items-center text-center">
+        <a href="#shipping" class="whitespace-nowrap rounded-full bg-white px-14 py-4 text-[22px] font-medium leading-none text-black">Watch the Reel</a>
+        <p class="mt-4 text-[14px] font-medium text-white/60">Delivered in 24 to 48 hours</p>
+      </div>
+    </section>
+
+    <section class="overflow-hidden bg-[#A6A4FF] py-[14px]" aria-label="Product announcement">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+        </div>
+        <div class="marquee-group" aria-hidden="true">
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Realtime 3D<sup class="text-[9px]">OS</sup> pipeline live</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="shipping" class="relative overflow-hidden rounded-b-[40px] bg-[#EAEAEA] pb-32 pt-16 text-black">
+      <div class="relative z-10 px-6 text-center">
+        <div class="text-[20px] font-medium leading-none">Lumenix<sup class="ml-1 align-super text-[9px]">3D</sup></div>
+        <h2 class="mt-2 text-[clamp(2rem,4.3vw,52px)] font-medium leading-none tracking-[-0.05em]">In Production Now</h2>
+      </div>
+
+      <div class="shipping-video-fallback mx-auto -my-24 flex h-[800px] w-[800px] max-w-full items-center justify-center overflow-hidden rounded-2xl">
+        <video class="h-full w-full object-contain"
+          src="/assets/demos/lumenix/shipping.mp4"
+          autoplay loop muted playsinline preload="auto" aria-label="Lumenix shipping showcase"></video>
+      </div>
+
+      <div class="relative z-10 flex flex-col items-center px-6 text-center">
+        <a href="#contact" class="min-w-[280px] rounded-full bg-black px-[46px] py-3 text-[18px] font-medium text-white">Start a Project</a>
+        <a href="#contact" class="mt-4 text-[20px] font-[450] text-black">See the work</a>
+      </div>
+    </section>
+
+    <footer id="contact" class="bg-black px-6 py-12 text-center text-white/50">
+      <p class="text-sm">© 2026 Lumenix. Cinematic 3D, built to land.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import React from "https://esm.sh/react@19.1.0";
+    import { createRoot } from "https://esm.sh/react-dom@19.1.0/client";
+    import { motion } from "https://esm.sh/framer-motion@12.23.6?deps=react@19.1.0,react-dom@19.1.0";
+
+    const e = React.createElement;
+
+    const LOGO_SRC = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="190" height="46" viewBox="0 0 190 46" fill="none">
+        <rect x="1" y="1" width="44" height="44" rx="11" fill="black"/>
+        <path d="M11 12h24v7H18v5h15v7H18v10h-7V12Z" fill="white"/>
+        <text x="57" y="31" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="black">LUMENIX</text>
+      </svg>
+    `)}`;
+
+    const navColumns = [
+      ["Work", "Services"],
+      ["Projects", "Pipeline"],
+      ["Careers", "Contact"]
+    ];
+
+    const heroVideo = "/assets/demos/lumenix/hero.mp4";
+    const shippingVideo = "/assets/demos/lumenix/shipping.mp4";
+
+    function CartTicket() {
+      return e(
+        "div",
+        { className: "relative flex h-[30px] w-[27px] items-center justify-center text-white" },
+        e(
+          "svg",
+          {
+            width: 27,
+            height: 30,
+            viewBox: "0 0 27 30",
+            fill: "none",
+            xmlns: "http://www.w3.org/2000/svg",
+            "aria-hidden": "true"
+          },
+          e("path", {
+            d: "M4.5 1H22.5V4.25C20.55 4.25 19 5.81 19 7.75C19 9.69 20.55 11.25 22.5 11.25V18.75C20.55 18.75 19 20.31 19 22.25C19 24.19 20.55 25.75 22.5 25.75V29H4.5V25.75C6.45 25.75 8 24.19 8 22.25C8 20.31 6.45 18.75 4.5 18.75V11.25C6.45 11.25 8 9.69 8 7.75C8 5.81 6.45 4.25 4.5 4.25V1Z",
+            stroke: "currentColor",
+            strokeWidth: 1.4
+          })
+        ),
+        e("span", { className: "absolute inset-0 flex items-center justify-center text-[11px] font-medium" }, "0")
+      );
+    }
+
+    function Navbar() {
+      return e(
+        "header",
+        { className: "relative z-30 bg-black px-5 pb-5 pt-8 sm:px-9" },
+        e(
+          "div",
+          { className: "mx-auto flex w-full items-start justify-between" },
+          e(
+            "a",
+            { href: "#", className: "inline-flex items-center", "aria-label": "Lumenix home" },
+            e("img", {
+              src: LOGO_SRC,
+              alt: "Lumenix",
+              className: "h-9 w-auto brightness-0 invert"
+            })
+          ),
+          e(
+            "nav",
+            { className: "hidden items-start gap-16 md:flex", "aria-label": "Primary navigation" },
+            navColumns.map((column, index) =>
+              e(
+                "div",
+                { key: index, className: "flex min-w-[92px] flex-col gap-2" },
+                column.map((item) =>
+                  e(
+                    "a",
+                    {
+                      key: item,
+                      href: item === "Contact" ? "#contact" : "#",
+                      className: "text-[14px] font-medium text-white transition-opacity hover:opacity-55"
+                    },
+                    item
+                  )
+                )
+              )
+            )
+          ),
+          e(
+            "button",
+            {
+              type: "button",
+              className: "text-white transition-opacity hover:opacity-60",
+              "aria-label": "Open cart"
+            },
+            e(CartTicket)
+          )
+        )
+      );
+    }
+
+    function Hero() {
+      return e(
+        "section",
+        { className: "video-fallback relative min-h-screen w-full overflow-hidden bg-black" },
+        e("video", {
+          className: "absolute inset-0 h-full w-full object-cover",
+          src: heroVideo,
+          autoPlay: true,
+          loop: true,
+          muted: true,
+          playsInline: true,
+          preload: "auto",
+          "aria-hidden": "true"
+        }),
+        e("div", { className: "pointer-events-none absolute inset-0 bg-black/10" }),
+        e(
+          motion.div,
+          {
+            initial: { opacity: 0, y: -28 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
+            className: "absolute left-1/2 top-[50px] z-10 w-full -translate-x-1/2 px-6 text-center"
+          },
+          e(
+            "div",
+            { className: "mb-2 text-[26px] font-medium leading-none text-white" },
+            "Lumenix",
+            e("sup", { className: "ml-1 align-super text-[11px] tracking-[-0.02em]" }, "3D")
+          ),
+          e(
+            "h1",
+            { className: "mx-auto max-w-[1100px] text-[clamp(2rem,5.5vw,68px)] font-medium leading-[0.98] tracking-[-0.055em] text-white" },
+            "Motion Studios for Brands That Move"
+          )
+        ),
+        e(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 28 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] },
+            className: "absolute bottom-[12%] left-1/2 z-10 flex -translate-x-1/2 flex-col items-center text-center"
+          },
+          e(
+            "a",
+            {
+              href: "#shipping",
+              className: "whitespace-nowrap rounded-full bg-white px-14 py-4 text-[22px] font-medium leading-none text-black transition-transform duration-300 hover:scale-[1.03]"
+            },
+            "Watch the Reel"
+          ),
+          e("p", { className: "mt-4 text-[14px] font-medium text-white/60" }, "Delivered in 24 to 48 hours")
+        )
+      );
+    }
+
+    function Marquee() {
+      const items = Array.from({ length: 6 }, (_, i) =>
+        e(
+          "span",
+          { key: i, className: "whitespace-nowrap text-[16px] font-medium tracking-[-0.02em] text-black" },
+          "Realtime 3D",
+          e("sup", { className: "text-[9px]" }, "OS"),
+          " pipeline live"
+        )
+      );
+
+      return e(
+        "section",
+        { className: "overflow-hidden bg-[#A6A4FF] py-[14px]", "aria-label": "Product announcement" },
+        e(
+          "div",
+          { className: "marquee-track" },
+          e("div", { className: "marquee-group" }, items),
+          e("div", { className: "marquee-group", "aria-hidden": "true" }, items)
+        )
+      );
+    }
+
+    function Shipping() {
+      return e(
+        "section",
+        {
+          id: "shipping",
+          className: "relative overflow-hidden rounded-b-[40px] bg-[#EAEAEA] pb-32 pt-16 text-black"
+        },
+        e(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 24 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, amount: 0.5 },
+            transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
+            className: "relative z-10 px-6 text-center"
+          },
+          e(
+            "div",
+            { className: "text-[20px] font-medium leading-none" },
+            "Lumenix",
+            e("sup", { className: "ml-1 align-super text-[9px]" }, "3D")
+          ),
+          e(
+            "h2",
+            { className: "mt-2 text-[clamp(2rem,4.3vw,52px)] font-medium leading-none tracking-[-0.05em]" },
+            "In Production Now"
+          )
+        ),
+        e(
+          "div",
+          { className: "shipping-video-fallback mx-auto -my-24 flex h-[800px] w-[800px] max-w-full items-center justify-center overflow-hidden rounded-2xl" },
+          e("video", {
+            className: "h-full w-full object-contain",
+            src: shippingVideo,
+            autoPlay: true,
+            loop: true,
+            muted: true,
+            playsInline: true,
+            preload: "auto",
+            "aria-label": "Lumenix shipping showcase"
+          })
+        ),
+        e(
+          motion.div,
+          {
+            initial: { opacity: 0, y: 24 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, amount: 0.5 },
+            transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
+            className: "relative z-10 flex flex-col items-center px-6 text-center"
+          },
+          e(
+            "a",
+            {
+              href: "#contact",
+              className: "min-w-[280px] rounded-full bg-black px-[46px] py-3 text-[18px] font-medium text-white transition-transform duration-300 hover:scale-[1.03]"
+            },
+            "Start a Project"
+          ),
+          e("a", { href: "#contact", className: "mt-4 text-[20px] font-[450] text-black transition-opacity hover:opacity-55" }, "See the work")
+        )
+      );
+    }
+
+    function Footer() {
+      return e(
+        "footer",
+        { id: "contact", className: "bg-black px-6 py-12 text-center text-white/50" },
+        e("p", { className: "text-sm" }, "© 2026 Lumenix. Cinematic 3D, built to land.")
+      );
+    }
+
+    function App() {
+      return e(
+        React.Fragment,
+        null,
+        e(Navbar),
+        e(Hero),
+        e(Marquee),
+        e(Shipping),
+        e(Footer)
+      );
+    }
+
+    const root = createRoot(document.getElementById("root"));
+    root.render(e(App));
+  </script>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>

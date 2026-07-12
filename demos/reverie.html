@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" style="scrollbar-gutter: stable;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0608" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Reverie, an immersive storyworld where maps end. A concept build by DW Funnel." />
+  <title>Reverie · Go Where Maps End</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Imprima&family=Viaoda+Libre&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0a0608;
+      scroll-behavior: auto;
+    }
+
+    html { scrollbar-gutter: stable; }
+
+    body {
+      font-family: 'Imprima', sans-serif;
+      overflow-x: hidden;
+    }
+
+    * { box-sizing: border-box; }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    @keyframes bobUp {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .reverie-heading { font-family: 'Viaoda Libre', serif; }
+    .gpu { will-change: transform, opacity; transform: translateZ(0); backface-visibility: hidden; }
+
+    .nav-link {
+      position: relative;
+      transition: opacity 220ms ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 100%;
+      bottom: -5px;
+      height: 1px;
+      background: rgba(255,255,255,.72);
+      transition: right 240ms ease;
+    }
+    .nav-link:hover { opacity: 1 !important; }
+    .nav-link:hover::after { right: 0; }
+
+    .scene-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 16px 50px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.12);
+      transform-style: preserve-3d;
+      transition: box-shadow 280ms ease;
+    }
+    .scene-card:hover {
+      box-shadow: 0 22px 70px rgba(0,0,0,.34), inset 0 0 0 1px rgba(255,255,255,.2);
+    }
+    .scene-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1.02);
+      transition: transform 650ms cubic-bezier(.2,.7,.2,1);
+    }
+    .scene-card:hover img { transform: scale(1.08); }
+
+    .card-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 60%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .card-glass {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      padding: 13px 15px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background: linear-gradient(to top, rgba(10,6,8,.26), rgba(10,6,8,.04));
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .play-button {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.8);
+      background: rgba(255,255,255,.96);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      transition: transform 250ms ease, background 250ms ease;
+      box-shadow: 0 7px 22px rgba(0,0,0,.18);
+    }
+    .scene-card:hover .play-button { transform: scale(1.08); background: #fff; }
+
+    .curtain {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      transform-origin: center center;
+    }
+
+    @media (max-width: 767px) {
+      .scene-card { border-radius: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nav-link::after,
+      .scene-card,
+      .scene-card img,
+      .play-button { transition-duration: 0.001ms !important; }
+      .bob { animation: none !important; }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    /* React application compiled from TypeScript/TSX for reliable single-file delivery. */
+const { useEffect, useRef, useState } = React;
+const PORTAL_BG = '/assets/demos/reverie/portal.webp';
+const CURTAIN_LEFT = '/assets/demos/reverie/curtain-left.webp';
+const CURTAIN_RIGHT = '/assets/demos/reverie/curtain-right.webp';
+const WORLD_BG = '/assets/demos/reverie/world.webp';
+// The cards MUST remain in this exact order (Card 3, Card 1, Card 2)
+const CARD_IMAGES = [
+    '/assets/demos/reverie/card-3.webp',
+    '/assets/demos/reverie/card-2.webp', // Representing Card 1
+    '/assets/demos/reverie/card-1.webp', // Representing Card 2
+];
+const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+const MAG = {
+    world: 6,
+    portal: 7,
+    curtainL: 14,
+    curtainR: 14,
+};
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches);
+    useEffect(() => {
+        const media = window.matchMedia('(max-width: 767px)');
+        const onChange = (event) => setIsMobile(event.matches);
+        setIsMobile(media.matches);
+        media.addEventListener?.('change', onChange);
+        return () => media.removeEventListener?.('change', onChange);
+    }, []);
+    return isMobile;
+}
+function StarLogo() {
+    return (React.createElement("svg", { width: "28", height: "28", viewBox: "0 0 28 28", fill: "none", "aria-label": "Reverie star mark" },
+        React.createElement("path", { d: "M14 2l2.09 6.42H23l-5.55 3.99 2.12 6.47L14 14.9l-5.57 3.98 2.12-6.47L5 8.42h6.91L14 2Z", fill: "rgba(255,255,255,.96)" })));
+}
+function PlayIcon() {
+    return (React.createElement("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "none", "aria-hidden": "true" },
+        React.createElement("path", { d: "M3.5 2.1L9.1 6l-5.6 3.9V2.1Z", fill: "#1a0d10" })));
+}
+function ChevronDown() {
+    return (React.createElement("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "none", "aria-hidden": "true" },
+        React.createElement("path", { d: "M3 5.2 7 9l4-3.8", stroke: "rgba(255,255,255,.78)", strokeWidth: "1.2", strokeLinecap: "round", strokeLinejoin: "round" })));
+}
+function Nav() {
+    return (React.createElement("nav", { className: "absolute left-0 top-0 w-full flex items-center justify-between", style: { zIndex: 50, padding: '22px 48px' } },
+        React.createElement("div", { className: "hidden md:flex items-center gap-8 flex-1" }, ['Stories', 'Places', 'Passage'].map((item) => (React.createElement("a", { key: item, className: "nav-link", href: `#${item.toLowerCase()}`, style: navLinkStyle }, item)))),
+        React.createElement("div", { className: "md:hidden flex flex-1 justify-start" },
+            React.createElement("a", { className: "nav-link", href: "#worlds", style: navLinkStyle }, "Discover")),
+        React.createElement("a", { href: "#reverie", "aria-label": "Reverie home", className: "flex items-center justify-center", style: { filter: 'drop-shadow(0 4px 12px rgba(0,0,0,.25))' } },
+            React.createElement(StarLogo, null)),
+        React.createElement("div", { className: "hidden md:flex items-center justify-end gap-8 flex-1" }, ['Journal', 'Private', 'Enquire'].map((item) => (React.createElement("a", { key: item, className: "nav-link", href: `#${item.toLowerCase()}`, style: navLinkStyle }, item)))),
+        React.createElement("div", { className: "md:hidden flex flex-1 justify-end" },
+            React.createElement("a", { className: "nav-link", href: "#connect", style: navLinkStyle }, "Enquire"))));
+}
+const navLinkStyle = {
+    textTransform: 'uppercase',
+    fontSize: '12px',
+    letterSpacing: '0.12em',
+    color: '#fff',
+    opacity: 0.9,
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
+};
+function StoryCard({ image, type, onMove, onLeave }) {
+    return (React.createElement("div", { className: "scene-card gpu", onMouseMove: onMove, onMouseLeave: onLeave },
+        React.createElement("img", { src: image, alt: "Reverie world vignette", draggable: "false" }),
+        React.createElement("div", { className: "card-shade" }),
+        React.createElement("div", { className: "card-glass" }, type === 'reel' ? (React.createElement("div", { className: "flex items-center gap-3 text-white" },
+            React.createElement("div", { className: "play-button" },
+                React.createElement(PlayIcon, null)),
+            React.createElement("span", { style: { fontSize: 13, letterSpacing: '.03em' } }, "Enter Story"))) : (React.createElement("div", { className: "text-white" },
+            React.createElement("div", { className: "reverie-heading", style: { fontSize: 27, lineHeight: 1 } }, "32"),
+            React.createElement("div", { style: { fontSize: 11, opacity: .84, letterSpacing: '.04em', marginTop: 3 } }, "Private Circle"))))));
+}
+function App() {
+    const isMobile = useIsMobile();
+    const rootRef = useRef(null);
+    const worldRef = useRef(null);
+    const portalRef = useRef(null);
+    const curtainLRef = useRef(null);
+    const curtainRRef = useRef(null);
+    const heroRef = useRef(null);
+    const ctaRef = useRef(null);
+    const uiRef = useRef(null);
+    const scrollProgress = useRef(0);
+    const mouseTarget = useRef({ x: 0, y: 0 });
+    const mouseCurrent = useRef({ x: 0, y: 0 });
+    const [entered, setEntered] = useState(false);
+    const [uiVisible, setUiVisible] = useState(false);
+    const [entryTransitions, setEntryTransitions] = useState(true);
+    useEffect(() => {
+        const curtainTimer = window.setTimeout(() => setEntered(true), 100);
+        const uiTimer = window.setTimeout(() => setUiVisible(true), 600);
+        const transitionTimer = window.setTimeout(() => setEntryTransitions(false), 2200);
+        return () => {
+            clearTimeout(curtainTimer);
+            clearTimeout(uiTimer);
+            clearTimeout(transitionTimer);
+        };
+    }, []);
+    useEffect(() => {
+        let frame = 0;
+        const updateScroll = () => {
+            const root = rootRef.current;
+            if (!root)
+                return;
+            const maxScroll = Math.max(1, root.offsetHeight - window.innerHeight);
+            scrollProgress.current = clamp(window.scrollY / maxScroll, 0, 1);
+        };
+        const updatePointer = (event) => {
+            mouseTarget.current.x = clamp(((event.clientX / window.innerWidth) - 0.5) * 2, -1, 1);
+            mouseTarget.current.y = clamp(((event.clientY / window.innerHeight) - 0.5) * 2, -1, 1);
+        };
+        const resetPointer = () => {
+            mouseTarget.current.x = 0;
+            mouseTarget.current.y = 0;
+        };
+        const tick = () => {
+            const p = scrollProgress.current;
+            mouseCurrent.current.x = lerp(mouseCurrent.current.x, mouseTarget.current.x, 0.07);
+            mouseCurrent.current.y = lerp(mouseCurrent.current.y, mouseTarget.current.y, 0.07);
+            const rx = mouseCurrent.current.x;
+            const ry = mouseCurrent.current.y;
+            const eased = easeInOut(p);
+            const worldScale = lerp(1, 1.18, p);
+            if (worldRef.current) {
+                worldRef.current.style.transform = `scale(${worldScale}) translate3d(${rx * MAG.world}px, ${ry * MAG.world}px, 0)`;
+            }
+            const portalScale = lerp(1, 7.5, p);
+            if (portalRef.current) {
+                portalRef.current.style.transform = `scale(${portalScale}) translate3d(${rx * MAG.portal}px, ${ry * MAG.portal}px, 0)`;
+                portalRef.current.style.opacity = String(clamp(1 - (p - 0.65) / 0.2, 0, 1));
+            }
+            const totalShift = lerp(62, 150, eased);
+            const curtainScrollScale = lerp(1, 1.3, p);
+            if (curtainLRef.current) {
+                curtainLRef.current.style.transform = `translateX(calc(-${totalShift}% + ${rx * MAG.curtainL}px)) translateY(${ry * MAG.curtainL * 0.3}px) scale(${curtainScrollScale}) translateZ(0)`;
+            }
+            if (curtainRRef.current) {
+                curtainRRef.current.style.transform = `translateX(calc(${totalShift}% + ${rx * MAG.curtainR}px)) translateY(${ry * MAG.curtainR * 0.3}px) scale(${curtainScrollScale}) translateZ(0)`;
+            }
+            const heroOpacity = clamp(1 - p / 0.22, 0, 1);
+            if (heroRef.current) {
+                heroRef.current.style.opacity = String(heroOpacity);
+                heroRef.current.style.pointerEvents = heroOpacity > 0.08 ? 'auto' : 'none';
+            }
+            const ctaOpacity = clamp((p - 0.68) / 0.16, 0, 1);
+            if (ctaRef.current) {
+                ctaRef.current.style.opacity = String(ctaOpacity);
+                ctaRef.current.style.pointerEvents = ctaOpacity > 0.08 ? 'auto' : 'none';
+                ctaRef.current.style.transform = `translate3d(0, ${lerp(28, 0, ctaOpacity)}px, 0)`;
+            }
+            frame = requestAnimationFrame(tick);
+        };
+        updateScroll();
+        window.addEventListener('scroll', updateScroll, { passive: true });
+        window.addEventListener('resize', updateScroll, { passive: true });
+        window.addEventListener('pointermove', updatePointer, { passive: true });
+        document.documentElement.addEventListener('mouseleave', resetPointer);
+        frame = requestAnimationFrame(tick);
+        return () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener('scroll', updateScroll);
+            window.removeEventListener('resize', updateScroll);
+            window.removeEventListener('pointermove', updatePointer);
+            document.documentElement.removeEventListener('mouseleave', resetPointer);
+        };
+    }, []);
+    const cardTilt = (event) => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+            return;
+        const el = event.currentTarget;
+        const rect = el.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        el.style.transform = `perspective(700px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg) translateZ(0)`;
+    };
+    const cardReset = (event) => {
+        event.currentTarget.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+    };
+    const heroTransition = entryTransitions
+        ? 'opacity .9s ease .3s, transform .9s ease .3s'
+        : 'none';
+    return (React.createElement("main", { ref: rootRef, id: "reverie", style: { height: '480vh', background: '#0a0608' } },
+        React.createElement("section", { className: "sticky top-0 h-screen overflow-hidden", style: { background: '#0a0608' } },
+            React.createElement("div", { ref: worldRef, className: "absolute inset-0 gpu", style: {
+                    backgroundImage: `url(${WORLD_BG})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center center',
+                    transformOrigin: 'center center',
+                    zIndex: 1,
+                } }),
+            React.createElement("div", { className: "absolute inset-0", style: { zIndex: 2, background: 'radial-gradient(circle at 52% 38%, transparent 0%, rgba(8,3,6,.03) 42%, rgba(8,3,6,.22) 100%)' } }),
+            React.createElement("div", { ref: portalRef, className: "absolute inset-0 gpu", style: {
+                    backgroundImage: `url(${PORTAL_BG})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center center',
+                    transformOrigin: '52% 38%',
+                    zIndex: 8,
+                } }),
+            React.createElement("img", { ref: curtainLRef, className: "curtain gpu", src: CURTAIN_LEFT, alt: "", "aria-hidden": "true", draggable: "false", style: {
+                    zIndex: 20,
+                    transition: entryTransitions ? 'transform 1.55s cubic-bezier(.18,.74,.18,1)' : 'none',
+                    transform: `translateX(${entered ? '-62%' : '-7%'}) translateZ(0)`,
+                } }),
+            React.createElement("img", { ref: curtainRRef, className: "curtain gpu", src: CURTAIN_RIGHT, alt: "", "aria-hidden": "true", draggable: "false", style: {
+                    zIndex: 21,
+                    transition: entryTransitions ? 'transform 1.55s cubic-bezier(.18,.74,.18,1)' : 'none',
+                    transform: `translateX(${entered ? '62%' : '7%'}) translateZ(0)`,
+                } }),
+            React.createElement("div", { ref: uiRef, className: "absolute inset-0", style: {
+                    zIndex: 45,
+                    opacity: uiVisible ? 1 : 0,
+                    transition: 'opacity .75s ease',
+                } },
+                React.createElement(Nav, null),
+                React.createElement("div", { ref: heroRef, className: "absolute inset-0 gpu", style: {
+                        opacity: 1,
+                        transform: uiVisible ? 'translateY(0)' : 'translateY(20px)',
+                        transition: heroTransition,
+                    } },
+                    React.createElement("div", { className: "md:hidden absolute inset-0 flex flex-col items-center justify-center px-5", style: { paddingTop: 52 } },
+                        React.createElement("div", { className: "text-center", style: { color: '#fff', marginBottom: 28, textShadow: '0 2px 20px rgba(0,0,0,.34)' } },
+                            React.createElement("h1", { className: "reverie-heading", style: { fontSize: 'clamp(44px, 14vw, 70px)', lineHeight: .94, letterSpacing: '.015em', margin: 0, color: '#fff' } },
+                                "GO WHERE",
+                                React.createElement("br", null),
+                                "MAPS END"),
+                            React.createElement("p", { style: { maxWidth: 280, fontSize: 14, lineHeight: 1.55, margin: '18px auto 0', opacity: .88 } }, "Rare places. Unscripted moments. Journeys designed around what moves you, not what everyone else has already seen.")),
+                        React.createElement("div", { style: { width: 'min(72vw, 300px)', aspectRatio: '1 / 1' } },
+                            React.createElement(StoryCard, { image: CARD_IMAGES[0], type: "reel", onMove: cardTilt, onLeave: cardReset }))),
+                    React.createElement("div", { className: "hidden md:flex xl:hidden absolute inset-0 flex-col items-center justify-center px-8", style: { paddingTop: 30 } },
+                        React.createElement("div", { className: "text-center", style: { color: '#fff', marginBottom: 32, textShadow: '0 2px 20px rgba(0,0,0,.34)' } },
+                            React.createElement("h1", { className: "reverie-heading", style: { fontSize: 'clamp(56px, 8vw, 82px)', lineHeight: .94, letterSpacing: '.015em', margin: 0, color: '#fff' } }, "GO WHERE MAPS END"),
+                            React.createElement("p", { style: { maxWidth: 400, fontSize: 16, lineHeight: 1.55, margin: '18px auto 0', opacity: .88 } }, "Rare places. Unscripted moments. Journeys designed around what moves you, not what everyone else has already seen.")),
+                        React.createElement("div", { className: "flex gap-4" },
+                            React.createElement("div", { style: { width: 158, height: 158 } },
+                                React.createElement(StoryCard, { image: CARD_IMAGES[0], type: "reel", onMove: cardTilt, onLeave: cardReset })),
+                            React.createElement("div", { style: { width: 158, height: 158 } },
+                                React.createElement(StoryCard, { image: CARD_IMAGES[1], type: "patrons", onMove: cardTilt, onLeave: cardReset })),
+                            React.createElement("div", { style: { width: 158, height: 158 } },
+                                React.createElement(StoryCard, { image: CARD_IMAGES[2], type: "reel", onMove: cardTilt, onLeave: cardReset })))),
+                    React.createElement("div", { className: "hidden xl:block absolute", style: { top: '46%', left: 60, transform: 'translateY(-50%)', color: '#fff', maxWidth: 440 } },
+                        React.createElement("h1", { className: "reverie-heading", style: { fontSize: 'clamp(54px, 5.4vw, 88px)', lineHeight: .92, letterSpacing: '.015em', margin: 0, color: '#fff', textShadow: '0 2px 24px rgba(0,0,0,.25)' } },
+                            "GO WHERE",
+                            React.createElement("br", null),
+                            "MAPS END"),
+                        React.createElement("p", { style: { fontSize: 17, lineHeight: 1.6, marginTop: 22, maxWidth: 390, color: 'rgba(255,255,255,.84)', textShadow: '0 2px 12px rgba(0,0,0,.28)' } }, "Rare places. Unscripted moments. Journeys designed around what moves you, not what everyone else has already seen.")),
+                    React.createElement("div", { className: "hidden xl:flex absolute gap-4", style: { top: '50%', right: 40, transform: 'translateY(-50%)' } },
+                        React.createElement("div", { style: { width: 158, height: 158 } },
+                            React.createElement(StoryCard, { image: CARD_IMAGES[0], type: "reel", onMove: cardTilt, onLeave: cardReset })),
+                        React.createElement("div", { style: { width: 158, height: 158 } },
+                            React.createElement(StoryCard, { image: CARD_IMAGES[1], type: "patrons", onMove: cardTilt, onLeave: cardReset })),
+                        React.createElement("div", { style: { width: 158, height: 158 } },
+                            React.createElement(StoryCard, { image: CARD_IMAGES[2], type: "reel", onMove: cardTilt, onLeave: cardReset }))),
+                    React.createElement("div", { className: "absolute flex gap-2 items-center left-1/2 -translate-x-1/2 xl:left-[60px] xl:translate-x-0", style: { bottom: isMobile ? 24 : 42 }, "aria-label": "Slide one of four" }, [28, 14, 14, 14].map((width, i) => (React.createElement("span", { key: i, style: { width, height: 3, borderRadius: 999, background: '#fff', opacity: i === 0 ? .95 : .36 } })))),
+                    React.createElement("div", { className: "hidden md:flex absolute left-1/2 -translate-x-1/2 flex-col items-center", style: { bottom: 36 } },
+                        React.createElement("span", { style: { textTransform: 'uppercase', fontSize: 10, letterSpacing: '.22em', color: 'rgba(255,255,255,.6)', marginBottom: 10 } }, "Keep Going"),
+                        React.createElement("div", { className: "bob grid place-items-center rounded-full", style: { width: 34, height: 34, border: '1px solid rgba(255,255,255,.35)', animation: 'bobUp 1.8s ease-in-out infinite' } },
+                            React.createElement(ChevronDown, null)))),
+                React.createElement("div", { ref: ctaRef, className: "absolute inset-0 gpu flex flex-col items-center justify-center px-5 text-center", style: { zIndex: 46, opacity: 0, pointerEvents: 'none' } },
+                    React.createElement("div", null,
+                        React.createElement("h2", { className: "reverie-heading", style: { fontSize: 'clamp(38px, 6.2vw, 78px)', color: '#fff', letterSpacing: '.03em', lineHeight: 1.05, textShadow: '0 2px 20px rgba(0,0,0,.4)', margin: 0 } }, "LEAVE THE FAMILIAR BEHIND"),
+                        React.createElement("p", { style: { fontSize: isMobile ? 14 : 20, maxWidth: isMobile ? 260 : 480, lineHeight: 1.6, color: 'rgba(255,255,255,.82)', margin: isMobile ? '18px auto 0' : '22px auto 0', textShadow: '0 2px 14px rgba(0,0,0,.28)' } }, "We create private journeys for people who have seen enough of the obvious. Thoughtfully shaped, deeply personal, and impossible to copy from an itinerary.")))))));
+}
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App, null));
+  </script>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>
