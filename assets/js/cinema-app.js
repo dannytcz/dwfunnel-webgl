@@ -508,37 +508,19 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: every card animates in place and the film cards loop.
-   Autoplay covers it; this is a fallback for browsers that block muted
-   autoplay until nudged. */
+/* Selected Work grid: previews are animated WebP <img>s (motionsite.ai model).
+   No video play/pause. Data-saver swaps the loop for a static poster. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
-  const vids = Array.from(grid.querySelectorAll("video"));
-  if (!vids.length) return;
-  // Data-saver: leave the posters, never fetch the clips.
+  const imgs = Array.from(grid.querySelectorAll("img.ws-embed-preview"));
+  if (!imgs.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
-  if (saveData || !("IntersectionObserver" in window)) {
-    if (!saveData) vids.forEach((v) => v.play().catch(() => {}));
-    return;
-  }
-  // Only the cards on screen decode video; the rest stay on their poster and
-  // load nothing until they scroll into view. Keeps the grid light at any count.
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        const v = e.target;
-        if (e.isIntersecting) {
-          if (v.preload === "none") v.preload = "auto";
-          v.play().catch(() => {});
-        } else {
-          v.pause();
-        }
-      });
-    },
-    { rootMargin: "150px 0px", threshold: 0.15 }
-  );
-  vids.forEach((v) => io.observe(v));
+  if (!saveData) return;
+  imgs.forEach((img) => {
+    const poster = img.getAttribute("data-poster");
+    if (poster) img.src = poster;
+  });
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides

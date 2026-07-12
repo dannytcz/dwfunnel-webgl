@@ -1645,10 +1645,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-/* Selected Work previews: a lightweight captured video of the real site loops
-   in the card (poster shows first), and the card links through to the live demo. */
+/* Selected Work previews: animated WebP of the real site loops in the card
+   via <img> (image-path decode, not a video element), then links to the live demo. */
 .ws--embed { background: #06110e; overflow: hidden; }
-.ws-embed-video {
+.ws-embed-preview {
   position: absolute;
   inset: 0;
   width: 100%;
