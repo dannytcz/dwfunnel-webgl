@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Selected Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **13 cards**, all live demos.
+Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **14 cards**, all live demos.
 
 Each live card is:
 ```html
@@ -90,6 +90,7 @@ The 8 live demos and what each replaced:
 - **Kairo** fintech consumer app landing (`/demos/kairo.html`), product video hero.
 - **Valence** AI automation agency (`/demos/valence.html`), rebranded from Cognitra.
 - **Elyra** immersive digital / spatial computing (`/demos/elyra.html`), rebranded from NeoVision.
+- **Alto Studio** residential interiors (`/demos/alto.html`), curated space concept.
 
 ## 6. How to add a new demo ("make it ours")
 
@@ -134,7 +135,7 @@ The `mcp__Claude_Browser__*` screenshot / `computer` actions time out this whole
 
 ## 10. Current state and what is likely next
 
-- Grid is 4 wide, 13 live demos, H.264 30fps preview mp4s + posters. Cache at v=89+. Push after each iteration.
+- Grid is 4 wide, 14 live demos, H.264 30fps preview mp4s + posters. Cache at v=89+. Push after each iteration.
 - **The obvious next task:** next template Danny sends, same make-ours recipe; optional grid pagination when the set grows.
 - Deferred by Danny or still open: pagination or a "see more" second page for when the grid gets large (video previews keep it light for now, so not urgent); optional seamless looping of clips (boomerang); favicon and OG image; real content on the main page (a real WhatsApp number, real stats, a real founder portrait, currently placeholders); custom domain and analytics (Danny maps these himself later).
 - Code protection question came up: you cannot truly stop front end copying, disabling right click is not real protection and hurts UX. The agreed direction if pursued is minify plus obfuscate the demo code, a copyright and terms page, not right click blocking.

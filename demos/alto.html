@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAF8F4" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Alto Studio, residential interiors shaped through architecture, material, and place. A concept build by DW Funnel." />
+  <title>Alto Studio · Curated Spaces</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:ital, wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#FAF8F4;--ink:#111;--muted:#555;--soft:#6E6E6E;--gold:#C9A56A;--gold-dark:#A8813D;--ease:cubic-bezier(.22,1, .36,1)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scrollbar-width:none}html::-webkit-scrollbar, body::-webkit-scrollbar{display:none}
+    body{margin:0;background:var(--cream);color:#222;font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;overflow-x:hidden;background-image:url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E")}
+    img, video{-webkit-user-drag:none;user-select:none}a{color:inherit;text-decoration:none}button{font:inherit} .serif{font-family:"Playfair Display", Georgia, serif}
+    .container{width:min(100%,1440px);margin:0 auto;padding-left:24px;padding-right:24px}
+
+    /* intro only appears after the video can actually render */
+    #intro{position:fixed;inset:0;z-index:9999;background:#080808;opacity:0;visibility:hidden;overflow:hidden;transition:opacity 1.2s var(--ease), transform 1.2s var(--ease);transform:scale(1)}
+    #intro.ready{opacity:1;visibility:visible}#intro.exit{opacity:0;transform:scale(1.05);pointer-events:none}
+    #intro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    #intro:before{content:"";position:absolute;z-index:2;inset:0 0 auto;height:15%;background:linear-gradient(to bottom, rgba(8,8,8, .6), transparent);pointer-events:none}
+    #intro:after{content:"";position:absolute;z-index:2;inset:auto 0 0;height:35%;background:linear-gradient(to top, #080808, transparent);pointer-events:none}
+    .skip{position:absolute;z-index:3;right:24px;bottom:24px;border:1px solid rgba(255,255,255, .3);background:rgba(0,0,0, .25);backdrop-filter:blur(10px);color:white;border-radius:999px;padding:10px 16px;font-size:10px;text-transform:uppercase;letter-spacing:.16em;cursor:pointer}
+
+    .nav{position:fixed;z-index:50;top:0;left:0;right:0;height:72px;transition:all .7s var(--ease)}
+    .nav.scrolled, .nav.menu-open{background:rgba(250,248,244, .95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 1px 0 rgba(0,0,0, .06)}
+    .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:baseline}.logo-a{font-family:"Playfair Display", Georgia, serif;font-size:26px;color:var(--gold);letter-spacing:-.02em}.logo-lto{margin-left:1px;font-size:16px;font-weight:500;letter-spacing:.22em;color:var(--ink)}
+    .nav-links{display:none;align-items:center;gap:32px}.nav-link{position:relative;font-size:14px;font-weight:500;color:var(--muted);transition:color .3s}.nav-link:hover{color:var(--ink)}
+    .nav-link:after{content:"";position:absolute;left:0;bottom:-7px;width:0;height:1px;background:var(--gold);transition:width .5s var(--ease)}.nav-link:hover:after{width:100%}
+    .nav-cta{display:none;border:1px solid rgba(0,0,0, .12);border-radius:999px;padding:13px 24px;font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;transition:.3s}
+    .nav-cta:hover{background:var(--ink);color:#fff;border-color:var(--ink);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0, .12)}
+    .menu-btn{position:relative;z-index:60;width:44px;height:44px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer}.menu-lines{position:relative;width:26px;height:18px}.menu-lines span{position:absolute;left:0;height:1px;background:var(--ink);transition:.35s var(--ease);transform-origin:center}.menu-lines span:nth-child(1){top:0;width:26px}.menu-lines span:nth-child(2){top:8.5px;width:19px}.menu-lines span:nth-child(3){bottom:0;width:26px}.menu-btn.open span:nth-child(1){transform:translateY(8.5px) rotate(45deg)}.menu-btn.open span:nth-child(2){opacity:0;width:0}.menu-btn.open span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg)}
+    .mobile-menu{position:fixed;inset:0;z-index:40;background:var(--cream);height:0;overflow:hidden;transition:height .5s var(--ease)}.mobile-menu.open{height:100vh}.mobile-menu-inner{height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:112px 24px 40px}.mobile-menu nav{display:flex;flex-direction:column;gap:18px}.mobile-menu a.mobile-link{font-family:"Playfair Display", Georgia, serif;font-size:36px;line-height:1.12;color:var(--ink);opacity:0;transform:translateX(-20px);transition:.55s var(--ease)}.mobile-menu.open a.mobile-link{opacity:1;transform:none}.mobile-cta{display:flex;justify-content:center;background:var(--ink);color:#fff;border-radius:999px;padding:16px 28px;font-size:13px;text-transform:uppercase;letter-spacing:.12em}
+
+    .hero{position:relative;min-height:100svh;overflow:hidden;background:var(--cream)}
+    .hero-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.hero-base{background:radial-gradient(circle at 74% 30%, #d6c4a9 0, rgba(214,196,169, .22) 23%, transparent 47%), linear-gradient(118deg, #f4eee3 0%, #d4c2a5 52%, #8b7662 100%)}
+    .hero-image{z-index:1}.hero-outline{z-index:2;filter:invert(1);opacity:0}.hero-outline.sweep{animation:softSweepReveal 8s linear infinite;-webkit-mask-image:linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);-webkit-mask-size:200% 100%;-webkit-mask-repeat:no-repeat}
+    .hero-video{z-index:3;transition:opacity 1s}.hero-video.done{opacity:0;pointer-events:none}
+    .top-blend, .left-grade, .warm-grade, .bottom-vignette, .sun-bloom, .hero-noise{position:absolute;pointer-events:none}.top-blend{z-index:4;left:0;right:0;top:0;height:250px;background:linear-gradient(to bottom, #fff 30%, transparent)}
+    .left-grade{z-index:5;inset:0;background:linear-gradient(to right, rgba(250,248,244, .93) 0%, rgba(250,248,244, .78) 28%, rgba(250,248,244, .42) 52%, rgba(250,248,244, .06) 72%, rgba(250,248,244,0) 88%)}
+    .warm-grade{z-index:6;inset:0;mix-blend-mode:multiply;background:linear-gradient(155deg, rgba(201,165,106, .08) 0%, rgba(180,120,60, .05) 40%, rgba(20,14,6, .18) 100%)}
+    .bottom-vignette{z-index:7;inset:0;background:linear-gradient(to top, rgba(0,0,0, .12) 0%, transparent 35%)}.sun-bloom{z-index:8;top:-5%;right:5%;width:45%;height:55%;background:radial-gradient(circle, rgba(255,220,150, .1), transparent 70%);filter:blur(40px)}
+    .hero-noise{z-index:9;inset:0;opacity:.18;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.08'/%3E%3C/svg%3E")}
+    .hero-inner{position:relative;z-index:10;min-height:100svh;display:flex;align-items:center;padding-top:112px;padding-bottom:112px}.hero-content{max-width:900px}.hero-content.transition-out{opacity:0;transform:translateY(-20px);transition:.5s var(--ease)}.hero-content.transition-in{animation:fadeUp 1.2s var(--ease) both}
+    .eyebrow{display:flex;align-items:center;gap:16px;margin-bottom:20px;color:var(--gold);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.26em}.eyebrow i{display:block;width:40px;height:1px;background:var(--gold)}
+    h1{margin:0;font-family:"Playfair Display", Georgia, serif;font-size:clamp(38px,6vw,82px);font-weight:400;line-height:1.02;letter-spacing:-.025em;color:var(--ink)}h1 span{display:block;animation:fadeUp 1.2s var(--ease) both}h1 span:nth-child(2){animation-delay:.1s}h1 span:nth-child(3){animation-delay:.2s}h1 em{font-weight:400;color:var(--gold)}
+    .cta-row{margin-top:32px;display:flex;align-items:center;flex-wrap:wrap;gap:20px}.primary-cta{display:inline-flex;align-items:center;gap:16px;border-radius:999px;background:var(--gold);color:#fff;padding:17px 34px;font-size:14px;font-weight:500;letter-spacing:.07em;transition:.3s}.primary-cta:hover{background:var(--gold-dark);box-shadow:0 12px 40px rgba(201,165,106, .4);transform:translateY(-2px)}.primary-cta span{transition:.3s}.primary-cta:hover span{transform:translateX(4px)}.secondary-cta{padding-bottom:4px;border-bottom:1px solid rgba(110,110,110, .35);color:var(--soft);font-size:15px;transition:.3s}.secondary-cta:hover{color:#222;border-color:rgba(34,34,34, .6)}
+    .stats{margin-top:32px;display:flex;align-items:center;flex-wrap:wrap;row-gap:24px}.stat{min-width:88px;padding-right:24px}.stat-number{font-family:"Playfair Display", Georgia, serif;font-size:36px;font-weight:500;line-height:1;letter-spacing:-.02em;color:var(--ink)}.stat-label{margin-top:8px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}.sep{width:1px;height:36px;background:rgba(0,0,0, .1);margin-right:24px}
+    .project-card{position:absolute;z-index:20;right:56px;bottom:48px;width:310px;display:none;padding:24px;border-radius:24px;color:#fff;background:rgba(255,255,255, .1);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border:1px solid rgba(255,255,255, .2);box-shadow:0 4px 20px rgba(0,0,0, .1),0 16px 48px rgba(0,0,0, .14), inset 0 1px 0 rgba(255,255,255, .18);animation:cardIn 1.1s 1.2s var(--ease) both}.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.featured{font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255, .8)}.status{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255, .15);background:rgba(0,0,0, .1);border-radius:999px;padding:6px 12px;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255, .8)}.status i{width:6px;height:6px;border-radius:50%;background:#D6B373;animation:tagPulse 2.4s ease-in-out infinite}.project-card h2{margin:0;font-family:"Playfair Display", Georgia, serif;font-size:22px;font-weight:400}.place{margin:8px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255, .65)}.meta{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255, .15);display:grid;grid-template-columns:repeat(3,1fr)}.meta div+div{border-left:1px solid rgba(255,255,255, .15);padding-left:16px}.meta-value{font-family:"Playfair Display", Georgia, serif;font-size:17px}.meta-label{margin-top:4px;font-size:8px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255, .5)}
+    .scroll-indicator{position:absolute;z-index:20;bottom:20px;left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;pointer-events:none}.scroll-indicator span{margin-bottom:12px;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.22em;color:rgba(255,255,255, .7)}.scroll-line{width:1px;height:56px;background:linear-gradient(to bottom, transparent, var(--gold));animation:scrollLine 2.8s ease-in-out infinite}.vertical-text{position:absolute;z-index:20;right:-58px;top:50%;transform:translateY(-50%) rotate(90deg);display:none;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.3em;color:rgba(255,255,255, .3)}
+    .continuation{min-height:62vh;display:flex;align-items:center;padding-top:96px;padding-bottom:96px}.continuation-grid{display:grid;gap:48px;border-top:1px solid rgba(0,0,0, .1);padding-top:56px}.section-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.24em;color:var(--gold)}.small-line{margin-top:20px;width:40px;height:1px;background:var(--gold)}.continuation h2{max-width:900px;margin:0;font-family:"Playfair Display", Georgia, serif;font-size:clamp(38px,5vw,72px);font-weight:400;line-height:1.05;letter-spacing:-.025em;color:var(--ink)}.continuation h2 em{font-weight:400;color:var(--gold)}.continuation p{max-width:576px;margin:32px 0 0;font-size:15px;line-height:1.85;color:var(--muted)}
+    .media-fallback{position:absolute;z-index:0;inset:0;background:radial-gradient(circle at 78% 30%, rgba(235,208,168, .65), transparent 26%), linear-gradient(125deg, #f4eee4 0%, #d6c2a5 58%, #7a6657 100%)}
+
+    @keyframes tagPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+    @keyframes scrollLine{0%{clip-path:inset(0 0 100% 0);opacity:0}30%{clip-path:inset(0 0 0 0);opacity:.5}70%{clip-path:inset(0 0 0 0);opacity:.5}100%{clip-path:inset(100% 0 0 0);opacity:0}}
+    @keyframes softSweepReveal{0%{-webkit-mask-position:200% 0;opacity:0}15%{opacity:1}85%{opacity:1}100%{-webkit-mask-position:-100% 0;opacity:0}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+    @keyframes cardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+    @media(min-width:768px){.container{padding-left:48px;padding-right:48px}.nav{height:88px}.nav-links{display:flex}.nav-cta{display:inline-flex}.menu-btn, .mobile-menu{display:none}.hero-inner{padding-top:128px;padding-bottom:96px}.eyebrow{font-size:11px;margin-bottom:24px}.cta-row{margin-top:40px;gap:28px}.stats{margin-top:40px}.stat{min-width:120px;padding-right:36px}.stat-number{font-size:40px}.sep{margin-right:36px}.scroll-indicator{display:flex}.continuation-grid{grid-template-columns:.7fr 1.3fr;padding-top:80px}}
+    @media(min-width:1024px){.container{padding-left:96px;padding-right:96px}.project-card, .vertical-text{display:block}}
+    @media(min-width:1280px){.hero-inner{padding-left:128px;padding-right:128px}.hero-content{max-width:1100px}}
+    @media(max-width:767px){.hero-media{object-position:62% center}.left-grade{background:linear-gradient(to right, rgba(250,248,244, .96) 0%, rgba(250,248,244, .88) 45%, rgba(250,248,244, .35) 78%, rgba(250,248,244, .04) 100%)}}
+    @media(prefers-reduced-motion:reduce){*, *:before, *:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit,html.is-embed #intro{display:none!important}html.is-embed #intro{visibility:hidden!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  // skip cinematic intro in embed previews
+  try{ document.getElementById('intro') && document.getElementById('intro').classList.add('exit'); }catch(e){}
+  var DUR=16000,HOLD=900,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+<body>
+  <div id="intro" aria-hidden="true">
+    <video id="introVideo" muted playsinline preload="auto" src="/assets/demos/alto/intro.mp4"></video>
+    <button class="skip" id="skipIntro">Skip intro</button>
+  </div>
+
+  <header class="nav" id="navbar">
+    <div class="container nav-inner">
+      <a href="#top" class="logo" aria-label="Alto Studio home"><span class="logo-a">A</span><span class="logo-lto">LTO</span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a class="nav-link" href="#projects">Projects</a><a class="nav-link" href="#services">Services</a><a class="nav-link" href="#about">About</a><a class="nav-link" href="#journal">Journal</a><a class="nav-link" href="#contact">Contact</a>
+      </nav>
+      <a class="nav-cta" href="#contact">Start Project</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu"><span class="menu-lines"><span></span><span></span><span></span></span></button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <nav><a class="mobile-link" href="#projects">Projects</a><a class="mobile-link" href="#services">Services</a><a class="mobile-link" href="#about">About</a><a class="mobile-link" href="#journal">Journal</a><a class="mobile-link" href="#contact">Contact</a></nav>
+      <a class="mobile-cta" href="#contact">Start Project</a>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="media-fallback"></div>
+      <img class="hero-media hero-image" src="/assets/demos/alto/hero.webp" alt="Luxury interior designed by Alto Studio">
+      <img class="hero-media hero-outline" id="heroOutline" src="/assets/demos/alto/hero-outline.webp" alt="">
+      <video class="hero-media hero-video" id="heroVideo" muted playsinline autoplay preload="auto" src="/assets/demos/alto/intro.mp4"></video>
+      <div class="top-blend"></div><div class="left-grade"></div><div class="warm-grade"></div><div class="bottom-vignette"></div><div class="sun-bloom"></div><div class="hero-noise"></div>
+
+      <div class="container hero-inner">
+        <div class="hero-content transition-in" id="heroContent">
+          <div class="eyebrow"><i></i><span id="eyebrow">Interior architecture &amp; design</span></div>
+          <h1 id="headline"><span>We shape rooms</span><span><em>around how you</em></span><span>want to live.</span></h1>
+          <div class="cta-row"><a class="primary-cta" href="#projects">Explore Projects <span>→</span></a><a class="secondary-cta" href="#contact">Book Consultation</a></div>
+          <div class="stats" id="stats"></div>
+        </div>
+      </div>
+
+      <aside class="project-card">
+        <div class="card-top"><span class="featured">✦ Featured</span><span class="status"><i></i>In Progress</span></div>
+        <h2>Luxury Penthouse</h2><p class="place">Dubai Marina</p>
+        <div class="meta"><div><div class="meta-value">620 m²</div><div class="meta-label">Area</div></div><div><div class="meta-value">Full</div><div class="meta-label">Scope</div></div><div><div class="meta-value">2026</div><div class="meta-label">Year</div></div></div>
+      </aside>
+      <div class="scroll-indicator"><span>Scroll</span><div class="scroll-line"></div></div>
+      <div class="vertical-text">Curated Spaces · 2026</div>
+    </section>
+
+    <section class="continuation" id="projects">
+      <div class="container continuation-grid"><div><div class="section-label">Selected approach</div><div class="small-line"></div></div><div><h2>A home should feel composed, <em>never decorated.</em> Every decision earns its place.</h2><p>Alto Studio develops residential interiors through architecture, material study and bespoke detailing, balancing clarity with a strong sense of place.</p></div></div>
+    </section>
+  </main>
+
+  <script>
+    (()=>{
+      const slides=[
+        {eyebrow:'Interior architecture & design', lines:['We shape rooms', 'around how you', 'want to live.'], stats:[['18', 'Years'], ['126', 'Projects'], ['24', 'Awards']]},
+        {eyebrow:'Quiet luxury, deeply considered', lines:['Spaces with less', 'noise and more', 'meaning.'], stats:[['11', 'Cities'], ['42', 'Artisans'], ['9', 'Countries']]},
+        {eyebrow:'Private homes, curated globally', lines:['Material. Light.', 'Proportion. Then', 'everything else.'], stats:[['87%', 'Referrals'], ['34', 'Bespoke'], ['1', 'Vision']]}
+      ];
+      const navbar=document.getElementById('navbar'), menuBtn=document.getElementById('menuBtn'), mobileMenu=document.getElementById('mobileMenu');
+      const heroContent=document.getElementById('heroContent'), eyebrow=document.getElementById('eyebrow'), headline=document.getElementById('headline'), stats=document.getElementById('stats');
+      const heroVideo=document.getElementById('heroVideo'), heroOutline=document.getElementById('heroOutline');
+      const intro=document.getElementById('intro'), introVideo=document.getElementById('introVideo'), skipIntro=document.getElementById('skipIntro');
+      let menuOpen=false, slideIndex=0, introDone=false;
+
+      function renderStats(items){stats.innerHTML=items.map((item, i)=>`<div class="stat"><div class="stat-number">${item[0]}</div><div class="stat-label">${item[1]}</div></div>${i<items.length-1?'<div class="sep"></div>':''}`).join('')}
+      function renderSlide(s){eyebrow.textContent=s.eyebrow;headline.innerHTML=`<span>${s.lines[0]}</span><span><em>${s.lines[1]}</em></span><span>${s.lines[2]}</span>`;renderStats(s.stats)}
+      renderStats(slides[0].stats);
+
+      addEventListener('scroll', ()=>navbar.classList.toggle('scrolled', scrollY>=60), {passive:true});
+      menuBtn.addEventListener('click', ()=>{menuOpen=!menuOpen;menuBtn.classList.toggle('open', menuOpen);mobileMenu.classList.toggle('open', menuOpen);navbar.classList.toggle('menu-open', menuOpen);document.body.style.overflow=menuOpen?'hidden':''});
+      document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click', ()=>{menuOpen=false;menuBtn.classList.remove('open');mobileMenu.classList.remove('open');navbar.classList.remove('menu-open');document.body.style.overflow=''}));
+
+      setInterval(()=>{heroContent.classList.remove('transition-in');heroContent.classList.add('transition-out');setTimeout(()=>{slideIndex=(slideIndex+1)%slides.length;renderSlide(slides[slideIndex]);heroContent.classList.remove('transition-out');void heroContent.offsetWidth;heroContent.classList.add('transition-in')},500)},5000);
+
+      function endHeroVideo(){heroVideo.classList.add('done');heroOutline.classList.add('sweep')}
+      heroVideo.addEventListener('ended', endHeroVideo, {once:true});heroVideo.addEventListener('error', endHeroVideo, {once:true});setTimeout(()=>{if(heroVideo.readyState<2)endHeroVideo()},3500);
+
+      function endIntro(){if(introDone)return;introDone=true;intro.classList.add('exit');setTimeout(()=>{intro.remove()},1250)}
+      introVideo.addEventListener('canplay', ()=>{if(introDone)return;intro.classList.add('ready');introVideo.play().catch(endIntro)}, {once:true});
+      introVideo.addEventListener('ended', endIntro, {once:true});introVideo.addEventListener('error', endIntro, {once:true});skipIntro.addEventListener('click', endIntro);
+      setTimeout(()=>{if(!intro.classList.contains('ready'))endIntro()},2500);setTimeout(endIntro,15000);
+    })();
+  </script>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:500 10px/1.2 Inter,system-ui,sans-serif;letter-spacing:.06em;color:#111;text-decoration:none;background:rgba(250,248,244,.92);padding:8px 12px;border:1px solid rgba(17,17,17,.14);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>
