@@ -1657,6 +1657,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   border: 0;
   display: block;
   pointer-events: none;
+  content-visibility: auto;
+}
+/* Gallery focus: freeze continuous page chrome so preview loops stay silky
+   (motionsite.ai is smooth because its gallery page has no competing WebGL). */
+html.is-work-focus .webgl-atmosphere {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+html.is-work-focus .wall__track,
+html.is-work-focus .tech-marquee__group {
+  animation-play-state: paused !important;
 }
 .ws-embed-frame {
   position: absolute;

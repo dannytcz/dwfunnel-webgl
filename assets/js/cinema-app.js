@@ -261,7 +261,9 @@ function initThreeAtmosphere({ reduced, mobile, saveData }) {
   window.addEventListener("resize", resize);
 
   const clock = new THREE.Clock();
+  let paused = false;
   function tick() {
+    if (paused) return;
     const t = clock.getElapsedTime();
     points.rotation.y = t * 0.045;
     points.rotation.x = Math.sin(t * 0.2) * 0.045;
@@ -272,6 +274,11 @@ function initThreeAtmosphere({ reduced, mobile, saveData }) {
   const atmosphere = {
     setIntensity(value) {
       material.opacity = 0.38 + Math.max(0, Math.min(1, value)) * 0.34;
+    },
+    setPaused(value) {
+      paused = !!value;
+      canvas.style.visibility = paused ? "hidden" : "";
+      if (!paused) tick();
     },
     destroy() {
       window.gsap.ticker.remove(tick);
@@ -508,16 +515,19 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: start on static posters, swap in animated WebP only for
-   cards on screen, and cap how many run at once. Eight animated loops beside
-   Lenis + Three.js still stutter; three concurrent loops stay silky. */
+/* Selected Work grid: motionsite-smooth path.
+   When the gallery is on screen we freeze the page's heavy continuous work
+   (Three.js atmosphere + drifting testimonial wall) so animated WebP cards
+   get a clean GPU budget, same idea as motionsite.ai's light gallery page.
+   Cards start as posters; visible ones swap to loops, hover wins priority. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
+  const section = grid.closest("section") || grid;
   const imgs = Array.from(grid.querySelectorAll("img.ws-embed-preview"));
   if (!imgs.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
-  if (saveData) return; // posters already in src
+  if (saveData) return;
   if (!("IntersectionObserver" in window)) {
     imgs.forEach((img) => {
       const anim = img.getAttribute("data-anim");
@@ -526,9 +536,13 @@ function initWorkGrid() {
     return;
   }
 
-  const MAX_LIVE = 3;
+  // With WebGL paused, several loops are fine. Without it, keep one.
+  const MAX_LIVE_FOCUS = 6;
+  const MAX_LIVE_IDLE = 1;
   const visible = new Set();
   const live = new Set();
+  let workFocus = false;
+  let hovered = null;
 
   function posterOf(img) {
     return img.getAttribute("data-poster") || img.currentSrc;
@@ -547,37 +561,64 @@ function initWorkGrid() {
     if (img.getAttribute("src") !== a) img.src = a;
     live.add(img);
   }
+  function setWorkFocus(on) {
+    workFocus = on;
+    document.documentElement.classList.toggle("is-work-focus", on);
+    appState.atmosphere?.setPaused?.(on);
+    syncLive();
+  }
   function syncLive() {
-    // Prefer cards nearest the viewport center when over the cap.
+    const mid = window.innerHeight * 0.45;
     const ranked = Array.from(visible).sort((a, b) => {
+      if (hovered && a === hovered) return -1;
+      if (hovered && b === hovered) return 1;
       const ra = a.getBoundingClientRect();
       const rb = b.getBoundingClientRect();
-      const mid = window.innerHeight * 0.45;
-      const da = Math.abs(ra.top + ra.height / 2 - mid);
-      const db = Math.abs(rb.top + rb.height / 2 - mid);
-      return da - db;
+      return Math.abs(ra.top + ra.height / 2 - mid) - Math.abs(rb.top + rb.height / 2 - mid);
     });
-    const keep = new Set(ranked.slice(0, MAX_LIVE));
+    const cap = workFocus ? MAX_LIVE_FOCUS : MAX_LIVE_IDLE;
+    const keep = new Set(ranked.slice(0, cap));
     live.forEach((img) => {
       if (!keep.has(img)) showPoster(img);
     });
     keep.forEach((img) => showAnim(img));
   }
 
-  const io = new IntersectionObserver(
+  const sectionIo = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => setWorkFocus(e.isIntersecting));
+    },
+    { rootMargin: "0px", threshold: 0.2 }
+  );
+  sectionIo.observe(section);
+
+  const cardIo = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) visible.add(e.target);
         else {
           visible.delete(e.target);
           showPoster(e.target);
+          if (hovered === e.target) hovered = null;
         }
       });
       syncLive();
     },
-    { rootMargin: "80px 0px", threshold: 0.35 }
+    { rootMargin: "40px 0px", threshold: 0.2 }
   );
-  imgs.forEach((img) => io.observe(img));
+  imgs.forEach((img) => {
+    cardIo.observe(img);
+    const card = img.closest(".work-card");
+    if (!card) return;
+    card.addEventListener("pointerenter", () => {
+      hovered = img;
+      syncLive();
+    });
+    card.addEventListener("pointerleave", () => {
+      if (hovered === img) hovered = null;
+      syncLive();
+    });
+  });
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides

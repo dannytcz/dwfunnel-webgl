@@ -51,7 +51,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 4. Cache versioning (do not skip)
 
-`cinema.css` and `cinema-app.js` are loaded with `?v=NN`. **Whenever you change either file, bump its version** in `cinema.html` (currently both at `v=86`). The HTML itself is not cache busted, so in the local browser add a throwaway `&cb=NN` to force fresh HTML while testing.
+`cinema.css` and `cinema-app.js` are loaded with `?v=NN`. **Whenever you change either file, bump its version** in `cinema.html` (currently both at `v=87`). The HTML itself is not cache busted, so in the local browser add a throwaway `&cb=NN` to force fresh HTML while testing.
 
 ## 5. The Selected Work grid, how it works
 
@@ -74,7 +74,7 @@ Each live card is:
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): previews are animated WebP, same approach as motionsite.ai, but cards start on a static poster and only swap to the loop when on screen. At most 3 loops run at once; the rest stay on posters. That keeps the grid silky beside Lenis + Three.js. `initWorkGrid()` owns the swap. Data-saver leaves posters forever. Do not go back to always-on mp4/webm `<video>` for the grid.
+Performance model (this is deliberate, keep it): previews are animated WebP. Cards start on a static poster. When the Selected Work section is on screen, the page freezes Three.js + the testimonial wall (`html.is-work-focus`) so the gallery gets a clean GPU budget like motionsite.ai. Visible cards then swap to loops, hover wins priority, up to 6 live at once while focused. Data-saver leaves posters forever. Do not go back to always-on mp4/webm `<video>` for the grid.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum
