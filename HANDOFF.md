@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Selected Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **9 cards**, all live demos (Ember placeholder replaced by Basilico).
+Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **9 cards**, all live demos (Ember placeholder replaced by The Brew).
 
 Each live card is:
 ```html
@@ -85,7 +85,7 @@ The 8 live demos and what each replaced:
 - **TOYBOMB** designer collectibles (carousel), original
 - **Elowen** boutique stays (ambient video hero), original
 - **LEXIS** performance footwear (Vite storefront, cursor X-ray), replaced Orbit
-- **Basilico** fine dining reservations (`/demos/basilico.html`), replaced the Ember placeholder.
+- **The Brew** fine dining reservations (`/demos/basilico.html`), replaced the Ember placeholder.
 
 ## 6. How to add a new demo ("make it ours")
 

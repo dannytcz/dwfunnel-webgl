@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#070707" />
   <meta name="robots" content="noindex" />
-  <meta name="description" content="Basilico, a Mayfair tasting room by Chef Alexander Thorne. Thirty-two seats, one open kitchen, dinner worth dressing for." />
-  <title>Basilico · Mayfair</title>
+  <meta name="description" content="The Brew, a Mayfair tasting room by Chef Alexander Thorne. Thirty-two seats, one open kitchen, dinner worth dressing for." />
+  <title>The Brew · Mayfair</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1303,7 +1303,7 @@
 
   <div class="nav-wrap">
     <header class="navbar">
-      <a class="brand interactive" href="#home" aria-label="Basilico home">Basilico<span class="brand-dot">.</span></a>
+      <a class="brand interactive" href="#home" aria-label="The Brew home">The Brew<span class="brand-dot">.</span></a>
 
       <nav class="nav-links" aria-label="Primary navigation">
         <a class="interactive" href="#menu">Menu</a>
@@ -1387,7 +1387,7 @@
         <div class="section-heading">
           <div class="section-heading-copy">
             <span class="eyebrow">Featured plates</span>
-            <h2 class="section-title">Four expressions of the <span class="gold-gradient">Basilico kitchen.</span></h2>
+            <h2 class="section-title">Four expressions of the <span class="gold-gradient">Brew kitchen.</span></h2>
           </div>
           <button class="button interactive" id="openMenu">View Full Menu <span class="arrow">↗</span></button>
         </div>
@@ -1454,7 +1454,7 @@
           <span class="eyebrow">The vision</span>
           <h2 class="section-title">A kitchen that cooks with <span class="gold-gradient">restraint.</span></h2>
           <p>
-            Chef Alexander Thorne opened Basilico on the belief that luxury should never need to announce itself. Find the best expression of an ingredient, then remove everything that gets in its way.
+            Chef Alexander Thorne opened The Brew on the belief that luxury should never need to announce itself. Find the best expression of an ingredient, then remove everything that gets in its way.
           </p>
           <p>
             Raised between coastal kitchens and European dining rooms, Thorne brings fire-led technique and a tightly seasonal point of view to every service.
@@ -1512,7 +1512,7 @@
 
     <section class="experience reveal-section" id="experience">
       <div class="experience-card">
-        <img class="experience-bg" id="experienceBg" src="/assets/demos/basilico/bg.webp" alt="Basilico dining room in Mayfair" loading="lazy" />
+        <img class="experience-bg" id="experienceBg" src="/assets/demos/basilico/bg.webp" alt="The Brew dining room in Mayfair" loading="lazy" />
         <div class="experience-content">
           <div class="experience-copy">
             <span class="eyebrow">Beyond the plate</span>
@@ -1538,7 +1538,7 @@
 
         <div class="testimonial-stage">
           <article class="testimonial active">
-            <blockquote>“Basilico understands the rarest luxury in modern dining: knowing exactly when to stop.”</blockquote>
+            <blockquote>“The Brew understands the rarest luxury in modern dining: knowing exactly when to stop.”</blockquote>
             <cite>Elena Marlow · The Continental Review</cite>
           </article>
           <article class="testimonial">
@@ -1572,7 +1572,18 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="date">Date</label>
-              <input class="field interactive" id="date" name="date" type="date" required />
+              <input
+                class="field interactive"
+                id="date"
+                name="date"
+                type="text"
+                inputmode="numeric"
+                placeholder="DD/MM/YYYY"
+                pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{4}$"
+                maxlength="10"
+                autocomplete="off"
+                required
+              />
             </div>
             <div class="form-group">
               <label for="time">Time</label>
@@ -1661,7 +1672,7 @@
       <div class="container">
         <div class="footer-grid">
           <div class="footer-about">
-            <a class="brand interactive" href="#home">Basilico<span class="brand-dot">.</span></a>
+            <a class="brand interactive" href="#home">The Brew<span class="brand-dot">.</span></a>
             <p>A Mayfair tasting room shaped by season, fire and quiet precision. Dinner, Tuesday through Sunday.</p>
           </div>
 
@@ -1671,7 +1682,7 @@
               14 Mount Street<br />
               Mayfair, London W1K 2RR<br />
               +44 20 7491 6620<br />
-              <a class="interactive" href="mailto:table@basilico.example">table@basilico.example</a>
+              <a class="interactive" href="mailto:table@thebrew.example">table@thebrew.example</a>
             </div>
           </div>
 
@@ -1696,7 +1707,7 @@
         </div>
 
         <div class="footer-bottom">
-          <span>© 2026 Basilico Restaurant · Concept build by <a href="/" style="color:var(--gold)">DW Funnel</a></span>
+          <span>© 2026 The Brew · Concept build by <a href="/" style="color:var(--gold)">DW Funnel</a></span>
           <span>Season · Fire · Memory</span>
         </div>
       </div>
@@ -1707,7 +1718,7 @@
     <div class="modal-panel">
       <button class="modal-close interactive" id="closeMenu" aria-label="Close menu">×</button>
       <div class="menu-modal-head">
-        <div class="brand" id="menuModalTitle">Basilico<span class="brand-dot">.</span></div>
+        <div class="brand" id="menuModalTitle">The Brew<span class="brand-dot">.</span></div>
         <p>Our à la carte menu changes with the market. The selection below reflects the current season and may shift quietly from one evening to the next.</p>
       </div>
 
@@ -1906,14 +1917,38 @@
 
       // Forms
       const dateInput = document.getElementById("date");
-      const today = new Date();
-      const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split("T")[0];
-      dateInput.min = localDate;
+      dateInput.addEventListener("input", () => {
+        const digits = dateInput.value.replace(/\D/g, "").slice(0, 8);
+        let next = digits;
+        if (digits.length > 4) next = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+        else if (digits.length > 2) next = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+        dateInput.value = next;
+      });
+
+      const parseUkDate = (value) => {
+        const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+        if (!match) return null;
+        const day = Number(match[1]);
+        const month = Number(match[2]);
+        const year = Number(match[3]);
+        const parsed = new Date(year, month - 1, day);
+        if (parsed.getFullYear() !== year || parsed.getMonth() !== month - 1 || parsed.getDate() !== day) return null;
+        return parsed;
+      };
 
       reservationForm.addEventListener("submit", (event) => {
         event.preventDefault();
         if (!reservationForm.checkValidity()) {
           reservationForm.reportValidity();
+          return;
+        }
+        const booked = parseUkDate(dateInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (!booked || booked < today) {
+          dateInput.setCustomValidity("Please enter a valid future date as DD/MM/YYYY");
+          dateInput.reportValidity();
+          dateInput.setCustomValidity("");
           return;
         }
         document.getElementById("formNote").style.display = "none";
@@ -2062,7 +2097,7 @@
       document.querySelectorAll("img").forEach((img) => {
         img.addEventListener("error", () => {
           img.style.background = "linear-gradient(135deg, #17120e, #070707)";
-          img.alt = img.alt || "Basilico visual";
+          img.alt = img.alt || "The Brew visual";
         });
       });
     })();
