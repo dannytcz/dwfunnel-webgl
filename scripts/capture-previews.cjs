@@ -54,6 +54,17 @@ async function sweep(page, loops) {
   const pts = [[W*0.25,H*0.55],[W*0.75,H*0.45],[W*0.6,H*0.65],[W*0.35,H*0.4],[W*0.7,H*0.55]];
   for (let l = 0; l < loops; l++) for (const [x,y] of pts) { await page.mouse.move(x,y,{steps:14}); await page.waitForTimeout(90); }
 }
+// Slow full-viewport orbit so particle / cursor demos leave visible frame diffs
+// after WebP compression (Kane Voss starfield was nearly static at q52).
+async function orbit(page, seconds) {
+  const cx = W * 0.5, cy = H * 0.48, rx = W * 0.32, ry = H * 0.28;
+  const steps = Math.max(24, Math.floor(seconds * 18));
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    await page.mouse.move(cx + Math.cos(t) * rx, cy + Math.sin(t) * ry, { steps: 3 });
+    await page.waitForTimeout(Math.floor((seconds * 1000) / steps));
+  }
+}
 async function spin(page, sel) {
   try {
     const el = await page.$(sel); if (!el) return;
@@ -65,10 +76,10 @@ async function spin(page, sel) {
   } catch (e) {}
 }
 
-// key -> { url, wait(ms after fonts.ready), act, trim:{start,dur} }
+// key -> { url, wait(ms after fonts.ready), act, trim:{start,dur}, q? }
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',           wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
-  kanevoss: { url:'/demos/kanevoss.html',        wait:1600, trim:{start:2.5,dur:7}, act: p => sweep(p,8) },
+  kanevoss: { url:'/demos/kanevoss.html?preview=1', wait:1200, trim:{start:1.2,dur:5}, q:72, posterAt:2.2, act: p => orbit(p, 7) },
   verde:    { url:'/demos/verde.html',           wait:5000, trim:{start:1.5,dur:7}, act: async p => { await hold(p,1200); await spin(p,'#product-model'); await clickSel(p,'[data-flavor="blue"]'); await hold(p,1600); await spin(p,'#product-model'); await clickSel(p,'[data-flavor="classic"]'); await hold(p,1600);} },
   toybomb:  { url:'/demos/toybomb.html',          wait:1800, trim:{start:2.5,dur:6}, act: async p => { for (let i=0;i<3;i++){ await clickSel(p,'#nextButton'); await hold(p,1900);} } },
   harbour:  { url:'/demos/harbour.html?embed=1',  wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
@@ -98,14 +109,15 @@ const RECIPES = {
     const anim = path.join(OUT, key + '.webp');
     const poster = path.join(OUT, key + '-poster.webp');
     const dur = Math.min(r.trim.dur, MAX_DUR);
+    const q = r.q != null ? r.q : WEBP_Q;
     // Animated WebP: image-path decode, infinite loop, no video element needed.
     // Poster comes from the source webm: ffmpeg's webp demuxer cannot re-read
     // animated WebP (skips ANIM/ANMF), so do not extract from the anim file.
     execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start),'-t',String(dur),'-i',webm,
       '-vf',`scale=${SCALE}:flags=lanczos,fps=${FPS}`,'-an',
-      '-c:v','libwebp_anim','-lossless','0','-compression_level','6','-q:v',String(WEBP_Q),
+      '-c:v','libwebp_anim','-lossless','0','-compression_level','6','-q:v',String(q),
       '-loop','0','-preset','default', anim]);
-    execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start + 0.4),'-i',webm,
+    execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start + (r.posterAt || 0.4)),'-i',webm,
       '-vf',`scale=${SCALE}:flags=lanczos`,'-frames:v','1','-c:v','libwebp','-q:v','70', poster]);
     // Drop legacy mp4 if present so the grid never picks it up by mistake.
     const legacyMp4 = path.join(OUT, key + '.mp4');

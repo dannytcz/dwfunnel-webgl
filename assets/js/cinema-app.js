@@ -508,19 +508,76 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: previews are animated WebP <img>s (motionsite.ai model).
-   No video play/pause. Data-saver swaps the loop for a static poster. */
+/* Selected Work grid: start on static posters, swap in animated WebP only for
+   cards on screen, and cap how many run at once. Eight animated loops beside
+   Lenis + Three.js still stutter; three concurrent loops stay silky. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
   const imgs = Array.from(grid.querySelectorAll("img.ws-embed-preview"));
   if (!imgs.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
-  if (!saveData) return;
-  imgs.forEach((img) => {
-    const poster = img.getAttribute("data-poster");
-    if (poster) img.src = poster;
-  });
+  if (saveData) return; // posters already in src
+  if (!("IntersectionObserver" in window)) {
+    imgs.forEach((img) => {
+      const anim = img.getAttribute("data-anim");
+      if (anim) img.src = anim;
+    });
+    return;
+  }
+
+  const MAX_LIVE = 3;
+  const visible = new Set();
+  const live = new Set();
+
+  function posterOf(img) {
+    return img.getAttribute("data-poster") || img.currentSrc;
+  }
+  function animOf(img) {
+    return img.getAttribute("data-anim");
+  }
+  function showPoster(img) {
+    const p = posterOf(img);
+    if (p && img.getAttribute("src") !== p) img.src = p;
+    live.delete(img);
+  }
+  function showAnim(img) {
+    const a = animOf(img);
+    if (!a) return;
+    if (img.getAttribute("src") !== a) img.src = a;
+    live.add(img);
+  }
+  function syncLive() {
+    // Prefer cards nearest the viewport center when over the cap.
+    const ranked = Array.from(visible).sort((a, b) => {
+      const ra = a.getBoundingClientRect();
+      const rb = b.getBoundingClientRect();
+      const mid = window.innerHeight * 0.45;
+      const da = Math.abs(ra.top + ra.height / 2 - mid);
+      const db = Math.abs(rb.top + rb.height / 2 - mid);
+      return da - db;
+    });
+    const keep = new Set(ranked.slice(0, MAX_LIVE));
+    live.forEach((img) => {
+      if (!keep.has(img)) showPoster(img);
+    });
+    keep.forEach((img) => showAnim(img));
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) visible.add(e.target);
+        else {
+          visible.delete(e.target);
+          showPoster(e.target);
+        }
+      });
+      syncLive();
+    },
+    { rootMargin: "80px 0px", threshold: 0.35 }
+  );
+  imgs.forEach((img) => io.observe(img));
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides

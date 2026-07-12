@@ -329,8 +329,15 @@ textarea{min-height:112px;resize:vertical}
   const ctx = canvas.getContext("2d", { alpha:true });
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const embed = new URLSearchParams(location.search).has("embed");
+  // preview=1 is only for Selected Work clip capture: faster + brighter so the
+  // particle field still reads after 640px WebP compression.
+  const preview = new URLSearchParams(location.search).has("preview");
   const particleCount = embed ? 520 : (innerWidth < 760 ? 650 : 1800);
   const lineCount = embed ? 70 : (innerWidth < 760 ? 90 : 260);
+  const speedMul = preview ? 5.5 : 1;
+  const sizeMul = preview ? 2.1 : 1;
+  const alphaMul = preview ? 2.4 : 1;
+  const mouseRadius = preview ? 220 : 120;
   let w=0,h=0,dpr=1,cx=0,cy=0;
   let mouseX=0,mouseY=0,mouseActive=false;
   const particles=[];
@@ -346,8 +353,8 @@ textarea{min-height:112px;resize:vertical}
       z:Math.random(),
       baseX:Math.cos(a)*r,
       baseY:Math.sin(a)*r*.62,
-      size:.25+Math.random()*1.35,
-      speed:.0006+Math.random()*.0018
+      size:(.25+Math.random()*1.35)*sizeMul,
+      speed:(.0006+Math.random()*.0018)*speedMul
     };
   }
 
@@ -358,7 +365,7 @@ textarea{min-height:112px;resize:vertical}
       r:20+Math.pow(Math.random(),.65)*Math.max(innerWidth,innerHeight)*.62,
       z:Math.random(),
       len:20+Math.random()*160,
-      speed:.002+Math.random()*.004
+      speed:(.002+Math.random()*.004)*speedMul
     };
   }
 
@@ -394,11 +401,11 @@ textarea{min-height:112px;resize:vertical}
       const y=cy+Math.sin(l.a)*l.r*.62*scale;
       const ex=cx+Math.cos(l.a)*(l.r+l.len)*scale;
       const ey=cy+Math.sin(l.a)*(l.r+l.len)*.62*scale;
-      const alpha=.018+l.z*.13;
+      const alpha=(.018+l.z*.13)*alphaMul;
       ctx.beginPath();
       ctx.moveTo(x,y);ctx.lineTo(ex,ey);
-      ctx.strokeStyle=`rgba(136,170,255,${alpha})`;
-      ctx.lineWidth=Math.max(.25,l.z*.85);
+      ctx.strokeStyle=`rgba(136,170,255,${Math.min(alpha,.55)})`;
+      ctx.lineWidth=Math.max(.25,l.z*.85)*(preview?1.6:1);
       ctx.stroke();
     }
 
@@ -415,11 +422,11 @@ textarea{min-height:112px;resize:vertical}
       if(mouseActive) {
         const dx=x-mouseX,dy=y-mouseY;
         const dist=Math.hypot(dx,dy);
-        if(dist<120) {
-          const force=(120-dist)*.04;
+        if(dist<mouseRadius) {
+          const force=(mouseRadius-dist)*(preview ? 0.07 : 0.04);
           p.x+=dx/(dist||1)*force;
           p.y+=dy/(dist||1)*force;
-          acid=Math.min((1-dist/120)*.4,.4);
+          acid=Math.min((1-dist/mouseRadius)*(preview ? 0.75 : 0.4), preview ? 0.75 : 0.4);
         }
       }
       p.x+=(p.baseX-p.x)*.028;
@@ -428,9 +435,9 @@ textarea{min-height:112px;resize:vertical}
       x=cx+p.x*scale;
       y=cy+p.y*scale;
       const radius=p.size*(.35+p.z*1.45);
-      const alpha=.08+p.z*.45;
+      const alpha=Math.min((.08+p.z*.45)*alphaMul,.85);
       if(acid>0) {
-        ctx.fillStyle=`rgba(204,255,0,${Math.min(alpha+acid,.72)})`;
+        ctx.fillStyle=`rgba(204,255,0,${Math.min(alpha+acid,.9)})`;
       } else {
         ctx.fillStyle=`rgba(82,151,255,${alpha})`;
       }

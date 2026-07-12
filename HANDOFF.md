@@ -51,7 +51,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 4. Cache versioning (do not skip)
 
-`cinema.css` and `cinema-app.js` are loaded with `?v=NN`. **Whenever you change either file, bump its version** in `cinema.html` (currently both at `v=85`). The HTML itself is not cache busted, so in the local browser add a throwaway `&cb=NN` to force fresh HTML while testing.
+`cinema.css` and `cinema-app.js` are loaded with `?v=NN`. **Whenever you change either file, bump its version** in `cinema.html` (currently both at `v=86`). The HTML itself is not cache busted, so in the local browser add a throwaway `&cb=NN` to force fresh HTML while testing.
 
 ## 5. The Selected Work grid, how it works
 
@@ -64,7 +64,8 @@ Each live card is:
     <div class="work-card__screen ws--embed">
       <span class="ws-chrome"><i></i><i></i><i></i></span>
       <span class="work-card__live">Live site</span>
-      <img class="ws-embed-preview" src="/assets/demos/previews/<key>.webp"
+      <img class="ws-embed-preview" src="/assets/demos/previews/<key>-poster.webp"
+           data-anim="/assets/demos/previews/<key>.webp"
            data-poster="/assets/demos/previews/<key>-poster.webp"
            alt="" width="640" height="400" loading="lazy" decoding="async" aria-hidden="true">
     </div>
@@ -73,7 +74,7 @@ Each live card is:
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): previews are animated WebP in `<img>`, same approach as motionsite.ai. Image-path decode stays silky with many cards on screen; video elements do not, because each opens a decoder and fights Lenis + Three.js. `loading="lazy"` defers offscreen cards. `initWorkGrid()` only swaps to the static poster when `navigator.connection.saveData` is on. Do not go back to mp4/webm `<video>` for the grid.
+Performance model (this is deliberate, keep it): previews are animated WebP, same approach as motionsite.ai, but cards start on a static poster and only swap to the loop when on screen. At most 3 loops run at once; the rest stay on posters. That keeps the grid silky beside Lenis + Three.js. `initWorkGrid()` owns the swap. Data-saver leaves posters forever. Do not go back to always-on mp4/webm `<video>` for the grid.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum
