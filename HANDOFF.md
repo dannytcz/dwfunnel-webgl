@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Our Work grid, how it works
 
-Section meta is `005 / Our Work`, headline **This Is Our Work.**, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **25 cards**, all live demos.
+Section meta is `005 / Our Work`, headline **This Is Our Work.**, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **27 cards**, all live demos.
 
 Each live card is:
 ```html
@@ -102,6 +102,8 @@ The 8 live demos and what each replaced:
 - **Picocore** network operations (`/demos/picocore.html`), rebranded from Datacore.
 - **LionTech** intelligent security (`/demos/liontech.html`), rebranded from Akor.
 - **Tarismo** transport (`/demos/tarismo.html`), rebranded from Targo.
+- **Briefline** newsletter (`/demos/briefline.html`), rebranded from NewShift; AI and culture briefings.
+- **Autonex** industrial automation (`/demos/autonex.html`), rebranded from Automation Machines; Spline 3D machine hero.
 
 ## 6. How to add a new demo ("make it ours")
 

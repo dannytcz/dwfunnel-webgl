@@ -86,6 +86,8 @@ const RECIPES = {
   picocore: { url:'/demos/picocore.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   liontech:{ url:'/demos/liontech.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  briefline:{ url:'/demos/briefline.html?embed=1', wait:2200, trim:{start:2.0,dur:7}, act: p => hold(p,10000) },
+  autonex:  { url:'/demos/autonex.html?embed=1',  wait:8000, trim:{start:7.5,dur:6}, posterAt:1.0, act: p => hold(p,10000) },
 };
 
 (async () => {
