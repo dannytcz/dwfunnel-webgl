@@ -55,7 +55,7 @@ The main page loads: self hosted Space Grotesk/Mono, Google Fonts (Cinzel, Orbit
 
 ## 5. The Selected Work grid, how it works
 
-Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **21 cards**, all live demos.
+Section id is around the "Selected Work" heading, class `.work-grid`. It is **4 columns** on desktop (steps to 3 at <=1200px, 2 at <=900px, 1 at <=560px). There are currently **23 cards**, all live demos.
 
 Each live card is:
 ```html
@@ -98,6 +98,8 @@ The 8 live demos and what each replaced:
 - **Lumenix** 3D motion studio (`/demos/lumenix.html`), rebranded from Framelix; cinematic brand motion.
 - **Reverie** immersive storyworld (`/demos/reverie.html`), go where maps end.
 - **STRETCH** ethical beauty (`/demos/stretch.html`), sustainable skincare commerce.
+- **Weblex** smart website builder (`/demos/weblex.html`), product hero with light copy polish.
+- **Picocore** network operations (`/demos/picocore.html`), rebranded from Datacore.
 
 ## 6. How to add a new demo ("make it ours")
 

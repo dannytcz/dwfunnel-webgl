@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050507" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Picocore, one clear interface for access, logs, and servers. A concept build by DW Funnel." />
+  <title>Picocore · Network Operations, Made Clear</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.1.0",
+        "react-dom/client": "https://esm.sh/react-dom@19.1.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.468.0?external=react"
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      --font-manrope: "Manrope", sans-serif;
+      --font-inter: "Inter", sans-serif;
+      --font-cabin: "Cabin", sans-serif;
+      --font-instrument: "Instrument Serif", serif;
+    }
+  </style>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --purple: #7b39fc;
+      --purple-hover: #6a2ce0;
+      --secondary: #2b2344;
+      --secondary-hover: #352b54;
+      --orange: #f87b52;
+      --glass-border: rgba(164,132,215,.5);
+      --glass-bg: rgba(85,80,110,.4);
+    }
+
+    * { box-sizing: border-box; }
+    html, body, #root { min-height: 100%; }
+    html { background: #000; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: #000;
+      color: #fff;
+      font-family: "Manrope", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .video-poster {
+      transition: opacity 900ms cubic-bezier(.22,1,.36,1), visibility 900ms;
+    }
+
+    .hero-vignette {
+      background:
+        radial-gradient(circle at 50% 46%, transparent 0%, rgba(0,0,0,.06) 34%, rgba(0,0,0,.42) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,.34), rgba(0,0,0,.04) 35%, rgba(0,0,0,.28));
+    }
+
+    .hero-noise {
+      opacity: .035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
+
+    .glass-button {
+      background: rgba(27,24,38,.38);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .badge-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.12),
+        0 16px 50px rgba(0,0,0,.18);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .nav-shell {
+      background: rgba(4,4,8,.18);
+      border: 1px solid rgba(255,255,255,.07);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 18px 70px rgba(0,0,0,.2);
+    }
+
+    .primary-button {
+      background: var(--purple);
+      box-shadow:
+        0 12px 38px rgba(123,57,252,.28),
+        inset 0 1px 0 rgba(255,255,255,.2);
+    }
+
+    .primary-button:hover { background: var(--purple-hover); }
+    .secondary-button { background: var(--secondary); }
+    .secondary-button:hover { background: var(--secondary-hover); }
+
+    .soft-outline {
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+    }
+
+    .mobile-menu {
+      transition: opacity 260ms ease, visibility 260ms ease;
+    }
+
+    .fade-up {
+      animation: fadeUp .85s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .fade-up-delay-1 { animation-delay: .08s; }
+    .fade-up-delay-2 { animation-delay: .16s; }
+    .fade-up-delay-3 { animation-delay: .24s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fallback-shell {
+      position: relative;
+      min-height: 100svh;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      padding: 8rem 1.25rem 3rem;
+      isolation: isolate;
+    }
+    .fallback-bg, .fallback-overlay { position: absolute; inset: 0; }
+    .fallback-bg { width: 100%; height: 100%; object-fit: cover; z-index: -3; }
+    .fallback-overlay { z-index: -2; background: rgba(0,0,0,.64); }
+    .fallback-nav {
+      position: absolute; top: 1.5rem; left: 50%; transform: translateX(-50%);
+      width: min(92%, 1360px); display: flex; align-items: center; justify-content: space-between;
+      padding: .8rem 1rem; border: 1px solid rgba(255,255,255,.08); border-radius: 1rem;
+      background: rgba(4,4,8,.3); backdrop-filter: blur(18px);
+    }
+    .fallback-brand { display: flex; align-items: center; gap: .75rem; font: 600 17px/1 "Inter", sans-serif; }
+    .fallback-logo { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: #fff; color: #000; font-size: 21px; }
+    .fallback-copy { width: min(100%, 1050px); text-align: center; }
+    .fallback-badge {
+      display: inline-flex; gap: .55rem; align-items: center; padding: .4rem 1rem .4rem .4rem;
+      border: 1px solid var(--glass-border); border-radius: 999px; background: var(--glass-bg);
+      font: 600 13px/1 "Cabin", sans-serif; backdrop-filter: blur(18px);
+    }
+    .fallback-badge b { padding: .38rem .65rem; border-radius: 999px; background: var(--orange); text-transform: uppercase; font-size: 11px; }
+    .fallback-title { margin: 1.8rem auto 0; font: 500 clamp(3.15rem,7.2vw,4.8rem)/.95 "Inter", sans-serif; letter-spacing: -.065em; }
+    .fallback-title span { display: block; margin-top: .5rem; }
+    .fallback-title em { font-family: "Instrument Serif", serif; font-weight: 400; letter-spacing: -.035em; }
+    .fallback-text { margin: 1.7rem auto 0; max-width: 580px; color: rgba(255,255,255,.68); font-size: 1.05rem; line-height: 1.8; }
+    .fallback-actions { margin-top: 2rem; display: flex; justify-content: center; gap: .75rem; flex-wrap: wrap; }
+    .fallback-actions a { padding: .95rem 1.5rem; border-radius: .75rem; font: 600 15px/1 "Cabin", sans-serif; }
+    .fallback-actions a:first-child { background: var(--purple); }
+    .fallback-actions a:last-child { background: var(--secondary); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+    @media (max-width: 640px) {
+      .fallback-shell { padding-top: 7rem; }
+      .fallback-actions { flex-direction: column; }
+      .fallback-actions a { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+
+<script>
+(function(){
+  if(!new URLSearchParams(location.search).has('embed')) return;
+  document.documentElement.classList.add('is-embed');
+  var st=document.createElement('style');
+  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  document.head.appendChild(st);
+  var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
+  function tick(){
+    var now=performance.now();
+    var max=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+    if(max<8) return;
+    if(anchor===null) anchor=now;
+    if(now<holdUntil) return;
+    var t=Math.min((now-anchor)/DUR,1);
+    var p=phase==='down'?t:1-t;
+    scrollTo(0,p*max);
+    if(t>=1){phase=phase==='down'?'up':'down';anchor=now;holdUntil=now+HOLD;}
+  }
+  addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
+})();
+</script>
+</head>
+
+<body>
+  <div id="root">
+    <div class="fallback-shell">
+      <img class="fallback-bg" src="/assets/demos/picocore/poster.webp" alt="" />
+      <div class="fallback-overlay"></div>
+      <div class="fallback-nav">
+        <div class="fallback-brand"><span class="fallback-logo">⌘</span><span>Picocore</span></div>
+        <span style="font:600 13px 'Cabin',sans-serif;color:rgba(255,255,255,.65)">Menu</span>
+      </div>
+      <main class="fallback-copy">
+        <div class="fallback-badge"><b>New</b><span>Picocore v3.2 is live</span></div>
+        <h1 class="fallback-title">Your Network Stack.<span>One Clear <em>Interface</em>.</span></h1>
+        <p class="fallback-text">Give admins one place to control access, logs, and servers, with intent.</p>
+        <div class="fallback-actions"><a href="#">Book a Demo ↗</a><a href="#">Start Free</a></div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import React, { useEffect, useRef, useState } from "react";
+    import { createRoot } from "react-dom/client";
+    import {
+      Command,
+      ChevronDown,
+      Menu,
+      X,
+      ArrowUpRight
+    } from "lucide-react";
+
+    const h = React.createElement;
+
+    const VIDEO_SRC = "/assets/demos/picocore/hero.mp4";
+    const POSTER_SRC = "/assets/demos/picocore/poster.webp";
+
+    function BackgroundVideo() {
+      const videoRef = useRef(null);
+      const [hasStarted, setHasStarted] = useState(false);
+
+      useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        let cancelled = false;
+
+        const tryPlay = async () => {
+          try {
+            await video.play();
+          } catch (_) {
+            // Muted autoplay normally succeeds; poster remains as graceful fallback.
+          }
+        };
+
+        const attachSource = () => {
+          video.src = VIDEO_SRC;
+          tryPlay();
+        };
+
+        attachSource();
+
+        return () => {
+          cancelled = true;
+        };
+      }, []);
+
+      return h(
+        "div",
+        { className: "absolute inset-0 z-0 overflow-hidden bg-black", "aria-hidden": "true" },
+        h("img", {
+          src: POSTER_SRC,
+          alt: "",
+          className:
+            "video-poster absolute inset-0 h-full w-full object-cover " +
+            (hasStarted ? "invisible opacity-0" : "visible opacity-100")
+        }),
+        h("video", {
+          ref: videoRef,
+          muted: true,
+          loop: true,
+          playsInline: true,
+          autoPlay: true,
+          preload: "auto",
+          poster: POSTER_SRC,
+          onPlaying: () => setHasStarted(true),
+          className: "absolute inset-0 h-full w-full object-cover"
+        }),
+        h("div", { className: "absolute inset-0 bg-black/60" }),
+        h("div", { className: "hero-vignette absolute inset-0" }),
+        h("div", { className: "hero-noise pointer-events-none absolute inset-0 mix-blend-screen" })
+      );
+    }
+
+    function Logo() {
+      return h(
+        "a",
+        {
+          href: "#",
+          className: "group flex items-center gap-3",
+          "aria-label": "Picocore home"
+        },
+        h(
+          "span",
+          {
+            className:
+              "grid size-10 place-items-center rounded-xl bg-white text-black shadow-[0_12px_35px_rgba(255,255,255,.15)] transition-transform duration-300 group-hover:-rotate-3"
+          },
+          h(Command, { size: 21, strokeWidth: 2.15 })
+        ),
+        h(
+          "span",
+          { className: "font-inter text-[17px] font-semibold tracking-[-0.04em] text-white" },
+          "Picocore"
+        )
+      );
+    }
+
+    const links = ["Home", "Services", "Reviews", "Contact"];
+
+    function DesktopNav() {
+      return h(
+        "nav",
+        { className: "hidden items-center gap-9 lg:flex", "aria-label": "Primary navigation" },
+        ...links.map((label) =>
+          h(
+            "a",
+            {
+              key: label,
+              href: "#",
+              className:
+                "group flex items-center gap-1.5 font-manrope text-sm font-medium text-white/72 transition-colors hover:text-white"
+            },
+            label,
+            label === "Services"
+              ? h(ChevronDown, {
+                  size: 14,
+                  className: "transition-transform duration-200 group-hover:translate-y-0.5"
+                })
+              : null
+          )
+        )
+      );
+    }
+
+    function Navbar({ menuOpen, setMenuOpen }) {
+      return h(
+        React.Fragment,
+        null,
+        h(
+          "header",
+          { className: "absolute inset-x-0 top-0 z-40 px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8" },
+          h(
+            "div",
+            {
+              className:
+                "nav-shell mx-auto flex max-w-[1360px] items-center justify-between rounded-2xl px-4 py-3 sm:px-5"
+            },
+            h(Logo),
+            h(DesktopNav),
+            h(
+              "div",
+              { className: "hidden items-center gap-2.5 lg:flex" },
+              h(
+                "a",
+                {
+                  href: "#",
+                  className:
+                    "glass-button rounded-xl px-5 py-3 font-cabin text-sm font-semibold text-white transition hover:bg-white/10"
+                },
+                "Sign In"
+              ),
+              h(
+                "a",
+                {
+                  href: "#",
+                  className:
+                    "primary-button rounded-xl px-5 py-3 font-cabin text-sm font-semibold text-white transition duration-200"
+                },
+                "Get Started"
+              )
+            ),
+            h(
+              "button",
+              {
+                type: "button",
+                onClick: () => setMenuOpen((open) => !open),
+                className:
+                  "glass-button grid size-11 place-items-center rounded-xl text-white lg:hidden",
+                "aria-label": menuOpen ? "Close menu" : "Open menu",
+                "aria-expanded": menuOpen
+              },
+              menuOpen ? h(X, { size: 21 }) : h(Menu, { size: 22 })
+            )
+          )
+        ),
+        h(
+          "div",
+          {
+            className:
+              "mobile-menu fixed inset-0 z-30 flex bg-black/95 px-6 pt-28 lg:hidden " +
+              (menuOpen
+                ? "visible opacity-100"
+                : "pointer-events-none invisible opacity-0"),
+            "aria-hidden": !menuOpen
+          },
+          h(
+            "nav",
+            { className: "flex w-full flex-col", "aria-label": "Mobile navigation" },
+            ...links.map((label, index) =>
+              h(
+                "a",
+                {
+                  key: label,
+                  href: "#",
+                  onClick: () => setMenuOpen(false),
+                  className:
+                    "flex items-center justify-between border-b border-white/10 py-5 font-inter text-3xl font-medium tracking-[-0.04em] text-white"
+                },
+                h("span", null, label),
+                h("span", { className: "font-manrope text-xs font-medium text-white/35" }, `0${index + 1}`)
+              )
+            ),
+            h(
+              "div",
+              { className: "mt-auto grid gap-3 pb-8" },
+              h(
+                "a",
+                {
+                  href: "#",
+                  className:
+                    "glass-button rounded-xl px-5 py-4 text-center font-cabin text-sm font-semibold text-white"
+                },
+                "Sign In"
+              ),
+              h(
+                "a",
+                {
+                  href: "#",
+                  className:
+                    "primary-button rounded-xl px-5 py-4 text-center font-cabin text-sm font-semibold text-white"
+                },
+                "Get Started"
+              )
+            )
+          )
+        )
+      );
+    }
+
+    function HeroContent() {
+      return h(
+        "main",
+        {
+          className:
+            "relative z-10 flex min-h-[100svh] items-center justify-center px-5 pb-12 pt-28 sm:px-6 sm:pb-14 sm:pt-32 lg:px-8"
+        },
+        h(
+          "section",
+          { className: "mx-auto flex w-full max-w-[1100px] flex-col items-center text-center" },
+          h(
+            "div",
+            {
+              className:
+                "badge-glass fade-up inline-flex items-center gap-2 rounded-full p-1.5 pr-4 font-cabin text-xs font-medium text-white/85 sm:text-sm"
+            },
+            h(
+              "span",
+              {
+                className:
+                  "rounded-full bg-[#f87b52] px-2.5 py-1 font-cabin text-[11px] font-bold uppercase tracking-[.04em] text-white sm:text-xs"
+              },
+              "New"
+            ),
+            h("span", null, "Picocore v3.2 is live")
+          ),
+          h(
+            "h1",
+            {
+              className:
+                "fade-up fade-up-delay-1 mt-7 max-w-[1000px] font-inter text-[clamp(3.15rem,7.2vw,4.8rem)] font-medium leading-[.95] tracking-[-.065em] text-white drop-shadow-[0_8px_30px_rgba(0,0,0,.36)]"
+            },
+            h("span", { className: "block" }, "Your Network Stack."),
+            h(
+              "span",
+              { className: "mt-2 block" },
+              "One Clear ",
+              h(
+                "em",
+                {
+                  className:
+                    "font-instrument font-normal tracking-[-.035em] text-white"
+                },
+                "Interface"
+              ),
+              "."
+            )
+          ),
+          h(
+            "p",
+            {
+              className:
+                "fade-up fade-up-delay-2 mt-7 max-w-[580px] font-manrope text-base leading-7 text-white/66 sm:text-lg sm:leading-8"
+            },
+            "Give admins one place to control access, logs, and servers, with intent."
+          ),
+          h(
+            "div",
+            {
+              className:
+                "fade-up fade-up-delay-3 mt-9 flex w-full max-w-[440px] flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row"
+            },
+            h(
+              "a",
+              {
+                href: "#",
+                className:
+                  "primary-button inline-flex min-h-13 items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-cabin text-[15px] font-semibold text-white transition duration-200 hover:-translate-y-0.5"
+              },
+              "Book a Demo",
+              h(ArrowUpRight, { size: 17, strokeWidth: 2 })
+            ),
+            h(
+              "a",
+              {
+                href: "#",
+                className:
+                  "secondary-button soft-outline inline-flex min-h-13 items-center justify-center rounded-xl px-6 py-3.5 font-cabin text-[15px] font-semibold text-white transition duration-200 hover:-translate-y-0.5"
+              },
+              "Start Free"
+            )
+          )
+        )
+      );
+    }
+
+    function App() {
+      const [menuOpen, setMenuOpen] = useState(false);
+
+      useEffect(() => {
+        document.body.style.overflow = menuOpen ? "hidden" : "";
+        return () => { document.body.style.overflow = ""; };
+      }, [menuOpen]);
+
+      return h(
+        "div",
+        { className: "relative min-h-[100svh] overflow-hidden bg-black" },
+        h(BackgroundVideo),
+        h(Navbar, { menuOpen, setMenuOpen }),
+        h(HeroContent)
+      );
+    }
+
+    const root = createRoot(document.getElementById("root"));
+    root.render(h(App));
+  </script>
+  <a class="dwf-credit" href="/" style="position:fixed;right:14px;bottom:12px;z-index:9999;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:999px">Concept by DW Funnel</a>
+</body>
+</html>
