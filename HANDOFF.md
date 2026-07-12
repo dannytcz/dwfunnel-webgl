@@ -90,9 +90,9 @@ The 8 live demos and what each replaced:
 - **Kairo** fintech consumer app landing (`/demos/kairo.html`), product video hero.
 - **Valence** AI automation agency (`/demos/valence.html`), rebranded from Cognitra.
 - **Elyra** immersive digital / spatial computing (`/demos/elyra.html`), rebranded from NeoVision.
-- **Alto Studio** residential interiors (`/demos/alto.html`), curated space concept.
+- **Alzer Studio** residential interiors (`/demos/alzer.html`), curated space concept, rebranded from Alto.
 - **Petalform** AI floral design (`/demos/petalform.html`), generative botanics studio.
-- **Genova** biosciences (`/demos/genova.html`), biotech brand hero.
+- **Geneevo** biosciences (`/demos/geneevo.html`), biotech brand hero, rebranded from Genova.
 - **CerebralKinetics** adaptive systems (`/demos/cerebralkinetics.html`), rebranded from NeuralKinetics; bionics + cognitive AI hero.
 - **Mallee & Paw** Australian pet living (`/demos/malleepaw.html`), considered comfort commerce hero.
 - **Lumenix** 3D motion studio (`/demos/lumenix.html`), rebranded from Framelix; cinematic brand motion.
@@ -146,7 +146,7 @@ The `mcp__Claude_Browser__*` screenshot / `computer` actions time out this whole
 
 ## 10. Current state and what is likely next
 
-- Grid is 4 wide, 16 live demos, H.264 30fps preview mp4s + posters. Cache at v=89+. Push after each iteration.
+- Grid is 4 wide, 16 live demos, H.264 30fps preview mp4s + posters. Cache at v=90+. Push after each iteration.
 - **The obvious next task:** next template Danny sends, same make-ours recipe; optional grid pagination when the set grows.
 - Deferred by Danny or still open: pagination or a "see more" second page for when the grid gets large (video previews keep it light for now, so not urgent); optional seamless looping of clips (boomerang); favicon and OG image; real content on the main page (a real WhatsApp number, real stats, a real founder portrait, currently placeholders); custom domain and analytics (Danny maps these himself later).
 - Code protection question came up: you cannot truly stop front end copying, disabling right click is not real protection and hurts UX. The agreed direction if pursued is minify plus obfuscate the demo code, a copyright and terms page, not right click blocking.

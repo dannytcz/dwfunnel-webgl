@@ -1412,12 +1412,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transform: translateY(-6px);
 }
 .ws-chrome {
+  display: none !important;
+}
+.work-card__live {
+  display: none !important;
+}
+.ws-chrome-hidden {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 3;
-  display: flex;
+  display: none;
   gap: 6px;
   padding: 10px 14px;
 }
@@ -1622,11 +1628,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   cursor: pointer;
 }
 .work-card__live {
+  display: none !important;
   position: absolute;
   top: 10px;
   right: 14px;
   z-index: 3;
-  display: flex;
   align-items: center;
   gap: 7px;
   font-family: var(--font-mono);
