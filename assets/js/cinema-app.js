@@ -498,14 +498,23 @@ function initFaq() {
   });
 }
 
-/* Selected Work rail: clone the card set once so the CSS marquee can wrap
-   at -50% without a visible seam. Runs in both static and motion paths. */
-function initWorkRail() {
-  const track = document.querySelector(".work-rail__track");
-  const set = track ? track.querySelector(".work-rail__set") : null;
-  const clone = track ? track.querySelector("[data-rail-clone]") : null;
-  if (!set || !clone || clone.children.length) return;
-  clone.innerHTML = set.innerHTML;
+/* Testimonial wall: duplicate each row's card group once so the CSS marquee
+   wraps at -50% without a seam. Runs in both static and motion paths. */
+function initTestimonialWall() {
+  document.querySelectorAll(".wall__track").forEach((track) => {
+    const group = track.querySelector(".wall__group");
+    if (!group || track.children.length > 1) return;
+    track.appendChild(group.cloneNode(true));
+  });
+}
+
+/* Selected Work grid: every card animates in place and the film cards loop.
+   Autoplay covers it; this is a fallback for browsers that block muted
+   autoplay until nudged. */
+function initWorkGrid() {
+  const grid = document.querySelector(".work-grid");
+  if (!grid) return;
+  grid.querySelectorAll("video").forEach((v) => v.play().catch(() => {}));
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides
@@ -650,7 +659,8 @@ async function init() {
     initGlobalProgress();
     initReveals();
     initFaq();
-    initWorkRail();
+    initTestimonialWall();
+    initWorkGrid();
     window.ScrollTrigger.refresh();
     return;
   }
@@ -667,7 +677,8 @@ async function init() {
   initHeroMotion();
   initReveals();
   initFaq();
-  initWorkRail();
+  initTestimonialWall();
+  initWorkGrid();
   // SplitText measures line boxes, so it must wait for Orbitron to load or
   // lines get split at fallback-font widths and clip once the wide font lands.
   await document.fonts.ready;
