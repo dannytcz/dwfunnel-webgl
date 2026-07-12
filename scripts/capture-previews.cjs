@@ -70,6 +70,7 @@ const RECIPES = {
   auren:    { url:'/demos/auren.html?embed=1',       wait:1800, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   elowen:   { url:'/demos/elowen.html',              wait:1500, trim:{start:2.5,dur:6}, act: p => hold(p,6000) },
   thebrew:  { url:'/demos/thebrew.html?embed=1',     wait:2000, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
+  unwritten:{ url:'/demos/unwritten.html?embed=1',  wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
 };
 
 (async () => {
