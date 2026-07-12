@@ -85,7 +85,7 @@ The 8 live demos and what each replaced:
 - **TOYBOMB** designer collectibles (carousel), original
 - **Elowen** boutique stays (ambient video hero), original
 - **LEXIS** performance footwear (Vite storefront, cursor X-ray), replaced Orbit
-- **The Brew** fine dining reservations (`/demos/basilico.html`), replaced the Ember placeholder.
+- **The Brew** fine dining reservations (`/demos/thebrew.html`), replaced the Ember placeholder.
 
 ## 6. How to add a new demo ("make it ours")
 
