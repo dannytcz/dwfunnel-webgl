@@ -19,17 +19,25 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=93" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=94" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
   <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-fill"></span></div>
   <div id="loader" class="loader" aria-live="polite" aria-busy="true">
+    <div class="loader__atmosphere" aria-hidden="true"></div>
     <div class="loader__panel">
-      <p class="loader__brand">DW Funnel</p>
-      <div class="loader__track"><div class="loader__fill" id="loader-fill"></div></div>
-      <p class="loader__pct" id="loader-pct">0%</p>
+      <p class="loader__kicker" id="loader-kicker">001 / Boot sequence</p>
+      <p class="loader__brand"><span>DW</span><span>Funnel</span></p>
+      <div class="loader__track" aria-hidden="true">
+        <div class="loader__fill" id="loader-fill"></div>
+      </div>
+      <div class="loader__meta">
+        <span class="loader__status" id="loader-status">Preparing reel</span>
+        <span class="loader__pct" id="loader-pct">000</span>
+      </div>
     </div>
+    <div class="loader__corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   </div>
 
   <header class="site-nav" id="site-nav">
@@ -493,6 +501,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=90"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=91"></script>
 </body>
 </html>

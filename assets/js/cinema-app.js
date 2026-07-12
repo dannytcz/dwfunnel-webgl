@@ -51,12 +51,25 @@ function initLoader() {
   const loader = document.getElementById("loader");
   const fill = document.getElementById("loader-fill");
   const pct = document.getElementById("loader-pct");
+  const status = document.getElementById("loader-status");
   const tasks = [];
+  const stages = [
+    [0.12, "Warming optics"],
+    [0.35, "Loading frames"],
+    [0.62, "Syncing motion"],
+    [0.88, "Arming scroll"],
+    [1, "Ready"],
+  ];
 
   function setProgress(v) {
-    const n = Math.round(Math.max(0, Math.min(1, v)) * 100);
+    const clamped = Math.max(0, Math.min(1, v));
+    const n = Math.round(clamped * 100);
     if (fill) fill.style.width = `${n}%`;
-    if (pct) pct.textContent = `${n}%`;
+    if (pct) pct.textContent = String(n).padStart(3, "0");
+    if (status) {
+      const stage = stages.find(([threshold]) => clamped <= threshold) || stages[stages.length - 1];
+      status.textContent = stage[1];
+    }
   }
 
   function track(fn) {
@@ -69,6 +82,8 @@ function initLoader() {
       new Promise((resolve) => setTimeout(resolve, 2600)),
     ]);
     setProgress(1);
+    loader?.classList.add("is-exiting");
+    await new Promise((resolve) => setTimeout(resolve, 180));
     loader?.classList.add("is-done");
     loader?.setAttribute("aria-busy", "false");
   }

@@ -5,13 +5,26 @@ export function initLoader() {
   const loader = document.getElementById("loader");
   const fill = document.getElementById("loader-fill");
   const pct = document.getElementById("loader-pct");
+  const status = document.getElementById("loader-status");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tasks = [];
+  const stages = [
+    [0.12, "Warming optics"],
+    [0.35, "Loading frames"],
+    [0.62, "Syncing motion"],
+    [0.88, "Arming scroll"],
+    [1, "Ready"],
+  ];
 
   function setProgress(v) {
-    const n = Math.round(Math.max(0, Math.min(1, v)) * 100);
+    const clamped = Math.max(0, Math.min(1, v));
+    const n = Math.round(clamped * 100);
     if (fill) fill.style.width = `${n}%`;
-    if (pct) pct.textContent = `${n}%`;
+    if (pct) pct.textContent = String(n).padStart(3, "0");
+    if (status) {
+      const stage = stages.find(([threshold]) => clamped <= threshold) || stages[stages.length - 1];
+      status.textContent = stage[1];
+    }
   }
 
   function track(fn) {
@@ -24,6 +37,8 @@ export function initLoader() {
       new Promise((r) => setTimeout(r, LOADER_CAP_MS)),
     ]);
     setProgress(1);
+    loader?.classList.add("is-exiting");
+    await new Promise((r) => setTimeout(r, 180));
     loader?.classList.add("is-done");
     loader?.setAttribute("aria-busy", "false");
     animateHeroIntro(reducedMotion);
