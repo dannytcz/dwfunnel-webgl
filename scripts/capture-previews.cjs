@@ -82,7 +82,7 @@ const RECIPES = {
   lumenix:  { url:'/demos/lumenix.html?embed=1',  wait:2200, trim:{start:2.0,dur:7}, act: p => hold(p,10000) },
   reverie:  { url:'/demos/reverie.html?embed=1',  wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,12000) },
   stretch:  { url:'/demos/stretch.html?embed=1',  wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
-  weblex:   { url:'/demos/weblex.html?embed=1',   wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  webpal:   { url:'/demos/webpal.html?embed=1',   wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   picocore: { url:'/demos/picocore.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
 };
 

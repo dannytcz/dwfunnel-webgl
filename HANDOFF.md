@@ -98,7 +98,7 @@ The 8 live demos and what each replaced:
 - **Lumenix** 3D motion studio (`/demos/lumenix.html`), rebranded from Framelix; cinematic brand motion.
 - **Reverie** immersive storyworld (`/demos/reverie.html`), go where maps end.
 - **STRETCH** ethical beauty (`/demos/stretch.html`), sustainable skincare commerce.
-- **Weblex** smart website builder (`/demos/weblex.html`), product hero with light copy polish.
+- **WebPal** smart website builder (`/demos/webpal.html`), rebranded from Weblex with builder-fit copy.
 - **Picocore** network operations (`/demos/picocore.html`), rebranded from Datacore.
 
 ## 6. How to add a new demo ("make it ours")
