@@ -491,6 +491,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   margin-left: clamp(2rem, 6rem, 6rem);
 }
 .scrub-copy--center { text-align: center; }
+.scrub-act--work .kicker {
+  margin: 0 0 1.25rem;
+  color: rgba(232, 223, 210, 0.82);
+  font-size: clamp(1.15rem, 2.4vw, 1.75rem);
+  letter-spacing: 0.14em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
 
 /* ---- 006 / Build Stack: cinematic environment routing overlay ---- */
 .stack-system {
@@ -2204,6 +2212,10 @@ html.is-survey-open body {
   .hero-copy,
   .scrub-copy {
     width: calc(100vw - 2.4rem);
+  }
+  .scrub-act--work .kicker {
+    font-size: clamp(1.05rem, 4.6vw, 1.35rem);
+    letter-spacing: 0.1em;
   }
   .hero-title {
     font-size: 3.6rem;
