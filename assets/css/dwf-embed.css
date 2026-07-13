@@ -46,8 +46,7 @@ html.is-embed.is-lightbox.is-scroll body::-webkit-scrollbar {
 }
 
 /* Hero-fill lightboxes: percentage heights need a sized ancestor chain. */
-html[data-dwf-demo="thebrew"].is-lightbox #root,
-html[data-dwf-demo="elyra"].is-lightbox #root {
+html[data-dwf-demo="thebrew"].is-lightbox #root {
   height: 100% !important;
   min-height: 100% !important;
 }
@@ -334,122 +333,15 @@ html[data-dwf-demo="geneevo"].is-lightbox .hero-content {
   padding-top: 0.5rem !important;
 }
 
-/* —— Elyra —— */
+/* —— Elyra: lightbox matches embed preview (no custom layout overrides) —— */
+html[data-dwf-demo="elyra"].is-embed.is-lightbox {
+  font-size: clamp(11px, 0.95vw, 16px) !important;
+}
+
 html[data-dwf-demo="elyra"].is-lightbox,
 html[data-dwf-demo="elyra"].is-lightbox body {
   height: 100% !important;
   overflow: hidden !important;
-  background: #fff !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper {
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-  background: #fff !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #home {
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-  background: #fff !important;
-  position: relative !important;
-  display: block !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox section:not(#home) {
-  display: none !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0.left-0,
-html[data-dwf-demo="elyra"].is-lightbox #home > .absolute.bottom-0.left-0.z-\[3\] {
-  display: none !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #home > .video-plus-darker {
-  position: absolute !important;
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: auto !important;
-  width: 50% !important;
-  height: 100% !important;
-  max-width: none !important;
-  opacity: 1 !important;
-  z-index: 1 !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #home > .video-plus-darker video {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 100% !important;
-  object-fit: cover !important;
-  object-position: center top !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox h1 {
-  font-size: clamp(2.25rem, 6.5vw, 4.75rem) !important;
-  line-height: 0.92 !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #root,
-html[data-dwf-demo="elyra"].is-lightbox #root > div {
-  height: 100% !important;
-  min-height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #home .relative.z-\[2\] {
-  position: relative !important;
-  width: 52% !important;
-  max-width: 52% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  z-index: 2 !important;
-  background: transparent !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #home main {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: flex-start !important;
-  gap: 1.25rem !important;
-  padding-top: 0.75rem !important;
-  padding-bottom: 1.25rem !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
-  position: static !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: 100% !important;
-  display: flex !important;
-  align-items: flex-end !important;
-  justify-content: space-between !important;
-  gap: 1rem !important;
-  margin-top: auto !important;
-  padding-top: 1rem !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
-  margin-right: 0 !important;
-  max-width: 14rem !important;
-}
-
-@media (min-width: 768px) {
-  html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
-    margin-right: 8% !important;
-    max-width: 16rem !important;
-  }
 }
 
 /* —— The Brew —— */
