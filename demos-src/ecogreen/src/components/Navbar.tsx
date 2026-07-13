@@ -12,7 +12,7 @@ export function Navbar() {
   return (
     <header className="relative z-10 flex items-center justify-between px-4 py-4 md:px-8 md:py-6">
       <div className="flex items-center gap-3 md:gap-4">
-        <span className="text-lg font-semibold text-gray-900 md:text-xl">EcoVolta</span>
+        <span className="text-lg font-semibold text-gray-900 md:text-xl">EcoGreen</span>
         <button
           type="button"
           className="flex items-center gap-1.5 rounded-full border border-black/10 px-2.5 py-1 text-xs text-gray-700 md:text-sm"

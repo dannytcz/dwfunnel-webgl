@@ -3,9 +3,9 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/assets/demos/ecovolta/build/",
+  base: "/assets/demos/ecogreen/build/",
   build: {
-    outDir: "../../assets/demos/ecovolta/build",
+    outDir: "../../assets/demos/ecogreen/build",
     emptyOutDir: true,
     sourcemap: false,
     minify: "esbuild",
