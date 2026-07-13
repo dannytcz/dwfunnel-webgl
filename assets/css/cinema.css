@@ -2030,7 +2030,7 @@ html.is-survey-open body {
   justify-self: center;
   width: auto;
   max-width: 100%;
-  margin-top: clamp(0.35rem, 1vw, 0.75rem);
+  margin-top: calc(clamp(0.35rem, 1vw, 0.75rem) - 15px);
 }
 .leak-action {
   display: flex;
@@ -2221,7 +2221,7 @@ html.is-survey-open body {
   }
   .plain-section--leak .leak-action {
     justify-self: center;
-    margin-top: 0.65rem;
+    margin-top: calc(0.65rem - 15px);
   }
   .leak-diagnostic {
     width: 100%;
