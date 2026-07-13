@@ -76,7 +76,7 @@ Each live card is:
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): capture still outputs a master H.264 mp4, then ffmpeg makes a 480px / 10fps animated WebP for the grid. Cards start on the poster; at most **two** nearest visible cards swap to the loop while Studio Bench is on screen. Three.js + the testimonial wall freeze via `html.is-work-focus`. Offscreen cards snap back to posters. Data-saver leaves posters forever. Do not go back to many concurrent `<video>` players.
+Performance model (this is deliberate, keep it): capture outputs a master H.264 mp4, then ffmpeg makes a 480px / 10fps animated WebP for the grid. While Studio Bench is on screen, **every visible card** plays its loop together (the wow pass). Three.js, scroll-scrub tickers, and the testimonial wall freeze via `html.is-work-focus`. Offscreen cards snap back to posters. Data-saver leaves posters forever. Use animated WebP in `<img>`, not many concurrent `<video>` players.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum

@@ -545,9 +545,10 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: static poster by default; at most two nearest visible
-   cards swap to animated WebP loops. Avoids many concurrent video decoders
-   fighting Lenis + scroll scrub. Three.js pauses while the gallery is focused. */
+/* Selected Work grid: every visible card runs its animated WebP loop together
+   while Studio Bench is on screen (the wow pass). Three.js, scroll-scrub
+   tickers, and the testimonial wall pause via is-work-focus so decode budget
+   goes to the gallery. Offscreen cards snap back to posters. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
@@ -556,7 +557,6 @@ function initWorkGrid() {
   if (!imgs.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
-  const MAX_LIVE = 2;
 
   const visible = new Set();
   const live = new Set();
@@ -577,22 +577,17 @@ function initWorkGrid() {
     if (img.src !== anim) img.src = anim;
     live.add(img);
   }
-  function pickLive() {
-    if (!workFocus) return [];
-    return [...visible]
-      .map((img) => {
-        const r = img.getBoundingClientRect();
-        const cy = r.top + r.height / 2;
-        return { img, dist: Math.abs(cy - window.innerHeight / 2) };
-      })
-      .sort((a, b) => a.dist - b.dist)
-      .slice(0, MAX_LIVE)
-      .map((x) => x.img);
+  function setScrubPaused(paused) {
+    appState.scrubRecords.forEach((record) => {
+      if (paused) record.scrubber.pauseTicker();
+      else if (record.section._scrubST?.isActive) record.scrubber.resumeTicker();
+    });
   }
   function setWorkFocus(on) {
     workFocus = on;
     document.documentElement.classList.toggle("is-work-focus", on);
     appState.atmosphere?.setPaused?.(on);
+    setScrubPaused(on);
     syncLive();
   }
   function syncLive() {
@@ -600,18 +595,14 @@ function initWorkGrid() {
       Array.from(live).forEach(freeze);
       return;
     }
-    const want = new Set(pickLive());
-    visible.forEach((img) => {
-      if (!want.has(img)) freeze(img);
-    });
-    want.forEach(animate);
+    visible.forEach(animate);
     live.forEach((img) => {
       if (!visible.has(img)) freeze(img);
     });
   }
 
   if (!("IntersectionObserver" in window)) {
-    imgs.slice(0, MAX_LIVE).forEach(animate);
+    imgs.forEach(animate);
     return;
   }
 
@@ -634,18 +625,9 @@ function initWorkGrid() {
       });
       syncLive();
     },
-    { rootMargin: "80px 0px", threshold: 0.2 }
+    { rootMargin: "120px 0px", threshold: 0.12 }
   );
   imgs.forEach((img) => cardIo.observe(img));
-
-  let syncTimer = null;
-  const onScroll = () => {
-    if (!workFocus) return;
-    clearTimeout(syncTimer);
-    syncTimer = setTimeout(syncLive, 80);
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  appState.lenis?.on?.("scroll", onScroll);
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides
