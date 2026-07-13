@@ -2,6 +2,8 @@ import { CONTACT_CONFIG } from "./contact-config.js";
 
 const TRAFFIC_OPTIONS = ["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"];
 const BUDGET_OPTIONS = ["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"];
+const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+const UTM_STORAGE_KEY = "dwf_utm";
 
 /**
  * Submit a build request to the configured backend.
@@ -81,7 +83,72 @@ function getTrimmed(form, name) {
   return el && "value" in el ? String(el.value).trim() : "";
 }
 
-function collectPayload(form) {
+function persistUtmParams() {
+  try {
+    const params = new URLSearchParams(location.search);
+    const utm = {};
+    UTM_KEYS.forEach((key) => {
+      const value = params.get(key);
+      if (value) utm[key.replace("utm_", "")] = value;
+    });
+    if (Object.keys(utm).length) {
+      sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));
+    }
+  } catch {
+    // ignore storage failures
+  }
+}
+
+function readUtmParams() {
+  try {
+    const stored = sessionStorage.getItem(UTM_STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    // ignore parse failures
+  }
+
+  try {
+    const params = new URLSearchParams(location.search);
+    const utm = {};
+    UTM_KEYS.forEach((key) => {
+      const value = params.get(key);
+      if (value) utm[key.replace("utm_", "")] = value;
+    });
+    return Object.keys(utm).length ? utm : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function getDeviceType() {
+  const width = window.innerWidth;
+  if (width < 768) return "mobile";
+  if (width < 1024) return "tablet";
+  return "desktop";
+}
+
+function collectClientMeta(formInitTime) {
+  let clientTimezone = "";
+  try {
+    clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  } catch {
+    clientTimezone = "";
+  }
+
+  return {
+    clientTimezone,
+    clientSubmittedAt: new Date().toISOString(),
+    clientLocale: navigator.language || "",
+    referrer: document.referrer || "",
+    pageUrl: location.href,
+    device: getDeviceType(),
+    screenWidth: window.innerWidth,
+    utm: readUtmParams(),
+    formDurationSec: formInitTime ? Math.round((Date.now() - formInitTime) / 1000) : undefined,
+  };
+}
+
+function collectPayload(form, formInitTime) {
   const trafficSources = TRAFFIC_OPTIONS.filter((key) => {
     const input = form.querySelector(`input[name="trafficSources"][value="${key}"]`);
     return input?.checked;
@@ -99,6 +166,9 @@ function collectPayload(form) {
     currentPage: getTrimmed(form, "currentPage"),
     estimatedBudget: budgetInput ? budgetInput.value : "",
     additionalNotes: getTrimmed(form, "additionalNotes"),
+    meta: {
+      client: collectClientMeta(formInitTime),
+    },
   };
 }
 
@@ -176,11 +246,14 @@ function bindWhatsAppLinks() {
 }
 
 export function initBuildRequestForm() {
+  persistUtmParams();
   bindWhatsAppLinks();
 
   const form = document.getElementById("build-request-form");
   const wrap = document.getElementById("apply-form-wrap");
   if (!form || !wrap) return;
+
+  const formInitTime = Date.now();
 
   form.addEventListener("input", (event) => {
     const field = event.target.closest(".form-field");
@@ -205,7 +278,7 @@ export function initBuildRequestForm() {
 
     const submitBtn = form.querySelector('[type="submit"]');
     const formError = form.querySelector(".form-form__error");
-    const payload = collectPayload(form);
+    const payload = collectPayload(form, formInitTime);
 
     form.dataset.processing = "true";
     if (submitBtn) {

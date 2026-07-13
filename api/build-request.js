@@ -1,4 +1,9 @@
 import { buildEmailHtml, buildEmailText } from "./lib/email-template.js";
+import {
+  extractServerMeta,
+  mergeSubmissionMeta,
+  sanitizeClientMeta,
+} from "./lib/submission-meta.js";
 
 const BUDGET_OPTIONS = new Set(["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"]);
 const TRAFFIC_OPTIONS = new Set(["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"]);
@@ -70,6 +75,8 @@ function validatePayload(body) {
     return { ok: false, errors };
   }
 
+  const clientMeta = sanitizeClientMeta(body.meta?.client || body.meta);
+
   return {
     ok: true,
     payload: {
@@ -82,6 +89,7 @@ function validatePayload(body) {
       currentPage,
       estimatedBudget,
       additionalNotes,
+      meta: mergeSubmissionMeta(clientMeta, {}),
     },
   };
 }
@@ -144,7 +152,13 @@ export default async function handler(req, res) {
       return;
     }
 
-    const emailResult = await sendEmail(validated.payload);
+    const serverMeta = extractServerMeta(req);
+    const payload = {
+      ...validated.payload,
+      meta: mergeSubmissionMeta(validated.payload.meta.client, serverMeta),
+    };
+
+    const emailResult = await sendEmail(payload);
     json(res, 200, { ok: true, id: emailResult?.id || null });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected server error.";

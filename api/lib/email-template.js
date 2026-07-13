@@ -1,3 +1,5 @@
+import { formatMetaTextBlock } from "./submission-meta.js";
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -42,12 +44,78 @@ function chipList(values) {
     .join("");
 }
 
+function metaRow(label, value) {
+  return `<tr>
+    <td style="padding:0 0 8px;color:#4d463f;font-family:Consolas,Monaco,monospace;font-size:11px;line-height:1.55;letter-spacing:0.04em;">
+      <span style="color:#9d9388;text-transform:uppercase;letter-spacing:0.12em;">${escapeHtml(label)}</span><br />
+      <span style="color:#e6ded2;">${escapeHtml(value || "—")}</span>
+    </td>
+  </tr>`;
+}
+
+function buildMetaSection(meta) {
+  if (!meta) return "";
+
+  const client = meta.client || {};
+  const server = meta.server || {};
+  const visitorTime = (() => {
+    if (!client.clientSubmittedAt) return "Unknown";
+    try {
+      const label = new Date(client.clientSubmittedAt).toLocaleString("en-GB", {
+        timeZone: client.clientTimezone || "UTC",
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+      return client.clientTimezone ? `${label} — ${client.clientTimezone}` : label;
+    } catch {
+      return client.clientSubmittedAt;
+    }
+  })();
+
+  const locationParts = [server.city, server.region, server.country].filter(Boolean);
+  const location = locationParts.length ? locationParts.join(", ") : server.country || "Unknown";
+  const locationLine = server.ip && server.ip !== "Unknown" ? `${location} · ${server.ip}` : location;
+  const deviceLine = client.device
+    ? `${client.device}${client.screenWidth ? ` · ${client.screenWidth}px` : ""}`
+    : "—";
+  const utm = client.utm
+    ? Object.entries(client.utm)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(" · ")
+    : "None";
+
+  return `
+    <tr>
+      <td style="padding:8px 0 0;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border:1px solid rgba(232,223,210,0.12);background:#080807;">
+          <tr>
+            <td style="padding:14px 16px 8px;color:#f04a2a;font-family:Consolas,Monaco,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;">
+              Submission context
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 16px 14px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                ${metaRow("Visitor time", visitorTime)}
+                ${metaRow("Studio time", `${server.studioLocalTime || "—"} MYT`)}
+                ${metaRow("Location", locationLine)}
+                ${metaRow("Device", deviceLine)}
+                ${metaRow("Locale", client.clientLocale || "—")}
+                ${metaRow("Referrer", client.referrer || "Direct / none")}
+                ${metaRow("Page", client.pageUrl || "—")}
+                ${metaRow("UTM", utm)}
+                ${client.formDurationSec != null ? metaRow("Form time", `${client.formDurationSec}s`) : ""}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
 export function buildEmailHtml(payload) {
-  const submittedAt = new Date().toLocaleString("en-GB", {
-    timeZone: "Asia/Kuala_Lumpur",
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const studioTime = payload.meta?.server?.studioLocalTime;
+  const headerTime = studioTime ? `${studioTime} MYT` : "dwfunnel-webgl";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -65,7 +133,7 @@ export function buildEmailHtml(payload) {
             <td style="padding:28px 28px 22px;border-bottom:1px solid rgba(240,74,42,0.35);background:linear-gradient(135deg,rgba(240,74,42,0.12),transparent 55%);">
               <div style="color:#f04a2a;font-family:Consolas,Monaco,monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;">009 / Apply</div>
               <h1 style="margin:10px 0 8px;color:#e6ded2;font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.05;letter-spacing:0.04em;text-transform:uppercase;">New build request</h1>
-              <p style="margin:0;color:#9d9388;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;">Submitted ${escapeHtml(submittedAt)} MYT via dwfunnel-webgl</p>
+              <p style="margin:0;color:#9d9388;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;">Received ${escapeHtml(headerTime)}</p>
             </td>
           </tr>
           <tr>
@@ -95,6 +163,7 @@ export function buildEmailHtml(payload) {
                 ${fieldRow("Current page / website", payload.currentPage || "Not provided")}
                 ${fieldRow("Estimated build budget", payload.estimatedBudget)}
                 ${fieldRow("Anything else", payload.additionalNotes || "Not provided", { multiline: true })}
+                ${buildMetaSection(payload.meta)}
               </table>
             </td>
           </tr>
@@ -139,6 +208,8 @@ export function buildEmailText(payload) {
     "",
     "Anything else:",
     payload.additionalNotes || "Not provided",
+    "",
+    formatMetaTextBlock(payload.meta),
     "",
     "—",
     "DW Funnel build request form",
