@@ -1,4 +1,4 @@
-/* Studio Bench roller — 3-up fit, 3 live mp4 decoders, modulo infinite loop. */
+/* Studio Bench roller — 3D carousel, 3 live mp4, random start, modulo loop. */
 export function initWorkRoller(appState) {
   const roller = document.querySelector(".work-roller");
   const viewport = roller?.querySelector(".work-roller__viewport");
@@ -18,7 +18,7 @@ export function initWorkRoller(appState) {
   const prevBtn = roller.querySelector(".work-roller__nav--prev");
   const nextBtn = roller.querySelector(".work-roller__nav--next");
 
-  let activeIndex = 0;
+  let activeIndex = Math.floor(Math.random() * count);
   let animating = false;
   let workFocus = false;
   let lastDir = 1;
@@ -58,7 +58,7 @@ export function initWorkRoller(appState) {
     else v.addEventListener("canplay", run, { once: true });
   }
 
-  function attachVideo(cardIndex, play) {
+  function attachVideo(cardIndex) {
     const v = videoFor(cards[cardIndex]);
     if (!v) return;
     const src = v.getAttribute("data-src");
@@ -67,8 +67,7 @@ export function initWorkRoller(appState) {
       v.src = src;
       v.load();
     }
-    if (play) startPlay(v);
-    else v.pause();
+    startPlay(v);
   }
 
   function prefetchNext(src) {
@@ -113,7 +112,7 @@ export function initWorkRoller(appState) {
     cards.forEach((card, i) => {
       const v = videoFor(card);
       if (!v) return;
-      if (playSet.has(i)) attachVideo(i, true);
+      if (playSet.has(i)) attachVideo(i);
       else stopVideo(v);
     });
     const nextI = (activeIndex + lastDir + count) % count;
@@ -138,10 +137,14 @@ export function initWorkRoller(appState) {
   }
 
   function updateCardStates() {
+    const prevI = (activeIndex - 1 + count) % count;
+    const nextI = (activeIndex + 1) % count;
     cards.forEach((card, i) => {
       const wrap = ringDist(i, activeIndex);
       card.classList.toggle("is-center", i === activeIndex);
       card.classList.toggle("is-adjacent", wrap === 1);
+      card.classList.toggle("is-left", i === prevI);
+      card.classList.toggle("is-right", i === nextI);
       card.classList.toggle("is-off", wrap > 1);
     });
   }
@@ -152,24 +155,26 @@ export function initWorkRoller(appState) {
     if (dir) lastDir = dir;
     activeIndex = next;
     updateCardStates();
-    syncMedia();
 
-    const x = trackXForIndex(activeIndex);
-    slideTween?.kill();
-    if (immediate) {
-      gsap.set(track, { x });
-      animating = false;
-      return;
-    }
-    animating = true;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    slideTween = gsap.to(track, {
-      x,
-      duration: reduced ? 0.01 : 0.46,
-      ease: "power3.out",
-      onComplete: () => {
+    requestAnimationFrame(() => {
+      syncMedia();
+      const x = trackXForIndex(activeIndex);
+      slideTween?.kill();
+      if (immediate) {
+        gsap.set(track, { x });
         animating = false;
-      },
+        return;
+      }
+      animating = true;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      slideTween = gsap.to(track, {
+        x,
+        duration: reduced ? 0.01 : 0.5,
+        ease: "power3.out",
+        onComplete: () => {
+          animating = false;
+        },
+      });
     });
   }
 
@@ -256,5 +261,5 @@ export function initWorkRoller(appState) {
     setWorkFocus(true);
   }
 
-  snapTo(0, 1, { immediate: true });
+  snapTo(activeIndex, 1, { immediate: true });
 }

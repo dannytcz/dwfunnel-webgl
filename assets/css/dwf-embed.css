@@ -206,6 +206,46 @@ html[data-dwf-demo="enermax"].is-lightbox .hero-title {
   line-height: 1.05 !important;
 }
 
+html[data-dwf-demo="enermax"].is-embed .blur-overlay,
+html[data-dwf-demo="enermax"].is-lightbox .blur-overlay {
+  display: none !important;
+}
+
+html[data-dwf-demo="enermax"].is-embed .bg-back,
+html[data-dwf-demo="enermax"].is-lightbox .bg-back {
+  display: none !important;
+}
+
+html[data-dwf-demo="enermax"].is-embed:not(.is-lightbox) .hero-bg,
+html[data-dwf-demo="enermax"].is-lightbox .hero-bg {
+  background-position: center 36% !important;
+  transform: scale(1.04) !important;
+}
+
+html[data-dwf-demo="enermax"].is-embed:not(.is-lightbox) .hero-bg::after {
+  background:
+    radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.18) 0%,
+      transparent 28%,
+      transparent 78%,
+      rgba(0, 0, 0, 0.35) 100%
+    ) !important;
+}
+
+html[data-dwf-demo="enermax"].is-lightbox .hero-bg::after {
+  background:
+    radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.22) 100%),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.12) 0%,
+      transparent 32%,
+      transparent 82%,
+      rgba(0, 0, 0, 0.2) 100%
+    ) !important;
+}
+
 /* —— Tarismo: sharper hero video in lightbox —— */
 html[data-dwf-demo="tarismo"].is-lightbox video {
   transform: scale(1.04);

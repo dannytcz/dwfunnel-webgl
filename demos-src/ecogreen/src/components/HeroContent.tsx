@@ -38,8 +38,12 @@ export function HeroContent() {
         </div>
 
         <StaggeredFade
-          text="Renewable Power For Tomorrow, Infinite Clean Solutions"
-          className="mb-3 mt-5 max-w-5xl text-center text-3xl font-normal leading-tight text-forest sm:mt-6 sm:text-4xl md:mb-4 md:text-5xl lg:text-6xl"
+          text="Renewable Power For Tomorrow,"
+          className="mb-0 mt-5 max-w-5xl text-center text-3xl font-normal leading-tight text-forest sm:mt-6 sm:text-4xl md:text-5xl lg:text-6xl"
+        />
+        <StaggeredFade
+          text="Infinite Clean Solutions"
+          className="mb-3 mt-1 max-w-5xl text-center text-3xl font-normal leading-tight text-forest sm:text-4xl md:mb-4 md:text-5xl lg:text-6xl"
         />
 
         <FadeDown delay={0.5}>

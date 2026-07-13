@@ -63,7 +63,20 @@ async function spin(page, sel) {
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
   kanevoss: { url:'/demos/kanevoss.html?preview=1', wait:1200, trim:{start:1.2,dur:5}, posterAt:2.2, act: p => orbit(p, 7) },
-  ecogreen: { url:'/demos/ecogreen.html?embed=1&preview=1', wait:3500, trim:{start:2.5,dur:6}, posterAt:2.0, act: p => hold(p,8000) },
+  ecogreen: { url:'/demos/ecogreen.html?embed=1&preview=1', wait:4500, trim:{start:3,dur:5}, posterAt:2.8, act: async p => {
+    try {
+      await p.waitForSelector('video', { timeout: 12000 });
+      await p.evaluate(() => {
+        const v = document.querySelector('video');
+        if (!v) return;
+        v.muted = true;
+        return v.play();
+      });
+      await hold(p, 7000);
+    } catch (e) {
+      await hold(p, 8000);
+    }
+  }},
   toybomb:  { url:'/demos/toybomb.html',             wait:1800, trim:{start:2.5,dur:6}, act: async p => { for (let i=0;i<3;i++){ await clickSel(p,'#nextButton'); await hold(p,1900);} } },
   harbour:  { url:'/demos/harbour.html?embed=1',     wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   aurelia:  { url:'/demos/aurelia.html',             wait:1500, trim:{start:3.5,dur:6}, act: p => hold(p,8000) },
