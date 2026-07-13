@@ -591,146 +591,262 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: getlayers-style H.264 preview loops. Cap concurrent
-   decoders while Studio Bench is focused; rank by visibility. src attaches
-   only when a card is in the active set (preload=none). Page chrome pauses
-   under is-work-focus. */
-function initWorkGrid() {
-  const grid = document.querySelector(".work-grid");
-  if (!grid) return;
-  const section = grid.closest("section") || grid;
-  const vids = Array.from(grid.querySelectorAll("video.ws-embed-preview"));
-  const frames = Array.from(grid.querySelectorAll("iframe.ws-embed-iframe"));
-  const previews = [...vids, ...frames];
-  if (!previews.length) return;
+/* Studio Bench roller: three live preview loops, one lazy preload, GSAP snap. */
+function initWorkRoller() {
+  const roller = document.querySelector(".work-roller");
+  const viewport = roller?.querySelector(".work-roller__viewport");
+  const track = roller?.querySelector(".work-roller__track");
+  if (!roller || !viewport || !track) return;
+
+  const section = roller.closest("section") || roller;
+  const cards = Array.from(track.querySelectorAll(".work-card"));
+  const count = cards.length;
+  if (!count) return;
+
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
 
-  const mobile = window.matchMedia("(max-width: 899px)").matches;
-  const MAX_LIVE = mobile ? 3 : 5;
-  const MIN_VISIBLE_RATIO = 0.12;
-  const visible = new Set();
-  const visibleRatios = new Map();
-  const live = new Set();
-  const playTimers = new WeakMap();
-  let workFocus = false;
-  const PLAY_DELAY_MS = 120;
-  const PLAY_STAGGER_MS = 160;
+  const gsap = window.gsap;
+  if (!gsap) return;
 
-  function stop(v) {
+  const prevBtn = roller.querySelector(".work-roller__nav--prev");
+  const nextBtn = roller.querySelector(".work-roller__nav--next");
+
+  let activeIndex = 0;
+  let animating = false;
+  let workFocus = false;
+  let lastDir = 1;
+  let cardStep = 0;
+  let slideTween = null;
+
+  const live = new Set();
+  const lazy = new Set();
+
+  function videoFor(card) {
+    return card.querySelector("video.ws-embed-preview");
+  }
+
+  function stopVideo(v) {
     if (!v) return;
-    const timer = playTimers.get(v);
-    if (timer) {
-      clearTimeout(timer);
-      playTimers.delete(v);
-    }
-    if (v.tagName === "IFRAME") {
-      v.removeAttribute("src");
-      live.delete(v);
-      return;
-    }
     v.pause();
     if (v.getAttribute("src")) {
       v.removeAttribute("src");
       v.load();
     }
     live.delete(v);
+    lazy.delete(v);
   }
-  function play(v, staggerIndex = 0) {
-    if (!v) return;
+
+  function attachVideo(v, play) {
     const src = v.getAttribute("data-src");
     if (!src) return;
-    if (playTimers.has(v)) return;
-    const delay = PLAY_DELAY_MS + staggerIndex * PLAY_STAGGER_MS;
-    const timer = setTimeout(() => {
-      playTimers.delete(v);
-      if (!workFocus || !visible.has(v)) return;
-      if (v.tagName === "IFRAME") {
-        if (v.getAttribute("src") !== src) v.setAttribute("src", src);
-        live.add(v);
-        return;
-      }
-      if (v.getAttribute("src") !== src) {
-        v.src = src;
-        v.load();
-      }
+    if (v.getAttribute("src") !== src) {
+      v.src = src;
+      v.load();
+    }
+    if (play) {
+      lazy.delete(v);
       live.add(v);
       if (v.paused) v.play().catch(() => {});
-    }, delay);
-    playTimers.set(v, timer);
+    } else {
+      live.delete(v);
+      lazy.add(v);
+      v.pause();
+    }
   }
+
   function setScrubPaused(paused) {
     appState.scrubRecords.forEach((record) => {
       if (paused) record.scrubber.pauseTicker();
       else if (record.section._scrubST?.isActive) record.scrubber.resumeTicker();
     });
   }
-  function rankedVisible() {
-    return Array.from(visible).sort(
-      (a, b) => (visibleRatios.get(b) || 0) - (visibleRatios.get(a) || 0)
-    );
-  }
+
   function setWorkFocus(on) {
     workFocus = on;
     document.documentElement.classList.toggle("is-work-focus", on);
     appState.atmosphere?.setPaused?.(on);
     setScrubPaused(on);
-    syncLive();
+    syncMedia();
   }
-  function syncLive() {
+
+  function syncMedia() {
     if (!workFocus) {
-      Array.from(live).forEach(stop);
-      previews.forEach((v) => {
-        const timer = playTimers.get(v);
-        if (timer) {
-          clearTimeout(timer);
-          playTimers.delete(v);
-        }
-      });
+      cards.forEach((card) => stopVideo(videoFor(card)));
       return;
     }
-    const ranked = rankedVisible();
-    const allowed = new Set(ranked.slice(0, MAX_LIVE));
-    ranked.forEach((v, i) => {
-      if (allowed.has(v)) play(v, i);
-      else if (live.has(v)) stop(v);
-    });
-    live.forEach((v) => {
-      if (!visible.has(v)) stop(v);
+    const liveIdx = [];
+    if (activeIndex > 0) liveIdx.push(activeIndex - 1);
+    liveIdx.push(activeIndex);
+    if (activeIndex < count - 1) liveIdx.push(activeIndex + 1);
+
+    const lazySlot = activeIndex + lastDir * 2;
+    const lazyIdx =
+      lazySlot >= 0 && lazySlot < count && !liveIdx.includes(lazySlot) ? lazySlot : -1;
+    const keepSrc = new Set(liveIdx);
+    if (lazyIdx >= 0) keepSrc.add(lazyIdx);
+
+    cards.forEach((card, i) => {
+      const v = videoFor(card);
+      if (!v) return;
+      if (!keepSrc.has(i)) {
+        stopVideo(v);
+        return;
+      }
+      if (liveIdx.includes(i)) attachVideo(v, true);
+      else if (i === lazyIdx) attachVideo(v, false);
     });
   }
 
-  if (!("IntersectionObserver" in window)) {
-    previews.slice(0, MAX_LIVE).forEach((v, i) => play(v, i));
-    return;
+  function targetX(index) {
+    const card = cards[0];
+    if (!card) return 0;
+    const cardW = card.offsetWidth;
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    cardStep = cardW + gap;
+    return viewport.clientWidth / 2 - (index * cardStep + cardW / 2);
   }
 
-  const sectionIo = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => setWorkFocus(e.isIntersecting));
-    },
-    { rootMargin: "0px", threshold: 0.15 }
-  );
-  sectionIo.observe(section);
+  function updateCardStates() {
+    cards.forEach((card, i) => {
+      const dist = Math.abs(i - activeIndex);
+      card.classList.toggle("is-center", i === activeIndex);
+      card.classList.toggle("is-adjacent", dist === 1);
+      card.classList.toggle("is-peek", dist === 2);
+      card.classList.toggle("is-off", dist > 2);
+    });
+    if (prevBtn) prevBtn.disabled = activeIndex <= 0;
+    if (nextBtn) nextBtn.disabled = activeIndex >= count - 1;
+  }
 
-  const cardIo = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        const ratio = e.intersectionRatio;
-        if (e.isIntersecting && ratio >= MIN_VISIBLE_RATIO) {
-          visible.add(e.target);
-          visibleRatios.set(e.target, ratio);
-        } else {
-          visible.delete(e.target);
-          visibleRatios.delete(e.target);
-          stop(e.target);
-        }
-      });
-      syncLive();
+  function snapTo(index, dir, { immediate = false, force = false } = {}) {
+    const next = Math.max(0, Math.min(count - 1, index));
+    if (!immediate && !force && (animating || next === activeIndex)) return;
+    if (dir) lastDir = dir;
+    activeIndex = next;
+    updateCardStates();
+    syncMedia();
+
+    const x = targetX(activeIndex);
+    slideTween?.kill();
+    if (immediate) {
+      gsap.set(track, { x });
+      animating = false;
+      return;
+    }
+    animating = true;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    slideTween = gsap.to(track, {
+      x,
+      duration: reduced ? 0.01 : 0.52,
+      ease: "power3.out",
+      onComplete: () => {
+        animating = false;
+      },
+    });
+  }
+
+  function goNext() {
+    snapTo(activeIndex + 1, 1);
+  }
+
+  function goPrev() {
+    snapTo(activeIndex - 1, -1);
+  }
+
+  prevBtn?.addEventListener("click", goPrev);
+  nextBtn?.addEventListener("click", goNext);
+
+  roller.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goPrev();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      goNext();
+    }
+  });
+
+  let dragActive = false;
+  let dragStartX = 0;
+  let dragStartTrackX = 0;
+  let dragMoved = false;
+
+  viewport.addEventListener("pointerdown", (e) => {
+    if (animating || e.button !== 0) return;
+    dragActive = true;
+    dragMoved = false;
+    dragStartX = e.clientX;
+    dragStartTrackX = gsap.getProperty(track, "x") || 0;
+    viewport.classList.add("is-dragging");
+    viewport.setPointerCapture(e.pointerId);
+    slideTween?.kill();
+    animating = false;
+  });
+
+  viewport.addEventListener("pointermove", (e) => {
+    if (!dragActive) return;
+    const dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 4) dragMoved = true;
+    let x = dragStartTrackX + dx;
+    const minX = targetX(count - 1);
+    const maxX = targetX(0);
+    if (x > maxX) x = maxX + (x - maxX) * 0.22;
+    if (x < minX) x = minX + (x - minX) * 0.22;
+    gsap.set(track, { x });
+  });
+
+  function endDrag(e) {
+    if (!dragActive) return;
+    dragActive = false;
+    viewport.classList.remove("is-dragging");
+    try {
+      viewport.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+
+    if (!dragMoved) return;
+
+    const dx = e.clientX - dragStartX;
+    const threshold = Math.min(120, cardStep * 0.18);
+    if (dx <= -threshold && activeIndex < count - 1) snapTo(activeIndex + 1, 1);
+    else if (dx >= threshold && activeIndex > 0) snapTo(activeIndex - 1, -1);
+    else snapTo(activeIndex, lastDir, { force: true });
+  }
+
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
+
+  viewport.addEventListener(
+    "click",
+    (e) => {
+      if (dragMoved) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        dragMoved = false;
+      }
     },
-    { rootMargin: "48px 0px", threshold: [0, 0.12, 0.25, 0.5, 0.75, 1] }
+    true
   );
-  previews.forEach((v) => cardIo.observe(v));
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => snapTo(activeIndex, lastDir, { immediate: true }), 120);
+  });
+
+  if ("IntersectionObserver" in window) {
+    const sectionIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => setWorkFocus(e.isIntersecting));
+      },
+      { rootMargin: "0px", threshold: 0.15 }
+    );
+    sectionIo.observe(section);
+  } else {
+    setWorkFocus(true);
+  }
+
+  snapTo(0, 1, { immediate: true });
 }
 
 function initDemoLightbox() {
@@ -1107,7 +1223,7 @@ async function init() {
     initReveals();
     initFaq();
     initTestimonialWall();
-    initWorkGrid();
+    initWorkRoller();
     initDemoLightbox();
     initBuildRequestForm();
     initBuildRequestSurvey();
@@ -1138,7 +1254,7 @@ async function init() {
   initReveals();
   initFaq();
   initTestimonialWall();
-  initWorkGrid();
+  initWorkRoller();
   initDemoLightbox();
   initBuildRequestForm();
   initBuildRequestSurvey();

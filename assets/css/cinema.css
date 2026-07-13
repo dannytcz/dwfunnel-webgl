@@ -2796,27 +2796,114 @@ html.is-survey-open body {
   font-size: clamp(1rem, 1.2vw, 1.15rem);
   line-height: 1.6;
 }
-/* Selected Work grid: every build shown at once, all animating in place. */
-.work-grid {
+/* Studio Bench: horizontal roller — three live previews, silky snap. */
+.work-roller {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(0.8rem, 1.3vw, 1.5rem);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.35rem, 1.2vw, 0.85rem);
   margin-top: clamp(2.5rem, 5vh, 4rem);
 }
-@media (max-width: 1200px) {
-  .work-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.work-roller__viewport {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  touch-action: pan-y pinch-zoom;
+  cursor: grab;
 }
-@media (max-width: 900px) {
-  .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.work-roller__viewport.is-dragging {
+  cursor: grabbing;
 }
-@media (max-width: 560px) {
-  .work-grid { grid-template-columns: 1fr; }
+.work-roller__track {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.85rem, 2vw, 1.35rem);
+  will-change: transform;
+}
+.work-roller__nav {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: clamp(2.4rem, 4.5vw, 3.1rem);
+  height: clamp(2.4rem, 4.5vw, 3.1rem);
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(232, 223, 210, 0.18);
+  border-radius: 999px;
+  background: rgba(8, 14, 12, 0.72);
+  color: var(--ink);
+  font-family: var(--font-tech);
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color 0.25s var(--ease),
+    background 0.25s var(--ease),
+    transform 0.25s var(--ease),
+    opacity 0.25s var(--ease);
+}
+.work-roller__nav span {
+  display: block;
+  transform: translateY(-0.06em);
+}
+.work-roller__nav:hover:not(:disabled) {
+  border-color: rgba(242, 168, 74, 0.55);
+  background: rgba(242, 168, 74, 0.08);
+  transform: translateY(-2px);
+}
+.work-roller__nav:disabled {
+  opacity: 0.28;
+  cursor: default;
 }
 .work-card {
-  content-visibility: auto;
+  content-visibility: visible;
   contain-intrinsic-size: auto 380px;
+  flex: 0 0 min(72vw, 680px);
   margin: 0;
   width: auto;
+  transform-origin: center center;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.work-card.is-center {
+  transform: scale(1);
+  opacity: 1;
+  filter: brightness(1);
+  z-index: 3;
+}
+.work-card.is-adjacent {
+  transform: scale(0.9);
+  opacity: 0.9;
+  filter: brightness(0.82);
+  z-index: 2;
+}
+.work-card.is-peek {
+  transform: scale(0.82);
+  opacity: 0.55;
+  filter: brightness(0.62);
+  z-index: 1;
+}
+.work-card.is-off {
+  transform: scale(0.76);
+  opacity: 0.32;
+  filter: brightness(0.5);
+  z-index: 0;
+}
+@media (max-width: 900px) {
+  .work-card {
+    flex-basis: min(84vw, 520px);
+  }
+  .work-roller {
+    gap: 0.25rem;
+  }
+  .work-roller__nav {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.25rem;
+  }
 }
 .work-card__screen {
   position: relative;
@@ -2828,6 +2915,8 @@ html.is-survey-open body {
 }
 .work-card:hover .work-card__screen {
   border-color: rgba(242, 168, 74, 0.55);
+}
+.work-card.is-center:hover .work-card__screen {
   transform: translateY(-6px);
 }
 .ws-chrome {
@@ -3077,8 +3166,7 @@ html.is-survey-open body {
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-/* Selected Work previews: getlayers-style H.264 loops (30fps preview mp4).
-   Up to five visible cards decode at once while Studio Bench is focused. */
+/* Studio Bench previews: H.264 loops — three live decoders + one lazy preload. */
 .ws--embed { background: #06110e; overflow: hidden; }
 .ws-embed-preview {
   position: absolute;

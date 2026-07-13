@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=137" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=138" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -229,8 +229,10 @@
       <div class="section-meta">005 / Studio Bench</div>
       <h2 class="section-title glitch" data-glitch="BUILT ON THE BENCH">Built On The Bench.</h2>
       <p class="gallery-note">Every piece below is custom code out of this studio. Click to view.</p>
-      <!-- [PLACEHOLDER] concept reels, replace with captured loops of real client builds when available -->
-      <div class="work-grid" aria-label="Studio bench">
+      <div class="work-roller" aria-label="Studio bench" tabindex="0">
+        <button type="button" class="work-roller__nav work-roller__nav--prev" aria-label="Previous build"><span aria-hidden="true">&#8249;</span></button>
+        <div class="work-roller__viewport">
+          <div class="work-roller__track">
             <figure class="work-card">
               <button type="button" class="work-card__link" data-demo="/demos/auren.html?embed=1" aria-label="Preview demo">
                 <div class="work-card__screen ws--embed"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><video class="ws-embed-preview" poster="/assets/demos/previews/auren-poster.webp" data-src="/assets/demos/previews/auren.mp4" muted loop playsinline preload="none" width="960" height="600" tabindex="-1" aria-hidden="true"></video></div>
@@ -399,6 +401,9 @@
               </button>
               <figcaption><strong>Sable Yacht Club</strong><span>Luxury Lifestyle &middot; Brand Hero</span><em>Turns ocean romance into a membership ask.</em></figcaption>
             </figure>
+          </div>
+        </div>
+        <button type="button" class="work-roller__nav work-roller__nav--next" aria-label="Next build"><span aria-hidden="true">&#8250;</span></button>
       </div>
     </section>
 
@@ -772,6 +777,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js" defer></script>
-  <script type="module" src="assets/js/cinema-app.js?v=120"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=121"></script>
 </body>
 </html>
