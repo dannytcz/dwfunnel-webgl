@@ -105,7 +105,7 @@ function initLoader() {
   async function finish() {
     await Promise.race([
       Promise.all(tasks.map((fn) => fn().catch(() => {}))),
-      new Promise((resolve) => setTimeout(resolve, 2600)),
+      new Promise((resolve) => setTimeout(resolve, 1200)),
     ]);
     setProgress(1);
     loader?.classList.add("is-exiting");
@@ -471,7 +471,14 @@ function initScrub(section, { loader, eager = false, mobile = false, onProgress 
   appState.scrubRecords.push(record);
 
   if (eager) {
-    loader?.track(() => load((p) => loader.setProgress(0.1 + p * 0.85)));
+    loader?.track(async () => {
+      await scrubber.requestFrame(0);
+      scrubber.resize();
+      scrubber.renderNow();
+      if (isHero) hideHeroPoster();
+      loader?.setProgress(0.92);
+      load().catch(() => {});
+    });
   }
 
   const loadST = window.ScrollTrigger.create({
@@ -1092,12 +1099,10 @@ async function init() {
   initDemoLightbox();
   initBuildRequestForm();
   initBuildRequestSurvey();
-  // SplitText measures line boxes
   await document.fonts.ready;
   initAwardMotion();
   initConversionLeakSchematic({ reducedMotion: reduced });
   initMethodStack();
-  await document.fonts.ready;
   window.ScrollTrigger.refresh();
 }
 
