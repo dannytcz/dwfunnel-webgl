@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=101" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=102" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -408,39 +408,133 @@
     </section>
 
     <section id="apply" class="plain-section plain-section--apply" aria-labelledby="apply-heading">
-      <div class="section-meta">009 / Apply</div>
-      <h2 id="apply-heading" class="final-title glitch" data-glitch="LET'S BUILD">Let's build.</h2>
-      <p class="final-sub">Four build windows a month. Each one gets the studio's full attention. Strategy, cinematic page, tracking, and follow-up ship as one system.</p>
-      <div class="apply-grid">
-        <article class="fit-card">
-          <span>Good fit</span>
-          <ul>
-            <li>Validated offer with real buyer conversations.</li>
-            <li>Traffic from ads, DMs, content, referrals, or partners.</li>
-            <li>You're the premium option and need the page to prove it.</li>
-          </ul>
-        </article>
-        <article class="fit-card">
-          <span>Not yet</span>
-          <ul>
-            <li>No clear offer, price, or audience.</li>
-            <li>You need a cheap placeholder by tomorrow.</li>
-            <li>You want decoration without the funnel work.</li>
-          </ul>
-        </article>
+      <div class="apply-layout">
+        <div class="apply-copy reveal-panel">
+          <div class="section-meta">009 / Apply</div>
+          <h2 id="apply-heading" class="apply-heading glitch" data-glitch="THINK WE SHOULD BUILD THIS?">Think we should<br />build this?</h2>
+          <p class="apply-intro">We open four build windows each month. Send us the offer, the current page, and what isn't working. We review every request and reach out when there's a fit.</p>
+          <div class="apply-qual">
+            <span class="apply-qual__eyebrow">Before you send it</span>
+            <ol class="apply-qual__list">
+              <li><span class="apply-qual__num">01</span><span class="apply-qual__text">A real offer.</span></li>
+              <li><span class="apply-qual__num">02</span><span class="apply-qual__text">Existing traffic or buyer conversations.</span></li>
+              <li><span class="apply-qual__num">03</span><span class="apply-qual__text">A conversion problem worth solving.</span></li>
+            </ol>
+            <p class="apply-qual__note">No calendar link. We review the request first and reach out directly.</p>
+          </div>
+        </div>
+
+        <div class="apply-form-wrap" id="apply-form-wrap">
+          <div class="apply-form-panel reveal-panel">
+            <form class="build-request-form" id="build-request-form" novalidate>
+              <div class="form-field" data-field="name">
+                <label for="br-name">Your name</label>
+                <input type="text" id="br-name" name="name" autocomplete="name" required />
+                <span class="form-field__error" hidden></span>
+              </div>
+
+              <div class="form-field" data-field="contact">
+                <label for="br-contact">Email / WhatsApp</label>
+                <input type="text" id="br-contact" name="contact" autocomplete="email" placeholder="you@company.com or +1 555 000 0000" required />
+                <span class="form-field__error" hidden></span>
+              </div>
+
+              <div class="form-field" data-field="businessBrand">
+                <label for="br-brand">Business / brand</label>
+                <input type="text" id="br-brand" name="businessBrand" autocomplete="organization" required />
+                <span class="form-field__error" hidden></span>
+              </div>
+
+              <div class="form-field" data-field="offer">
+                <label for="br-offer">What are you selling?</label>
+                <textarea id="br-offer" name="offer" rows="3" required></textarea>
+                <span class="form-field__helper">Tell us the offer in plain English.</span>
+                <span class="form-field__error" hidden></span>
+              </div>
+
+              <fieldset class="form-fieldset" data-field="trafficSources">
+                <legend>Where is traffic coming from?</legend>
+                <div class="choice-group choice-group--multi" role="group" aria-label="Traffic sources">
+                  <div class="choice-item">
+                    <input type="checkbox" id="traffic-ads" name="trafficSources" value="ADS" />
+                    <label for="traffic-ads">Ads</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="checkbox" id="traffic-content" name="trafficSources" value="CONTENT" />
+                    <label for="traffic-content">Content</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="checkbox" id="traffic-dms" name="trafficSources" value="DMS" />
+                    <label for="traffic-dms">DMs</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="checkbox" id="traffic-referrals" name="trafficSources" value="REFERRALS" />
+                    <label for="traffic-referrals">Referrals</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="checkbox" id="traffic-other" name="trafficSources" value="OTHER" />
+                    <label for="traffic-other">Other</label>
+                  </div>
+                </div>
+                <span class="form-field__error" hidden></span>
+              </fieldset>
+
+              <div class="form-field" data-field="conversionProblem">
+                <label for="br-problem">What isn't working?</label>
+                <textarea id="br-problem" name="conversionProblem" rows="3" required></textarea>
+                <span class="form-field__helper">Where do you think people are dropping off?</span>
+                <span class="form-field__error" hidden></span>
+              </div>
+
+              <div class="form-field" data-field="currentPage">
+                <label for="br-page">Current page / website</label>
+                <input type="url" id="br-page" name="currentPage" placeholder="https://" inputmode="url" />
+                <span class="form-field__error" hidden></span>
+              </div>
+
+              <fieldset class="form-fieldset" data-field="estimatedBudget">
+                <legend>Estimated build budget</legend>
+                <div class="choice-group choice-group--single" role="radiogroup" aria-label="Estimated build budget in USD">
+                  <div class="choice-item">
+                    <input type="radio" id="budget-1k3k" name="estimatedBudget" value="$1K–3K" required />
+                    <label for="budget-1k3k">$1K–3K</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="radio" id="budget-3k5k" name="estimatedBudget" value="$3K–5K" />
+                    <label for="budget-3k5k">$3K–5K</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="radio" id="budget-5k10k" name="estimatedBudget" value="$5K–10K" />
+                    <label for="budget-5k10k">$5K–10K</label>
+                  </div>
+                  <div class="choice-item">
+                    <input type="radio" id="budget-10k" name="estimatedBudget" value="$10K+" />
+                    <label for="budget-10k">$10K+</label>
+                  </div>
+                </div>
+                <span class="form-field__error" hidden></span>
+              </fieldset>
+
+              <p class="form-form__error" role="alert" hidden></p>
+
+              <button type="submit" class="btn btn--primary btn--submit">Submit build request <span class="btn__arrow" aria-hidden="true">→</span></button>
+            </form>
+
+            <div class="apply-deadline">
+              <p class="apply-deadline__label">Tight deadline? Let's talk.</p>
+              <a class="apply-deadline__link" data-whatsapp-link href="#" target="_blank" rel="noopener noreferrer">Message us on WhatsApp →</a>
+            </div>
+          </div>
+
+          <div class="apply-success" hidden>
+            <div class="apply-success__inner">
+              <span class="apply-success__eyebrow">Request received</span>
+              <h3 class="apply-success__heading" tabindex="-1">We'll take a look.</h3>
+              <p class="apply-success__copy">We review every build request personally. If the project looks like a fit, we'll reach out using the contact details you sent.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <article class="apply-panel reveal-panel">
-        <div class="apply-panel__copy">
-          <span>Next step</span>
-          <h3>Book the fit call.</h3>
-          <p>Twenty minutes. Bring your current page, offer, and traffic source; leave with a scoped build plan and the reasoning, whether we work together or not.</p>
-        </div>
-        <div class="apply-panel__actions">
-          <a href="https://cal.com/daphne-wong-funnel/20min" class="btn btn--primary btn--xl" target="_blank" rel="noopener noreferrer">Book The Fit Call</a>
-          <!-- [PLACEHOLDER] real WhatsApp Business number -->
-          <a href="https://wa.me/0000000000" class="apply-panel__alt" target="_blank" rel="noopener noreferrer">Not ready? WhatsApp the brief instead</a>
-        </div>
-      </article>
     </section>
 
     <section id="faq" class="plain-section plain-section--faq" aria-labelledby="faq-heading">
@@ -488,9 +582,8 @@
         <p>Cinematic pages with a conversion machine wired beneath them.</p>
       </div>
       <div class="site-footer__links">
-        <a href="https://cal.com/daphne-wong-funnel/20min" target="_blank" rel="noopener noreferrer">Book a call</a>
-        <!-- [PLACEHOLDER] real WhatsApp Business number -->
-        <a href="https://wa.me/0000000000" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="#apply">Build request</a>
+        <a data-whatsapp-link href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         <a href="legal.html">Privacy</a>
         <a href="legal.html#terms">Terms</a>
       </div>
@@ -527,6 +620,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=97"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=98"></script>
 </body>
 </html>

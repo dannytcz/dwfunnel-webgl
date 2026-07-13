@@ -1,4 +1,5 @@
 import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
+import { initBuildRequestForm } from "./build-request-form.js";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
@@ -124,7 +125,7 @@ function initGlobalProgress() {
 
 function initMagneticCards() {
   document
-    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .fit-card, .apply-card, .proof-feature")
+    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature")
     .forEach((card) => {
       card.addEventListener("pointermove", (event) => {
         const rect = card.getBoundingClientRect();
@@ -135,7 +136,7 @@ function initMagneticCards() {
 }
 
 function initReveals() {
-  window.gsap.utils.toArray(".section-meta, .section-title, .final-title, .final-sub, .reveal-panel").forEach((el) => {
+  window.gsap.utils.toArray(".section-meta, .section-title, .final-title, .final-sub, .apply-heading, .apply-intro, .reveal-panel").forEach((el) => {
     window.gsap.fromTo(
       el,
       { autoAlpha: 0, y: 28 },
@@ -989,6 +990,7 @@ async function init() {
     initTestimonialWall();
     initWorkGrid();
     initDemoLightbox();
+    initBuildRequestForm();
     window.ScrollTrigger.refresh();
     return;
   }
@@ -1008,6 +1010,7 @@ async function init() {
   initTestimonialWall();
   initWorkGrid();
   initDemoLightbox();
+  initBuildRequestForm();
   // SplitText measures line boxes
   await document.fonts.ready;
   initAwardMotion();
