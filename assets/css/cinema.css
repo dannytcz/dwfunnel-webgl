@@ -2809,9 +2809,9 @@ html.is-survey-open body {
   position: relative;
   overflow: hidden;
   min-width: 0;
-  --roller-gap: clamp(0.35rem, 0.9vw, 0.6rem);
+  --roller-gap: clamp(0.4rem, 1vw, 0.7rem);
   perspective: 1200px;
-  perspective-origin: 50% 42%;
+  perspective-origin: 50% 50%;
   touch-action: pan-y pinch-zoom;
 }
 .work-roller__viewport.is-dragging {
@@ -2820,11 +2820,13 @@ html.is-survey-open body {
 .work-roller__track {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--roller-gap);
+  width: 100%;
   will-change: transform;
   transform-style: preserve-3d;
   cursor: grab;
-  padding-block: 0.35rem;
+  padding-block: 0.25rem;
 }
 .work-roller__track:active {
   cursor: grabbing;
@@ -2870,57 +2872,58 @@ html.is-survey-open body {
 .work-card {
   content-visibility: visible;
   contain-intrinsic-size: auto 300px;
-  flex: 0 0 22%;
+  flex: 0 0 25%;
+  max-width: 25%;
   margin: 0;
   width: auto;
   min-width: 0;
   transform-origin: center center;
-  transform: perspective(1200px) rotateY(0deg) scale(0.76);
+  transform: perspective(1200px) rotateY(0deg) scale(0.9);
   transition:
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    flex-basis 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.48s cubic-bezier(0.22, 1, 0.36, 1);
   backface-visibility: hidden;
 }
 .work-card.is-center {
-  flex: 0 0 50%;
+  flex: 0 0 46%;
+  max-width: 46%;
   transform: perspective(1200px) rotateY(0deg) scale(1);
   opacity: 1;
   filter: brightness(1);
   z-index: 5;
 }
 .work-card.is-adjacent.is-left {
-  transform: perspective(1200px) rotateY(16deg) scale(0.8);
-  opacity: 0.88;
-  filter: brightness(0.86);
+  transform: perspective(1200px) rotateY(11deg) scale(0.9);
+  opacity: 0.9;
+  filter: brightness(0.9);
   z-index: 2;
 }
 .work-card.is-adjacent.is-right {
-  transform: perspective(1200px) rotateY(-16deg) scale(0.8);
-  opacity: 0.88;
-  filter: brightness(0.86);
+  transform: perspective(1200px) rotateY(-11deg) scale(0.9);
+  opacity: 0.9;
+  filter: brightness(0.9);
   z-index: 2;
 }
-.work-card.is-off {
-  opacity: 0.28;
-  filter: brightness(0.5);
-  z-index: 0;
-  pointer-events: none;
+.work-card.is-off,
+.work-card[hidden] {
+  display: none !important;
 }
 @media (max-width: 900px) {
   .work-card {
-    flex: 0 0 24%;
-    transform: perspective(1000px) rotateY(0deg) scale(0.74);
+    flex: 0 0 27%;
+    max-width: 27%;
+    transform: perspective(1000px) rotateY(0deg) scale(0.88);
   }
   .work-card.is-center {
-    flex: 0 0 46%;
+    flex: 0 0 42%;
+    max-width: 42%;
   }
   .work-card.is-adjacent.is-left {
-    transform: perspective(1000px) rotateY(12deg) scale(0.78);
+    transform: perspective(1000px) rotateY(9deg) scale(0.88);
   }
   .work-card.is-adjacent.is-right {
-    transform: perspective(1000px) rotateY(-12deg) scale(0.78);
+    transform: perspective(1000px) rotateY(-9deg) scale(0.88);
   }
   .work-roller {
     gap: 0.25rem;
@@ -3197,6 +3200,15 @@ html.is-survey-open body {
 @keyframes ws-live { 50% { opacity: 0.25; } }
 /* Studio Bench previews: three live H.264 loops only. */
 .ws--embed { background: #06110e; overflow: hidden; }
+.ws-embed-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
 .ws-embed-preview {
   position: absolute;
   inset: 0;
@@ -3206,6 +3218,12 @@ html.is-survey-open body {
   border: 0;
   display: block;
   pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.ws-embed-preview.is-playing {
+  opacity: 1;
 }
 html.is-work-focus .ws-embed-preview {
   transform: translateZ(0);

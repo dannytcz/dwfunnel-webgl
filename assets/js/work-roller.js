@@ -1,4 +1,4 @@
-/* Studio Bench roller — 3D carousel, 3 live mp4, random start, modulo loop. */
+/* Studio Bench roller — exactly 3 visible cards, blob-warmed mp4, modulo loop. */
 export function initWorkRoller(appState) {
   const roller = document.querySelector(".work-roller");
   const viewport = roller?.querySelector(".work-roller__viewport");
@@ -26,7 +26,8 @@ export function initWorkRoller(appState) {
   let dragSuppressClick = false;
 
   const live = new Set();
-  let prefetchSrc = "";
+  const blobCache = new Map();
+  const blobPending = new Map();
 
   window.__workRollerSuppressClick = () => {
     const v = dragSuppressClick;
@@ -38,6 +39,54 @@ export function initWorkRoller(appState) {
     return card.querySelector("video.ws-embed-preview");
   }
 
+  function posterFor(card) {
+    return videoFor(card)?.getAttribute("poster") || "";
+  }
+
+  function ensurePosterFallback(card) {
+    const screen = card.querySelector(".work-card__screen");
+    const poster = posterFor(card);
+    if (!screen || !poster || screen.querySelector(".ws-embed-poster")) return;
+    const img = document.createElement("img");
+    img.className = "ws-embed-poster";
+    img.src = poster;
+    img.alt = "";
+    img.decoding = "async";
+    img.loading = "lazy";
+    img.setAttribute("aria-hidden", "true");
+    img.setAttribute("tabindex", "-1");
+    screen.prepend(img);
+  }
+
+  cards.forEach(ensurePosterFallback);
+
+  function warmVideo(src) {
+    if (!src) return Promise.resolve("");
+    const cached = blobCache.get(src);
+    if (cached) return Promise.resolve(cached);
+    const pending = blobPending.get(src);
+    if (pending) return pending;
+
+    const job = fetch(src)
+      .then((res) => {
+        if (!res.ok) throw new Error(`warm ${src} ${res.status}`);
+        return res.blob();
+      })
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        blobCache.set(src, url);
+        blobPending.delete(src);
+        return url;
+      })
+      .catch(() => {
+        blobPending.delete(src);
+        return src;
+      });
+
+    blobPending.set(src, job);
+    return job;
+  }
+
   function stopVideo(v) {
     if (!v) return;
     v.pause();
@@ -45,6 +94,7 @@ export function initWorkRoller(appState) {
       v.removeAttribute("src");
       v.load();
     }
+    v.classList.remove("is-playing");
     live.delete(v);
   }
 
@@ -52,7 +102,9 @@ export function initWorkRoller(appState) {
     live.add(v);
     const run = () => {
       if (!workFocus) return;
-      if (v.paused) v.play().catch(() => {});
+      v.play()
+        .then(() => v.classList.add("is-playing"))
+        .catch(() => v.classList.remove("is-playing"));
     };
     if (v.readyState >= 2) run();
     else v.addEventListener("canplay", run, { once: true });
@@ -63,21 +115,16 @@ export function initWorkRoller(appState) {
     if (!v) return;
     const src = v.getAttribute("data-src");
     if (!src) return;
-    if (v.getAttribute("src") !== src) {
-      v.src = src;
-      v.load();
-    }
-    startPlay(v);
-  }
 
-  function prefetchNext(src) {
-    if (!src || src === prefetchSrc) return;
-    prefetchSrc = src;
-    const link = document.createElement("link");
-    link.rel = "prefetch";
-    link.as = "video";
-    link.href = src;
-    document.head.appendChild(link);
+    warmVideo(src).then((url) => {
+      if (!workFocus) return;
+      if (v.getAttribute("data-src") !== src) return;
+      if (v.getAttribute("src") !== url) {
+        v.src = url;
+        v.load();
+      }
+      startPlay(v);
+    });
   }
 
   function setScrubPaused(paused) {
@@ -103,6 +150,16 @@ export function initWorkRoller(appState) {
     ];
   }
 
+  function warmVisible() {
+    liveIndices().forEach((i) => {
+      const src = videoFor(cards[i])?.getAttribute("data-src");
+      if (src) warmVideo(src);
+    });
+    const nextI = (activeIndex + lastDir + count) % count;
+    const nextSrc = videoFor(cards[nextI])?.getAttribute("data-src");
+    if (nextSrc) warmVideo(nextSrc);
+  }
+
   function syncMedia() {
     if (!workFocus) {
       cards.forEach((card) => stopVideo(videoFor(card)));
@@ -115,20 +172,7 @@ export function initWorkRoller(appState) {
       if (playSet.has(i)) attachVideo(i);
       else stopVideo(v);
     });
-    const nextI = (activeIndex + lastDir + count) % count;
-    prefetchNext(videoFor(cards[nextI])?.getAttribute("data-src"));
-  }
-
-  function gapPx() {
-    return parseFloat(getComputedStyle(track).gap) || 0;
-  }
-
-  function trackXForIndex(index) {
-    const gap = gapPx();
-    let lead = 0;
-    for (let i = 0; i < index; i++) lead += cards[i].offsetWidth + gap;
-    const w = cards[index].offsetWidth;
-    return viewport.clientWidth / 2 - (lead + w / 2);
+    warmVisible();
   }
 
   function ringDist(a, b) {
@@ -141,6 +185,9 @@ export function initWorkRoller(appState) {
     const nextI = (activeIndex + 1) % count;
     cards.forEach((card, i) => {
       const wrap = ringDist(i, activeIndex);
+      const visible = wrap <= 1;
+      card.hidden = !visible;
+      card.style.order = i === prevI ? "0" : i === activeIndex ? "1" : i === nextI ? "2" : "";
       card.classList.toggle("is-center", i === activeIndex);
       card.classList.toggle("is-adjacent", wrap === 1);
       card.classList.toggle("is-left", i === prevI);
@@ -153,29 +200,38 @@ export function initWorkRoller(appState) {
     const next = ((index % count) + count) % count;
     if (!immediate && !force && (animating || next === activeIndex)) return;
     if (dir) lastDir = dir;
-    activeIndex = next;
-    updateCardStates();
 
-    requestAnimationFrame(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    slideTween?.kill();
+
+    const apply = () => {
+      activeIndex = next;
+      updateCardStates();
+      gsap.set(track, { x: 0 });
       syncMedia();
-      const x = trackXForIndex(activeIndex);
-      slideTween?.kill();
-      if (immediate) {
-        gsap.set(track, { x });
-        animating = false;
-        return;
-      }
-      animating = true;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      slideTween = gsap.to(track, {
-        x,
-        duration: reduced ? 0.01 : 0.5,
+    };
+
+    if (immediate || reduced) {
+      apply();
+      animating = false;
+      return;
+    }
+
+    animating = true;
+    const nudge = dir > 0 ? -48 : dir < 0 ? 48 : 0;
+    slideTween = gsap.fromTo(
+      track,
+      { x: nudge },
+      {
+        x: 0,
+        duration: 0.48,
         ease: "power3.out",
+        onStart: apply,
         onComplete: () => {
           animating = false;
         },
-      });
-    });
+      }
+    );
   }
 
   function goNext() {
@@ -201,7 +257,6 @@ export function initWorkRoller(appState) {
 
   let dragActive = false;
   let dragStartX = 0;
-  let dragStartTrackX = 0;
   let dragDistance = 0;
 
   track.addEventListener("pointerdown", (e) => {
@@ -211,17 +266,19 @@ export function initWorkRoller(appState) {
     dragDistance = 0;
     dragSuppressClick = false;
     dragStartX = e.clientX;
-    dragStartTrackX = gsap.getProperty(track, "x") || 0;
     viewport.classList.add("is-dragging");
     track.setPointerCapture(e.pointerId);
     slideTween?.kill();
     animating = false;
+    gsap.set(track, { x: 0 });
   });
 
   track.addEventListener("pointermove", (e) => {
     if (!dragActive) return;
-    dragDistance = Math.abs(e.clientX - dragStartX);
-    gsap.set(track, { x: dragStartTrackX + (e.clientX - dragStartX) });
+    const dx = e.clientX - dragStartX;
+    dragDistance = Math.abs(dx);
+    const max = viewport.clientWidth * 0.12;
+    gsap.set(track, { x: Math.max(-max, Math.min(max, dx * 0.35)) });
   });
 
   function endDrag(e) {
@@ -233,14 +290,12 @@ export function initWorkRoller(appState) {
     } catch (err) {}
 
     if (dragDistance > 24) dragSuppressClick = true;
-    if (dragDistance < 10) return;
 
     const dx = e.clientX - dragStartX;
-    const step = cards[activeIndex].offsetWidth + gapPx();
-    const threshold = Math.min(90, step * 0.14);
+    const threshold = Math.min(72, viewport.clientWidth * 0.06);
     if (dx <= -threshold) goNext();
     else if (dx >= threshold) goPrev();
-    else snapTo(activeIndex, lastDir, { force: true });
+    else snapTo(activeIndex, lastDir, { force: true, immediate: true });
   }
 
   track.addEventListener("pointerup", endDrag);
@@ -252,10 +307,23 @@ export function initWorkRoller(appState) {
     resizeTimer = window.setTimeout(() => snapTo(activeIndex, lastDir, { immediate: true }), 120);
   });
 
+  const onWarm = () => warmVisible();
+  if ("requestIdleCallback" in window) requestIdleCallback(onWarm, { timeout: 2200 });
+  else window.setTimeout(onWarm, 1200);
+
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(
-      (entries) => entries.forEach((e) => setWorkFocus(e.isIntersecting)),
-      { threshold: 0.15 }
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setWorkFocus(true);
+            warmVisible();
+          } else {
+            setWorkFocus(false);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "320px 0px" }
     ).observe(section);
   } else {
     setWorkFocus(true);

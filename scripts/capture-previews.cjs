@@ -63,7 +63,7 @@ async function spin(page, sel) {
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
   kanevoss: { url:'/demos/kanevoss.html?preview=1', wait:1200, trim:{start:1.2,dur:5}, posterAt:2.2, act: p => orbit(p, 7) },
-  ecogreen: { url:'/demos/ecogreen.html?embed=1&preview=1', wait:4500, trim:{start:3,dur:5}, posterAt:2.8, act: async p => {
+  ecogreen: { url:'/demos/ecogreen.html?embed=1&preview=1', wait:4500, trim:{start:3.2,dur:5}, posterAt:3.0, act: async p => {
     try {
       await p.waitForSelector('video', { timeout: 12000 });
       await p.evaluate(() => {
@@ -72,7 +72,11 @@ const RECIPES = {
         v.muted = true;
         return v.play();
       });
-      await hold(p, 7000);
+      await hold(p, 2500);
+      await p.evaluate(() => window.scrollTo(0, 0));
+      await hold(p, 1500);
+      await sweep(p, 5);
+      await hold(p, 4500);
     } catch (e) {
       await hold(p, 8000);
     }
