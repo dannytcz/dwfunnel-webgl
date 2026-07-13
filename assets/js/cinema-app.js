@@ -593,13 +593,16 @@ function initTestimonialWall() {
 
 /* Selected Work grid: getlayers-style H.264 preview loops. Every visible card
    plays together while Studio Bench is focused. src is attached only when a
-   card is visible (preload=none). Page chrome pauses under is-work-focus. */
+   card is visible (preload=none). Page chrome pauses under is-work-focus.
+   Autonex and Sable use live iframe embeds so copy typography can be tuned. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
   const section = grid.closest("section") || grid;
   const vids = Array.from(grid.querySelectorAll("video.ws-embed-preview"));
-  if (!vids.length) return;
+  const frames = Array.from(grid.querySelectorAll("iframe.ws-embed-iframe"));
+  const previews = [...vids, ...frames];
+  if (!previews.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
 
@@ -616,6 +619,11 @@ function initWorkGrid() {
       clearTimeout(timer);
       playTimers.delete(v);
     }
+    if (v.tagName === "IFRAME") {
+      v.removeAttribute("src");
+      live.delete(v);
+      return;
+    }
     v.pause();
     if (v.getAttribute("src")) {
       v.removeAttribute("src");
@@ -631,6 +639,11 @@ function initWorkGrid() {
     const timer = setTimeout(() => {
       playTimers.delete(v);
       if (!workFocus || !visible.has(v)) return;
+      if (v.tagName === "IFRAME") {
+        if (v.getAttribute("src") !== src) v.setAttribute("src", src);
+        live.add(v);
+        return;
+      }
       if (v.getAttribute("src") !== src) {
         v.src = src;
         v.load();
@@ -663,6 +676,13 @@ function initWorkGrid() {
           playTimers.delete(v);
         }
       });
+      frames.forEach((v) => {
+        const timer = playTimers.get(v);
+        if (timer) {
+          clearTimeout(timer);
+          playTimers.delete(v);
+        }
+      });
       return;
     }
     visible.forEach(play);
@@ -672,7 +692,7 @@ function initWorkGrid() {
   }
 
   if (!("IntersectionObserver" in window)) {
-    vids.forEach(play);
+    previews.forEach(play);
     return;
   }
 
@@ -697,7 +717,7 @@ function initWorkGrid() {
     },
     { rootMargin: "100px 0px", threshold: 0.1 }
   );
-  vids.forEach((v) => cardIo.observe(v));
+  previews.forEach((v) => cardIo.observe(v));
 }
 
 function initDemoLightbox() {

@@ -3044,15 +3044,6 @@ html.is-survey-open body {
 /* Selected Work previews: getlayers-style H.264 loops (30fps preview mp4).
    All visible cards play together while Studio Bench is focused. */
 .ws--embed { background: #06110e; overflow: hidden; }
-.ws--autonex .ws-embed-preview {
-  transform: scale(1.2);
-  transform-origin: center 42%;
-}
-.ws--sable .ws-embed-preview {
-  transform: scale(0.5);
-  transform-origin: center 12%;
-  object-position: center 18%;
-}
 .ws-embed-preview {
   position: absolute;
   inset: 0;
@@ -3062,6 +3053,18 @@ html.is-survey-open body {
   border: 0;
   display: block;
   pointer-events: none;
+}
+.ws--autonex .ws-embed-iframe {
+  width: 185%;
+  height: 185%;
+  left: -42%;
+  top: -6%;
+}
+.ws--sable .ws-embed-iframe {
+  width: 200%;
+  height: 200%;
+  left: -50%;
+  top: -4%;
 }
 /* Gallery focus: freeze continuous page chrome so many preview videos stay silky. */
 html.is-work-focus .webgl-atmosphere {

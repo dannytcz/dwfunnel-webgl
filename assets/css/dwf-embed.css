@@ -190,8 +190,9 @@ html[data-dwf-demo="petalform"].is-lightbox .hero h1 {
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[64px]"],
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[140px]"],
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="md:text-[140px]"] {
-  font-size: clamp(2.2rem, 5.5vw, 4.2rem) !important;
-  line-height: 0.95 !important;
+  font-size: clamp(1.5rem, 3.8vw, 2.5rem) !important;
+  line-height: 1 !important;
+  margin-bottom: 0.4em !important;
 }
 
 html[data-dwf-demo="sable"].is-lightbox [class*="text-[64px]"],
@@ -217,12 +218,8 @@ html[data-dwf-demo="liontech"].is-lightbox .services-intro h2 {
 }
 
 /* —— NewShift (Tailwind scale-down) —— */
-html[data-dwf-demo="newshift"].is-lightbox h1,
-html[data-dwf-demo="newshift"].is-lightbox .text-6xl,
-html[data-dwf-demo="newshift"].is-lightbox .text-7xl,
-html[data-dwf-demo="newshift"].is-lightbox .text-8xl,
-html[data-dwf-demo="newshift"].is-lightbox .text-9xl {
-  font-size: clamp(2.8rem, 7vw, 4.55rem) !important;
+html[data-dwf-demo="newshift"].is-lightbox #home h1 {
+  font-size: clamp(2rem, 4.5vw, 3.75rem) !important;
   line-height: 1.05 !important;
 }
 
@@ -260,6 +257,7 @@ html[data-dwf-demo="elyra"].is-lightbox,
 html[data-dwf-demo="elyra"].is-lightbox body {
   height: 100% !important;
   overflow: hidden !important;
+  background: #fff !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper {
@@ -267,6 +265,7 @@ html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper {
   min-height: 100% !important;
   max-height: 100% !important;
   overflow: hidden !important;
+  background: #fff !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home {
@@ -274,27 +273,36 @@ html[data-dwf-demo="elyra"].is-lightbox #home {
   min-height: 100% !important;
   max-height: 100% !important;
   overflow: hidden !important;
+  background: #fff !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox section:not(#home) {
   display: none !important;
 }
 
+html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 {
+  display: none !important;
+}
+
 html[data-dwf-demo="elyra"].is-lightbox h1 {
-  font-size: clamp(2.5rem, 7.5vw, 5.5rem) !important;
+  font-size: clamp(2.25rem, 6.5vw, 4.75rem) !important;
   line-height: 0.92 !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home .relative.z-\[2\] {
   height: 100% !important;
   min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main {
   flex: 1 1 auto !important;
-  min-height: 100% !important;
-  padding-bottom: 4.5rem !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
   justify-content: space-between !important;
+  padding-bottom: 2.5rem !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
@@ -302,25 +310,24 @@ html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
   left: auto !important;
   right: auto !important;
   bottom: auto !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  margin-top: auto !important;
+  padding-top: 1rem !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
-  margin-right: 24% !important;
-  max-width: 15rem !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 svg {
-  height: 4.25rem !important;
+  margin-right: 0 !important;
+  max-width: 14rem !important;
 }
 
 @media (min-width: 768px) {
   html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
-    margin-right: 28% !important;
-    max-width: 17rem !important;
-  }
-
-  html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 svg {
-    height: 5rem !important;
+    margin-right: 8% !important;
+    max-width: 16rem !important;
   }
 }
 
@@ -329,6 +336,11 @@ html[data-dwf-demo="thebrew"].is-lightbox,
 html[data-dwf-demo="thebrew"].is-lightbox body {
   height: 100% !important;
   overflow: hidden !important;
+  background: #070707 !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .site-shell > *:not(.hero) {
+  display: none !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero {
@@ -338,31 +350,26 @@ html[data-dwf-demo="thebrew"].is-lightbox .hero {
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-content {
-  width: min(100% - 2rem, 100%) !important;
+  width: min(100% - 2rem, 920px) !important;
   padding: 0 1rem !important;
   align-items: center !important;
-  transform: scale(0.88);
-  transform-origin: center center;
+  transform: none !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero h1 {
-  font-size: clamp(2rem, 5vw, 3.25rem) !important;
+  font-size: clamp(2.25rem, 5.5vw, 3.5rem) !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-intro {
-  font-size: 0.85rem !important;
-  max-width: 28ch !important;
+  font-size: 0.9rem !important;
+  max-width: 32ch !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-card-wrap {
-  width: min(72%, 300px) !important;
+  width: min(68%, 280px) !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-scroll {
-  display: none !important;
-}
-
-html[data-dwf-demo="thebrew"].is-lightbox .site-shell > section:not(.hero) {
   display: none !important;
 }
 
@@ -413,4 +420,39 @@ html[data-dwf-demo="autonex"].is-lightbox section .text-xs {
 
 html[data-dwf-demo="autonex"].is-lightbox main {
   padding-inline: clamp(1rem, 3vw, 2rem) !important;
+}
+
+/* —— Autonex preview (Studio Bench card) —— */
+html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) .text-\[40px\] {
+  font-size: clamp(2rem, 5.4vw, 3rem) !important;
+  line-height: 0.95 !important;
+}
+
+html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) .sm\:text-\[56px\] {
+  font-size: clamp(2.65rem, 6.2vw, 3.65rem) !important;
+}
+
+html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) .md\:text-\[72px\] {
+  font-size: clamp(3.15rem, 7.2vw, 4.35rem) !important;
+}
+
+html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) main p.text-sm {
+  font-size: 1.05rem !important;
+}
+
+html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) section h2.text-\[10px\] {
+  font-size: 0.75rem !important;
+}
+
+html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) section .text-xs {
+  font-size: 0.9rem !important;
+}
+
+/* —— Elowen —— */
+html[data-dwf-demo="elowen"].is-lightbox .hero {
+  padding-top: clamp(10rem, 16vh, 12rem) !important;
+}
+
+html[data-dwf-demo="elowen"].is-lightbox .hero h1 {
+  margin-top: clamp(1.5rem, 4vh, 2.75rem) !important;
 }

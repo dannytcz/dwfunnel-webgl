@@ -132,7 +132,7 @@
   addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
 })();
 </script>
-  <script src="/assets/js/dwf-loader.js?v=17"></script>
+  <script src="/assets/js/dwf-loader.js?v=19"></script>
 </head>
 
 <body>
@@ -192,19 +192,19 @@
       <div class="marquee-track">
         <div class="marquee-group">
           <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Motion-first experiences built for production</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">From concept to shipped 3D in days</span>
           <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Motion-first experiences built for production</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">From concept to shipped 3D in days</span>
         </div>
         <div class="marquee-group" aria-hidden="true">
           <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Motion-first experiences built for production</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">From concept to shipped 3D in days</span>
           <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
-          <span class="whitespace-nowrap text-[16px] font-medium text-black">Cinematic 3D pipelines shipping weekly</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">Motion-first experiences built for production</span>
+          <span class="whitespace-nowrap text-[16px] font-medium text-black">From concept to shipped 3D in days</span>
         </div>
       </div>
     </section>
@@ -387,11 +387,16 @@
     }
 
     function Marquee() {
+      const lines = [
+        "Cinematic 3D pipelines shipping weekly",
+        "Motion-first experiences built for production",
+        "From concept to shipped 3D in days",
+      ];
       const items = Array.from({ length: 6 }, (_, i) =>
         e(
           "span",
           { key: i, className: "whitespace-nowrap text-[16px] font-medium tracking-[-0.02em] text-black" },
-          "Cinematic 3D pipelines shipping weekly"
+          lines[i % lines.length]
         )
       );
 
