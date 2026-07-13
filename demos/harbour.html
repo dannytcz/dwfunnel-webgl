@@ -37,7 +37,7 @@
       html { scroll-behavior: auto; }
     }
   </style>
-  <script src="/assets/js/dwf-loader.js?v=8"></script>
+  <script src="/assets/js/dwf-loader.js?v=20"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -344,7 +344,10 @@
     }
 
     function App() {
-      const [showSplash, setShowSplash] = useState(() => !new URLSearchParams(window.location.search).has('embed'));
+      const [showSplash, setShowSplash] = useState(() => {
+        const q = new URLSearchParams(window.location.search);
+        return !q.has('embed') && !q.has('lightbox');
+      });
       const isMobile = useIsMobile();
 
       const section1Ref = useRef(null);

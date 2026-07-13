@@ -779,6 +779,9 @@ function initDemoLightbox() {
     const u = new URL(url, window.location.origin);
     u.searchParams.set("embed", "1");
     u.searchParams.set("lightbox", "1");
+    if (u.pathname.endsWith(".html")) {
+      u.pathname = u.pathname.replace(/\.html$/, ".html/");
+    }
     return u.pathname + u.search;
   }
 

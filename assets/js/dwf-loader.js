@@ -23,15 +23,17 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1, thebrew: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
   var LIGHTBOX_CINEMATIC_HALF = 10000;
+  var LIGHTBOX_CINEMATIC_HALF_UNWRITTEN = 13200;
   var LIGHTBOX_SCROLL_OPTS = {
     aurelia: { cycle: 60480 },
     auren: { startDelay: 8000, cycle: 54600 },
-    alzer: { startDelayAfterIntro: 4000 },
-    thebrew: { heroOnly: true },
+    alzer: { startDelayAfterIntro: 4000, cycle: 30000 },
+    stretch: { cycle: 40000 },
+    liontech: { cycle: 40000 },
   };
 
   function notifyParent(type) {
@@ -54,7 +56,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=16";
+      link.href = "/assets/css/dwf-embed.css?v=17";
       (document.head || html).appendChild(link);
     }
   }
@@ -67,7 +69,7 @@
     if (document.getElementById("dwf-embed-autoscroll")) return;
     window.__DWF_AUTOSCROLL__ = true;
 
-    var HALF = LIGHTBOX_CINEMATIC_HALF;
+    var HALF = demo === "unwritten" ? LIGHTBOX_CINEMATIC_HALF_UNWRITTEN : LIGHTBOX_CINEMATIC_HALF;
     var CYCLE = HALF * 2;
     var startedAt = 0;
 
@@ -270,7 +272,7 @@
     whenReady(applyProvenance);
   }, 2800);
 
-  var runBoot = !preview && (!embed || lightbox);
+  var runBoot = !preview && !embed;
   if (!runBoot) return;
 
   if (window.__DWF_BOOT__) return;

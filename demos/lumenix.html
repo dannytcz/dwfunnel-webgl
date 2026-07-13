@@ -147,19 +147,13 @@
           </svg>
         </a>
 
-        <nav class="hidden items-start gap-16 md:flex" aria-label="Primary navigation">
-          <div class="flex min-w-[92px] flex-col gap-2">
-            <a href="#" class="text-[14px] font-medium text-white">Work</a>
-            <a href="#" class="text-[14px] font-medium text-white">Services</a>
-          </div>
-          <div class="flex min-w-[92px] flex-col gap-2">
-            <a href="#" class="text-[14px] font-medium text-white">Projects</a>
-            <a href="#" class="text-[14px] font-medium text-white">Pipeline</a>
-          </div>
-          <div class="flex min-w-[92px] flex-col gap-2">
-            <a href="#" class="text-[14px] font-medium text-white">Careers</a>
-            <a href="#contact" class="text-[14px] font-medium text-white">Contact</a>
-          </div>
+        <nav class="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
+          <a href="#" class="text-[14px] font-medium text-white">Work</a>
+          <a href="#" class="text-[14px] font-medium text-white">Services</a>
+          <a href="#" class="text-[14px] font-medium text-white">Projects</a>
+          <a href="#" class="text-[14px] font-medium text-white">Pipeline</a>
+          <a href="#" class="text-[14px] font-medium text-white">Careers</a>
+          <a href="#contact" class="text-[14px] font-medium text-white">Contact</a>
         </nav>
 
         <button type="button" class="relative flex h-[30px] w-[27px] items-center justify-center text-white" aria-label="Open cart">
@@ -247,11 +241,7 @@
       </svg>
     `)}`;
 
-    const navColumns = [
-      ["Work", "Services"],
-      ["Projects", "Pipeline"],
-      ["Careers", "Contact"]
-    ];
+    const navLinks = ["Work", "Services", "Projects", "Pipeline", "Careers", "Contact"];
 
     const heroVideo = "/assets/demos/lumenix/hero.mp4";
     const shippingVideo = "/assets/demos/lumenix/shipping.mp4";
@@ -298,22 +288,16 @@
           ),
           e(
             "nav",
-            { className: "hidden items-start gap-16 md:flex", "aria-label": "Primary navigation" },
-            navColumns.map((column, index) =>
+            { className: "hidden items-center gap-8 md:flex", "aria-label": "Primary navigation" },
+            navLinks.map((item) =>
               e(
-                "div",
-                { key: index, className: "flex min-w-[92px] flex-col gap-2" },
-                column.map((item) =>
-                  e(
-                    "a",
-                    {
-                      key: item,
-                      href: item === "Contact" ? "#contact" : "#",
-                      className: "text-[14px] font-medium text-white transition-opacity hover:opacity-55"
-                    },
-                    item
-                  )
-                )
+                "a",
+                {
+                  key: item,
+                  href: item === "Contact" ? "#contact" : "#",
+                  className: "text-[14px] font-medium text-white transition-opacity hover:opacity-55"
+                },
+                item
               )
             )
           ),

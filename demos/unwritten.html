@@ -160,7 +160,7 @@
 })();
 </script>
 
-  <script src="/assets/js/dwf-loader.js?v=16"></script>
+  <script src="/assets/js/dwf-loader.js?v=20"></script>
 </head>
 <body>
   <main id="experience">
@@ -255,12 +255,18 @@
         p=readProgress();
         const scene1Opacity=clamp(1-p/.22,0,1);
         const scene2Opacity=clamp((p-.68)/.16,0,1);
+        const cardBrowse=clamp((p-.70)/.30,0,1);
         els.scene1.style.opacity=scene1Opacity;
         els.scene1.style.pointerEvents=scene1Opacity>.05?'auto':'none';
         els.scene2.style.opacity=scene2Opacity;
         els.scene2.style.pointerEvents=scene2Opacity>.05?'auto':'none';
         els.arcWrap.style.opacity=scene2Opacity;
         els.arcWrap.style.pointerEvents=scene2Opacity>.05?'auto':'none';
+        document.querySelectorAll('.desktop-heading, .tablet-layout .heading, .scene1 .heading').forEach((el)=>{
+          const base=scene1Opacity;
+          const fade=scene2Opacity>0.05?clamp(1-cardBrowse*1.15,0,1):1;
+          el.style.opacity=String(clamp(base*fade,0,1));
+        });
         positionArcCards();
       }
       function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(updateProgress)}}
