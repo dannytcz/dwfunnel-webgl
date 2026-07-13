@@ -172,8 +172,30 @@
     '<div class="dwf-boot__panel">' +
     '<p class="dwf-boot__brand">DW <span>Funnel</span></p>' +
     '<div class="dwf-boot__track"><div class="dwf-boot__fill" id="dwf-boot-fill"></div></div>' +
-    '<div class="dwf-boot__row"><span>Preparing concept</span><span class="dwf-boot__pct" id="dwf-boot-pct">0%</span></div>' +
+    '<div class="dwf-boot__row"><span id="dwf-boot-status">Opening studio</span><span class="dwf-boot__pct" id="dwf-boot-pct">0%</span></div>' +
     "</div>";
+
+  var BOOT_STAGES = [
+    [0.4, "Opening studio"],
+    [0.75, "Setting the stage"],
+    [0.99, "Cueing motion"],
+    [1, "Almost ready"],
+  ];
+  var BOOT_WAITING = [
+    "Almost ready",
+    "Finishing touches",
+    "Polishing frames",
+    "Syncing motion",
+    "Opening now",
+  ];
+
+  function bootStatusLabel(p) {
+    var clamped = Math.max(0, Math.min(1, p));
+    for (var i = 0; i < BOOT_STAGES.length; i++) {
+      if (clamped <= BOOT_STAGES[i][0]) return BOOT_STAGES[i][1];
+    }
+    return BOOT_STAGES[BOOT_STAGES.length - 1][1];
+  }
 
   function mount() {
     if (!root.parentNode) {
@@ -187,26 +209,52 @@
 
   var fill = root.querySelector("#dwf-boot-fill");
   var pct = root.querySelector("#dwf-boot-pct");
+  var status = root.querySelector("#dwf-boot-status");
   var progress = 0;
   var loaded = document.readyState === "complete";
   var minMs = lightbox ? 1100 : 900;
   var maxMs = lightbox ? 4500 : 3200;
   var started = performance.now();
   var done = false;
+  var rotateTimer = null;
+  var waitingTick = 0;
+
+  function stopWaitingRotate() {
+    if (!rotateTimer) return;
+    clearInterval(rotateTimer);
+    rotateTimer = null;
+  }
+
+  function startWaitingRotate() {
+    if (rotateTimer) return;
+    waitingTick = 0;
+    if (status) status.textContent = BOOT_WAITING[0];
+    rotateTimer = setInterval(function () {
+      waitingTick += 1;
+      if (status) status.textContent = BOOT_WAITING[waitingTick % BOOT_WAITING.length];
+    }, 1200);
+  }
 
   function setProgress(p) {
     progress = Math.max(progress, Math.min(1, p));
     var v = Math.round(progress * 100);
     if (fill) fill.style.width = v + "%";
     if (pct) pct.textContent = v + "%";
+    if (progress >= 0.99) {
+      startWaitingRotate();
+    } else {
+      stopWaitingRotate();
+      waitingTick = 0;
+      if (status) status.textContent = bootStatusLabel(progress);
+    }
     notifyParent("dwf:progress");
   }
 
   function tick() {
     if (done) return;
     var elapsed = performance.now() - started;
-    var soft = Math.min(0.86, elapsed / 1400);
-    if (loaded) soft = Math.max(soft, 0.92);
+    var soft = Math.min(0.99, elapsed / 1400);
+    if (loaded) soft = Math.max(soft, 0.99);
     setProgress(soft);
     if (loaded && elapsed >= minMs) {
       finish();
@@ -222,6 +270,7 @@
   function finish() {
     if (done) return;
     done = true;
+    stopWaitingRotate();
     setProgress(1);
     root.setAttribute("aria-busy", "false");
     root.classList.add("is-done");

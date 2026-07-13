@@ -9,10 +9,11 @@ export function initLoader() {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tasks = [];
   const stages = [
-    [0.12, "Warming optics"],
-    [0.35, "Loading frames"],
-    [0.62, "Syncing motion"],
-    [0.88, "Arming scroll"],
+    [0.12, "Boot sequence"],
+    [0.35, "Warming optics"],
+    [0.62, "Loading frames"],
+    [0.88, "Syncing motion"],
+    [0.99, "Arming scroll"],
     [1, "Ready"],
   ];
 

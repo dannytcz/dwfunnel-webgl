@@ -48,6 +48,26 @@ function sectionUrls(key, count) {
   );
 }
 
+function demoLoaderStatus(progress) {
+  const stages = [
+    [0.4, "Opening studio"],
+    [0.75, "Setting the stage"],
+    [0.99, "Cueing motion"],
+    [1, "Almost ready"],
+  ];
+  const p = Math.max(0, Math.min(1, progress));
+  const stage = stages.find(([threshold]) => p <= threshold) || stages[stages.length - 1];
+  return stage[1];
+}
+
+const DEMO_LOADER_WAITING = [
+  "Almost ready",
+  "Finishing touches",
+  "Polishing frames",
+  "Syncing motion",
+  "Opening now",
+];
+
 function initLoader() {
   const loader = document.getElementById("loader");
   const fill = document.getElementById("loader-fill");
@@ -55,10 +75,11 @@ function initLoader() {
   const status = document.getElementById("loader-status");
   const tasks = [];
   const stages = [
-    [0.12, "Warming optics"],
-    [0.35, "Loading frames"],
-    [0.62, "Syncing motion"],
-    [0.88, "Arming scroll"],
+    [0.12, "Boot sequence"],
+    [0.35, "Warming optics"],
+    [0.62, "Loading frames"],
+    [0.88, "Syncing motion"],
+    [0.99, "Arming scroll"],
     [1, "Ready"],
   ];
 
@@ -663,27 +684,56 @@ function initDemoLightbox() {
   const loader = root?.querySelector(".demo-lightbox__loader");
   const loaderFill = loader?.querySelector(".demo-lightbox__loader-fill");
   const loaderPct = loader?.querySelector(".demo-lightbox__loader-pct");
+  const loaderStatus = loader?.querySelector(".demo-lightbox__loader-status");
   if (!root || !frame || !iframe || !titleEl) return;
 
   let lastFocus = null;
   let open = false;
   let loaderRaf = 0;
   let loaderStarted = 0;
+  let loaderRotateTimer = null;
+  let loaderWaitingTick = 0;
   let onMessage = null;
   let readyTimer = null;
   let scrollBlockers = null;
+
+  function stopWaitingRotate() {
+    if (!loaderRotateTimer) return;
+    clearInterval(loaderRotateTimer);
+    loaderRotateTimer = null;
+  }
+
+  function startWaitingRotate() {
+    if (loaderRotateTimer) return;
+    loaderWaitingTick = 0;
+    if (loaderStatus) loaderStatus.textContent = DEMO_LOADER_WAITING[0];
+    loaderRotateTimer = window.setInterval(() => {
+      loaderWaitingTick += 1;
+      if (loaderStatus) {
+        loaderStatus.textContent = DEMO_LOADER_WAITING[loaderWaitingTick % DEMO_LOADER_WAITING.length];
+      }
+    }, 1200);
+  }
+
+  function setLoaderProgress(p) {
+    const clamped = Math.max(0, Math.min(1, p));
+    const v = Math.round(clamped * 100);
+    if (loaderFill) loaderFill.style.width = `${v}%`;
+    if (loaderPct) loaderPct.textContent = `${v}%`;
+    if (clamped >= 0.99) {
+      startWaitingRotate();
+    } else {
+      stopWaitingRotate();
+      loaderWaitingTick = 0;
+      if (loaderStatus) loaderStatus.textContent = demoLoaderStatus(clamped);
+    }
+  }
 
   function buildLightboxUrl(url) {
     const u = new URL(url, window.location.origin);
     u.searchParams.set("embed", "1");
     u.searchParams.set("lightbox", "1");
     return u.pathname + u.search;
-  }
-
-  function setLoaderProgress(p) {
-    const v = Math.round(Math.max(0, Math.min(1, p)) * 100);
-    if (loaderFill) loaderFill.style.width = `${v}%`;
-    if (loaderPct) loaderPct.textContent = `${v}%`;
   }
 
   function startLoaderAnim() {
@@ -693,7 +743,7 @@ function initDemoLightbox() {
     const tick = () => {
       if (!open) return;
       const elapsed = performance.now() - loaderStarted;
-      const soft = Math.min(0.88, elapsed / 1600);
+      const soft = Math.min(0.99, elapsed / 1600);
       setLoaderProgress(soft);
       loaderRaf = requestAnimationFrame(tick);
     };
@@ -748,6 +798,7 @@ function initDemoLightbox() {
 
   function cleanupOpen() {
     stopLoaderAnim();
+    stopWaitingRotate();
     if (onMessage) {
       window.removeEventListener("message", onMessage);
       onMessage = null;
@@ -809,7 +860,7 @@ function initDemoLightbox() {
       if (e.source !== iframe.contentWindow) return;
       const type = e.data && e.data.type;
       if (type === "dwf:progress") {
-        setLoaderProgress(Math.max(0.35, performance.now() - loaderStarted > 400 ? 0.62 : 0.35));
+        setLoaderProgress(Math.max(0.75, performance.now() - loaderStarted > 600 ? 0.99 : 0.75));
       }
       if (type === "dwf:ready") finish();
     };
