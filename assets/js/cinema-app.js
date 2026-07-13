@@ -727,8 +727,8 @@ function initWorkRoller() {
       if (!liveLogical.has(idx)) lazyLogical.add(idx);
     });
 
-    liveLogical.forEach((idx) => prefetchMp4(cards[idx]?.querySelector("video.ws-embed-preview")?.getAttribute("data-src"));
-    lazyLogical.forEach((idx) => prefetchMp4(cards[idx]?.querySelector("video.ws-embed-preview")?.getAttribute("data-src"));
+    liveLogical.forEach((idx) => prefetchMp4(cards[idx]?.querySelector("video.ws-embed-preview")?.getAttribute("data-src")));
+    lazyLogical.forEach((idx) => prefetchMp4(cards[idx]?.querySelector("video.ws-embed-preview")?.getAttribute("data-src")));
 
     cards.forEach((card, i) => {
       const v = videoFor(card);
