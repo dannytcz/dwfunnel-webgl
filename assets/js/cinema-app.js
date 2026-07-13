@@ -792,7 +792,7 @@ function initDemoLightbox() {
     const tick = () => {
       if (!open) return;
       const elapsed = performance.now() - loaderStarted;
-      const soft = Math.min(0.99, elapsed / 1600);
+      const soft = Math.min(0.99, elapsed / 850);
       setLoaderProgress(soft);
       loaderRaf = requestAnimationFrame(tick);
     };
@@ -921,16 +921,23 @@ function initDemoLightbox() {
       revealIframe();
     };
 
+    const onIframeLoad = () => {
+      if (!open || revealed) return;
+      setLoaderProgress(0.99);
+      window.setTimeout(finish, 120);
+    };
+
     onMessage = (e) => {
       if (e.source !== iframe.contentWindow) return;
       const type = e.data && e.data.type;
       if (type === "dwf:progress") {
-        setLoaderProgress(Math.max(0.75, performance.now() - loaderStarted > 600 ? 0.99 : 0.75));
+        setLoaderProgress(Math.max(0.7, performance.now() - loaderStarted > 350 ? 0.96 : 0.7));
       }
-      if (type === "dwf:ready") finish();
+      if (type === "dwf:ready") onIframeLoad();
     };
     window.addEventListener("message", onMessage);
-    readyTimer = window.setTimeout(finish, 6500);
+    readyTimer = window.setTimeout(finish, 2800);
+    iframe.addEventListener("load", onIframeLoad, { once: true });
 
     iframe.src = buildLightboxUrl(url);
     requestAnimationFrame(() => frame.focus());

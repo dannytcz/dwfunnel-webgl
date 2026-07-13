@@ -37,7 +37,7 @@
       html { scroll-behavior: auto; }
     }
   </style>
-  <script src="/assets/js/dwf-loader.js?v=20"></script>
+  <script src="/assets/js/dwf-loader.js?v=21"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -350,6 +350,19 @@
       });
       const isMobile = useIsMobile();
 
+      useEffect(() => {
+        const q = new URLSearchParams(window.location.search);
+        if (!q.has('lightbox')) return;
+        const reset = () => {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        };
+        reset();
+        const t = window.setTimeout(reset, 120);
+        return () => window.clearTimeout(t);
+      }, []);
+
       const section1Ref = useRef(null);
       const section2Ref = useRef(null);
       const s1Cards = useRef([]);
@@ -532,7 +545,14 @@
   <script>
   (function(){
     if(!new URLSearchParams(location.search).has('embed')) return;
-  if(new URLSearchParams(location.search).has('lightbox'))return;
+    var q = new URLSearchParams(location.search);
+    if(q.has('lightbox')) {
+      try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      return;
+    }
     var st=document.createElement('style');
     st.textContent='::-webkit-scrollbar{width:0;height:0;display:none}html{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:auto!important}';
     document.head.appendChild(st);

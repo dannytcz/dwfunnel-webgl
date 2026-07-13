@@ -23,17 +23,19 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1, thebrew: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
   var LIGHTBOX_CINEMATIC_HALF = 10000;
   var LIGHTBOX_CINEMATIC_HALF_UNWRITTEN = 13200;
   var LIGHTBOX_SCROLL_OPTS = {
-    aurelia: { cycle: 60480 },
+    aurelia: { cycle: 78624 },
     auren: { startDelay: 8000, cycle: 54600 },
     alzer: { startDelayAfterIntro: 4000, cycle: 30000 },
     stretch: { cycle: 40000 },
     liontech: { cycle: 40000 },
+    harbour: { cycle: 28000, startDelay: 900 },
+    thebrew: { heroOnly: true, cycle: 36000, startDelay: 900 },
   };
 
   function notifyParent(type) {
@@ -50,13 +52,22 @@
     html.classList.add("is-embed");
     if (lightbox) html.classList.add("is-lightbox");
     var m = location.pathname.match(/\/demos\/([^/.]+)/);
-    if (m) html.setAttribute("data-dwf-demo", m[1]);
+    var slug = m ? m[1] : "";
+    if (m) html.setAttribute("data-dwf-demo", slug);
+    if (
+      lightbox &&
+      !LIGHTBOX_NO_SCROLL[slug] &&
+      !LIGHTBOX_CINEMATIC[slug] &&
+      !LIGHTBOX_PAGE_SCROLL[slug]
+    ) {
+      html.classList.add("is-scroll");
+    }
 
     if (!document.getElementById("dwf-embed-css")) {
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=17";
+      link.href = "/assets/css/dwf-embed.css?v=18";
       (document.head || html).appendChild(link);
     }
   }
@@ -100,6 +111,10 @@
     if (LIGHTBOX_NO_SCROLL[demo] || LIGHTBOX_PAGE_SCROLL[demo] || LIGHTBOX_CINEMATIC[demo]) return;
     if (document.getElementById("dwf-embed-autoscroll")) return;
     window.__DWF_AUTOSCROLL__ = true;
+
+    try {
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    } catch (e) {}
 
     var opts = LIGHTBOX_SCROLL_OPTS[demo] || {};
     var scrollCap = 1;
@@ -156,11 +171,18 @@
     }
 
     function start() {
+      setScrollY(0);
+      currentY = 0;
+      startedAt = 0;
+      lastNow = 0;
       window.requestAnimationFrame(tick);
     }
 
     function scheduleStart() {
+      setScrollY(0);
+      currentY = 0;
       var delay = opts.startDelay || 2200;
+      if (lightbox) delay = Math.max(delay, 500);
       if (opts.startDelayAfterIntro) {
         var started = false;
         function go() {
@@ -181,6 +203,18 @@
   }
   setupCinematicLightbox();
   setupLightboxAutoscroll();
+
+  if (embed) {
+    function emitReady() {
+      window.dispatchEvent(new CustomEvent("dwf:ready"));
+      notifyParent("dwf:ready");
+    }
+    function scheduleReady() {
+      window.setTimeout(emitReady, lightbox ? 180 : 60);
+    }
+    if (document.readyState === "complete") scheduleReady();
+    else window.addEventListener("load", scheduleReady, { once: true });
+  }
 
   function ensureMeta(name, content) {
     var el = document.querySelector('meta[name="' + name + '"]');
