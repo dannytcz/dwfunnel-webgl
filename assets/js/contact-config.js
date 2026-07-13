@@ -11,5 +11,5 @@ export const CONTACT_CONFIG = {
    * Set to your API route, webhook, or CRM endpoint when ready.
    * Example: "/api/build-request"
    */
-  buildRequestEndpoint: null,
+  buildRequestEndpoint: "/api/build-request",
 };
