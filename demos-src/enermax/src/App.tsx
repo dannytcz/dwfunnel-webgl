@@ -11,6 +11,9 @@ export default function App() {
   const bgBackRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
 
+  const isDarkRef = useRef(isDark);
+  isDarkRef.current = isDark;
+
   useEffect(() => {
     if (isDark) {
       document.body.classList.remove("light-theme");
@@ -25,8 +28,29 @@ export default function App() {
     if (bgBackRef.current) bgBackRef.current.style.backgroundImage = darkUrl;
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shouldLoop =
+      params.has("preview") || (params.has("embed") && !params.has("lightbox"));
+    if (!shouldLoop) return;
+
+    let onDark = true;
+    let timer = 0;
+    const LOOP_MS = 3800;
+    const START_DELAY = 1600;
+
+    const flip = () => {
+      onDark = !onDark;
+      toggleTheme(onDark);
+      timer = window.setTimeout(flip, LOOP_MS);
+    };
+
+    timer = window.setTimeout(flip, START_DELAY);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   function toggleTheme(toDark: boolean) {
-    if (isDark === toDark || animatingRef.current) return;
+    if (isDarkRef.current === toDark || animatingRef.current) return;
 
     const targetImg = toDark ? DARK_IMG : LIGHT_IMG;
     const bgFront = bgFrontRef.current;
