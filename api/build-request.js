@@ -3,7 +3,7 @@ import { buildEmailHtml, buildEmailText } from "./lib/email-template.js";
 const BUDGET_OPTIONS = new Set(["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"]);
 const TRAFFIC_OPTIONS = new Set(["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"]);
 const TO_EMAIL = process.env.BUILD_REQUEST_TO_EMAIL || "drdannytan@gmail.com";
-const FROM_EMAIL = process.env.RESEND_FROM || "DW Funnel <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.RESEND_FROM || "DW Funnel <build@deedaptech.com>";
 
 function json(res, status, body) {
   res.statusCode = status;
