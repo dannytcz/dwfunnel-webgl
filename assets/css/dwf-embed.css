@@ -77,7 +77,62 @@ html[data-dwf-demo="kanevoss"].is-lightbox .marquee-track {
 }
 
 html[data-dwf-demo="kanevoss"].is-lightbox .hero-image-wrap {
-  height: 58vh !important;
+  height: 70vh !important;
+}
+
+html[data-dwf-demo="kanevoss"].is-lightbox .hero-image {
+  transform: scale(1.2);
+  transform-origin: center bottom;
+}
+
+/* —— Unwritten / Reverie: hero-only lightbox, no dead scroll —— */
+html[data-dwf-demo="unwritten"].is-lightbox #experience,
+html[data-dwf-demo="reverie"].is-lightbox #reverie {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="unwritten"].is-lightbox .viewport,
+html[data-dwf-demo="reverie"].is-lightbox .sticky {
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+html[data-dwf-demo="unwritten"].is-lightbox .scroll-cue {
+  display: none !important;
+}
+
+/* —— NewShift: allow document scroll for lightbox autoscroll —— */
+html[data-dwf-demo="newshift"].is-lightbox,
+html[data-dwf-demo="newshift"].is-lightbox body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100% !important;
+  scrollbar-width: none;
+}
+
+html[data-dwf-demo="newshift"].is-lightbox::-webkit-scrollbar,
+html[data-dwf-demo="newshift"].is-lightbox body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* —— Tarismo: sharper hero video in lightbox —— */
+html[data-dwf-demo="tarismo"].is-lightbox video {
+  transform: scale(1.04);
+  transform-origin: center center;
+  filter: contrast(1.04) saturate(1.03);
+}
+
+html[data-dwf-demo="tarismo"].is-lightbox .hero-video {
+  width: 104% !important;
+  height: 104% !important;
+  left: -2% !important;
+  top: -2% !important;
 }
 
 /* —— Petalform —— */

@@ -16,7 +16,15 @@
     lightbox = q.has("lightbox");
   } catch (e) {}
 
-  if (lightbox) window.__DWF_AUTOSCROLL__ = true;
+  if (lightbox) window.__DWF_LIGHTBOX__ = true;
+
+  function demoSlug() {
+    var m = location.pathname.match(/\/demos\/([^/.]+)/);
+    return m ? m[1] : "";
+  }
+
+  var LIGHTBOX_NO_SCROLL = { unwritten: 1, reverie: 1, kanevoss: 1 };
+  var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
 
   function notifyParent(type) {
     try {
@@ -38,7 +46,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=4";
+      link.href = "/assets/css/dwf-embed.css?v=5";
       (document.head || html).appendChild(link);
     }
   }
@@ -46,7 +54,10 @@
 
   function setupLightboxAutoscroll() {
     if (!lightbox || preview) return;
+    var demo = demoSlug();
+    if (LIGHTBOX_NO_SCROLL[demo] || LIGHTBOX_PAGE_SCROLL[demo]) return;
     if (document.getElementById("dwf-embed-autoscroll")) return;
+    window.__DWF_AUTOSCROLL__ = true;
 
     var CYCLE = 42000;
     var startedAt = 0;
