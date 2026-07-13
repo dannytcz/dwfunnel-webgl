@@ -330,4 +330,14 @@ export function initWorkRoller(appState) {
   }
 
   snapTo(activeIndex, 1, { immediate: true });
+
+  window.__workRollerResume = () => {
+    if (!workFocus) return;
+    liveIndices().forEach((i) => {
+      const v = videoFor(cards[i]);
+      if (!v) return;
+      if (v.getAttribute("src")) startPlay(v);
+      else attachVideo(i);
+    });
+  };
 }

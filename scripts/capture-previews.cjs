@@ -60,9 +60,40 @@ async function spin(page, sel) {
   } catch (e) {}
 }
 
+async function smoothOrbit(page, seconds) {
+  const cx = W * 0.5, cy = H * 0.48, rx = W * 0.26, ry = H * 0.22;
+  const steps = Math.max(56, Math.floor(seconds * 28));
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    await page.mouse.move(cx + Math.cos(t) * rx, cy + Math.sin(t) * ry, { steps: 10 });
+    await page.waitForTimeout(Math.floor((seconds * 1000) / steps));
+  }
+}
+async function waitVideo(p) {
+  try {
+    await p.waitForSelector('video', { timeout: 12000 });
+    await p.evaluate(() => {
+      const v = document.querySelector('video');
+      if (!v) return;
+      v.muted = true;
+      return v.play();
+    });
+    await hold(p, 1200);
+  } catch (e) {}
+}
+async function heroHold(p, ms) {
+  await waitVideo(p);
+  await sweep(p, 3);
+  await hold(p, ms);
+}
+
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
-  kanevoss: { url:'/demos/kanevoss.html?preview=1', wait:1200, trim:{start:1.2,dur:5}, posterAt:2.2, act: p => orbit(p, 7) },
+  kanevoss: { url:'/demos/kanevoss.html?embed=1&preview=1', wait:2200, trim:{start:3.5,dur:4}, posterAt:4.2, act: async p => {
+    await hold(p, 1000);
+    await smoothOrbit(p, 9);
+    await hold(p, 1500);
+  }},
   ecogreen: { url:'/demos/ecogreen.html?embed=1&preview=1', wait:4500, trim:{start:3.2,dur:5}, posterAt:3.0, act: async p => {
     try {
       await p.waitForSelector('video', { timeout: 12000 });
@@ -84,23 +115,46 @@ const RECIPES = {
   toybomb:  { url:'/demos/toybomb.html',             wait:1800, trim:{start:2.5,dur:6}, act: async p => { for (let i=0;i<3;i++){ await clickSel(p,'#nextButton'); await hold(p,1900);} } },
   harbour:  { url:'/demos/harbour.html?embed=1',     wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   aurelia:  { url:'/demos/aurelia.html',             wait:1500, trim:{start:3.5,dur:6}, act: p => hold(p,8000) },
-  auren:    { url:'/demos/auren.html?embed=1',       wait:1800, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
+  auren:    { url:'/demos/auren.html?embed=1&preview=1', wait:2800, trim:{start:2.5,dur:4}, posterAt:3.2, act: async p => {
+    await hold(p, 3500);
+    await sweep(p, 5);
+    await hold(p, 5000);
+  }},
   supabot:  { url:'/demos/supabot.html',             wait:2000, trim:{start:2.5,dur:6}, act: p => hold(p,6000) },
-  thebrew:  { url:'/demos/thebrew.html?embed=1',     wait:2000, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
+  thebrew:  { url:'/demos/thebrew.html?embed=1&preview=1', wait:2600, trim:{start:2.2,dur:4}, posterAt:3.0, act: p => heroHold(p, 7000) },
   unwritten:{ url:'/demos/unwritten.html?embed=1',  wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
-  kairo:    { url:'/demos/kairo.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
+  kairo:    { url:'/demos/kairo.html?embed=1&preview=1', wait:2400, trim:{start:2.0,dur:4}, posterAt:2.8, act: p => heroHold(p, 7500) },
   valence:  { url:'/demos/valence.html?embed=1',    wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
   elyra:    { url:'/demos/elyra.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
-  alzer:    { url:'/demos/alzer.html?embed=1',      wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  alzer:    { url:'/demos/alzer.html?embed=1&preview=1', wait:2800, trim:{start:2.5,dur:4}, posterAt:3.0, act: async p => {
+    await hold(p, 3000);
+    await sweep(p, 4);
+    await hold(p, 4500);
+  }},
   petalform:{ url:'/demos/petalform.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, viewport:{width:1680,height:1050}, act: p => hold(p,8000) },
   geneevo:  { url:'/demos/geneevo.html?embed=1',   wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
-  arcfield: { url:'/demos/arcfield.html?embed=1&preview=1', wait:3500, trim:{start:2.0,dur:6}, posterAt:1.5, act: p => hold(p,7000) },
+  arcfield: { url:'/demos/arcfield.html?embed=1&preview=1', wait:4000, trim:{start:3.0,dur:4}, posterAt:3.5, act: async p => {
+    await hold(p, 2500);
+    await sweep(p, 5);
+    await hold(p, 5500);
+  }},
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   lumenix:  { url:'/demos/lumenix.html?embed=1&preview=1', wait:3800, trim:{start:2.2,dur:6}, posterAt:1.8, act: p => hold(p,10000) },
-  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:4200, trim:{start:2.8,dur:6}, posterAt:2.4, act: p => hold(p,12000) },
+  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:3500, trim:{start:3.2,dur:4}, posterAt:3.8, act: async p => {
+    await hold(p, 2000);
+    for (let i = 0; i <= 16; i++) {
+      await p.evaluate((y) => window.scrollTo(0, y), Math.round((i / 16) * 500));
+      await hold(p, 180);
+    }
+    await hold(p, 4500);
+  }},
   stretch:  { url:'/demos/stretch.html?embed=1',  wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   webpal:   { url:'/demos/webpal.html?embed=1',   wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
-  picocore: { url:'/demos/picocore.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  picocore: { url:'/demos/picocore.html?embed=1&preview=1', wait:2600, trim:{start:2.2,dur:4}, posterAt:2.8, act: async p => {
+    await hold(p, 3000);
+    await sweep(p, 5);
+    await hold(p, 4500);
+  }},
   liontech:{ url:'/demos/liontech.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   enermax:  { url:'/demos/enermax.html?embed=1&preview=1', wait:3200, trim:{start:2.0,dur:6}, posterAt:2.2, act: p => hold(p,12000) },
@@ -159,7 +213,7 @@ const RECIPES = {
     const vfPoster = `scale=${SCALE}:force_original_aspect_ratio=increase,crop=${SCALE}`;
     execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start),'-t',String(dur),'-i',webm,
       '-vf',vf,'-an',
-      '-c:v','libx264','-crf',String(CRF),'-preset','slow','-pix_fmt','yuv420p','-movflags','+faststart', mp4]);
+      '-c:v','libx264','-crf',String(CRF),'-preset','medium','-tune','animation','-pix_fmt','yuv420p','-movflags','+faststart', mp4]);
     execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start + (r.posterAt || 0.5)),'-i',webm,
       '-vf',vfPoster,'-frames:v','1','-c:v','libwebp','-q:v','72', poster]);
     console.log(`[${key}] ${(fs.statSync(mp4).size/1024|0)}KB mp4 + poster`);
