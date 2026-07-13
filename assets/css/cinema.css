@@ -1819,10 +1819,10 @@ html.is-survey-open body {
 .section-title { font-size: clamp(2.8rem, 4vw, 4.1rem); }
 .split-copy h2 { font-size: clamp(2.8rem, 3.8vw, 4rem); }
 
-/* Conversion leak diagnostic schematic — problem section right column.
-   Stages span full width; each stage ends in a Yes/No fork junction.
+/* Conversion leak diagnostic — continuous spine, Yes ↓ / No → decisions.
    Default CSS state is fully visible; GSAP scrubs the reveal. */
 .leak-diagnostic {
+  --leak-spine: 0;
   grid-column: 2;
   position: relative;
   width: 100%;
@@ -1853,33 +1853,37 @@ html.is-survey-open body {
 .leak-wire {
   width: 1px;
   height: clamp(2.6rem, 5vh, 3.8rem);
-  margin: 0.65rem 0;
-  background: rgba(157, 147, 136, 0.55);
+  margin: 0;
+  background: rgba(157, 147, 136, 0.42);
   transform-origin: top center;
 }
 .leak-wire--loss1 {
-  background: repeating-linear-gradient(180deg, rgba(157, 147, 136, 0.46) 0 7px, transparent 7px 11px);
+  background: repeating-linear-gradient(180deg, rgba(157, 147, 136, 0.4) 0 7px, transparent 7px 11px);
 }
 .leak-wire--loss2 {
-  background: repeating-linear-gradient(180deg, rgba(157, 147, 136, 0.36) 0 5px, transparent 5px 11px);
+  background: repeating-linear-gradient(180deg, rgba(157, 147, 136, 0.32) 0 5px, transparent 5px 11px);
 }
 .leak-wire--loss3 {
-  background: repeating-linear-gradient(180deg, rgba(157, 147, 136, 0.28) 0 3px, transparent 3px 11px);
+  background: repeating-linear-gradient(180deg, rgba(157, 147, 136, 0.24) 0 3px, transparent 3px 11px);
 }
 .leak-stage {
   position: relative;
   min-width: 0;
-  padding: 1.35rem 1.25rem 0 1.75rem;
-  border-left: 1px solid var(--line);
 }
-.leak-stage::before {
+.leak-stage__body {
+  position: relative;
+  min-width: 0;
+  padding: 1.15rem 1.25rem 1.15rem 1.75rem;
+  border-left: 1px solid rgba(157, 147, 136, 0.38);
+}
+.leak-stage__body::before {
   content: "";
   position: absolute;
   left: 0;
   top: 0;
-  width: 18px;
+  width: 14px;
   height: 1px;
-  background: var(--line);
+  background: rgba(157, 147, 136, 0.45);
 }
 .leak-stage__label {
   display: block;
@@ -1906,92 +1910,69 @@ html.is-survey-open body {
   font-size: clamp(0.92rem, 1.1vw, 1.02rem);
   line-height: 1.62;
 }
-/* Yes/No fork — T-junction: Yes continues down, Leak exits right. */
-.leak-fork {
+
+/* Decision: No → right, then Yes ↓ continue. */
+.leak-decision {
   position: relative;
   display: grid;
-  grid-template-columns: 2.85rem minmax(0, 1fr);
-  align-items: start;
-  margin-top: 1.15rem;
-  margin-left: -1.75rem;
-  min-height: clamp(3.2rem, 5.5vh, 4.2rem);
+  grid-template-columns: 1px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 0;
   min-width: 0;
-  max-width: calc(100% + 1.75rem);
+  max-width: 100%;
 }
-.leak-fork__rail {
+.leak-decision__node {
+  grid-column: 1;
+  grid-row: 1;
   position: relative;
-  align-self: stretch;
-  min-height: inherit;
-}
-.leak-fork__node {
-  position: absolute;
-  left: -2px;
-  top: -2px;
-  z-index: 3;
+  z-index: 2;
   width: 5px;
   height: 5px;
-  border: 1px solid rgba(240, 74, 42, 0.85);
+  margin-left: -2px;
+  margin-top: -2px;
+  border: 1px solid rgba(240, 74, 42, 0.8);
   background: #0a0908;
   transform: rotate(45deg);
 }
-.leak-fork__down {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  height: 100%;
-  min-height: inherit;
-  margin: 0;
-  transform-origin: top center;
-}
-.leak-fork__yes {
-  position: absolute;
-  left: 0.7rem;
-  top: 52%;
-  z-index: 2;
-  color: rgba(157, 147, 136, 0.58);
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: translateY(-50%);
-}
-.leak-fork__exit {
+.leak-decision__no {
+  grid-column: 1 / -1;
+  grid-row: 1;
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin-top: -1px;
-  max-width: 22rem;
   min-width: 0;
+  padding-left: 0;
 }
-.leak-fork__svg {
-  flex: 0 0 clamp(4.5rem, 9vw, 7rem);
-  width: clamp(4.5rem, 9vw, 7rem);
+.leak-decision__branch {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: clamp(5.5rem, 18vw, 12rem);
+  max-width: min(18rem, 52%);
   height: 2px;
   overflow: visible;
   transform-origin: left center;
   pointer-events: none;
 }
-.leak-fork__branch {
+.leak-decision__branch path {
   stroke: var(--red);
   stroke-width: 1.35;
   stroke-opacity: 0.88;
   fill: none;
   vector-effect: non-scaling-stroke;
 }
-.leak-fork--2 .leak-fork__branch { stroke-opacity: 0.76; }
-.leak-fork--3 .leak-fork__branch { stroke-opacity: 0.64; }
-.leak-fork__leak {
+.leak-decision--2 .leak-decision__branch path { stroke-opacity: 0.76; }
+.leak-decision--3 .leak-decision__branch path { stroke-opacity: 0.64; }
+.leak-decision__label {
+  flex: 0 1 auto;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.25rem 0.4rem;
+  gap: 0.2rem 0.35rem;
   min-width: 0;
-  line-height: 1.2;
+  max-width: 12rem;
+  line-height: 1.25;
 }
-.leak-fork__leak i {
+.leak-decision__label i {
   color: var(--red);
   font-style: normal;
   font-family: var(--font-mono);
@@ -1999,61 +1980,85 @@ html.is-survey-open body {
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
-.leak-fork__leak i::after {
-  content: ":";
-  letter-spacing: 0;
+.leak-decision__label i::after {
+  content: " /";
+  letter-spacing: 0.08em;
 }
-.leak-fork__leak b {
+.leak-decision__label b {
   color: rgba(240, 74, 42, 0.92);
   font-weight: 400;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+.leak-decision__yes {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: clamp(2.8rem, 5vh, 3.8rem);
+  padding-top: 0.35rem;
+}
+.leak-decision__yes .leak-wire {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  min-height: inherit;
+}
+.leak-decision__yes-label {
+  position: relative;
+  z-index: 1;
+  margin: 0.55rem 0 0 0.7rem;
+  color: rgba(157, 147, 136, 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Schematic terminal — not a CTA button. */
 .leak-action {
   display: inline-flex;
   align-items: center;
-  gap: 0.85rem;
-  margin-top: 0.65rem;
-  padding: 0.95rem 1.65rem 0.95rem 1.25rem;
-  border: 1px solid var(--line-hot);
-  background:
-    linear-gradient(135deg, rgba(240, 74, 42, 0.16), transparent 52%),
-    rgba(10, 9, 8, 0.82);
-  box-shadow:
-    0 0 28px rgba(240, 74, 42, 0.14),
-    inset 0 1px 0 rgba(232, 223, 210, 0.07);
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0.15rem 0 0.2rem;
+  border: 0;
+  background: none;
+  box-shadow: none;
   pointer-events: none;
+  cursor: default;
   transform-origin: left center;
 }
 .leak-action__node {
-  margin-left: -2px;
+  margin-left: -5px;
   color: var(--red);
   font-family: var(--font-mono);
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   line-height: 1;
-  text-shadow: 0 0 12px rgba(240, 74, 42, 0.45);
+  text-shadow: none;
 }
 .leak-action__label {
   color: var(--ink);
   font-family: var(--font-tech);
-  font-size: clamp(0.82rem, 1.1vw, 0.92rem);
+  font-size: clamp(0.78rem, 1vw, 0.88rem);
   font-weight: 700;
   letter-spacing: 0.26em;
   text-transform: uppercase;
 }
 
 @media (min-width: 1100px) {
-  .leak-fork {
-    min-height: clamp(3.4rem, 6vh, 4.6rem);
+  .leak-decision__branch {
+    min-width: clamp(8rem, 22vw, 14rem);
+    max-width: min(20rem, 58%);
   }
-  .leak-fork__exit {
-    max-width: 24rem;
-  }
-  .leak-fork__svg {
-    flex-basis: clamp(5.5rem, 8vw, 8rem);
-    width: clamp(5.5rem, 8vw, 8rem);
+  .leak-decision__label {
+    max-width: 14rem;
   }
   .leak-stage__question {
     font-size: clamp(1.42rem, 1.9vw, 1.85rem);
@@ -2199,39 +2204,33 @@ html.is-survey-open body {
     padding-right: 0;
     overflow-x: clip;
   }
-  .leak-fork {
-    grid-template-columns: 2.35rem minmax(0, 1fr);
-    margin-left: -1.1rem;
-    max-width: calc(100% + 1.1rem);
-    min-height: 2.8rem;
-    margin-top: 0.85rem;
-  }
-  .leak-fork__rail {
-    min-height: 2.8rem;
-  }
-  .leak-fork__yes {
-    left: 0.55rem;
-    font-size: 0.52rem;
-    letter-spacing: 0.16em;
-  }
-  .leak-fork__exit {
-    max-width: min(16rem, 78%);
+  .leak-decision__no {
     gap: 0.4rem;
   }
-  .leak-fork__svg {
-    flex: 0 0 3.75rem;
-    width: 3.75rem;
+  .leak-decision__branch {
+    min-width: 3.5rem;
+    max-width: min(7.5rem, 42%);
   }
-  .leak-fork__leak i {
+  .leak-decision__label {
+    max-width: 9.5rem;
+  }
+  .leak-decision__label i {
     font-size: 0.54rem;
     letter-spacing: 0.12em;
   }
-  .leak-fork__leak b {
-    font-size: 0.58rem;
+  .leak-decision__label b {
+    font-size: 0.56rem;
     letter-spacing: 0.08em;
   }
-  .leak-stage {
-    padding: 1.15rem 0.25rem 0 1.1rem;
+  .leak-decision__yes {
+    min-height: 2.5rem;
+  }
+  .leak-decision__yes-label {
+    margin-left: 0.55rem;
+    font-size: 0.52rem;
+  }
+  .leak-stage__body {
+    padding: 1.05rem 0.25rem 1rem 1.1rem;
   }
   .leak-stage__question {
     text-wrap: pretty;
@@ -2247,7 +2246,6 @@ html.is-survey-open body {
   }
   .leak-action {
     max-width: 100%;
-    padding: 0.85rem 1.1rem 0.85rem 0.95rem;
   }
   .leak-action__label {
     letter-spacing: 0.18em;

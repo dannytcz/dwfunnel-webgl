@@ -1,14 +1,15 @@
 /**
- * Conversion leak diagnostic schematic — scroll-scrubbed signal path.
+ * Conversion leak diagnostic — scroll-scrubbed signal path.
  *
- * DOM order: traffic → wire → stage (with fork: down + branch) → … → action.
- * Each stage fork: Yes path draws down; Leak branch draws right.
+ * Sequence per stage: stage → No branch (right) → Yes label → Yes wire (down).
+ * Ends at ACTION terminal.
  */
 
 export function initConversionLeakSchematic({ reducedMotion = false, staticDraw = false } = {}) {
   const root = document.getElementById("leak-diagnostic");
   if (!root) return null;
 
+  // Reduced-motion / static: keep CSS-visible complete schematic.
   if (reducedMotion || staticDraw) return null;
 
   const gsap = window.gsap;
@@ -27,10 +28,11 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
 
   for (const el of items) {
     const kind = el.getAttribute("data-anim");
+
     if (kind === "wire") {
       tl.fromTo(el, { scaleY: 0 }, { scaleY: 1, duration: 0.5 });
     } else if (kind === "branch") {
-      const line = el.closest(".leak-fork")?.querySelector(".leak-fork__svg");
+      const line = el.closest(".leak-decision")?.querySelector(".leak-decision__branch");
       if (line) {
         tl.fromTo(
           line,
@@ -41,26 +43,32 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
       tl.fromTo(
         el,
         { autoAlpha: 0, x: -8 },
-        { autoAlpha: 1, x: 0, duration: 0.35, ease: "power1.out" },
+        { autoAlpha: 1, x: 0, duration: 0.35 },
         "-=0.12"
+      );
+    } else if (kind === "yes") {
+      tl.fromTo(
+        el,
+        { autoAlpha: 0, y: -4 },
+        { autoAlpha: 1, y: 0, duration: 0.28 }
       );
     } else if (kind === "stage") {
       tl.fromTo(
         el,
-        { autoAlpha: 0, y: 14 },
-        { autoAlpha: 1, y: 0, duration: 0.55, ease: "power1.out" }
+        { autoAlpha: 0, y: 12 },
+        { autoAlpha: 1, y: 0, duration: 0.5 }
       );
-    } else if (el.classList.contains("leak-action")) {
+    } else if (kind === "action") {
       tl.fromTo(
         el,
-        { autoAlpha: 0, scale: 0.94, y: 10 },
-        { autoAlpha: 1, scale: 1, y: 0, duration: 0.55, ease: "power2.out" }
+        { autoAlpha: 0, y: 8 },
+        { autoAlpha: 1, y: 0, duration: 0.45 }
       );
     } else {
       tl.fromTo(
         el,
         { autoAlpha: 0, y: 8 },
-        { autoAlpha: 1, y: 0, duration: 0.4, ease: "power1.out" }
+        { autoAlpha: 1, y: 0, duration: 0.35 }
       );
     }
   }
