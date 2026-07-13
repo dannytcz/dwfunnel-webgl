@@ -2021,13 +2021,13 @@ html.is-survey-open body {
   text-transform: uppercase;
 }
 
-/* Schematic terminal — not a CTA button. */
+/* Schematic terminal — neon endpoint, not a CTA button. */
 .leak-action {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  margin: 0;
-  padding: 0.15rem 0 0.2rem;
+  gap: 0.75rem;
+  margin: 0.15rem 0 0;
+  padding: 0.35rem 0.85rem 0.35rem 0.15rem;
   border: 0;
   background: none;
   box-shadow: none;
@@ -2036,20 +2036,29 @@ html.is-survey-open body {
   transform-origin: left center;
 }
 .leak-action__node {
-  margin-left: -5px;
-  color: var(--red);
+  margin-left: -4px;
+  color: #ff5a38;
   font-family: var(--font-mono);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   line-height: 1;
-  text-shadow: none;
+  text-shadow:
+    0 0 6px rgba(255, 90, 56, 0.95),
+    0 0 14px rgba(240, 74, 42, 0.85),
+    0 0 28px rgba(240, 74, 42, 0.55),
+    0 0 48px rgba(240, 74, 42, 0.28);
 }
 .leak-action__label {
-  color: var(--ink);
+  color: #ffe8e0;
   font-family: var(--font-tech);
-  font-size: clamp(0.78rem, 1vw, 0.88rem);
+  font-size: clamp(0.88rem, 1.15vw, 1.02rem);
   font-weight: 700;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
+  text-shadow:
+    0 0 8px rgba(255, 120, 90, 0.9),
+    0 0 18px rgba(240, 74, 42, 0.75),
+    0 0 36px rgba(240, 74, 42, 0.45),
+    0 0 64px rgba(240, 74, 42, 0.22);
 }
 
 @media (min-width: 1100px) {
