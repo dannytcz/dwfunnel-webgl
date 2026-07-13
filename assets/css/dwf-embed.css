@@ -20,14 +20,15 @@ html.is-embed.is-lightbox body {
 }
 
 html.is-embed .dwf-credit,
-html.is-embed .studio-badge {
+html.is-embed .studio-badge,
+html.is-embed .studio-badge strong {
   display: inline-flex !important;
   align-items: center;
   z-index: 2147482000 !important;
-  font-size: 0.625rem !important;
+  font-size: 0.75rem !important;
   line-height: 1.2 !important;
   letter-spacing: 0.05em !important;
-  padding: 0.5rem 0.75rem !important;
+  padding: 0.6rem 0.9rem !important;
 }
 
 /* —— Harbour Smile —— */

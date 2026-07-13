@@ -36,7 +36,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=2";
+      link.href = "/assets/css/dwf-embed.css?v=3";
       (document.head || html).appendChild(link);
     }
   }
@@ -79,7 +79,8 @@
       if (!style) {
         style = document.createElement("style");
         style.id = "dwf-credit-style";
-        style.textContent = ".dwf-credit,.studio-badge{z-index:2147482000}";
+        style.textContent =
+          ".dwf-credit,.studio-badge,.studio-badge strong{z-index:2147482000;font-size:0.75rem;line-height:1.2}";
         (document.head || document.documentElement).appendChild(style);
       }
 
@@ -110,8 +111,8 @@
         }
         a.style.cssText =
           "position:fixed;right:0.875rem;bottom:0.75rem;z-index:2147482000;" +
-          "font:600 0.625rem/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;" +
-          "text-decoration:none;background:rgba(0,0,0,.45);padding:0.5rem 0.75rem;" +
+          "font:600 0.75rem/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;" +
+          "text-decoration:none;background:rgba(0,0,0,.45);padding:0.6rem 0.9rem;" +
           "border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);" +
           "border-radius:999px";
         (document.body || document.documentElement).appendChild(a);
