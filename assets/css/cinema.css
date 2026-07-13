@@ -1769,7 +1769,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Scene 07 Verde: the clickable live beverage demo, real can floating in its world. */
 .work-card__link {
   display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
   color: inherit;
+  font: inherit;
+  text-align: left;
   text-decoration: none;
   cursor: pointer;
 }
@@ -1819,6 +1826,120 @@ html.is-work-focus .wall__track,
 html.is-work-focus .tech-marquee__group {
   animation-play-state: paused !important;
 }
+
+/* Studio Bench demo lightbox: in-page iframe preview, no new tab. */
+.demo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+.demo-lightbox[hidden] {
+  display: none !important;
+}
+.demo-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.82);
+  backdrop-filter: blur(10px);
+}
+.demo-lightbox__frame {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(80vw, 1320px);
+  height: min(80vh, 880px);
+  border: 1px solid rgba(232, 223, 210, 0.16);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a1210;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  outline: none;
+}
+.demo-lightbox__chrome {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem 0.85rem 1.1rem;
+  border-bottom: 1px solid rgba(232, 223, 210, 0.1);
+  background: linear-gradient(180deg, rgba(232, 223, 210, 0.06), rgba(232, 223, 210, 0.02));
+}
+.demo-lightbox__dots {
+  display: inline-flex;
+  gap: 0.38rem;
+}
+.demo-lightbox__dots i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: rgba(232, 223, 210, 0.28);
+}
+.demo-lightbox__dots i:first-child { background: #f04a2a; }
+.demo-lightbox__dots i:nth-child(2) { background: rgba(232, 223, 210, 0.45); }
+.demo-lightbox__dots i:nth-child(3) { background: rgba(232, 223, 210, 0.22); }
+.demo-lightbox__title {
+  margin: 0;
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(232, 223, 210, 0.78);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.demo-lightbox__close {
+  border: 1px solid rgba(232, 223, 210, 0.18);
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  background: rgba(5, 5, 5, 0.35);
+  color: rgba(232, 223, 210, 0.88);
+  font-family: var(--font-tech);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.demo-lightbox__close:hover {
+  border-color: rgba(240, 74, 42, 0.55);
+  color: #fff;
+}
+.demo-lightbox__viewport {
+  flex: 1;
+  min-height: 0;
+  background: #061018;
+}
+.demo-lightbox__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #061018;
+}
+html.is-demo-open {
+  overflow: hidden;
+}
+html.is-demo-open .webgl-atmosphere,
+html.is-demo-open .wall__track,
+html.is-demo-open .tech-marquee__group {
+  animation-play-state: paused !important;
+}
+@media (max-width: 720px) {
+  .demo-lightbox__frame {
+    width: min(94vw, 720px);
+    height: min(86vh, 720px);
+    border-radius: 12px;
+  }
+}
+
 .ws-embed-frame {
   position: absolute;
   top: 0;

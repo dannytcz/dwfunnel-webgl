@@ -8,7 +8,7 @@ You are taking over an in progress build. Read this whole file before touching a
 
 Live: **https://dwfunnel-webgl.vercel.app** (the root rewrites to `cinema.html`).
 
-The most active surface right now is the **Studio Bench** section (formerly Our Work / Selected Work), a grid of concept builds. Each card is a small looping video preview of a real, self hosted demo site, and clicking a card opens that live demo in a new tab. Live demos boot with a shared DW Funnel branded loader (`assets/js/dwf-loader.js`, skipped on `?embed=1`). Danny keeps sending purchased HTML templates that you "make ours" and add to the grid.
+The most active surface right now is the **Studio Bench** section (formerly Our Work / Selected Work), a grid of concept builds. Each card is a small looping video preview of a real, self hosted demo site, and clicking a card opens an in-page lightbox iframe (`?embed=1`). Live demos boot with a shared DW Funnel branded loader (`assets/js/dwf-loader.js`, skipped on `?embed=1`). Danny keeps sending purchased HTML templates that you "make ours" and add to the grid.
 
 ## 2. Environment and setup
 
@@ -61,21 +61,16 @@ Section meta is `005 / Studio Bench`, headline **Built On The Bench.**, class `.
 Each live card is:
 ```html
 <figure class="work-card">
-  <a class="work-card__link" href="/demos/<key>.html" target="_blank" rel="noopener" aria-label="Open the <Brand> live demo in a new tab">
-    <div class="work-card__screen ws--embed">
-      <span class="ws-chrome"><i></i><i></i><i></i></span>
-      <span class="work-card__live">Live site</span>
-      <video class="ws-embed-preview" poster="/assets/demos/previews/<key>-poster.webp"
-             data-src="/assets/demos/previews/<key>.mp4"
-             muted loop playsinline preload="none" width="960" height="600"
-             tabindex="-1" aria-hidden="true"></video>
-    </div>
-  </a>
+  <button type="button" class="work-card__link" data-demo="/demos/<key>.html?embed=1" aria-label="Preview demo">
+    <div class="work-card__screen ws--embed">...</div>
+  </button>
   <figcaption><strong><Brand></strong><span>Sector &middot; Deliverable</span><em>One line hook.</em></figcaption>
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): getlayers-style **30fps H.264 preview mp4** per card (~960px, ~3–4s, `preload="none"`). While Studio Bench is on screen, **every visible card** plays together. `src` is only attached when a card is in view; offscreen cards unload back to poster. Three.js, scroll-scrub tickers, and the testimonial wall freeze via `html.is-work-focus` (we need this more than getlayers because the rest of cinema.html is heavier). Data-saver leaves posters forever. Animated WebP is not used in the grid.
+Click opens `#demo-lightbox` (~80vw / 80vh iframe). No new tab. `initDemoLightbox()` in `cinema-app.js`.
+
+Performance model (this is deliberate, keep it): getlayers-style **30fps H.264 preview mp4** per card. While Studio Bench is on screen, **every visible card** plays together. Lightbox pauses Lenis, scrub tickers, atmosphere, and grid previews while open.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum

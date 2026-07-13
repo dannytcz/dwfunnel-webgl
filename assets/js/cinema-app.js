@@ -654,6 +654,80 @@ function initWorkGrid() {
   vids.forEach((v) => cardIo.observe(v));
 }
 
+function initDemoLightbox() {
+  const root = document.getElementById("demo-lightbox");
+  const frame = root?.querySelector(".demo-lightbox__frame");
+  const iframe = root?.querySelector(".demo-lightbox__iframe");
+  const titleEl = root?.querySelector(".demo-lightbox__title");
+  if (!root || !frame || !iframe || !titleEl) return;
+
+  let lastFocus = null;
+  let open = false;
+
+  function pausePage() {
+    document.documentElement.classList.add("is-demo-open");
+    appState.lenis?.stop?.();
+    appState.atmosphere?.setPaused?.(true);
+    appState.scrubRecords.forEach((r) => r.scrubber.pauseTicker());
+    document.querySelectorAll("video.ws-embed-preview").forEach((v) => {
+      v.pause();
+    });
+  }
+  function resumePage() {
+    document.documentElement.classList.remove("is-demo-open");
+    appState.lenis?.start?.();
+    appState.atmosphere?.setPaused?.(false);
+    appState.scrubRecords.forEach((r) => {
+      if (r.section._scrubST?.isActive) r.scrubber.resumeTicker();
+    });
+    window.ScrollTrigger?.refresh?.();
+  }
+  function closeLightbox() {
+    if (!open) return;
+    open = false;
+    iframe.removeAttribute("src");
+    iframe.title = "Demo preview";
+    root.hidden = true;
+    root.setAttribute("aria-hidden", "true");
+    resumePage();
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    lastFocus = null;
+  }
+  function openLightbox(url, title) {
+    lastFocus = document.activeElement;
+    titleEl.textContent = title || "Studio preview";
+    iframe.title = title ? `${title} preview` : "Demo preview";
+    iframe.src = url;
+    root.hidden = false;
+    root.setAttribute("aria-hidden", "false");
+    open = true;
+    pausePage();
+    requestAnimationFrame(() => frame.focus());
+  }
+
+  document.querySelectorAll(".work-card__link[data-demo]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = btn.getAttribute("data-demo");
+      if (!url) return;
+      const card = btn.closest(".work-card");
+      const title = card?.querySelector("figcaption strong")?.textContent?.trim() || "Studio preview";
+      openLightbox(url, title);
+    });
+  });
+
+  root.querySelectorAll("[data-demo-close]").forEach((el) => {
+    el.addEventListener("click", closeLightbox);
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && open) {
+      e.preventDefault();
+      closeLightbox();
+    }
+  });
+}
+
 /* Method stack: earlier cards recede (scale + dim) as the next card slides
    over them, selling the physical pile. */
 function initMethodStack() {
@@ -800,6 +874,7 @@ async function init() {
     initFaq();
     initTestimonialWall();
     initWorkGrid();
+    initDemoLightbox();
     window.ScrollTrigger.refresh();
     return;
   }
@@ -818,8 +893,8 @@ async function init() {
   initFaq();
   initTestimonialWall();
   initWorkGrid();
-  // SplitText measures line boxes, so it must wait for Orbitron to load or
-  // lines get split at fallback-font widths and clip once the wide font lands.
+  initDemoLightbox();
+  // SplitText measures line boxes
   await document.fonts.ready;
   initAwardMotion();
   initMethodStack();
