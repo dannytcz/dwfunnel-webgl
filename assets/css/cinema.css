@@ -492,13 +492,227 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .scrub-copy--center { text-align: center; }
 
-/* Platform stack over the method scrub: quiet mono chips, revealed by beats. */
-.stack-note {
-  margin: 1.1rem auto 0;
+/* ---- 006 / Build Stack: cinematic environment routing overlay ---- */
+.stack-system {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.stack-scan {
+  position: absolute;
+  top: 7.5rem;
+  right: 2.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: right;
+  opacity: 0;
+}
+.stack-scan span {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(232, 223, 210, 0.38);
+}
+.stack-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.stack-route {
+  fill: none;
+  stroke: rgba(201, 68, 45, 0.55);
+  stroke-width: 0.18;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+.stack-system.is-routing .stack-route {
+  stroke: rgba(240, 74, 42, 0.72);
+}
+.stack-env {
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  opacity: 0;
+  transform: translate(-4px, 8px);
+  white-space: nowrap;
+}
+.stack-env__tick {
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(232, 223, 210, 0.45);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+.stack-env__label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(232, 223, 210, 0.72);
+  padding: 0.2rem 0.45rem 0.2rem 0;
+  border-left: 1px solid rgba(157, 147, 136, 0.45);
+}
+.stack-env__label i {
+  font-style: normal;
+  color: rgba(157, 147, 136, 0.55);
+}
+.stack-core {
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  text-align: center;
+}
+.stack-core__frame {
+  position: relative;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin: 0 auto 0.5rem;
+}
+.stack-core__frame span {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(240, 74, 42, 0.55);
+}
+.stack-core__frame span:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.stack-core__frame span:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.stack-core__frame span:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+.stack-core__frame span:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+.stack-core.is-active .stack-core__frame span {
+  border-color: rgba(240, 74, 42, 0.88);
+}
+.stack-core__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  white-space: nowrap;
+}
+.stack-conversion {
+  position: absolute;
+  left: 50%;
+  bottom: 5.5rem;
+  z-index: 4;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  opacity: 0;
+  max-width: calc(100vw - 3rem);
+}
+.stack-stage {
+  opacity: 0;
+  text-align: center;
+  padding: 0.55rem 0.7rem;
+  border-top: 1px solid rgba(157, 147, 136, 0.4);
+  border-bottom: 1px solid rgba(157, 147, 136, 0.4);
+  min-width: 4.8rem;
+}
+.stack-stage__name {
+  display: block;
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(232, 223, 210, 0.88);
+}
+.stack-stage__micro {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(157, 147, 136, 0.65);
+}
+.stack-conversion__sep {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(240, 74, 42, 0.65);
+  opacity: 0;
+}
+.stack-copy {
+  z-index: 5;
+}
+.stack-headline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+.stack-headline__line {
+  display: block;
+}
+.stack-support {
+  margin: 1.2rem auto 0;
   max-width: 42ch;
   font-size: 0.95rem;
-  color: rgba(234, 242, 246, 0.72);
+  line-height: 1.55;
+  color: rgba(232, 223, 210, 0.68);
 }
+.stack-deploy {
+  margin: 1rem auto 0;
+  max-width: 52ch;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  color: rgba(157, 147, 136, 0.55);
+}
+.scrub-act--method .scrub-stage::after {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(5, 5, 5, 0.02), rgba(5, 5, 5, 0.48) 72%),
+    linear-gradient(90deg, rgba(5, 5, 5, 0.72), rgba(5, 5, 5, 0.06) 46%, rgba(5, 5, 5, 0.68)),
+    linear-gradient(0deg, rgba(5, 5, 5, 0.78), transparent 24%, transparent 70%, rgba(5, 5, 5, 0.38));
+}
+.stack-system.is-resolved .stack-env,
+.stack-system.is-resolved .stack-route,
+.stack-system.is-resolved .stack-core {
+  opacity: 0 !important;
+}
+.stack-system.is-resolved .stack-conversion {
+  opacity: 1 !important;
+}
+.stack-system.is-resolved .stack-stage,
+.stack-system.is-resolved .stack-conversion__sep {
+  opacity: 1 !important;
+  transform: none !important;
+}
+.stack-system.is-static-mode .stack-env {
+  opacity: 0.48 !important;
+  transform: none !important;
+}
+.stack-system.is-static-mode .stack-route {
+  opacity: 0.22 !important;
+  stroke-dashoffset: 0 !important;
+}
+.stack-system.is-static-mode .stack-core {
+  opacity: 0.55 !important;
+}
+.stack-system.is-static-mode .stack-conversion,
+.stack-system.is-static-mode .stack-stage,
+.stack-system.is-static-mode .stack-conversion__sep {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 .scrub-support {
   margin: 1rem 0 0;
   max-width: 38rem;
@@ -509,27 +723,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .scrub-copy--center .scrub-support {
   margin-left: auto;
   margin-right: auto;
-}
-.stack-tags {
-  list-style: none;
-  margin: 1.4rem auto 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-  max-width: 640px;
-}
-.stack-tags li {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.45rem 0.9rem;
-  border: 1px solid rgba(216, 177, 92, 0.35);
-  border-radius: 999px;
-  color: rgba(234, 242, 246, 0.85);
-  background: rgba(5, 5, 5, 0.45);
 }
 .scrub-stat-row {
   position: absolute;
@@ -1538,6 +1731,62 @@ button, a { -webkit-tap-highlight-color: transparent; }
     margin-left: 0;
     text-align: center;
   }
+  .stack-conversion {
+    flex-direction: column;
+    bottom: 4.5rem;
+    gap: 0;
+    align-items: stretch;
+    width: min(12rem, calc(100vw - 2.4rem));
+  }
+  .stack-conversion__sep {
+    display: block;
+    text-align: center;
+    padding: 0.15rem 0;
+    transform: none;
+    font-size: 0;
+  }
+  .stack-conversion__sep::before {
+    content: "↓";
+    font-size: 0.65rem;
+    color: rgba(240, 74, 42, 0.65);
+  }
+  .stack-stage {
+    min-width: 0;
+    width: 100%;
+  }
+  .stack-env {
+    font-size: 0.9em;
+  }
+  .stack-env[data-env="webflow"],
+  .stack-env[data-env="framer"],
+  .stack-env[data-env="kajabi"],
+  .stack-env[data-env="custom"] {
+    transform: translate(calc(-100% + 4px), 8px);
+  }
+  .stack-env[data-env="webflow"] .stack-env__label,
+  .stack-env[data-env="framer"] .stack-env__label,
+  .stack-env[data-env="kajabi"] .stack-env__label,
+  .stack-env[data-env="custom"] .stack-env__label {
+    border-left: 0;
+    border-right: 1px solid rgba(157, 147, 136, 0.45);
+    padding: 0.2rem 0 0.2rem 0.45rem;
+  }
+  .stack-core {
+    left: 50% !important;
+    top: 38% !important;
+  }
+  .stack-headline .mega-title,
+  .stack-headline {
+    font-size: 2.6rem;
+  }
+  .stack-support {
+    max-width: none;
+    padding: 0 0.2rem;
+  }
+  .stack-deploy {
+    max-width: none;
+    font-size: 0.52rem;
+  }
   .scrub-stat-row {
     left: 1.2rem;
     right: 1.2rem;
@@ -1589,6 +1838,29 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .glitch::before,
   .glitch::after {
     display: none;
+  }
+  .scrub-act--method .stack-system {
+    opacity: 1;
+  }
+  .scrub-act--method .stack-system.is-static-mode .stack-env {
+    opacity: 0.48 !important;
+    transform: none !important;
+  }
+  .scrub-act--method .stack-system.is-static-mode .stack-route {
+    opacity: 0.22 !important;
+  }
+  .scrub-act--method .stack-system.is-static-mode .stack-core {
+    opacity: 0.55 !important;
+  }
+  .scrub-act--method .stack-conversion,
+  .scrub-act--method .stack-stage,
+  .scrub-act--method .stack-conversion__sep {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .scrub-act--method [data-beat] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

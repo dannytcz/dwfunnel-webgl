@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=104" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=105" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -363,28 +363,59 @@
       </div>
     </section>
 
-    <section id="method" class="scrub-act scrub-act--method" data-scrub data-film-frames="method" data-film-count="120" data-vh="200" aria-label="Method video scrub">
+    <section id="method" class="scrub-act scrub-act--method" data-scrub data-film-frames="method" data-film-count="120" data-vh="220" aria-label="Build stack video scrub">
       <div class="scrub-stage">
         <canvas class="scrub-canvas film-canvas" id="method-canvas" aria-hidden="true"></canvas>
       </div>
       <div class="scrub-hud">
         <span>006 / Build Stack</span>
-        <span>Strategy to launch</span>
+        <span>Environment routing</span>
       </div>
-      <div class="scrub-copy scrub-copy--center">
-        <p class="kicker" data-scramble data-beat="0.03,0.11">Not a template skin</p>
-        <h2 class="mega-title glitch" data-glitch="THE CREATOR STACK" data-beat="0.11,0.24">The Creator<br />Stack.</h2>
-        <p class="stack-note" data-beat="0.26,0.34">One conversion system, deployed on the stack you already run. Deployed across 8 platforms and counting.</p>
-        <ul class="stack-tags" aria-label="Platforms">
-          <li data-beat="0.36,0.42">GoHighLevel</li>
-          <li data-beat="0.42,0.48">ClickFunnels</li>
-          <li data-beat="0.48,0.54">Webflow</li>
-          <li data-beat="0.54,0.60">Framer</li>
-          <li data-beat="0.60,0.66">Shopify</li>
-          <li data-beat="0.66,0.72">Kajabi</li>
-          <li data-beat="0.72,0.78">WordPress</li>
-          <li data-beat="0.78,0.86">Custom Code</li>
-        </ul>
+      <div class="stack-system" id="stack-system" aria-hidden="true">
+        <div class="stack-scan" aria-hidden="true">
+          <span>System Scan</span>
+          <span>Environment Active</span>
+          <span>Build Context</span>
+        </div>
+        <svg class="stack-routes" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path class="stack-route" data-route="ghl" d="M10 22 L58 42" />
+          <path class="stack-route" data-route="webflow" d="M82 18 L58 42" />
+          <path class="stack-route" data-route="shopify" d="M8 46 L58 42" />
+          <path class="stack-route" data-route="framer" d="M86 34 L58 42" />
+          <path class="stack-route" data-route="clickfunnels" d="M14 66 L58 42" />
+          <path class="stack-route" data-route="kajabi" d="M88 50 L58 42" />
+          <path class="stack-route" data-route="wordpress" d="M20 76 L58 42" />
+          <path class="stack-route" data-route="custom" d="M84 70 L58 42" />
+        </svg>
+        <div class="stack-env" data-env="ghl" style="--sx:10%;--sy:22%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">GHL <i>/ ENV-01</i></span></div>
+        <div class="stack-env" data-env="webflow" style="--sx:82%;--sy:18%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">Webflow <i>/ ENV-02</i></span></div>
+        <div class="stack-env" data-env="shopify" style="--sx:8%;--sy:46%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">Shopify <i>/ ENV-03</i></span></div>
+        <div class="stack-env" data-env="framer" style="--sx:86%;--sy:34%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">Framer <i>/ ENV-04</i></span></div>
+        <div class="stack-env" data-env="clickfunnels" style="--sx:14%;--sy:66%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">ClickFunnels <i>/ ENV-05</i></span></div>
+        <div class="stack-env" data-env="kajabi" style="--sx:88%;--sy:50%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">Kajabi <i>/ ENV-06</i></span></div>
+        <div class="stack-env" data-env="wordpress" style="--sx:20%;--sy:76%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">WordPress <i>/ ENV-07</i></span></div>
+        <div class="stack-env" data-env="custom" style="--sx:84%;--sy:70%"><span class="stack-env__tick" aria-hidden="true"></span><span class="stack-env__label">Custom Code <i>/ ENV-08</i></span></div>
+        <div class="stack-core" style="--sx:58%;--sy:42%">
+          <div class="stack-core__frame" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <span class="stack-core__label">Core / Conversion Logic</span>
+        </div>
+        <div class="stack-conversion" aria-label="Conversion logic path">
+          <div class="stack-stage" data-stage="signal"><span class="stack-stage__name">Signal</span><span class="stack-stage__micro">Clear Offer</span></div>
+          <span class="stack-conversion__sep" aria-hidden="true">→</span>
+          <div class="stack-stage" data-stage="proof"><span class="stack-stage__name">Proof</span><span class="stack-stage__micro">Build Belief</span></div>
+          <span class="stack-conversion__sep" aria-hidden="true">→</span>
+          <div class="stack-stage" data-stage="action"><span class="stack-stage__name">Action</span><span class="stack-stage__micro">One Next Move</span></div>
+          <span class="stack-conversion__sep" aria-hidden="true">→</span>
+          <div class="stack-stage" data-stage="follow-up"><span class="stack-stage__name">Follow-Up</span><span class="stack-stage__micro">Stay In Motion</span></div>
+        </div>
+      </div>
+      <div class="scrub-copy scrub-copy--center stack-copy">
+        <h2 class="mega-title stack-headline">
+          <span class="stack-headline__line" data-beat="0.04,0.16">Your Stack.</span>
+          <span class="stack-headline__line stack-headline__line--engine glitch" data-glitch="OUR ENGINE." data-beat="0.48,0.58">Our Engine.</span>
+        </h2>
+        <p class="stack-support" data-beat="0.86,0.94">Whatever you already run, the job stays the same: make the offer clear, build belief, make the next move obvious, and follow up when they don't act.</p>
+        <p class="stack-deploy" data-beat="0.90,0.98">Deployed across GHL / ClickFunnels / Webflow / Framer / Shopify / Kajabi / WordPress / Custom Code</p>
       </div>
       <div class="scrub-progress" aria-hidden="true"><span></span></div>
     </section>
@@ -653,6 +684,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=102"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=103"></script>
 </body>
 </html>

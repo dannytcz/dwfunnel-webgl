@@ -1,5 +1,6 @@
 import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
 import { initBuildRequestForm } from "./build-request-form.js";
+import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=2";
 
 const SECTION_DECODE_W = 900;
@@ -351,10 +352,22 @@ function setStaticAct(section) {
   const filmKey = section.dataset.filmFrames;
   let url = "";
   if (cdnKey) url = window.DWF_CDN?.acts?.[cdnKey]?.[0] || "";
-  if (filmKey) url = `assets/frames/sections/${filmKey}/frame_00001.webp`;
+  else if (filmKey) {
+    url =
+      section.id === "method"
+        ? `assets/frames/sections/${filmKey}/frame_00090.webp`
+        : `assets/frames/sections/${filmKey}/frame_00001.webp`;
+  }
   if (stage && url) stage.style.backgroundImage = `url(${url})`;
   canvas?.classList.remove("is-active");
   section.classList.add("is-static");
+  if (section.id === "method") {
+    initBuildStackStatic(section);
+    section.querySelectorAll("[data-beat]").forEach((el) => {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+    });
+  }
 }
 
 function buildUrls(section, { mobile = false } = {}) {
@@ -374,7 +387,7 @@ function hideHeroPoster() {
   document.getElementById("hero-poster")?.classList.add("is-hidden");
 }
 
-function initScrub(section, { loader, eager = false, mobile = false } = {}) {
+function initScrub(section, { loader, eager = false, mobile = false, onProgress } = {}) {
   const stage = section.querySelector(".scrub-stage");
   const canvas = section.querySelector(".scrub-canvas");
   const urls = buildUrls(section, { mobile });
@@ -494,6 +507,7 @@ function initScrub(section, { loader, eager = false, mobile = false } = {}) {
         frameCounter.textContent = `FR ${String(frame + 1).padStart(3, "0")}`;
       }
       applyBeats(p);
+      onProgress?.(p, self);
       appState.atmosphere?.setIntensity(isHero ? p : 0.45 + p * 0.35);
     },
   });
@@ -1049,7 +1063,16 @@ async function init() {
 
   initThreeAtmosphere({ reduced, mobile, saveData });
   const hero = document.getElementById("hero-pin");
-  sections.forEach((section) => initScrub(section, { loader, eager: section === hero, mobile }));
+  const methodSection = document.getElementById("method");
+  const stackOverlay = methodSection ? initBuildStackOverlay(methodSection, { reducedMotion: reduced }) : null;
+  sections.forEach((section) =>
+    initScrub(section, {
+      loader,
+      eager: section === hero,
+      mobile,
+      onProgress: section === methodSection && stackOverlay ? (p) => stackOverlay.apply(p) : undefined,
+    })
+  );
 
   await loader.finish();
   const lenis = mobile ? null : initLenis(reduced);
