@@ -696,6 +696,7 @@ function initDemoLightbox() {
   let onMessage = null;
   let readyTimer = null;
   let scrollBlockers = null;
+  let revealed = false;
 
   function stopWaitingRotate() {
     if (!loaderRotateTimer) return;
@@ -716,6 +717,7 @@ function initDemoLightbox() {
   }
 
   function setLoaderProgress(p) {
+    if (revealed) return;
     const clamped = Math.max(0, Math.min(1, p));
     const v = Math.round(clamped * 100);
     if (loaderFill) loaderFill.style.width = `${v}%`;
@@ -810,20 +812,39 @@ function initDemoLightbox() {
   }
 
   function revealIframe() {
-    setLoaderProgress(1);
+    if (revealed) return;
+    revealed = true;
+    stopLoaderAnim();
+    stopWaitingRotate();
+    if (readyTimer) {
+      clearTimeout(readyTimer);
+      readyTimer = null;
+    }
+    if (onMessage) {
+      window.removeEventListener("message", onMessage);
+      onMessage = null;
+    }
     loader?.setAttribute("aria-busy", "false");
     loader?.classList.add("is-done");
     iframe.classList.remove("is-loading");
+  }
+
+  function resetLoaderUi() {
+    revealed = false;
     stopLoaderAnim();
-    window.setTimeout(() => {
-      loader?.classList.remove("is-done");
-    }, 600);
+    stopWaitingRotate();
+    loader?.classList.remove("is-done");
+    loader?.setAttribute("aria-busy", "true");
+    if (loaderFill) loaderFill.style.width = "0%";
+    if (loaderPct) loaderPct.textContent = "0%";
+    if (loaderStatus) loaderStatus.textContent = demoLoaderStatus(0);
   }
 
   function closeLightbox() {
     if (!open) return;
     open = false;
     cleanupOpen();
+    resetLoaderUi();
     iframe.removeAttribute("src");
     iframe.classList.add("is-loading");
     iframe.title = "Demo preview";
@@ -837,22 +858,19 @@ function initDemoLightbox() {
 
   function openLightbox(url, title) {
     cleanupOpen();
+    resetLoaderUi();
     lastFocus = document.activeElement;
     titleEl.textContent = title || "Studio preview";
     iframe.title = title ? `${title} preview` : "Demo preview";
     iframe.classList.add("is-loading");
-    loader?.setAttribute("aria-busy", "true");
-    loader?.classList.remove("is-done");
     root.hidden = false;
     root.setAttribute("aria-hidden", "false");
     open = true;
     pausePage();
     startLoaderAnim();
 
-    let revealed = false;
     const finish = () => {
       if (!open || revealed) return;
-      revealed = true;
       revealIframe();
     };
 
