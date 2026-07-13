@@ -28,16 +28,16 @@
         padding: 0.55rem 0.95rem;
         border-radius: 999px;
         background: transparent;
-        border: 1px solid rgba(0, 0, 0, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.55);
         text-decoration: none;
-        color: #111;
+        color: #fff;
         font: 600 0.65rem/1.2 Outfit, system-ui, sans-serif;
         letter-spacing: 0.05em;
         transition: color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
         pointer-events: auto;
       }
       .studio-badge strong {
-        color: #111;
+        color: #fff;
         font-size: 0.72rem;
         font-weight: 600;
       }
@@ -45,6 +45,17 @@
         display: none !important;
       }
       .studio-badge:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.85);
+      }
+      body.light-theme .studio-badge {
+        color: #111;
+        border-color: rgba(0, 0, 0, 0.78);
+      }
+      body.light-theme .studio-badge strong {
+        color: #111;
+      }
+      body.light-theme .studio-badge:hover {
         color: #000;
         border-color: #000;
       }
@@ -53,7 +64,7 @@
         display: none !important;
       }
     </style>
-    <script src="/assets/js/dwf-loader.js?v=29"></script>
+    <script src="/assets/js/dwf-loader.js?v=30"></script>
     <script type="module" crossorigin src="/assets/demos/enermax/build/index-Yr0KZPrL.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/demos/enermax/build/index-BzaW72S9.css" />
   </head>

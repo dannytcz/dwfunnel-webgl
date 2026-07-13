@@ -32,21 +32,24 @@ const checks = [
       await page.waitForTimeout(3500);
       const data = await page.evaluate(() => {
         const home = document.querySelector('#home');
-        const wedge = document.querySelector('.app-hero-wrapper > .absolute.bottom-0');
+        const html = document.documentElement;
         const rect = home?.getBoundingClientRect();
         const vh = window.innerHeight;
-        const bottomSample = document.elementFromPoint(window.innerWidth * 0.5, vh * 0.85);
         return {
           homeH: rect?.height || 0,
           vh,
           fill: rect ? rect.height / vh : 0,
-          wedgeDisplay: wedge ? getComputedStyle(wedge).display : 'missing',
-          bottomTag: bottomSample?.tagName || 'none',
-          bottomClass: bottomSample?.className || '',
+          isScroll: html.classList.contains('is-scroll'),
+          overflowY: getComputedStyle(html).overflowY,
+          maxY: Math.max(0, html.scrollHeight - vh),
         };
       });
       if (data.fill < 0.92) throw new Error(`home fill ${data.fill.toFixed(2)} < 0.92`);
-      if (data.wedgeDisplay !== 'none') throw new Error('black wedge still visible');
+      if (!data.isScroll) throw new Error('missing is-scroll class');
+      if (!['auto', 'scroll', 'overlay'].includes(data.overflowY)) {
+        throw new Error(`overflow-y locked: ${data.overflowY}`);
+      }
+      if (data.maxY < 200) throw new Error(`no scroll range: maxY=${data.maxY}`);
       return data;
     },
   },

@@ -87,19 +87,23 @@ const RECIPES = {
   liontech:{ url:'/demos/liontech.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   enermax:  { url:'/demos/enermax.html?embed=1&preview=1', wait:3200, trim:{start:2.0,dur:6}, posterAt:2.2, act: p => hold(p,12000) },
-  autonex:  { url:'/demos/autonex.html?embed=1',  wait:8000, trim:{start:7.5,dur:6}, posterAt:1.0, act: p => hold(p,10000) },
-  sable:    { url:'/demos/sable.html?embed=1', wait:2000, trim:{start:2.0,dur:7}, act: async p => {
-    await hold(p, 1800);
+  autonex:  { url:'/demos/autonex.html?embed=1&preview=1', wait:7000, trim:{start:6.5,dur:6}, posterAt:1.0, act: async p => {
+    // Sweep the cursor so the Spline robot arm visibly tracks it.
+    await hold(p, 1500);
+    await sweep(p, 6);
+    await hold(p, 1500);
+  }},
+  sable:    { url:'/demos/sable.html?embed=1&lightbox=1&preview=1', wait:2500, trim:{start:1.5,dur:6}, posterAt:0.8, act: async p => {
+    // Hold the lightbox-scaled hero so the trim lands on properly sized type.
+    await hold(p, 4500);
     await clickSel(p, '.sm-toggle');
-    await hold(p, 900);
-    // Our Fleet is usually the second menu item
+    await hold(p, 800);
     const fleet = p.locator('.sm-panel-itemList a, .sm-panel-itemList button, .staggered-menu-panel a, .staggered-menu-panel button').filter({ hasText: /Our Fleet/i });
-    if (await fleet.count()) { await fleet.first().click(); await hold(p, 2200); }
-    // hover middle vessel column
-    await p.mouse.move(720, 420);
-    await hold(p, 3500);
-    await p.mouse.move(1100, 420);
-    await hold(p, 2500);
+    if (await fleet.count()) { await fleet.first().click(); await hold(p, 1800); }
+    await p.mouse.move(720, 420, { steps: 12 });
+    await hold(p, 2000);
+    await p.mouse.move(1100, 420, { steps: 12 });
+    await hold(p, 1600);
   }},
 };
 
@@ -108,7 +112,8 @@ const RECIPES = {
   fs.mkdirSync(OUT, { recursive: true });
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'dwprev-'));
   const browser = await chromium.launch({
-    args: ['--autoplay-policy=no-user-gesture-required','--use-gl=angle','--use-angle=swiftshader','--enable-webgl','--ignore-gpu-blocklist']
+    channel: 'chrome',
+    args: ['--autoplay-policy=no-user-gesture-required','--ignore-gpu-blocklist']
   });
   for (const key of only) {
     const r = RECIPES[key]; if (!r) { console.log('no recipe:', key); continue; }
@@ -125,6 +130,8 @@ const RECIPES = {
     await page.waitForTimeout(r.wait);
     await r.act(page);
     const vid = page.video();
+    // Detach heavy WebGL pages before closing the video context.
+    try { await page.goto('about:blank', { waitUntil: 'domcontentloaded', timeout: 5000 }); } catch (e) {}
     await ctx.close();
     const webm = await vid.path();
     const mp4 = path.join(OUT, key + '.mp4');

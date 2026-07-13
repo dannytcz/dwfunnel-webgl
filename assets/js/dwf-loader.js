@@ -23,7 +23,7 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1, ecogreen: 1, enermax: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, ecogreen: 1, enermax: 1 };
   var LIGHTBOX_PAGE_SCROLL = {};
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
   var LIGHTBOX_CINEMATIC_HALF = 10000;
@@ -35,9 +35,10 @@
     stretch: { cycle: 40000 },
     liontech: { cycle: 40000 },
     harbour: { cycle: 28000, startDelay: 900 },
-    arcfield: { heroOnly: true, cycle: 39200, startDelay: 900 },
+    arcfield: { heroOnly: true, cycle: 78400, startDelay: 900 },
     thebrew: { cycle: 28000, startDelay: 1200 },
     lexis: { cycle: 46200 },
+    elyra: { cycle: 42000, startDelay: 1200 },
   };
 
   function notifyParent(type) {
@@ -69,7 +70,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=27";
+      link.href = "/assets/css/dwf-embed.css?v=28";
       (document.head || html).appendChild(link);
     }
   }

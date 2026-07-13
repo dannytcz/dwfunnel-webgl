@@ -226,19 +226,12 @@ html[data-dwf-demo="petalform"].is-lightbox .hero h1 {
 }
 
 /* —— Sable Yacht Club —— */
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[64px]"],
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[140px]"],
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="md:text-[140px]"] {
-  font-size: clamp(3.125rem, 8.125vw, 6rem) !important;
+html[data-dwf-demo="sable"].is-embed [class*="text-[64px]"],
+html[data-dwf-demo="sable"].is-embed [class*="text-[140px]"],
+html[data-dwf-demo="sable"].is-embed [class*="md:text-[140px]"] {
+  font-size: clamp(2.25rem, 4.6vw, 3.75rem) !important;
   line-height: 0.95 !important;
   margin-bottom: 0.35em !important;
-}
-
-html[data-dwf-demo="sable"].is-lightbox [class*="text-[64px]"],
-html[data-dwf-demo="sable"].is-lightbox [class*="text-[140px]"],
-html[data-dwf-demo="sable"].is-lightbox [class*="md:text-[140px]"] {
-  font-size: clamp(3.125rem, 8.125vw, 6rem) !important;
-  line-height: 0.95 !important;
 }
 
 html[data-dwf-demo="sable"].is-lightbox h1,
@@ -246,37 +239,20 @@ html[data-dwf-demo="sable"].is-lightbox h2 {
   letter-spacing: -0.02em !important;
 }
 
-html[data-dwf-demo="sable"].is-lightbox .text-lg,
-html[data-dwf-demo="sable"].is-lightbox .text-xl,
-html[data-dwf-demo="sable"].is-lightbox [class*="text-[18px]"],
-html[data-dwf-demo="sable"].is-lightbox [class*="text-[20px]"],
-html[data-dwf-demo="sable"].is-lightbox p[class*="text-[10px]"] {
+html[data-dwf-demo="sable"].is-embed .text-lg,
+html[data-dwf-demo="sable"].is-embed .text-xl,
+html[data-dwf-demo="sable"].is-embed [class*="text-[18px]"],
+html[data-dwf-demo="sable"].is-embed [class*="text-[20px]"],
+html[data-dwf-demo="sable"].is-embed p[class*="text-[10px]"] {
   font-size: 150% !important;
   line-height: 1.4 !important;
 }
 
-html[data-dwf-demo="sable"].is-lightbox header a,
-html[data-dwf-demo="sable"].is-lightbox header button,
-html[data-dwf-demo="sable"].is-lightbox nav a,
-html[data-dwf-demo="sable"].is-lightbox [class*="text-2xl"],
-html[data-dwf-demo="sable"].is-lightbox [class*="text-3xl"] {
-  font-size: 125% !important;
-}
-
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) .text-lg,
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) .text-xl,
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[18px]"],
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[20px]"],
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) p[class*="text-[10px]"] {
-  font-size: 150% !important;
-  line-height: 1.4 !important;
-}
-
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) header a,
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) header button,
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) nav a,
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-2xl"],
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-3xl"] {
+html[data-dwf-demo="sable"].is-embed header a,
+html[data-dwf-demo="sable"].is-embed header button,
+html[data-dwf-demo="sable"].is-embed nav a,
+html[data-dwf-demo="sable"].is-embed [class*="text-2xl"],
+html[data-dwf-demo="sable"].is-embed [class*="text-3xl"] {
   font-size: 125% !important;
 }
 
@@ -365,15 +341,24 @@ html[data-dwf-demo="geneevo"].is-lightbox .hero-content {
   padding-top: 0.5rem !important;
 }
 
-/* —— Elyra: lightbox matches embed preview —— */
+/* —— Elyra: lightbox scrolls the full page —— */
 html[data-dwf-demo="elyra"].is-embed.is-lightbox {
   font-size: clamp(11px, 0.95vw, 16px) !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox,
 html[data-dwf-demo="elyra"].is-lightbox body {
+  height: auto !important;
   min-height: 100% !important;
-  overflow: hidden !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #root {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow: visible !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home {
