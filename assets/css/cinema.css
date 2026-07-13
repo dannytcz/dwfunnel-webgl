@@ -2023,23 +2023,26 @@ html.is-survey-open body {
 
 /* Schematic terminal — neon endpoint, not a CTA button. */
 .leak-action {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 0.15rem 0 0;
-  padding: 0.35rem 0.85rem 0.35rem 0.15rem;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  margin: 0.55rem 0 0;
+  padding: 0.75rem 1rem;
   border: 0;
   background: none;
   box-shadow: none;
   pointer-events: none;
   cursor: default;
-  transform-origin: left center;
+  transform-origin: center center;
+  overflow: visible;
 }
 .leak-action__node {
-  margin-left: -4px;
+  flex-shrink: 0;
   color: #ff5a38;
   font-family: var(--font-mono);
-  font-size: 1.15rem;
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
   line-height: 1;
   text-shadow:
     0 0 6px rgba(255, 90, 56, 0.95),
@@ -2050,7 +2053,7 @@ html.is-survey-open body {
 .leak-action__label {
   color: #ffe8e0;
   font-family: var(--font-tech);
-  font-size: clamp(0.88rem, 1.15vw, 1.02rem);
+  font-size: clamp(1.25rem, 2.4vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -2255,9 +2258,11 @@ html.is-survey-open body {
   }
   .leak-action {
     max-width: 100%;
+    padding: 0.65rem 0.75rem;
   }
   .leak-action__label {
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
+    font-size: clamp(1.1rem, 5.5vw, 1.45rem);
   }
   .scrub-copy--left {
     margin-left: 0;
