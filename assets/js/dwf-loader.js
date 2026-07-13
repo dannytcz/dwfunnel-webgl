@@ -26,7 +26,7 @@
   var LIGHTBOX_NO_SCROLL = { kanevoss: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
-  var LIGHTBOX_CINEMATIC_CAP = 0.48;
+  var LIGHTBOX_CINEMATIC_HALF = 6000;
 
   function notifyParent(type) {
     try {
@@ -48,7 +48,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=10";
+      link.href = "/assets/css/dwf-embed.css?v=11";
       (document.head || html).appendChild(link);
     }
   }
@@ -61,11 +61,9 @@
     if (document.getElementById("dwf-embed-autoscroll")) return;
     window.__DWF_AUTOSCROLL__ = true;
 
-    var CAP = LIGHTBOX_CINEMATIC_CAP;
-    var CYCLE = 36000;
+    var HALF = LIGHTBOX_CINEMATIC_HALF;
+    var CYCLE = HALF * 2;
     var startedAt = 0;
-    var lastNow = 0;
-    var currentP = 0;
 
     function setProgress(p) {
       window.__DWF_CINEMATIC_P__ = p;
@@ -73,18 +71,10 @@
     }
 
     function tick(now) {
-      if (!startedAt) {
-        startedAt = now;
-        lastNow = now;
-      }
-      var dt = Math.min(48, Math.max(8, now - lastNow));
-      lastNow = now;
-      var t = ((now - startedAt) % CYCLE) / CYCLE;
-      var wave = (1 - Math.cos(t * Math.PI * 2)) / 2;
-      var targetP = wave * CAP;
-      var alpha = 1 - Math.exp(-2.6 * dt / 1000);
-      currentP += (targetP - currentP) * alpha;
-      setProgress(currentP);
+      if (!startedAt) startedAt = now;
+      var t = (now - startedAt) % CYCLE;
+      var p = t < HALF ? t / HALF : 1 - (t - HALF) / HALF;
+      setProgress(p);
       window.requestAnimationFrame(tick);
     }
 
