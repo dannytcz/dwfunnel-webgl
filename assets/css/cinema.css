@@ -2021,15 +2021,21 @@ html.is-survey-open body {
   text-transform: uppercase;
 }
 
-/* Schematic terminal — neon endpoint, not a CTA button. */
+/* Schematic terminal — page-centered neon endpoint, not a CTA. */
+.plain-section--leak .leak-action {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: auto;
+  max-width: 100%;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
 .leak-action {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  width: 100%;
   margin: 0.55rem 0 0;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
   border: 0;
   background: none;
   box-shadow: none;
@@ -2204,10 +2210,15 @@ html.is-survey-open body {
   }
   .plain-section--split .section-meta,
   .plain-section--split .split-copy,
-  .leak-diagnostic {
+  .leak-diagnostic,
+  .plain-section--leak .leak-action {
     grid-column: auto;
     margin-left: 0;
     margin-right: 0;
+  }
+  .plain-section--leak .leak-action {
+    justify-self: center;
+    margin-top: 1.75rem;
   }
   .leak-diagnostic {
     width: 100%;

@@ -2,7 +2,7 @@
  * Conversion leak diagnostic — scroll-scrubbed signal path.
  *
  * Sequence per stage: stage → No branch (right) → Yes label → Yes wire (down).
- * Ends at ACTION terminal.
+ * ACTION terminal sits page-centered below the split layout.
  */
 
 export function initConversionLeakSchematic({ reducedMotion = false, staticDraw = false } = {}) {
@@ -13,13 +13,17 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
   if (reducedMotion || staticDraw) return null;
 
   const gsap = window.gsap;
-  const items = Array.from(root.querySelectorAll("[data-anim]"));
+  const section = root.closest(".plain-section--leak") || root;
+  const items = [
+    ...root.querySelectorAll("[data-anim]"),
+    ...section.querySelectorAll(":scope > .leak-action[data-anim]"),
+  ];
   if (!items.length) return null;
 
   const tl = gsap.timeline({
     defaults: { ease: "none" },
     scrollTrigger: {
-      trigger: root,
+      trigger: section,
       start: "top 78%",
       end: "bottom 78%",
       scrub: 0.4,
@@ -61,8 +65,8 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
     } else if (kind === "action") {
       tl.fromTo(
         el,
-        { autoAlpha: 0, y: 8 },
-        { autoAlpha: 1, y: 0, duration: 0.45 }
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, y: 0, duration: 0.5 }
       );
     } else {
       tl.fromTo(
