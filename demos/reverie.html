@@ -277,7 +277,7 @@ function App() {
     useEffect(() => {
         let frame = 0;
         const updateScroll = () => {
-            if (window.__DWF_LIGHTBOX__ && typeof window.__DWF_CINEMATIC_P__ === 'number') {
+            if (typeof window.__DWF_CINEMATIC_P__ === 'number' && (window.__DWF_LIGHTBOX__ || new URLSearchParams(location.search).has('preview'))) {
                 scrollProgress.current = clamp(window.__DWF_CINEMATIC_P__, 0, 1);
                 return;
             }

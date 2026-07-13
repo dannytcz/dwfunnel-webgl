@@ -3283,6 +3283,10 @@ html.is-survey-open body {
 .ws-embed-preview.is-playing {
   opacity: 1;
 }
+.work-card__screen:has(.ws-embed-preview.is-playing) .ws-embed-poster {
+  opacity: 0;
+  visibility: hidden;
+}
 html.is-work-focus .ws-embed-preview {
   transform: translateZ(0);
   backface-visibility: hidden;

@@ -94,6 +94,17 @@ async function cinematicScroll(p, maxPx, seconds) {
     await hold(p, Math.floor((seconds * 1000) / steps));
   }
 }
+async function cinematicProgress(p, peak = 0.78, seconds = 7) {
+  const steps = Math.max(48, Math.floor(seconds * 24));
+  for (let i = 0; i <= steps; i++) {
+    const prog = (i / steps) * peak;
+    await p.evaluate((t) => {
+      window.__DWF_CINEMATIC_P__ = t;
+      window.dispatchEvent(new Event("dwf:cinematic"));
+    }, prog);
+    await hold(p, Math.floor((seconds * 1000) / steps));
+  }
+}
 
 async function carouselTicks(p, sel, ticks, intervalMs) {
   for (let i = 0; i < ticks; i++) {
@@ -170,18 +181,12 @@ const RECIPES = {
   }},
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   lumenix:  { url:'/demos/lumenix.html?embed=1&preview=1', wait:3800, trim:{start:2.2,dur:6}, posterAt:1.8, act: p => hold(p,10000) },
-  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:5500, trim:{start:3,dur:8}, posterAt:6.5, act: async p => {
-    await p.waitForSelector('#reverie h1', { timeout: 15000 }).catch(() => {});
-    await hold(p, 1800);
-    const max = await p.evaluate(() => {
-      const el = document.getElementById('reverie');
-      const docMax = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      if (!el) return Math.min(2200, docMax);
-      return Math.min(2400, Math.max(0, Math.min(docMax, el.offsetHeight * 0.45)));
-    });
-    await cinematicScroll(p, max, 7.5);
-    await sweep(p, 3);
-    await hold(p, 1200);
+  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:4500, trim:{start:8,dur:8}, posterAt:4, act: async p => {
+    await p.waitForSelector('#reverie', { state: 'attached', timeout: 15000 });
+    await hold(p, 3500);
+    await cinematicProgress(p, 0.82, 7);
+    await sweep(p, 4);
+    await hold(p, 500);
   }},
   stretch:  { url:'/demos/stretch.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.5, act: async p => {
     await waitVideo(p);
