@@ -4,7 +4,7 @@
  * Records a short looping clip of each live demo and encodes a smooth H.264
  * preview mp4 + static poster for the Selected Work grid in cinema.html.
  *
- * Model (getlayers.ai): dedicated preview.mp4 files, real 30fps H.264, about
+ * Model (getlayers.ai): dedicated preview.mp4 files, real 24fps H.264, about
  * 960px wide, proper bitrate. The grid plays ALL visible previews together.
  * Page smoothness comes from freezing Three.js while the gallery is focused,
  * not from starving frame rate or playing only one card.
@@ -17,7 +17,7 @@
  * Run all:   node scripts/capture-previews.cjs
  * Run some:  node scripts/capture-previews.cjs lexis,aurelia
  *
- * Output:    assets/demos/previews/<key>.mp4          ~960x600, 30fps, h264
+ * Output:    assets/demos/previews/<key>.mp4          ~960x600, 24fps, h264
  *            assets/demos/previews/<key>-poster.webp  static poster frame
  */
 const { chromium } = require('playwright');
@@ -30,9 +30,9 @@ const BASE = 'http://localhost:8768';
 const W = 1280, H = 800;
 const OUT = path.join(__dirname, '..', 'assets', 'demos', 'previews');
 const SCALE = '960:600';
-const FPS = 30;
+const FPS = 24;
 const MAX_DUR = 4;
-const CRF = 23;
+const CRF = 24;
 
 const hold = (p, ms) => p.waitForTimeout(ms);
 async function clickSel(p, sel) { try { const el = await p.$(sel); if (el) await el.click({ timeout: 800 }); } catch (e) {} }
