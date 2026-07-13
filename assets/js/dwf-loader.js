@@ -23,7 +23,7 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1, verde: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
   var LIGHTBOX_CINEMATIC_HALF = 10000;
@@ -36,6 +36,7 @@
     liontech: { cycle: 40000 },
     harbour: { cycle: 28000, startDelay: 900 },
     thebrew: { heroOnly: true, cycle: 36000, startDelay: 900 },
+    lexis: { cycle: 46200 },
   };
 
   function notifyParent(type) {
@@ -67,7 +68,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=18";
+      link.href = "/assets/css/dwf-embed.css?v=19";
       (document.head || html).appendChild(link);
     }
   }

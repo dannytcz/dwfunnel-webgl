@@ -408,7 +408,7 @@
         .is-embed:not(.is-lightbox) .berries-container,
         .is-embed:not(.is-lightbox) .leaves-container { display: none !important; }
     </style>
-  <script src="/assets/js/dwf-loader.js?v=7"></script>
+  <script src="/assets/js/dwf-loader.js?v=22"></script>
 </head>
 <body>
     <div id="bubbles-container"></div>
@@ -516,6 +516,7 @@
     </a>
 
     <script>
+        const dwfLightbox = new URLSearchParams(location.search).has('lightbox');
         const modelViewer = document.querySelector('#product-model');
         const berriesFG = document.querySelector('.berries-container');
         const leavesBG = document.querySelector('.leaves-container');
@@ -685,7 +686,16 @@
         allBerries.forEach(b => {
             b.dataset.rx = 0; b.dataset.ry = 0; b.dataset.angle = Math.random() * 360;
             b.dataset.baseX = 0; b.dataset.baseY = 0;
+            if (dwfLightbox) {
+                gsap.set(b, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, clearProps: 'transform' });
+                b.style.transform = 'none';
+            }
         });
+
+        if (dwfLightbox) {
+            berriesFG.style.transform = 'none';
+            leavesBG.style.transform = 'none';
+        }
 
         let mouse = { x: 0, y: 0, px: 0, py: 0 };
         let currentMouse = { x: 0, y: 0 };
@@ -703,6 +713,11 @@
             currentMouse.y += (mouse.y - currentMouse.y) * 0.05;
 
             modelViewer.cameraOrbit = `${(currentMouse.x * 40) + switchSpin}deg ${90 + (currentMouse.y * 20)}deg 380%`;
+
+            if (dwfLightbox) {
+                requestAnimationFrame(animate);
+                return;
+            }
 
             berriesFG.style.transform = `translate(${currentMouse.x * 60}px, ${currentMouse.y * 60}px)`;
             leavesBG.style.transform = `translate(${currentMouse.x * -15}px, ${currentMouse.y * -15}px)`;

@@ -31,6 +31,20 @@ html.is-embed.is-lightbox.is-scroll {
   height: 100% !important;
 }
 
+/* Hide scrollbars in lightbox embeds while keeping scroll behavior */
+html.is-embed.is-lightbox.is-scroll,
+html.is-embed.is-lightbox.is-scroll body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html.is-embed.is-lightbox.is-scroll::-webkit-scrollbar,
+html.is-embed.is-lightbox.is-scroll body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* Hero-fill lightboxes: percentage heights need a sized ancestor chain. */
 html[data-dwf-demo="thebrew"].is-lightbox #root,
 html[data-dwf-demo="elyra"].is-lightbox #root {
@@ -275,14 +289,32 @@ html[data-dwf-demo="newshift"].is-lightbox #home h1 {
 }
 
 /* —— Verde —— */
+html[data-dwf-demo="verde"].is-lightbox,
+html[data-dwf-demo="verde"].is-lightbox body {
+  height: 100% !important;
+  max-height: 100vh !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="verde"].is-lightbox .hero {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  padding-top: 4.5rem !important;
+}
+
 html[data-dwf-demo="verde"].is-lightbox .berries-container,
 html[data-dwf-demo="verde"].is-lightbox .leaves-container {
   display: block !important;
+  transform: none !important;
 }
 
 html[data-dwf-demo="verde"].is-lightbox .berry,
 html[data-dwf-demo="verde"].is-lightbox .leaf {
   display: block !important;
+  transform: none !important;
 }
 
 html[data-dwf-demo="verde"].is-lightbox model-viewer.berry,
@@ -290,6 +322,18 @@ html[data-dwf-demo="verde"].is-lightbox model-viewer.leaf {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
+html[data-dwf-demo="verde"].is-lightbox .main-product-3d {
+  width: min(72vw, 52rem) !important;
+  height: min(72vh, 40rem) !important;
+}
+
+html[data-dwf-demo="verde"].is-lightbox .b1 { top: 22% !important; left: 28% !important; width: 170px !important; height: 170px !important; }
+html[data-dwf-demo="verde"].is-lightbox .b2 { top: 58% !important; left: 40% !important; width: 90px !important; height: 90px !important; }
+html[data-dwf-demo="verde"].is-lightbox .b3 { top: 28% !important; left: 60% !important; width: 190px !important; height: 190px !important; }
+html[data-dwf-demo="verde"].is-lightbox .b4 { top: 14% !important; left: 46% !important; width: 120px !important; height: 120px !important; }
+html[data-dwf-demo="verde"].is-lightbox .b5 { top: 72% !important; left: 18% !important; width: 100px !important; height: 100px !important; }
+html[data-dwf-demo="verde"].is-lightbox .b6 { top: 42% !important; left: 72% !important; width: 150px !important; height: 150px !important; }
 
 /* —— Geneevo —— */
 html[data-dwf-demo="geneevo"].is-lightbox .hero-title {
@@ -325,14 +369,38 @@ html[data-dwf-demo="elyra"].is-lightbox #home {
   max-height: 100% !important;
   overflow: hidden !important;
   background: #fff !important;
+  position: relative !important;
+  display: block !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox section:not(#home) {
   display: none !important;
 }
 
-html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 {
+html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0.left-0,
+html[data-dwf-demo="elyra"].is-lightbox #home > .absolute.bottom-0.left-0.z-\[3\] {
   display: none !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home > .video-plus-darker {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: 50% !important;
+  height: 100% !important;
+  max-width: none !important;
+  opacity: 1 !important;
+  z-index: 1 !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home > .video-plus-darker video {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox h1 {
@@ -349,11 +417,15 @@ html[data-dwf-demo="elyra"].is-lightbox #root > div {
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home .relative.z-\[2\] {
+  position: relative !important;
+  width: 52% !important;
+  max-width: 52% !important;
   height: 100% !important;
-  min-height: 100% !important;
+  min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  flex: 1 1 auto !important;
+  z-index: 2 !important;
+  background: transparent !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main {
@@ -361,8 +433,10 @@ html[data-dwf-demo="elyra"].is-lightbox #home main {
   min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: space-between !important;
-  padding-bottom: 2.5rem !important;
+  justify-content: flex-start !important;
+  gap: 1.25rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 1.25rem !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
@@ -420,11 +494,21 @@ html[data-dwf-demo="thebrew"].is-lightbox .hero {
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-content {
-  width: min(100% - 2rem, 1100px) !important;
-  padding: 0 1rem 2.5rem !important;
+  width: min(100% - 2.5rem, 1100px) !important;
+  margin: 0 auto !important;
+  padding: 0 1.25rem 2.5rem !important;
   align-items: center !important;
-  transform: scale(1.25) !important;
-  transform-origin: center center !important;
+  transform: none !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero-copy {
+  max-width: 100% !important;
+  padding-left: 0.25rem !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero-kicker,
+html[data-dwf-demo="thebrew"].is-lightbox .hero-intro {
+  padding-left: 0.15rem !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero h1,
@@ -436,7 +520,7 @@ html[data-dwf-demo="thebrew"].is-lightbox .hero-line-inner {
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero h1 {
-  font-size: clamp(2.25rem, 5.5vw, 3.5rem) !important;
+  font-size: clamp(2.5rem, 6.2vw, 4rem) !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-intro {
@@ -470,7 +554,13 @@ html[data-dwf-demo="lumenix"].is-lightbox header nav > div {
 
 html[data-dwf-demo="lumenix"].is-lightbox header nav a {
   white-space: nowrap !important;
-  font-size: 0.78rem !important;
+  font-size: clamp(0.95rem, 1.35vw, 1.125rem) !important;
+}
+
+/* —— Valence —— */
+html[data-dwf-demo="valence"].is-lightbox .repost-button,
+html[data-dwf-demo="valence"].is-embed .repost-button {
+  display: none !important;
 }
 
 /* —— Autonex —— */
