@@ -160,7 +160,7 @@
 })();
 </script>
 
-  <script src="/assets/js/dwf-loader.js?v=11"></script>
+  <script src="/assets/js/dwf-loader.js?v=12"></script>
 </head>
 <body>
   <main id="experience">
@@ -242,10 +242,17 @@
       setTimeout(() => { document.querySelectorAll('.enter, .desktop-heading, .desktop-cards, .slider-dots, .scroll-cue').forEach(el=>el.classList.add('visible')); },600);
       setTimeout(() => { entranceDone=true; els.curtainL.style.transition='none'; els.curtainR.style.transition='none'; },2200);
 
+      function readProgress(){
+        if (window.__DWF_LIGHTBOX__ && typeof window.__DWF_CINEMATIC_P__ === 'number') {
+          return clamp(window.__DWF_CINEMATIC_P__, 0, 1);
+        }
+        const max=Math.max(1, els.experience.scrollHeight-innerHeight);
+        return clamp(scrollY/max,0,1);
+      }
+
       function updateProgress(){
         ticking=false;
-        const max=Math.max(1, els.experience.scrollHeight-innerHeight);
-        p=clamp(scrollY/max,0,1);
+        p=readProgress();
         const scene1Opacity=clamp(1-p/.22,0,1);
         const scene2Opacity=clamp((p-.68)/.16,0,1);
         els.scene1.style.opacity=scene1Opacity;
@@ -258,6 +265,7 @@
       }
       function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(updateProgress)}}
       addEventListener('scroll', onScroll, {passive:true}); addEventListener('resize', updateProgress);
+      addEventListener('dwf:cinematic', onScroll, {passive:true});
       addEventListener('mousemove', e=>{if(innerWidth<768)return;rawX=(e.clientX/innerWidth-.5)*2;rawY=(e.clientY/innerHeight-.5)*2}, {passive:true});
 
       function positionArcCards(){

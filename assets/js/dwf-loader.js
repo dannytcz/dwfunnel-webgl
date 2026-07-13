@@ -48,7 +48,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=7";
+      link.href = "/assets/css/dwf-embed.css?v=8";
       (document.head || html).appendChild(link);
     }
   }
@@ -67,23 +67,9 @@
     var lastNow = 0;
     var currentP = 0;
 
-    function scrollRoot() {
-      if (demo === "reverie") return document.getElementById("reverie");
-      if (demo === "unwritten") return document.getElementById("experience");
-      return null;
-    }
-
-    function scrollRange() {
-      var root = scrollRoot();
-      if (!root) return 0;
-      return Math.max(1, root.offsetHeight - window.innerHeight);
-    }
-
     function setProgress(p) {
-      var y = Math.max(0, p * scrollRange());
-      document.documentElement.scrollTop = y;
-      document.body.scrollTop = y;
-      window.dispatchEvent(new Event("scroll"));
+      window.__DWF_CINEMATIC_P__ = p;
+      window.dispatchEvent(new CustomEvent("dwf:cinematic", { detail: { p: p } }));
     }
 
     function tick(now) {

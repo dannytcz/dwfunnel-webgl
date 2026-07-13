@@ -164,7 +164,7 @@
   addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
 })();
 </script>
-  <script src="/assets/js/dwf-loader.js?v=11"></script>
+  <script src="/assets/js/dwf-loader.js?v=12"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -274,6 +274,10 @@ function App() {
     useEffect(() => {
         let frame = 0;
         const updateScroll = () => {
+            if (window.__DWF_LIGHTBOX__ && typeof window.__DWF_CINEMATIC_P__ === 'number') {
+                scrollProgress.current = clamp(window.__DWF_CINEMATIC_P__, 0, 1);
+                return;
+            }
             const root = rootRef.current;
             if (!root)
                 return;
@@ -327,6 +331,7 @@ function App() {
         };
         updateScroll();
         window.addEventListener('scroll', updateScroll, { passive: true });
+        window.addEventListener('dwf:cinematic', updateScroll, { passive: true });
         window.addEventListener('resize', updateScroll, { passive: true });
         window.addEventListener('pointermove', updatePointer, { passive: true });
         document.documentElement.addEventListener('mouseleave', resetPointer);
@@ -334,6 +339,7 @@ function App() {
         return () => {
             cancelAnimationFrame(frame);
             window.removeEventListener('scroll', updateScroll);
+            window.removeEventListener('dwf:cinematic', updateScroll);
             window.removeEventListener('resize', updateScroll);
             window.removeEventListener('pointermove', updatePointer);
             document.documentElement.removeEventListener('mouseleave', resetPointer);
