@@ -32,7 +32,7 @@ const OUT = path.join(__dirname, '..', 'assets', 'demos', 'previews');
 const SCALE = '960:600';
 const FPS = 24;
 const MAX_DUR = 4;
-const CRF = 24;
+const CRF = 21;
 
 const hold = (p, ms) => p.waitForTimeout(ms);
 async function clickSel(p, sel) { try { const el = await p.$(sel); if (el) await el.click({ timeout: 800 }); } catch (e) {} }
