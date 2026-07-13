@@ -591,10 +591,10 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: getlayers-style H.264 preview loops. Every visible card
-   plays together while Studio Bench is focused. src is attached only when a
-   card is visible (preload=none). Page chrome pauses under is-work-focus.
-   Autonex and Sable use live iframe embeds so copy typography can be tuned. */
+/* Selected Work grid: getlayers-style H.264 preview loops. Cap concurrent
+   decoders while Studio Bench is focused; rank by visibility. src attaches
+   only when a card is in the active set (preload=none). Page chrome pauses
+   under is-work-focus. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
@@ -606,11 +606,16 @@ function initWorkGrid() {
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
 
+  const mobile = window.matchMedia("(max-width: 899px)").matches;
+  const MAX_LIVE = mobile ? 3 : 5;
+  const MIN_VISIBLE_RATIO = 0.12;
   const visible = new Set();
+  const visibleRatios = new Map();
   const live = new Set();
   const playTimers = new WeakMap();
   let workFocus = false;
-  const PLAY_DELAY_MS = 150;
+  const PLAY_DELAY_MS = 120;
+  const PLAY_STAGGER_MS = 160;
 
   function stop(v) {
     if (!v) return;
@@ -631,11 +636,12 @@ function initWorkGrid() {
     }
     live.delete(v);
   }
-  function play(v) {
+  function play(v, staggerIndex = 0) {
     if (!v) return;
     const src = v.getAttribute("data-src");
     if (!src) return;
     if (playTimers.has(v)) return;
+    const delay = PLAY_DELAY_MS + staggerIndex * PLAY_STAGGER_MS;
     const timer = setTimeout(() => {
       playTimers.delete(v);
       if (!workFocus || !visible.has(v)) return;
@@ -650,7 +656,7 @@ function initWorkGrid() {
       }
       live.add(v);
       if (v.paused) v.play().catch(() => {});
-    }, PLAY_DELAY_MS);
+    }, delay);
     playTimers.set(v, timer);
   }
   function setScrubPaused(paused) {
@@ -658,6 +664,11 @@ function initWorkGrid() {
       if (paused) record.scrubber.pauseTicker();
       else if (record.section._scrubST?.isActive) record.scrubber.resumeTicker();
     });
+  }
+  function rankedVisible() {
+    return Array.from(visible).sort(
+      (a, b) => (visibleRatios.get(b) || 0) - (visibleRatios.get(a) || 0)
+    );
   }
   function setWorkFocus(on) {
     workFocus = on;
@@ -669,14 +680,7 @@ function initWorkGrid() {
   function syncLive() {
     if (!workFocus) {
       Array.from(live).forEach(stop);
-      vids.forEach((v) => {
-        const timer = playTimers.get(v);
-        if (timer) {
-          clearTimeout(timer);
-          playTimers.delete(v);
-        }
-      });
-      frames.forEach((v) => {
+      previews.forEach((v) => {
         const timer = playTimers.get(v);
         if (timer) {
           clearTimeout(timer);
@@ -685,14 +689,19 @@ function initWorkGrid() {
       });
       return;
     }
-    visible.forEach(play);
+    const ranked = rankedVisible();
+    const allowed = new Set(ranked.slice(0, MAX_LIVE));
+    ranked.forEach((v, i) => {
+      if (allowed.has(v)) play(v, i);
+      else if (live.has(v)) stop(v);
+    });
     live.forEach((v) => {
       if (!visible.has(v)) stop(v);
     });
   }
 
   if (!("IntersectionObserver" in window)) {
-    previews.forEach(play);
+    previews.slice(0, MAX_LIVE).forEach((v, i) => play(v, i));
     return;
   }
 
@@ -707,15 +716,19 @@ function initWorkGrid() {
   const cardIo = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) visible.add(e.target);
-        else {
+        const ratio = e.intersectionRatio;
+        if (e.isIntersecting && ratio >= MIN_VISIBLE_RATIO) {
+          visible.add(e.target);
+          visibleRatios.set(e.target, ratio);
+        } else {
           visible.delete(e.target);
+          visibleRatios.delete(e.target);
           stop(e.target);
         }
       });
       syncLive();
     },
-    { rootMargin: "100px 0px", threshold: 0.1 }
+    { rootMargin: "48px 0px", threshold: [0, 0.12, 0.25, 0.5, 0.75, 1] }
   );
   previews.forEach((v) => cardIo.observe(v));
 }

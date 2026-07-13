@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=135" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=136" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -389,13 +389,13 @@
             </figure>
             <figure class="work-card">
               <button type="button" class="work-card__link" data-demo="/demos/autonex.html?embed=1" aria-label="Preview demo">
-                <div class="work-card__screen ws--embed ws--autonex"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><iframe class="ws-embed-preview ws-embed-iframe" data-src="/demos/autonex.html?embed=1&preview=1" title="Autonex preview" tabindex="-1" loading="lazy"></iframe></div>
+                <div class="work-card__screen ws--embed"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><video class="ws-embed-preview" poster="/assets/demos/previews/autonex-poster.webp" data-src="/assets/demos/previews/autonex.mp4" muted loop playsinline preload="none" width="960" height="600" tabindex="-1" aria-hidden="true"></video></div>
               </button>
               <figcaption><strong>Autonex</strong><span>Industrial Automation &middot; Brand Hero</span><em>Sells industrial precision before the sales call.</em></figcaption>
             </figure>
             <figure class="work-card">
               <button type="button" class="work-card__link" data-demo="/demos/sable.html?embed=1" aria-label="Preview demo">
-                <div class="work-card__screen ws--embed ws--sable"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><iframe class="ws-embed-preview ws-embed-iframe" data-src="/demos/sable.html?embed=1&preview=1" title="Sable Yacht Club preview" tabindex="-1" loading="lazy"></iframe></div>
+                <div class="work-card__screen ws--embed"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><video class="ws-embed-preview" poster="/assets/demos/previews/sable-poster.webp" data-src="/assets/demos/previews/sable.mp4" muted loop playsinline preload="none" width="960" height="600" tabindex="-1" aria-hidden="true"></video></div>
               </button>
               <figcaption><strong>Sable Yacht Club</strong><span>Luxury Lifestyle &middot; Brand Hero</span><em>Turns ocean romance into a membership ask.</em></figcaption>
             </figure>
@@ -772,6 +772,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js" defer></script>
-  <script type="module" src="assets/js/cinema-app.js?v=119"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=120"></script>
 </body>
 </html>

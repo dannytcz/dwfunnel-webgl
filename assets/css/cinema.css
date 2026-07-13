@@ -2813,6 +2813,8 @@ html.is-survey-open body {
   .work-grid { grid-template-columns: 1fr; }
 }
 .work-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 380px;
   margin: 0;
   width: auto;
 }
@@ -3076,7 +3078,7 @@ html.is-survey-open body {
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
 /* Selected Work previews: getlayers-style H.264 loops (30fps preview mp4).
-   All visible cards play together while Studio Bench is focused. */
+   Up to five visible cards decode at once while Studio Bench is focused. */
 .ws--embed { background: #06110e; overflow: hidden; }
 .ws-embed-preview {
   position: absolute;
@@ -3088,19 +3090,11 @@ html.is-survey-open body {
   display: block;
   pointer-events: none;
 }
-.ws--autonex .ws-embed-iframe,
-.ws--sable .ws-embed-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 400%;
-  height: 400%;
-  border: 0;
-  transform: scale(0.25);
-  transform-origin: top left;
-  pointer-events: none;
+html.is-work-focus .ws-embed-preview {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
-/* Gallery focus: freeze continuous page chrome so many preview videos stay silky. */
+/* Gallery focus: freeze continuous page chrome so preview videos stay silky. */
 html.is-work-focus .webgl-atmosphere {
   opacity: 0 !important;
   visibility: hidden !important;
