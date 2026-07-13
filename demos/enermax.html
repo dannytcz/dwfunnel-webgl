@@ -19,56 +19,47 @@
     <style>
       .studio-badge {
         position: fixed;
-        left: 50%;
+        right: 1rem;
         bottom: 1rem;
+        left: auto;
         z-index: 2147482000;
-        display: flex;
-        flex-direction: column;
+        display: inline-flex;
         align-items: center;
-        gap: 0.15rem;
-        padding: 0.55rem 1rem;
+        padding: 0.55rem 0.95rem;
         border-radius: 999px;
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(0, 0, 0, 0.78);
         text-decoration: none;
-        color: rgba(255, 255, 255, 0.92);
+        color: #111;
         font: 600 0.65rem/1.2 Outfit, system-ui, sans-serif;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        transform: translateX(-50%);
-        transition: color 0.3s ease, border-color 0.3s ease;
+        letter-spacing: 0.05em;
+        transition: color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
         pointer-events: auto;
-        text-align: center;
-        max-width: calc(100% - 2rem);
       }
       .studio-badge strong {
-        color: #fff;
+        color: #111;
         font-size: 0.72rem;
+        font-weight: 600;
       }
       .studio-badge span {
-        font-size: 0.58rem;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        color: rgba(255, 255, 255, 0.72);
-        text-transform: none;
+        display: none !important;
       }
       .studio-badge:hover {
-        color: #fff;
-        border-color: #fff;
+        color: #000;
+        border-color: #000;
       }
       html.is-preview .studio-badge {
         display: none !important;
       }
     </style>
-    <script src="/assets/js/dwf-loader.js?v=28"></script>
-    <script type="module" crossorigin src="/assets/demos/enermax/build/index-DHxiuaBK.js"></script>
+    <script src="/assets/js/dwf-loader.js?v=29"></script>
+    <script type="module" crossorigin src="/assets/demos/enermax/build/index-cT1htWuD.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/demos/enermax/build/index-BzaW72S9.css" />
   </head>
   <body>
     <div id="root"></div>
     <a class="studio-badge" href="/" target="_blank" rel="noopener">
       <strong>Built by DW Funnel · © 2026</strong>
-      <span>See how we build pages like this</span>
     </a>
   </body>
 </html>

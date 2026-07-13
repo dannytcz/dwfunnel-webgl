@@ -338,18 +338,19 @@ html[data-dwf-demo="arcfield"].is-embed:not(.is-lightbox) #root > div {
 
 html[data-dwf-demo="arcfield"].is-lightbox,
 html[data-dwf-demo="arcfield"].is-lightbox body {
-  height: 100% !important;
-  max-height: 100vh !important;
+  height: auto !important;
   min-height: 100% !important;
-  overflow: hidden !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 
 html[data-dwf-demo="arcfield"].is-lightbox #root,
 html[data-dwf-demo="arcfield"].is-lightbox #root > div {
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: 100vh !important;
-  overflow: hidden !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 /* —— Geneevo —— */
@@ -364,15 +365,38 @@ html[data-dwf-demo="geneevo"].is-lightbox .hero-content {
   padding-top: 0.5rem !important;
 }
 
-/* —— Elyra: lightbox matches embed preview (no custom layout overrides) —— */
+/* —— Elyra: lightbox matches embed preview —— */
 html[data-dwf-demo="elyra"].is-embed.is-lightbox {
   font-size: clamp(11px, 0.95vw, 16px) !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox,
 html[data-dwf-demo="elyra"].is-lightbox body {
-  height: 100% !important;
+  min-height: 100% !important;
   overflow: hidden !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home {
+  min-height: 100vh !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home main {
+  padding-bottom: clamp(7.5rem, 17vh, 10.5rem) !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home main > div.flex.flex-col.gap-7 {
+  margin-top: auto !important;
+  margin-bottom: clamp(1.5rem, 4vh, 3rem) !important;
+  width: 100% !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
+  margin-right: 0 !important;
+  max-width: min(100%, 15rem) !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox .hero-description-group p {
+  max-width: 100% !important;
 }
 
 /* —— The Brew —— */

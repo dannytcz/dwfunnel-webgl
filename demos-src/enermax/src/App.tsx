@@ -61,7 +61,7 @@ export default function App() {
       <nav className="navbar">
         <div className="logo-container">
           <Zap className="logo" size={32} strokeWidth={2} />
-          <span className="brand-name">enermax</span>
+          <span className="brand-name">Enermax</span>
         </div>
 
         <div className={`nav-links${menuOpen ? " active" : ""}`}>
