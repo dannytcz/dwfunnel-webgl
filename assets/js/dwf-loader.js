@@ -44,30 +44,34 @@
 
   function setupLightboxAutoscroll() {
     if (!lightbox || preview) return;
-    if (document.getElementById("dwf-embed-autoscroll")) return;
-    var DUR = 22000;
-    var HOLD = 1200;
-    var phase = "down";
-    var anchor = null;
-    var holdUntil = 0;
-    function tick() {
-      var now = performance.now();
+    if (document.getElementById("dwf-embed-autoscroll") || window.__DWF_AUTOSCROLL__) return;
+    window.__DWF_AUTOSCROLL__ = true;
+
+    var CYCLE = 28000;
+    var scrollY = 0;
+    var startedAt = 0;
+    var raf = 0;
+
+    function tick(now) {
+      if (!startedAt) startedAt = now;
       var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      if (max < 8) return;
-      if (anchor === null) anchor = now;
-      if (now < holdUntil) return;
-      var t = Math.min((now - anchor) / DUR, 1);
-      var p = phase === "down" ? t : 1 - t;
-      window.scrollTo(0, p * max);
-      if (t >= 1) {
-        phase = phase === "down" ? "up" : "down";
-        anchor = now;
-        holdUntil = now + HOLD;
+      if (max < 8) {
+        raf = window.requestAnimationFrame(tick);
+        return;
       }
+      var t = ((now - startedAt) % CYCLE) / CYCLE;
+      var wave = (1 - Math.cos(t * Math.PI * 2)) / 2;
+      var targetY = wave * max;
+      scrollY += (targetY - scrollY) * 0.1;
+      window.scrollTo(0, scrollY);
+      raf = window.requestAnimationFrame(tick);
     }
+
     function start() {
-      window.setInterval(tick, 16);
+      if (raf) return;
+      raf = window.requestAnimationFrame(tick);
     }
+
     if (document.readyState === "complete") window.setTimeout(start, 1800);
     else window.addEventListener("load", function () { window.setTimeout(start, 1800); }, { once: true });
   }
