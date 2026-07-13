@@ -1,7 +1,7 @@
 /**
  * Conversion leak diagnostic schematic — scroll-scrubbed signal path.
  *
- * DOM order: traffic → wire → stage → gap (wire + leak) → … → action.
+ * DOM order: traffic → wire → stage → gap (wire + branch) → … → action.
  * Leak branches animate in the spine gaps between stages.
  */
 
@@ -30,11 +30,16 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
     if (kind === "wire") {
       tl.fromTo(el, { scaleY: 0 }, { scaleY: 1, duration: 0.5 });
     } else if (kind === "branch") {
-      const line = el.querySelector(".leak-branch__line");
-      const text = el.querySelector(".leak-branch__text");
-      tl.fromTo(line, { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.45 });
+      const line = el.closest(".leak-gap")?.querySelector(".leak-branch__line");
+      if (line) {
+        tl.fromTo(
+          line,
+          { scaleX: 0, transformOrigin: "left center" },
+          { scaleX: 1, duration: 0.45 }
+        );
+      }
       tl.fromTo(
-        text,
+        el,
         { autoAlpha: 0, x: -8 },
         { autoAlpha: 1, x: 0, duration: 0.35, ease: "power1.out" },
         "-=0.12"

@@ -1514,20 +1514,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Leak branches live in the spine gaps between stages. */
 .leak-gap {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 11rem);
-  gap: clamp(0.65rem, 2vw, 1.5rem);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(0.45rem, 1.2vw, 0.75rem);
   align-items: center;
   min-height: clamp(3rem, 5.5vh, 4.2rem);
   min-width: 0;
   max-width: 100%;
 }
-.leak-gap__spine {
+.leak-gap__track {
   position: relative;
-  align-self: stretch;
   min-height: inherit;
-  border-left: 1px solid transparent;
+  min-width: 0;
+  height: 100%;
 }
-.leak-gap__spine .leak-wire {
+.leak-gap__track .leak-wire {
   position: absolute;
   left: 0;
   top: 0;
@@ -1535,23 +1535,15 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 100%;
   margin: 0;
 }
-.leak-branch {
-  display: grid;
-  grid-template-columns: minmax(2.25rem, 3.75rem) minmax(0, 1fr);
-  gap: 0.45rem;
-  align-items: center;
-  min-height: 2.5rem;
-  min-width: 0;
-  max-width: 100%;
-}
 .leak-branch__line {
-  width: 100%;
-  max-width: 3.75rem;
-  height: 20px;
-  overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: calc(50% - 12px);
+  width: calc(100% - 0.25rem);
+  height: 24px;
+  overflow: visible;
+  transform-origin: left center;
 }
-.leak-branch--2 .leak-branch__line { max-width: 3.35rem; }
-.leak-branch--3 .leak-branch__line { max-width: 3rem; }
 .leak-branch__line path {
   stroke: var(--red);
   stroke-width: 1.2;
@@ -1559,30 +1551,44 @@ button, a { -webkit-tap-highlight-color: transparent; }
   fill: none;
   vector-effect: non-scaling-stroke;
 }
-.leak-branch--2 .leak-branch__line path { stroke-opacity: 0.72; }
-.leak-branch--3 .leak-branch__line path { stroke-opacity: 0.62; }
+.leak-gap--2 .leak-branch__line path { stroke-opacity: 0.72; }
+.leak-gap--3 .leak-branch__line path { stroke-opacity: 0.62; }
 .leak-branch__text {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.3rem 0.45rem;
-  min-width: 0;
+  gap: 0.3rem 0.4rem;
+  flex-shrink: 0;
   line-height: 1.25;
+  white-space: nowrap;
 }
 .leak-branch__text i {
-  color: rgba(240, 74, 42, 0.58);
+  color: var(--red);
   font-style: normal;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+.leak-branch__text i::after {
+  content: " →";
+  letter-spacing: 0.08em;
 }
 .leak-branch__text b {
   color: var(--red);
   font-weight: 400;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.leak-stage__yes {
+  display: block;
+  margin-top: 0.85rem;
+  color: rgba(157, 147, 136, 0.52);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 .leak-action {
@@ -1620,7 +1626,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 @media (min-width: 1100px) {
   .leak-gap {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 12.5rem);
     min-height: clamp(3.2rem, 6vh, 4.6rem);
   }
   .leak-stage__question {
@@ -1629,11 +1634,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .leak-stage__support {
     font-size: 1.02rem;
   }
-  .leak-branch__line {
-    max-width: 4.25rem;
-  }
-  .leak-branch--2 .leak-branch__line { max-width: 3.85rem; }
-  .leak-branch--3 .leak-branch__line { max-width: 3.5rem; }
 }
 
 /* Timeline progress line that draws across as you scroll. */
@@ -1773,16 +1773,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
     overflow-x: clip;
   }
   .leak-gap {
-    grid-template-columns: minmax(0, 2.5rem) minmax(0, 1fr);
-    gap: 0.4rem 0.55rem;
-    min-height: 0;
-    padding: 0.15rem 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.1rem 0;
   }
-  .leak-gap__spine {
-    min-height: 2rem;
+  .leak-gap__track {
+    min-height: 2.75rem;
   }
-  .leak-gap__spine .leak-wire {
-    height: 2rem;
+  .leak-gap__track .leak-wire {
+    height: 100%;
+  }
+  .leak-branch__line {
+    width: 72%;
   }
   .leak-stage {
     padding: 1.15rem 0.25rem 1.2rem 1.1rem;
@@ -1796,25 +1799,21 @@ button, a { -webkit-tap-highlight-color: transparent; }
     max-width: none;
     font-size: 0.88rem;
   }
-  .leak-branch {
-    grid-template-columns: minmax(1.75rem, 2.5rem) minmax(0, 1fr);
-    min-height: 0;
-    padding-left: 0;
+  .leak-stage__yes {
+    margin-top: 0.65rem;
+    font-size: 0.54rem;
   }
-  .leak-branch__line {
-    max-width: 2.5rem;
-  }
-  .leak-branch--2 .leak-branch__line,
-  .leak-branch--3 .leak-branch__line {
-    max-width: 2.25rem;
+  .leak-branch__text {
+    white-space: normal;
   }
   .leak-branch__text i {
-    font-size: 0.54rem;
-    letter-spacing: 0.14em;
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
   }
   .leak-branch__text b {
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    white-space: normal;
   }
   .leak-wire {
     height: 2.2rem;
@@ -2592,6 +2591,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Selected Work previews: getlayers-style H.264 loops (30fps preview mp4).
    All visible cards play together while Studio Bench is focused. */
 .ws--embed { background: #06110e; overflow: hidden; }
+.ws--sable .ws-embed-preview {
+  transform: scale(0.84);
+  transform-origin: center 18%;
+}
 .ws-embed-preview {
   position: absolute;
   inset: 0;

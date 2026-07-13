@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=107" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=108" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -106,43 +106,40 @@
           <span class="leak-stage__label">01 / Understand</span>
           <h3 class="leak-stage__question">Can they get it in five seconds?</h3>
           <p class="leak-stage__support">What you sell. Who it's for. Why it matters now.</p>
+          <span class="leak-stage__yes" aria-hidden="true">Yes →</span>
         </div>
         <div class="leak-gap">
-          <div class="leak-gap__spine" aria-hidden="true">
+          <div class="leak-gap__track" aria-hidden="true">
             <div class="leak-wire leak-wire--loss1" data-anim="wire"></div>
+            <svg class="leak-branch__line" viewBox="0 0 280 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 12 L120 12 L168 2 L280 2" /></svg>
           </div>
-          <div class="leak-branch" data-anim="branch">
-            <svg class="leak-branch__line" viewBox="0 0 200 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 L56 23 L88 3 L200 3" /></svg>
-            <span class="leak-branch__text"><i>Leak</i><b>Vague offer</b></span>
-          </div>
+          <span class="leak-branch__text" data-anim="branch"><i>No</i><b>Vague offer</b></span>
         </div>
         <div class="leak-stage" data-anim="stage">
           <span class="leak-stage__label">02 / Believe</span>
           <h3 class="leak-stage__question">Do they believe you?</h3>
           <p class="leak-stage__support">Proof should answer the doubt before the visitor starts looking for an exit.</p>
+          <span class="leak-stage__yes" aria-hidden="true">Yes →</span>
         </div>
-        <div class="leak-gap">
-          <div class="leak-gap__spine" aria-hidden="true">
+        <div class="leak-gap leak-gap--2">
+          <div class="leak-gap__track" aria-hidden="true">
             <div class="leak-wire leak-wire--loss2" data-anim="wire"></div>
+            <svg class="leak-branch__line" viewBox="0 0 280 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 12 L120 12 L168 2 L280 2" /></svg>
           </div>
-          <div class="leak-branch leak-branch--2" data-anim="branch">
-            <svg class="leak-branch__line" viewBox="0 0 200 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 L56 23 L88 3 L200 3" /></svg>
-            <span class="leak-branch__text"><i>Leak</i><b>Proof too late</b></span>
-          </div>
+          <span class="leak-branch__text" data-anim="branch"><i>No</i><b>Proof too late</b></span>
         </div>
         <div class="leak-stage" data-anim="stage">
           <span class="leak-stage__label">03 / Act</span>
           <h3 class="leak-stage__question">Is the next move obvious?</h3>
           <p class="leak-stage__support">One clear action. No dead ends. No competing buttons. No hunting around.</p>
+          <span class="leak-stage__yes" aria-hidden="true">Yes →</span>
         </div>
-        <div class="leak-gap">
-          <div class="leak-gap__spine" aria-hidden="true">
+        <div class="leak-gap leak-gap--3">
+          <div class="leak-gap__track" aria-hidden="true">
             <div class="leak-wire leak-wire--loss3" data-anim="wire"></div>
+            <svg class="leak-branch__line" viewBox="0 0 280 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 12 L120 12 L168 2 L280 2" /></svg>
           </div>
-          <div class="leak-branch leak-branch--3" data-anim="branch">
-            <svg class="leak-branch__line" viewBox="0 0 200 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 L56 23 L88 3 L200 3" /></svg>
-            <span class="leak-branch__text"><i>Leak</i><b>Unclear next step</b></span>
-          </div>
+          <span class="leak-branch__text" data-anim="branch"><i>No</i><b>Unclear next step</b></span>
         </div>
         <div class="leak-action" data-anim="node" aria-hidden="true">
           <span class="leak-action__node">◎</span>
@@ -368,7 +365,7 @@
             </figure>
             <figure class="work-card">
               <button type="button" class="work-card__link" data-demo="/demos/sable.html?embed=1" aria-label="Preview demo">
-                <div class="work-card__screen ws--embed"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><video class="ws-embed-preview" poster="/assets/demos/previews/sable-poster.webp" data-src="/assets/demos/previews/sable.mp4" muted loop playsinline preload="none" width="960" height="600" tabindex="-1" aria-hidden="true"></video></div>
+                <div class="work-card__screen ws--embed ws--sable"><span class="ws-chrome"><i></i><i></i><i></i></span><span class="work-card__live">Live site</span><video class="ws-embed-preview" poster="/assets/demos/previews/sable-poster.webp" data-src="/assets/demos/previews/sable.mp4" muted loop playsinline preload="none" width="960" height="600" tabindex="-1" aria-hidden="true"></video></div>
               </button>
               <figcaption><strong>Sable Yacht Club</strong><span>Luxury Lifestyle &middot; Brand Hero</span><em>Turns ocean romance into a membership ask.</em></figcaption>
             </figure>
@@ -696,6 +693,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=104"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=105"></script>
 </body>
 </html>
