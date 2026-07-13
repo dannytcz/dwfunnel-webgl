@@ -5,7 +5,6 @@ export function initWorkRoller(appState) {
   const track = roller?.querySelector(".work-roller__track");
   if (!roller || !viewport || !track) return;
 
-  const section = roller.closest("section") || roller;
   const cards = Array.from(track.querySelectorAll(".work-card"));
   const count = cards.length;
   if (!count) return;
@@ -330,8 +329,8 @@ export function initWorkRoller(appState) {
           }
         });
       },
-      { threshold: 0.12, rootMargin: "320px 0px" }
-    ).observe(section);
+      { threshold: 0.2, rootMargin: "0px 0px 80px 0px" }
+    ).observe(roller);
   } else {
     setWorkFocus(true);
   }

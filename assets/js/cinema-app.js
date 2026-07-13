@@ -4,7 +4,7 @@ import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
 import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
-import { initWorkRoller } from "./work-roller.js?v=5";
+import { initWorkRoller } from "./work-roller.js?v=6";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
@@ -587,8 +587,10 @@ function initFaq() {
 function initTestimonialWall() {
   document.querySelectorAll(".wall__track").forEach((track) => {
     const group = track.querySelector(".wall__group");
-    if (!group || track.children.length > 1) return;
-    track.appendChild(group.cloneNode(true));
+    if (!group || track.querySelector(".wall__group[aria-hidden='true']")) return;
+    const clone = group.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    track.appendChild(clone);
   });
 }
 
