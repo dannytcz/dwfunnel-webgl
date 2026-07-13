@@ -305,6 +305,23 @@ html[data-dwf-demo="ecogreen"].is-lightbox #root > div {
   overflow: hidden !important;
 }
 
+/* —— Arcfield —— */
+html[data-dwf-demo="arcfield"].is-lightbox,
+html[data-dwf-demo="arcfield"].is-lightbox body {
+  height: 100% !important;
+  max-height: 100vh !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="arcfield"].is-lightbox #root,
+html[data-dwf-demo="arcfield"].is-lightbox #root > div {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
 /* —— Geneevo —— */
 html[data-dwf-demo="geneevo"].is-lightbox .hero-title {
   font-size: clamp(4.5rem, 6vw, 5.4rem) !important;
@@ -499,7 +516,7 @@ html[data-dwf-demo="thebrew"].is-lightbox .hero-intro {
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-card-wrap {
-  width: min(72%, 320px) !important;
+  width: min(90%, 400px) !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero-scroll {

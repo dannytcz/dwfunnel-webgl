@@ -63,7 +63,7 @@ async function spin(page, sel) {
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
   kanevoss: { url:'/demos/kanevoss.html?preview=1', wait:1200, trim:{start:1.2,dur:5}, posterAt:2.2, act: p => orbit(p, 7) },
-  ecogreen: { url:'/demos/ecogreen.html', wait:3500, trim:{start:2.0,dur:6}, act: p => hold(p,7000) },
+  ecogreen: { url:'/demos/ecogreen.html?preview=1', wait:5500, trim:{start:2.5,dur:6}, posterAt:2.0, act: p => hold(p,8000) },
   toybomb:  { url:'/demos/toybomb.html',             wait:1800, trim:{start:2.5,dur:6}, act: async p => { for (let i=0;i<3;i++){ await clickSel(p,'#nextButton'); await hold(p,1900);} } },
   harbour:  { url:'/demos/harbour.html?embed=1',     wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   aurelia:  { url:'/demos/aurelia.html',             wait:1500, trim:{start:3.5,dur:6}, act: p => hold(p,8000) },
@@ -77,7 +77,7 @@ const RECIPES = {
   alzer:    { url:'/demos/alzer.html?embed=1',      wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   petalform:{ url:'/demos/petalform.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, viewport:{width:1680,height:1050}, act: p => hold(p,8000) },
   geneevo:  { url:'/demos/geneevo.html?embed=1',   wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
-  cerebralkinetics:{ url:'/demos/cerebralkinetics.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  arcfield: { url:'/demos/arcfield.html?preview=1', wait:4500, trim:{start:2.0,dur:6}, posterAt:1.5, act: p => hold(p,7000) },
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   lumenix:  { url:'/demos/lumenix.html?embed=1',  wait:2200, trim:{start:2.0,dur:7}, act: p => hold(p,10000) },
   reverie:  { url:'/demos/reverie.html?embed=1',  wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,12000) },
