@@ -1429,8 +1429,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   grid-column: 2;
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin-right: calc((100vw - min(var(--max), calc(100vw - 4.8rem))) / 2);
-  padding: 0.2rem 0 0.4rem;
+  padding: 0.2rem 0.75rem 0.4rem 0;
+  overflow-x: clip;
 }
 .leak-traffic {
   display: flex;
@@ -1511,10 +1514,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Leak branches live in the spine gaps between stages. */
 .leak-gap {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(11rem, 38%);
-  gap: clamp(1rem, 3vw, 2.5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 11rem);
+  gap: clamp(0.65rem, 2vw, 1.5rem);
   align-items: center;
   min-height: clamp(3rem, 5.5vh, 4.2rem);
+  min-width: 0;
+  max-width: 100%;
 }
 .leak-gap__spine {
   position: relative;
@@ -1531,16 +1536,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
   margin: 0;
 }
 .leak-branch {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(2.25rem, 3.75rem) minmax(0, 1fr);
+  gap: 0.45rem;
   align-items: center;
-  gap: clamp(0.6rem, 1.5vw, 1rem);
   min-height: 2.5rem;
+  min-width: 0;
+  max-width: 100%;
 }
 .leak-branch__line {
-  flex: 0 0 clamp(72px, 28%, 180px);
-  height: 22px;
-  overflow: visible;
+  width: 100%;
+  max-width: 3.75rem;
+  height: 20px;
+  overflow: hidden;
 }
+.leak-branch--2 .leak-branch__line { max-width: 3.35rem; }
+.leak-branch--3 .leak-branch__line { max-width: 3rem; }
 .leak-branch__line path {
   stroke: var(--red);
   stroke-width: 1.2;
@@ -1548,30 +1559,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
   fill: none;
   vector-effect: non-scaling-stroke;
 }
-.leak-branch--2 .leak-branch__line { flex-basis: clamp(64px, 24%, 160px); }
 .leak-branch--2 .leak-branch__line path { stroke-opacity: 0.72; }
-.leak-branch--3 .leak-branch__line { flex-basis: clamp(56px, 20%, 140px); }
 .leak-branch--3 .leak-branch__line path { stroke-opacity: 0.62; }
 .leak-branch__text {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.65rem;
-  white-space: nowrap;
+  gap: 0.3rem 0.45rem;
+  min-width: 0;
+  line-height: 1.25;
 }
 .leak-branch__text i {
   color: rgba(240, 74, 42, 0.58);
   font-style: normal;
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.26em;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 .leak-branch__text b {
   color: var(--red);
   font-weight: 400;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 .leak-action {
@@ -1609,7 +1620,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 @media (min-width: 1100px) {
   .leak-gap {
-    grid-template-columns: minmax(0, 1fr) minmax(12rem, 40%);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 12.5rem);
     min-height: clamp(3.2rem, 6vh, 4.6rem);
   }
   .leak-stage__question {
@@ -1619,8 +1630,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
     font-size: 1.02rem;
   }
   .leak-branch__line {
-    flex-basis: clamp(100px, 32%, 220px);
+    max-width: 4.25rem;
   }
+  .leak-branch--2 .leak-branch__line { max-width: 3.85rem; }
+  .leak-branch--3 .leak-branch__line { max-width: 3.5rem; }
 }
 
 /* Timeline progress line that draws across as you scroll. */
@@ -1743,6 +1756,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .timeline,
   .plain-section--split {
     grid-template-columns: 1fr;
+    overflow-x: clip;
   }
   .plain-section--split .section-meta,
   .plain-section--split .split-copy,
@@ -1753,11 +1767,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
   .leak-diagnostic {
     width: 100%;
+    max-width: 100%;
     margin-top: 2.2rem;
+    padding-right: 0;
+    overflow-x: clip;
   }
   .leak-gap {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+    grid-template-columns: minmax(0, 2.5rem) minmax(0, 1fr);
+    gap: 0.4rem 0.55rem;
     min-height: 0;
     padding: 0.15rem 0;
   }
@@ -1768,32 +1785,46 @@ button, a { -webkit-tap-highlight-color: transparent; }
     height: 2rem;
   }
   .leak-stage {
-    padding: 1.15rem 0.5rem 1.2rem 1.25rem;
+    padding: 1.15rem 0.25rem 1.2rem 1.1rem;
   }
   .leak-stage__question {
     text-wrap: pretty;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.1rem, 4.8vw, 1.35rem);
   }
   .leak-stage__support {
     max-width: none;
+    font-size: 0.88rem;
   }
   .leak-branch {
+    grid-template-columns: minmax(1.75rem, 2.5rem) minmax(0, 1fr);
     min-height: 0;
-    padding-left: 1.25rem;
+    padding-left: 0;
   }
   .leak-branch__line {
-    flex-basis: clamp(56px, 18vw, 100px);
+    max-width: 2.5rem;
   }
-  .leak-branch__text {
-    white-space: normal;
+  .leak-branch--2 .leak-branch__line,
+  .leak-branch--3 .leak-branch__line {
+    max-width: 2.25rem;
+  }
+  .leak-branch__text i {
+    font-size: 0.54rem;
+    letter-spacing: 0.14em;
   }
   .leak-branch__text b {
-    white-space: normal;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
   }
   .leak-wire {
     height: 2.2rem;
   }
   .leak-action {
-    padding: 0.85rem 1.25rem 0.85rem 1rem;
+    max-width: 100%;
+    padding: 0.85rem 1.1rem 0.85rem 0.95rem;
+  }
+  .leak-action__label {
+    letter-spacing: 0.18em;
   }
   .scrub-copy--left {
     margin-left: 0;
