@@ -545,52 +545,49 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: getlayers model.
-   Smooth H.264 preview loops (30fps) play on EVERY visible card together.
-   Silky feel comes from freezing Three.js + the testimonial wall while the
-   gallery is focused, and from proper preview encodes, not from limiting to
-   one player. Offscreen cards drop back to their poster. */
+/* Selected Work grid: static poster by default; at most two nearest visible
+   cards swap to animated WebP loops. Avoids many concurrent video decoders
+   fighting Lenis + scroll scrub. Three.js pauses while the gallery is focused. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
   const section = grid.closest("section") || grid;
-  const vids = Array.from(grid.querySelectorAll("video.ws-embed-preview"));
-  if (!vids.length) return;
+  const imgs = Array.from(grid.querySelectorAll("img.ws-embed-preview"));
+  if (!imgs.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
-  if (!("IntersectionObserver" in window)) {
-    vids.forEach((v) => {
-      const src = v.getAttribute("data-src");
-      if (!src) return;
-      v.src = src;
-      v.play().catch(() => {});
-    });
-    return;
-  }
+  const MAX_LIVE = 2;
 
   const visible = new Set();
   const live = new Set();
   let workFocus = false;
 
-  function stop(v) {
-    if (!v) return;
-    v.pause();
-    if (v.getAttribute("src")) {
-      v.removeAttribute("src");
-      v.load(); // snap back to poster
-    }
-    live.delete(v);
+  function posterFor(img) {
+    return img.dataset.poster || img.getAttribute("src") || "";
   }
-  function play(v) {
-    if (!v) return;
-    const src = v.getAttribute("data-src");
-    if (!src) return;
-    if (v.getAttribute("src") !== src) {
-      v.src = src;
-      v.load();
-    }
-    live.add(v);
-    if (v.paused) v.play().catch(() => {});
+  function freeze(img) {
+    if (!img) return;
+    const poster = posterFor(img);
+    if (poster && img.src !== poster) img.src = poster;
+    live.delete(img);
+  }
+  function animate(img) {
+    const anim = img.dataset.anim;
+    if (!anim) return;
+    if (img.src !== anim) img.src = anim;
+    live.add(img);
+  }
+  function pickLive() {
+    if (!workFocus) return [];
+    return [...visible]
+      .map((img) => {
+        const r = img.getBoundingClientRect();
+        const cy = r.top + r.height / 2;
+        return { img, dist: Math.abs(cy - window.innerHeight / 2) };
+      })
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, MAX_LIVE)
+      .map((x) => x.img);
   }
   function setWorkFocus(on) {
     workFocus = on;
@@ -600,14 +597,22 @@ function initWorkGrid() {
   }
   function syncLive() {
     if (!workFocus) {
-      Array.from(live).forEach(stop);
+      Array.from(live).forEach(freeze);
       return;
     }
-    // All visible cards play together, same as getlayers.ai gallery cards.
-    visible.forEach((v) => play(v));
-    live.forEach((v) => {
-      if (!visible.has(v)) stop(v);
+    const want = new Set(pickLive());
+    visible.forEach((img) => {
+      if (!want.has(img)) freeze(img);
     });
+    want.forEach(animate);
+    live.forEach((img) => {
+      if (!visible.has(img)) freeze(img);
+    });
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    imgs.slice(0, MAX_LIVE).forEach(animate);
+    return;
   }
 
   const sectionIo = new IntersectionObserver(
@@ -624,14 +629,23 @@ function initWorkGrid() {
         if (e.isIntersecting) visible.add(e.target);
         else {
           visible.delete(e.target);
-          stop(e.target);
+          freeze(e.target);
         }
       });
       syncLive();
     },
     { rootMargin: "80px 0px", threshold: 0.2 }
   );
-  vids.forEach((v) => cardIo.observe(v));
+  imgs.forEach((img) => cardIo.observe(img));
+
+  let syncTimer = null;
+  const onScroll = () => {
+    if (!workFocus) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(syncLive, 80);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  appState.lenis?.on?.("scroll", onScroll);
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides

@@ -42,8 +42,9 @@ assets/fonts/                   self hosted Space Grotesk + Space Mono woff2
 assets/images/hero/             hero poster + scrub frames
 demos/<key>.html                each live concept demo (self contained)
 assets/demos/<key>/             that demo's self hosted assets (webp, mp4, fonts, glb)
-assets/demos/previews/          grid preview clips: <key>.mp4 30fps H.264 + <key>-poster.webp
-scripts/capture-previews.cjs    Playwright tool that records + encodes getlayers-style preview mp4s
+assets/demos/previews/          grid previews: <key>.mp4 source, <key>.webp loop, <key>-poster.webp
+scripts/capture-previews.cjs    Playwright tool that records preview mp4 + webp + poster
+scripts/mp4-to-preview-webp.cjs re-encode existing mp4 loops to animated webp
 scripts/*.cjs, *.py             older UAT / capture helpers (use as reference)
 ```
 
@@ -64,17 +65,18 @@ Each live card is:
     <div class="work-card__screen ws--embed">
       <span class="ws-chrome"><i></i><i></i><i></i></span>
       <span class="work-card__live">Live site</span>
-      <video class="ws-embed-preview" poster="/assets/demos/previews/<key>-poster.webp"
-             data-src="/assets/demos/previews/<key>.mp4"
-             muted loop playsinline preload="none" width="960" height="600"
-             tabindex="-1" aria-hidden="true"></video>
+      <img class="ws-embed-preview" src="/assets/demos/previews/<key>-poster.webp"
+           data-poster="/assets/demos/previews/<key>-poster.webp"
+           data-anim="/assets/demos/previews/<key>.webp"
+           alt="" width="640" height="400" loading="lazy" decoding="async"
+           aria-hidden="true" />
     </div>
   </a>
   <figcaption><strong><Brand></strong><span>Sector &middot; Deliverable</span><em>One line hook.</em></figcaption>
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): getlayers-style smooth H.264 preview mp4s at 30fps. Cards start on a poster, then EVERY visible card plays its loop together while Studio Bench is on screen. Three.js + the testimonial wall freeze via `html.is-work-focus` so concurrent videos stay silky. Offscreen cards unload back to posters. Data-saver leaves posters forever.
+Performance model (this is deliberate, keep it): capture still outputs a master H.264 mp4, then ffmpeg makes a 480px / 10fps animated WebP for the grid. Cards start on the poster; at most **two** nearest visible cards swap to the loop while Studio Bench is on screen. Three.js + the testimonial wall freeze via `html.is-work-focus`. Offscreen cards snap back to posters. Data-saver leaves posters forever. Do not go back to many concurrent `<video>` players.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum
