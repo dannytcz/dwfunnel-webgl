@@ -494,6 +494,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 0.95rem;
   color: rgba(234, 242, 246, 0.72);
 }
+.scrub-support {
+  margin: 1rem 0 0;
+  max-width: 38rem;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: rgba(232, 223, 210, 0.68);
+}
+.scrub-copy--center .scrub-support {
+  margin-left: auto;
+  margin-right: auto;
+}
 .stack-tags {
   list-style: none;
   margin: 1.4rem auto 0;
@@ -579,7 +590,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   width: min(var(--max), 100%);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.4rem;
 }
 .stat-strip article {
@@ -925,8 +936,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transform-origin: left;
 }
 
-/* Work scrub CTA breathing room under the mega headline. */
-.scrub-copy .btn { margin-top: 2rem; }
+/* Work scrub CTA breathing room under the mega headline / support line. */
+.scrub-copy .btn { margin-top: 1.6rem; }
+.scrub-copy .scrub-support + .btn { margin-top: 1.4rem; }
 
 /* Apply hierarchy: qualification above, one dominant action panel below. */
 .apply-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1460,7 +1472,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Stat strip: editorial data columns instead of four names sitting in a row.
    Left rules, mono indices, staggered baselines, generous spread. */
 .stat-strip {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(2rem, 5vw, 5rem);
   counter-reset: stat;
 }
