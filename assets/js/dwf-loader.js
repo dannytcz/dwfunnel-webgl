@@ -23,8 +23,9 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { unwritten: 1, reverie: 1, kanevoss: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
+  var LIGHTBOX_CINEMATIC_CAP = { unwritten: 0.68, reverie: 0.68 };
 
   function notifyParent(type) {
     try {
@@ -46,7 +47,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=5";
+      link.href = "/assets/css/dwf-embed.css?v=6";
       (document.head || html).appendChild(link);
     }
   }
@@ -59,7 +60,8 @@
     if (document.getElementById("dwf-embed-autoscroll")) return;
     window.__DWF_AUTOSCROLL__ = true;
 
-    var CYCLE = 42000;
+    var scrollCap = LIGHTBOX_CINEMATIC_CAP[demo] || 1;
+    var CYCLE = scrollCap < 1 ? 34000 : 42000;
     var startedAt = 0;
     var lastNow = 0;
     var currentY = 0;
@@ -99,7 +101,7 @@
       lastNow = now;
       var t = ((now - startedAt) % CYCLE) / CYCLE;
       var wave = (1 - Math.cos(t * Math.PI * 2)) / 2;
-      var targetY = wave * maxY;
+      var targetY = wave * maxY * scrollCap;
       var alpha = 1 - Math.exp(-2.4 * dt / 1000);
       currentY += (targetY - currentY) * alpha;
       setScrollY(currentY);

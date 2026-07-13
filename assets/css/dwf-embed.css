@@ -85,19 +85,39 @@ html[data-dwf-demo="kanevoss"].is-lightbox .hero-image {
   transform-origin: center bottom;
 }
 
-/* —— Unwritten / Reverie: hero-only lightbox, no dead scroll —— */
+/* —— Unwritten / Reverie: cinematic lightbox scroll (capped before dead zone) —— */
 html[data-dwf-demo="unwritten"].is-lightbox #experience,
 html[data-dwf-demo="reverie"].is-lightbox #reverie {
-  height: 100vh !important;
-  max-height: 100vh !important;
-  min-height: 100vh !important;
-  overflow: hidden !important;
+  height: 300vh !important;
+  min-height: 300vh !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 html[data-dwf-demo="unwritten"].is-lightbox .viewport,
 html[data-dwf-demo="reverie"].is-lightbox .sticky {
   height: 100vh !important;
   max-height: 100vh !important;
+}
+
+html[data-dwf-demo="unwritten"].is-lightbox,
+html[data-dwf-demo="unwritten"].is-lightbox body,
+html[data-dwf-demo="reverie"].is-lightbox,
+html[data-dwf-demo="reverie"].is-lightbox body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100% !important;
+  scrollbar-width: none;
+}
+
+html[data-dwf-demo="unwritten"].is-lightbox::-webkit-scrollbar,
+html[data-dwf-demo="unwritten"].is-lightbox body::-webkit-scrollbar,
+html[data-dwf-demo="reverie"].is-lightbox::-webkit-scrollbar,
+html[data-dwf-demo="reverie"].is-lightbox body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 html[data-dwf-demo="unwritten"].is-lightbox .scroll-cue {
@@ -141,10 +161,17 @@ html[data-dwf-demo="petalform"].is-lightbox .hero h1 {
 }
 
 /* —— Sable Yacht Club —— */
+html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[64px]"],
+html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[140px]"],
+html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="md:text-[140px]"] {
+  font-size: clamp(2.2rem, 5.5vw, 4.2rem) !important;
+  line-height: 0.95 !important;
+}
+
 html[data-dwf-demo="sable"].is-lightbox [class*="text-[64px]"],
 html[data-dwf-demo="sable"].is-lightbox [class*="text-[140px]"],
 html[data-dwf-demo="sable"].is-lightbox [class*="md:text-[140px]"] {
-  font-size: clamp(3.3rem, 9vw, 6.6rem) !important;
+  font-size: clamp(2.5rem, 6.5vw, 4.8rem) !important;
   line-height: 0.95 !important;
 }
 
