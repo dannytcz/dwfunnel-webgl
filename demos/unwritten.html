@@ -160,7 +160,7 @@
 })();
 </script>
 
-  <script src="/assets/js/dwf-loader.js?v=12"></script>
+  <script src="/assets/js/dwf-loader.js?v=13"></script>
 </head>
 <body>
   <main id="experience">
@@ -253,8 +253,9 @@
       function updateProgress(){
         ticking=false;
         p=readProgress();
-        const scene1Opacity=clamp(1-p/.22,0,1);
-        const scene2Opacity=clamp((p-.68)/.16,0,1);
+        const inLightbox = !!window.__DWF_LIGHTBOX__;
+        const scene1Opacity=inLightbox ? 1 : clamp(1-p/.22,0,1);
+        const scene2Opacity=inLightbox ? 0 : clamp((p-.68)/.16,0,1);
         els.scene1.style.opacity=scene1Opacity;
         els.scene1.style.pointerEvents=scene1Opacity>.05?'auto':'none';
         els.scene2.style.opacity=scene2Opacity;
@@ -281,7 +282,7 @@
         els.clouds.style.transform=`translate3d(${-mx*MAG.clouds}px, ${-my*MAG.clouds*.4}px,0) scale(${lerp(1,1.4, ep)})`;
         els.clouds.style.opacity=String(lerp(.7,1, clamp(p/.05,0,1)));
         els.portal.style.transform=`translate3d(${-mx*MAG.portal}px, ${-my*MAG.portal}px,0) scale(${lerp(1,7.5, ep)})`;
-        els.portal.style.opacity=String(p<=.65?1:clamp(1-(p-.65)/.2,0,1));
+        els.portal.style.opacity=window.__DWF_LIGHTBOX__?'1':String(p<=.65?1:clamp(1-(p-.65)/.2,0,1));
         const extra=lerp(0,150, ep), base=curtainsOpen?62:0, scale=lerp(1,1.3, ep);
         els.curtainL.style.transform=`translateX(${-base-extra}%) translate3d(${-mx*MAG.curtainL}px, ${-my*MAG.curtainL*.3}px,0) scale(${scale})`;
         els.curtainR.style.transform=`translateX(${base+extra}%) translate3d(${-mx*MAG.curtainR}px, ${-my*MAG.curtainR*.3}px,0) scale(${scale})`;

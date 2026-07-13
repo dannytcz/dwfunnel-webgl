@@ -26,7 +26,7 @@
   var LIGHTBOX_NO_SCROLL = { kanevoss: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
-  var LIGHTBOX_CINEMATIC_CAP = 0.68;
+  var LIGHTBOX_CINEMATIC_CAP = 0.48;
 
   function notifyParent(type) {
     try {
@@ -48,7 +48,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=8";
+      link.href = "/assets/css/dwf-embed.css?v=9";
       (document.head || html).appendChild(link);
     }
   }
