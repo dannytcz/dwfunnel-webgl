@@ -3,8 +3,8 @@
  * Replace placeholder values when real endpoints are available.
  */
 export const CONTACT_CONFIG = {
-  /** WhatsApp Business link — update when the real number is provisioned. */
-  whatsAppUrl: "https://wa.me/0000000000",
+  /** WhatsApp Business link */
+  whatsAppUrl: "https://wa.me/60189621022",
 
   /**
    * POST endpoint for build request submissions.
