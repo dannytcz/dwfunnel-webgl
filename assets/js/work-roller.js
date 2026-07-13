@@ -24,7 +24,7 @@ export function initWorkRoller(appState) {
   let slideTween = null;
   let dragSuppressClick = false;
 
-  const PREVIEW_REV = "128";
+  const PREVIEW_REV = "130";
   const live = new Set();
   const blobCache = new Map();
   const blobPending = new Map();

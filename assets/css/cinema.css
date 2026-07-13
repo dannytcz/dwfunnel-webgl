@@ -2997,13 +2997,17 @@ html.is-survey-open body {
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
-  transition: border-color 0.4s var(--ease), transform 0.5s var(--ease);
+  transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 .work-card:hover .work-card__screen {
   border-color: rgba(242, 168, 74, 0.55);
 }
 .work-card.is-center:hover .work-card__screen {
-  transform: translateY(-6px);
+  border-color: rgba(242, 168, 74, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(242, 168, 74, 0.38),
+    0 0 28px rgba(242, 168, 74, 0.24),
+    0 14px 42px rgba(201, 68, 45, 0.14);
 }
 .ws-chrome {
   display: none !important;

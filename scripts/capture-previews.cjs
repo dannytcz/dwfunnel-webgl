@@ -95,6 +95,13 @@ async function cinematicScroll(p, maxPx, seconds) {
   }
 }
 
+async function carouselTicks(p, sel, ticks, intervalMs) {
+  for (let i = 0; i < ticks; i++) {
+    await clickSel(p, sel);
+    await hold(p, intervalMs);
+  }
+}
+
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.2, act: async p => {
     await hold(p, 2200);
@@ -124,13 +131,9 @@ const RECIPES = {
       await hold(p, 8000);
     }
   }},
-  toybomb:  { url:'/demos/toybomb.html?preview=1', wait:2200, trim:{start:2.5,dur:6}, posterAt:3.5, act: async p => {
-    await hold(p, 2500);
-    await smoothOrbit(p, 5);
-    await clickSel(p, '#nextButton');
-    await hold(p, 2800);
-    await clickSel(p, '#nextButton');
-    await hold(p, 2000);
+  toybomb:  { url:'/demos/toybomb.html?embed=1&preview=1', wait:3200, trim:{start:2.2,dur:8}, posterAt:5.5, act: async p => {
+    await hold(p, 1800);
+    await carouselTicks(p, '#nextButton', 3, 2000);
   }},
   harbour:  { url:'/demos/harbour.html?embed=1',     wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   aurelia:  { url:'/demos/aurelia.html',             wait:1500, trim:{start:3.5,dur:6}, act: p => hold(p,8000) },
@@ -167,12 +170,18 @@ const RECIPES = {
   }},
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   lumenix:  { url:'/demos/lumenix.html?embed=1&preview=1', wait:3800, trim:{start:2.2,dur:6}, posterAt:1.8, act: p => hold(p,10000) },
-  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:3200, trim:{start:2.8,dur:6}, posterAt:4.2, act: async p => {
-    await hold(p, 2200);
-    const max = await p.evaluate(() => Math.min(1800, Math.max(0, (document.getElementById('reverie')?.offsetHeight || 0) - window.innerHeight)));
-    await cinematicScroll(p, max, 6.5);
-    await sweep(p, 4);
-    await hold(p, 2000);
+  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:5500, trim:{start:3,dur:8}, posterAt:6.5, act: async p => {
+    await p.waitForSelector('#reverie h1', { timeout: 15000 }).catch(() => {});
+    await hold(p, 1800);
+    const max = await p.evaluate(() => {
+      const el = document.getElementById('reverie');
+      const docMax = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if (!el) return Math.min(2200, docMax);
+      return Math.min(2400, Math.max(0, Math.min(docMax, el.offsetHeight * 0.45)));
+    });
+    await cinematicScroll(p, max, 7.5);
+    await sweep(p, 3);
+    await hold(p, 1200);
   }},
   stretch:  { url:'/demos/stretch.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.5, act: async p => {
     await waitVideo(p);
