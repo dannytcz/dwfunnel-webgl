@@ -48,7 +48,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=11";
+      link.href = "/assets/css/dwf-embed.css?v=12";
       (document.head || html).appendChild(link);
     }
   }

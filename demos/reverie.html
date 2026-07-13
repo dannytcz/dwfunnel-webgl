@@ -166,7 +166,7 @@
   addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
 })();
 </script>
-  <script src="/assets/js/dwf-loader.js?v=14"></script>
+  <script src="/assets/js/dwf-loader.js?v=15"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -308,9 +308,7 @@ function App() {
             const portalScale = lerp(1, 7.5, p);
             if (portalRef.current) {
                 portalRef.current.style.transform = `scale(${portalScale}) translate3d(${rx * MAG.portal}px, ${ry * MAG.portal}px, 0)`;
-                portalRef.current.style.opacity = window.__DWF_LIGHTBOX__
-                    ? '1'
-                    : String(clamp(1 - (p - 0.65) / 0.2, 0, 1));
+                portalRef.current.style.opacity = String(clamp(1 - (p - 0.65) / 0.2, 0, 1));
             }
             const totalShift = lerp(62, 150, eased);
             const curtainScrollScale = lerp(1, 1.3, p);
@@ -320,12 +318,12 @@ function App() {
             if (curtainRRef.current) {
                 curtainRRef.current.style.transform = `translateX(calc(${totalShift}% + ${rx * MAG.curtainR}px)) translateY(${ry * MAG.curtainR * 0.3}px) scale(${curtainScrollScale}) translateZ(0)`;
             }
-            const heroOpacity = window.__DWF_LIGHTBOX__ ? 1 : clamp(1 - p / 0.22, 0, 1);
+            const heroOpacity = clamp(1 - p / 0.22, 0, 1);
             if (heroRef.current) {
                 heroRef.current.style.opacity = String(heroOpacity);
                 heroRef.current.style.pointerEvents = heroOpacity > 0.08 ? 'auto' : 'none';
             }
-            const ctaOpacity = window.__DWF_LIGHTBOX__ ? 0 : clamp((p - 0.68) / 0.16, 0, 1);
+            const ctaOpacity = clamp((p - 0.68) / 0.16, 0, 1);
             if (ctaRef.current) {
                 ctaRef.current.style.opacity = String(ctaOpacity);
                 ctaRef.current.style.pointerEvents = ctaOpacity > 0.08 ? 'auto' : 'none';
