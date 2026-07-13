@@ -79,7 +79,7 @@ The 8 live demos and what each replaced:
 - **Kane Voss** discipline coaching (canvas particle field), replaced Pulse
 - **Verde** botanical soda (model-viewer 3D cans), original
 - **TOYBOMB** designer collectibles (carousel), original
-- **Elowen** boutique stays (ambient video hero), original
+- **SupaBot** AI productivity assistant (liquid-glass hero, robot companion video), replaced Elowen
 - **LEXIS** performance footwear (Vite storefront, cursor X-ray), replaced Orbit
 - **The Brew** fine dining reservations (`/demos/thebrew.html`), replaced the Ember placeholder.
 - **Unwritten** immersive storyworlds (`/demos/unwritten.html`), scroll-driven portal experience.

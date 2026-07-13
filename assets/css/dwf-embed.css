@@ -556,11 +556,7 @@ html[data-dwf-demo="autonex"].is-embed:not(.is-lightbox) main {
   overflow: hidden !important;
 }
 
-/* —— Elowen —— */
-html[data-dwf-demo="elowen"].is-lightbox .hero {
-  padding-top: clamp(10rem, 16vh, 12rem) !important;
-}
-
-html[data-dwf-demo="elowen"].is-lightbox .hero h1 {
-  margin-top: clamp(1.5rem, 4vh, 2.75rem) !important;
+/* —— SupaBot —— */
+html[data-dwf-demo="supabot"].is-lightbox main {
+  padding-top: clamp(4.5rem, 8vh, 6rem) !important;
 }

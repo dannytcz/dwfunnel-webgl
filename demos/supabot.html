@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SupaBot | Your All in One AI Assistant</title>
+    <meta
+      name="description"
+      content="SupaBot is a DW Funnel concept build for an AI productivity assistant: ask questions, automate tasks, and get more done."
+    />
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fustat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        var q = new URLSearchParams(location.search);
+        if (q.has("embed")) document.documentElement.classList.add("is-embed");
+        if (q.has("preview")) document.documentElement.classList.add("is-preview");
+      })();
+    </script>
+    <style>
+      .studio-badge {
+        position: fixed;
+        left: 1.5rem;
+        bottom: 1rem;
+        z-index: 2147482000;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.65rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(8px);
+        text-decoration: none;
+        color: #1a1a1a;
+        font: 600 0.65rem/1.2 Inter, system-ui, sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        transition: color 0.3s ease;
+      }
+      .studio-badge strong {
+        color: #111;
+        font-size: 0.72rem;
+      }
+      .studio-badge span {
+        font-size: 0.58rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: rgba(17, 17, 17, 0.55);
+        text-transform: none;
+      }
+      .studio-badge:hover {
+        color: #0084ff;
+      }
+      html.is-embed:not(.is-lightbox) .studio-badge,
+      html.is-preview .studio-badge {
+        display: none !important;
+      }
+    </style>
+    <script src="/assets/js/dwf-loader.js?v=29"></script>
+    <script type="module" crossorigin src="/assets/demos/supabot/build/index-DE2_KRKr.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/demos/supabot/build/index-BsRamv3a.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <a class="studio-badge" href="/" target="_blank" rel="noopener">
+      <strong>Built by DW Funnel · © 2026</strong>
+      <span>See how we build pages like this</span>
+    </a>
+  </body>
+</html>
