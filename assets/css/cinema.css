@@ -2020,6 +2020,9 @@ html.is-survey-open body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
 }
+.leak-decision--3 .leak-decision__yes {
+  min-height: clamp(1.6rem, 3vh, 2.2rem);
+}
 
 /* Schematic terminal — page-centered neon endpoint, not a CTA. */
 .plain-section--leak .leak-action {
@@ -2027,7 +2030,7 @@ html.is-survey-open body {
   justify-self: center;
   width: auto;
   max-width: 100%;
-  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  margin-top: clamp(0.35rem, 1vw, 0.75rem);
 }
 .leak-action {
   display: flex;
@@ -2218,7 +2221,7 @@ html.is-survey-open body {
   }
   .plain-section--leak .leak-action {
     justify-self: center;
-    margin-top: 1.75rem;
+    margin-top: 0.65rem;
   }
   .leak-diagnostic {
     width: 100%;
