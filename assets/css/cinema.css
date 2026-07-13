@@ -626,8 +626,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .plain-section--split {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
-  gap: 4rem;
+  grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
+  gap: clamp(2.5rem, 5vw, 4rem);
   align-items: start;
 }
 .plain-section--split .section-meta,
@@ -642,6 +642,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 3.2rem;
   line-height: 1.02;
   text-transform: uppercase;
+}
+.split-copy h2 .glitch {
+  position: relative;
+  display: inline-block;
+  color: var(--red);
 }
 .split-copy p {
   color: var(--muted);
@@ -1219,41 +1224,205 @@ button, a { -webkit-tap-highlight-color: transparent; }
   display: grid;
   align-content: center;
 }
-.plain-section--split { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); }
+.plain-section--split { grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr); }
 .stat-strip strong { font-size: clamp(4.4rem, 8.5vw, 7.6rem); }
 .section-title { font-size: clamp(2.8rem, 4vw, 4.1rem); }
 .split-copy h2 { font-size: clamp(2.8rem, 3.8vw, 4rem); }
 
-/* Self-drawing conversion-leak schematic behind the problem section. */
-.leak-svg {
+/* Conversion leak diagnostic schematic — problem section right column. */
+.leak-diagnostic {
+  grid-column: 2;
+  position: relative;
+  width: min(640px, 100%);
+  margin-right: calc((100vw - min(var(--max), calc(100vw - 4.8rem))) / 2);
+  min-height: min(78vh, 760px);
+}
+.leak-diagnostic__rail {
   position: absolute;
-  top: 50%;
-  right: clamp(0.5rem, 4vw, 4rem);
-  height: min(78vh, 760px);
-  transform: translateY(-50%);
-  opacity: 0.5;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
-.leak-draw {
-  stroke: var(--gold);
-  stroke-width: 1.4;
+.leak-diagnostic__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.leak-path {
+  stroke-width: 1.2;
   fill: none;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
-.leak-draw--drip { stroke: var(--red); }
-.leak-label {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 0.2em;
-  fill: rgba(232, 223, 210, 0.55);
-  opacity: 0;
-  transition: opacity 0.6s;
+.leak-path--spine {
+  stroke: rgba(157, 147, 136, 0.48);
 }
-.leak-label--hot { fill: var(--red); }
-.leak-svg.is-labeled .leak-label { opacity: 1; }
-/* Keep the cards readable above the schematic. */
-.plain-section--split .diagnostic-grid { position: relative; z-index: 1; }
+.leak-path--spine[data-seg="0"] { stroke-opacity: 0.92; }
+.leak-path--spine[data-seg="1"] { stroke-opacity: 0.68; }
+.leak-path--spine[data-seg="2"] { stroke-opacity: 0.48; }
+.leak-path--spine[data-seg="3"] { stroke-opacity: 0.34; }
+.leak-path--spine[data-seg="4"] { stroke-opacity: 0.22; }
+.leak-diagnostic.is-lit-leak-1 .leak-path--spine[data-seg="1"],
+.leak-diagnostic.is-lit-leak-2 .leak-path--spine[data-seg="2"],
+.leak-diagnostic.is-lit-leak-3 .leak-path--spine[data-seg="3"],
+.leak-diagnostic.is-lit-leak-3 .leak-path--spine[data-seg="4"] {
+  stroke-dasharray: 0.1 0.08;
+}
+.leak-path--branch {
+  stroke: var(--red);
+  stroke-opacity: 0.72;
+}
+.leak-path--node {
+  stroke: rgba(157, 147, 136, 0.55);
+  fill: none;
+}
+.leak-diagnostic.is-complete .leak-path--node {
+  stroke: var(--red);
+  stroke-opacity: 0.85;
+}
+.leak-diagnostic__flow {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0;
+  padding-left: 1.1rem;
+}
+.leak-traffic {
+  margin: 0 0 1.6rem;
+  padding-left: 0.35rem;
+  color: rgba(232, 223, 210, 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+}
+.leak-stage {
+  position: relative;
+  margin-bottom: 1.75rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.leak-stage[data-step="stage-1"] { padding-top: 0.2rem; }
+.leak-stage[data-step="stage-2"] { padding-top: 0.6rem; }
+.leak-stage[data-step="stage-3"] { padding-top: 0.6rem; }
+.leak-stage__frame {
+  position: relative;
+  max-width: 19.5rem;
+  padding: 1rem 1rem 1rem 1.35rem;
+  border-left: 1px solid var(--line);
+}
+.leak-stage__frame::before,
+.leak-stage__frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 14px;
+  height: 1px;
+  background: var(--line);
+}
+.leak-stage__frame::before { top: 0; }
+.leak-stage__frame::after { bottom: 0; }
+.leak-stage__frame::marker { content: none; }
+.leak-stage__label {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.leak-stage__question {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-tech);
+  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  font-weight: 700;
+  line-height: 1.12;
+  text-transform: uppercase;
+}
+.leak-stage__support {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.leak-escape {
+  position: absolute;
+  top: 50%;
+  left: min(100%, 13.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-left: 0.6rem;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+  pointer-events: none;
+}
+.leak-escape__tag {
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.leak-escape__label {
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.leak-action {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.4rem;
+  padding-left: 0.15rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.leak-action__node {
+  color: rgba(157, 147, 136, 0.55);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: color 0.4s var(--ease);
+}
+.leak-action__label {
+  color: rgba(232, 223, 210, 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.leak-diagnostic.is-lit .leak-traffic,
+.leak-diagnostic.is-lit [data-step="traffic"] { opacity: 1; transform: none; }
+.leak-diagnostic.is-lit-stage-1 .leak-stage[data-step="stage-1"],
+.leak-diagnostic.is-lit-stage-2 .leak-stage[data-step="stage-2"],
+.leak-diagnostic.is-lit-stage-3 .leak-stage[data-step="stage-3"] { opacity: 1; transform: none; }
+.leak-diagnostic.is-lit-leak-1 .leak-escape[data-step="leak-1"],
+.leak-diagnostic.is-lit-leak-2 .leak-escape[data-step="leak-2"],
+.leak-diagnostic.is-lit-leak-3 .leak-escape[data-step="leak-3"] { opacity: 1; transform: none; }
+.leak-diagnostic.is-lit-action .leak-action { opacity: 1; transform: none; }
+.leak-diagnostic.is-lit-action .leak-action__node { color: var(--red); }
+.leak-diagnostic.is-static .leak-traffic,
+.leak-diagnostic.is-static .leak-stage,
+.leak-diagnostic.is-static .leak-escape,
+.leak-diagnostic.is-static .leak-action {
+  opacity: 1;
+  transform: none;
+}
+.leak-diagnostic.is-static .leak-path {
+  stroke-dashoffset: 0;
+}
 
 /* Timeline progress line that draws across as you scroll. */
 .timeline { position: relative; }
@@ -1334,7 +1503,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
-  .leak-svg { display: none; }
   .scroll-progress {
     left: 1.2rem;
     right: 1.2rem;
@@ -1379,10 +1547,29 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
   .plain-section--split .section-meta,
   .plain-section--split .split-copy,
-  .diagnostic-grid {
+  .leak-diagnostic {
     grid-column: auto;
     margin-left: 0;
     margin-right: 0;
+  }
+  .leak-diagnostic {
+    width: 100%;
+    min-height: auto;
+    margin-top: 2.5rem;
+  }
+  .leak-stage__frame {
+    max-width: none;
+  }
+  .leak-escape {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0.75rem 0 0 1.35rem;
+    padding-left: 0;
+    transform: translateX(0);
+  }
+  .leak-escape__label {
+    white-space: normal;
   }
   .scrub-copy--left {
     margin-left: 0;
@@ -1439,6 +1626,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .glitch::before,
   .glitch::after {
     display: none;
+  }
+  .leak-diagnostic .leak-path {
+    stroke-dashoffset: 0 !important;
+  }
+  .leak-traffic,
+  .leak-stage,
+  .leak-escape,
+  .leak-action {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

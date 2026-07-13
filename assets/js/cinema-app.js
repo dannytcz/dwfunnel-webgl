@@ -1,5 +1,6 @@
 import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
 import { initBuildRequestForm } from "./build-request-form.js";
+import { initConversionLeakSchematic } from "./conversion-leak-schematic.js";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
@@ -932,9 +933,9 @@ function initMethodStack() {
   });
 }
 
-/* Award pass: masked line reveals on the big titles, a self-drawing leak
-   schematic, a scrubbed timeline progress line, and gentle parallax on the
-   stat numerals. Desktop only (called from the full-motion path). */
+/* Award pass: masked line reveals on the big titles, a scrubbed timeline
+   progress line, and gentle parallax on the stat numerals. Desktop only
+   (conversion leak schematic is initialised separately). */
 function initAwardMotion() {
   const gsap = window.gsap;
 
@@ -952,25 +953,6 @@ function initAwardMotion() {
           scrollTrigger: { trigger: el, start: "top 80%", once: true },
         });
       });
-  }
-
-  const leak = document.querySelector(".leak-svg");
-  if (leak) {
-    const paths = leak.querySelectorAll(".leak-draw");
-    window.ScrollTrigger.create({
-      trigger: "#problem",
-      start: "top 75%",
-      end: "center center",
-      scrub: 0.4,
-      onUpdate: (self) => {
-        const p = self.progress;
-        paths.forEach((path, i) => {
-          const local = Math.max(0, Math.min(1, p * paths.length - i));
-          path.style.strokeDashoffset = String(1 - local);
-        });
-        leak.classList.toggle("is-labeled", p > 0.85);
-      },
-    });
   }
 
   const timeline = document.querySelector(".timeline");
@@ -1060,6 +1042,7 @@ async function init() {
     initWorkGrid();
     initDemoLightbox();
     initBuildRequestForm();
+    initConversionLeakSchematic({ staticDraw: true });
     window.ScrollTrigger.refresh();
     return;
   }
@@ -1083,6 +1066,7 @@ async function init() {
   // SplitText measures line boxes
   await document.fonts.ready;
   initAwardMotion();
+  initConversionLeakSchematic({ reducedMotion: reduced });
   initMethodStack();
   await document.fonts.ready;
   window.ScrollTrigger.refresh();

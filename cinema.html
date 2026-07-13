@@ -93,27 +93,67 @@
       </div>
     </div>
 
-    <section id="problem" class="plain-section plain-section--split" aria-labelledby="problem-heading">
-      <svg class="leak-svg" viewBox="0 0 600 900" fill="none" aria-hidden="true">
-        <path class="leak-draw" pathLength="1" d="M60 80 L540 80 L360 360 L360 560 L240 640 L240 360 Z" />
-        <path class="leak-draw" pathLength="1" d="M140 120 L460 120" />
-        <path class="leak-draw" pathLength="1" d="M300 640 L300 700 M300 730 L300 760 M300 790 L300 805" />
-        <circle class="leak-draw" pathLength="1" cx="300" cy="840" r="26" />
-        <path class="leak-draw leak-draw--drip" pathLength="1" d="M395 470 L430 520 M405 545 L428 585 M385 610 L402 645" />
-        <text class="leak-label" x="300" y="52" text-anchor="middle">TRAFFIC</text>
-        <text class="leak-label" x="300" y="878" text-anchor="middle" dominant-baseline="hanging">BOOKED</text>
-        <text class="leak-label leak-label--hot" x="470" y="560" text-anchor="middle">LEAK</text>
-      </svg>
+    <section id="problem" class="plain-section plain-section--split plain-section--leak" aria-labelledby="problem-heading">
       <div class="section-meta">002 / Conversion Leak</div>
       <div class="split-copy">
-        <h2 id="problem-heading" class="glitch" data-glitch="THE PAGE IS AN ENGINE">The page is an engine. Not a brochure.</h2>
-        <p>Most pages look fine and still leak. The message lands late, the proof sits below the fold, tracking is guesswork, and follow-up starts after the lead has gone cold.</p>
+        <h2 id="problem-heading">Traffic gets there.<br /><span class="glitch" data-glitch="THE PAGE LOSES IT.">The page loses it.</span></h2>
+        <p>Most pages don't fail because they look bad. They fail in the seconds between interest and action. The offer takes too long to understand. Proof arrives too late. The next move feels unclear. Then the visitor leaves.</p>
       </div>
-      <div class="diagnostic-grid reveal-group">
-        <article><span>01</span><h3 data-scramble>Signal</h3><p>Five seconds in, the visitor knows what you sell, who it's for, and why now. Clarity before curiosity runs out.</p></article>
-        <article><span>02</span><h3 data-scramble>System</h3><p>Mechanism, proof, and one path to the calendar. No dead ends, no "learn more."</p></article>
-        <article><span>03</span><h3 data-scramble>Sequence</h3><p>Most visitors don't book on the first pass. The system follows them. Automatically.</p></article>
-      </div>
+      <aside class="leak-diagnostic" id="leak-diagnostic" aria-label="Conversion leak diagnostic schematic">
+        <div class="leak-diagnostic__rail" aria-hidden="true">
+          <svg class="leak-diagnostic__svg" viewBox="0 0 420 920" fill="none" preserveAspectRatio="xMinYMin meet">
+            <path class="leak-path leak-path--spine" data-seg="0" pathLength="1" d="M52 56 L52 118" />
+            <path class="leak-path leak-path--spine" data-seg="1" pathLength="1" d="M52 254 L52 326" />
+            <path class="leak-path leak-path--spine" data-seg="2" pathLength="1" d="M52 478 L52 550" />
+            <path class="leak-path leak-path--spine" data-seg="3" pathLength="1" d="M52 702 L52 774" />
+            <path class="leak-path leak-path--spine" data-seg="4" pathLength="1" d="M52 798 L52 838" />
+            <path class="leak-path leak-path--branch" data-seg="5" pathLength="1" d="M52 238 L118 238 L166 218 L308 218" />
+            <path class="leak-path leak-path--branch" data-seg="6" pathLength="1" d="M52 462 L114 462 L158 442 L296 442" />
+            <path class="leak-path leak-path--branch" data-seg="7" pathLength="1" d="M52 686 L108 686 L152 666 L276 666" />
+            <circle class="leak-path leak-path--node" data-seg="8" pathLength="1" cx="52" cy="852" r="10" />
+          </svg>
+        </div>
+        <div class="leak-diagnostic__flow">
+          <p class="leak-traffic" data-step="traffic">Traffic</p>
+          <div class="leak-stage" data-step="stage-1">
+            <div class="leak-stage__frame">
+              <span class="leak-stage__label">01 / Understand</span>
+              <h3 class="leak-stage__question">Can they get it<br />in five seconds?</h3>
+              <p class="leak-stage__support">What you sell. Who it's for. Why it matters now.</p>
+            </div>
+            <div class="leak-escape" data-step="leak-1">
+              <span class="leak-escape__tag">Leak</span>
+              <span class="leak-escape__label">Vague offer</span>
+            </div>
+          </div>
+          <div class="leak-stage" data-step="stage-2">
+            <div class="leak-stage__frame">
+              <span class="leak-stage__label">02 / Believe</span>
+              <h3 class="leak-stage__question">Do they<br />believe you?</h3>
+              <p class="leak-stage__support">Proof should answer the doubt before the visitor starts looking for an exit.</p>
+            </div>
+            <div class="leak-escape" data-step="leak-2">
+              <span class="leak-escape__tag">Leak</span>
+              <span class="leak-escape__label">Proof too late</span>
+            </div>
+          </div>
+          <div class="leak-stage" data-step="stage-3">
+            <div class="leak-stage__frame">
+              <span class="leak-stage__label">03 / Act</span>
+              <h3 class="leak-stage__question">Is the next move<br />obvious?</h3>
+              <p class="leak-stage__support">One clear action. No dead ends. No competing buttons. No hunting around.</p>
+            </div>
+            <div class="leak-escape" data-step="leak-3">
+              <span class="leak-escape__tag">Leak</span>
+              <span class="leak-escape__label">Unclear next step</span>
+            </div>
+          </div>
+          <div class="leak-action" data-step="action">
+            <span class="leak-action__node" aria-hidden="true">◎</span>
+            <span class="leak-action__label">Action</span>
+          </div>
+        </div>
+      </aside>
     </section>
 
     <section id="proof" class="scrub-act scrub-act--proof" data-scrub data-film-frames="proof" data-film-count="120" data-vh="175" aria-label="Proof video scrub">
@@ -630,6 +670,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=100"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=101"></script>
 </body>
 </html>
