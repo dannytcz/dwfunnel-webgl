@@ -295,7 +295,7 @@
     .craft__ring{animation:none;}
   }
 </style>
-  <script src="/assets/js/dwf-loader.js?v=7"></script>
+  <script src="/assets/js/dwf-loader.js?v=8"></script>
 </head>
 <body>
 
@@ -513,13 +513,17 @@
   /* ---------- LENIS ---------- */
   var lenis = null;
   var isEmbed = document.documentElement.classList.contains("is-embed");
-  if (window.Lenis && !reduce && !isEmbed){
+  var isLightbox = new URLSearchParams(location.search).has("lightbox");
+  if (window.Lenis && !reduce && (!isEmbed || isLightbox)){
     try {
       lenis = new Lenis({
         duration:1.2,
         easing:function(t){ return Math.min(1, 1.001 - Math.pow(2, -10*t)); },
-        smoothWheel:true
+        smoothWheel:!isLightbox
       });
+      if (isLightbox) {
+        window.__dwfLenis = lenis;
+      }
       if (hasGSAP){
         lenis.on("scroll", ScrollTrigger.update);
         gsap.ticker.add(function(time){ lenis.raf(time*1000); });
@@ -782,6 +786,7 @@
   <script>
   (function(){
     if(!new URLSearchParams(location.search).has('embed')) return;
+    if(new URLSearchParams(location.search).has('lightbox')) return;
     var st=document.createElement('style');
     st.textContent='::-webkit-scrollbar{width:0;height:0;display:none}html{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:auto!important}';
     document.head.appendChild(st);

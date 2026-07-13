@@ -144,6 +144,7 @@
 <script>
 (function(){
   if(!new URLSearchParams(location.search).has('embed')) return;
+  if(new URLSearchParams(location.search).has('lightbox'))return;
   document.documentElement.classList.add('is-embed');
   var st=document.createElement('style');
   st.textContent='::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
@@ -163,7 +164,7 @@
   addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
 })();
 </script>
-  <script src="/assets/js/dwf-loader.js?v=7"></script>
+  <script src="/assets/js/dwf-loader.js?v=8"></script>
 </head>
 <body>
   <div id="root"></div>

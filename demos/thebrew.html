@@ -1276,8 +1276,8 @@
   <script>
   (function () {
     if (!new URLSearchParams(location.search).has('embed')) return;
+  if(new URLSearchParams(location.search).has('lightbox'))return;
     document.documentElement.classList.add('is-embed');
-    window.__DWF_AUTOSCROLL__ = true;
     var st = document.createElement('style');
     st.textContent = 'html.is-embed,html.is-embed body{cursor:auto!important}.is-embed .cursor,.is-embed .cursor-dot,.is-embed .cursor-ring,.is-embed .custom-cursor{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none;scroll-behavior:auto!important}';
     document.head.appendChild(st);
@@ -1298,7 +1298,7 @@
   })();
   </script>
 
-  <script src="/assets/js/dwf-loader.js?v=7"></script>
+  <script src="/assets/js/dwf-loader.js?v=8"></script>
 </head>
 <body>
   <div class="cursor" id="cursor" aria-hidden="true"></div>

@@ -37,7 +37,7 @@
       html { scroll-behavior: auto; }
     }
   </style>
-  <script src="/assets/js/dwf-loader.js?v=7"></script>
+  <script src="/assets/js/dwf-loader.js?v=8"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -529,6 +529,7 @@
   <script>
   (function(){
     if(!new URLSearchParams(location.search).has('embed')) return;
+  if(new URLSearchParams(location.search).has('lightbox'))return;
     var st=document.createElement('style');
     st.textContent='::-webkit-scrollbar{width:0;height:0;display:none}html{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:auto!important}';
     document.head.appendChild(st);

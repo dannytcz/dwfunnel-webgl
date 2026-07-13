@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
   <head>
   <meta name="robots" content="noindex" />
-  <script src="/assets/js/dwf-loader.js?v=7" defer></script>
+  <script src="/assets/js/dwf-loader.js?v=8" defer></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
@@ -78,6 +78,7 @@ Schedule: ${d.map(E=>Bi(E))} pos: ${this.timelinePos}`),m.length&&this.log(`Remo
   try {
     var q = new URLSearchParams(location.search);
     if (!q.has('embed') && !q.has('preview')) return;
+    if (q.has('lightbox')) return;
   } catch (e) { return; }
   if (window.__DWF_AUTOSCROLL__) return;
   window.__DWF_AUTOSCROLL__ = true;

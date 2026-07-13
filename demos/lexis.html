@@ -45,7 +45,7 @@
     @media(prefers-reduced-motion:reduce){.reveal,.line>span,.word{opacity:1!important;transform:none!important}}
     @media print{.loader{display:none!important}.reveal,.line>span,.word{opacity:1!important;transform:none!important}.header{opacity:1!important;transform:none!important}}
   </style>
-  <script src="/assets/js/dwf-loader.js?v=7"></script>
+  <script src="/assets/js/dwf-loader.js?v=8"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -126,6 +126,7 @@
   <script>
   (function(){
     if(!new URLSearchParams(location.search).has('embed')) return;
+  if(new URLSearchParams(location.search).has('lightbox'))return;
     var st=document.createElement('style');
     st.textContent='::-webkit-scrollbar{width:0;height:0;display:none}html{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:auto!important}';
     document.head.appendChild(st);

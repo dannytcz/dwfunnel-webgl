@@ -16,6 +16,8 @@
     lightbox = q.has("lightbox");
   } catch (e) {}
 
+  if (lightbox) window.__DWF_AUTOSCROLL__ = true;
+
   function notifyParent(type) {
     try {
       if (window.parent && window.parent !== window) {
@@ -44,36 +46,61 @@
 
   function setupLightboxAutoscroll() {
     if (!lightbox || preview) return;
-    if (document.getElementById("dwf-embed-autoscroll") || window.__DWF_AUTOSCROLL__) return;
-    window.__DWF_AUTOSCROLL__ = true;
+    if (document.getElementById("dwf-embed-autoscroll")) return;
 
-    var CYCLE = 28000;
-    var scrollY = 0;
+    var CYCLE = 42000;
     var startedAt = 0;
-    var raf = 0;
+    var lastNow = 0;
+    var currentY = 0;
+    var maxY = 0;
+    var lastMaxCheck = 0;
+
+    function refreshMax(now) {
+      if (now - lastMaxCheck < 350) return;
+      lastMaxCheck = now;
+      maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    }
+
+    function setScrollY(y) {
+      var lenis = window.__dwfLenis || window.lenis;
+      if (lenis && typeof lenis.scrollTo === "function") {
+        lenis.scrollTo(y, { immediate: true, force: true, lock: true });
+      } else {
+        document.documentElement.scrollTop = y;
+        document.body.scrollTop = y;
+      }
+      if (window.ScrollTrigger && typeof window.ScrollTrigger.update === "function") {
+        window.ScrollTrigger.update();
+      }
+    }
 
     function tick(now) {
-      if (!startedAt) startedAt = now;
-      var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      if (max < 8) {
-        raf = window.requestAnimationFrame(tick);
+      if (!startedAt) {
+        startedAt = now;
+        lastNow = now;
+      }
+      refreshMax(now);
+      if (maxY < 8) {
+        window.requestAnimationFrame(tick);
         return;
       }
+      var dt = Math.min(48, Math.max(8, now - lastNow));
+      lastNow = now;
       var t = ((now - startedAt) % CYCLE) / CYCLE;
       var wave = (1 - Math.cos(t * Math.PI * 2)) / 2;
-      var targetY = wave * max;
-      scrollY += (targetY - scrollY) * 0.1;
-      window.scrollTo(0, scrollY);
-      raf = window.requestAnimationFrame(tick);
+      var targetY = wave * maxY;
+      var alpha = 1 - Math.exp(-2.4 * dt / 1000);
+      currentY += (targetY - currentY) * alpha;
+      setScrollY(currentY);
+      window.requestAnimationFrame(tick);
     }
 
     function start() {
-      if (raf) return;
-      raf = window.requestAnimationFrame(tick);
+      window.requestAnimationFrame(tick);
     }
 
-    if (document.readyState === "complete") window.setTimeout(start, 1800);
-    else window.addEventListener("load", function () { window.setTimeout(start, 1800); }, { once: true });
+    if (document.readyState === "complete") window.setTimeout(start, 2200);
+    else window.addEventListener("load", function () { window.setTimeout(start, 2200); }, { once: true });
   }
   setupLightboxAutoscroll();
 
