@@ -51,7 +51,8 @@ function isEmail(value) {
 function validatePayload(body) {
   const errors = {};
   const name = trim(body.name);
-  const contact = trim(body.contact);
+  const email = trim(body.email);
+  const whatsapp = trim(body.whatsapp);
   const businessBrand = trim(body.businessBrand);
   const offer = trim(body.offer);
   const conversionProblem = trim(body.conversionProblem);
@@ -63,7 +64,8 @@ function validatePayload(body) {
     : [];
 
   if (!name) errors.name = "Enter your name.";
-  if (!contact) errors.contact = "Enter an email or WhatsApp number.";
+  if (!email) errors.email = "Enter your email address.";
+  if (email && !isEmail(email)) errors.email = "Enter a valid email address.";
   if (!businessBrand) errors.businessBrand = "Enter your business or brand name.";
   if (!offer) errors.offer = "Tell us what you are selling.";
   if (!conversionProblem) errors.conversionProblem = "Tell us what is not working.";
@@ -81,7 +83,8 @@ function validatePayload(body) {
     ok: true,
     payload: {
       name,
-      contact,
+      email,
+      whatsapp,
       businessBrand,
       offer,
       trafficSources,
@@ -113,7 +116,7 @@ async function sendEmail(payload) {
       subject,
       html: buildEmailHtml(payload),
       text: buildEmailText(payload),
-      reply_to: isEmail(payload.contact) ? payload.contact : undefined,
+      reply_to: isEmail(payload.email) ? payload.email : undefined,
     }),
   });
 

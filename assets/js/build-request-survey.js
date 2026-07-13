@@ -1,17 +1,23 @@
 import {
+  OVERALL_STEPS,
+  STEP_RETENTION,
   STEP_TITLES,
   bindFormInputClearing,
   clearAllErrors,
   collectPayload,
+  renderReviewSummary,
   showPageSuccess,
   submitBuildRequest,
   validateForm,
+  validatePageStep,
   validateStep,
 } from "./build-request-form.js";
 import { markReachedApply } from "./visit-analytics.js";
 
-const TOTAL_STEPS = 4;
+const MODAL_STEPS = 4;
 const DRAFT_KEY = "dwf_build_survey_draft";
+const CONTINUE_LABEL = 'Continue <span class="btn__arrow" aria-hidden="true">→</span>';
+const SUBMIT_LABEL = 'Submit build request <span class="btn__arrow" aria-hidden="true">→</span>';
 
 let currentStep = 1;
 let formInitTime = null;
@@ -34,11 +40,15 @@ function getFocusableElements(container) {
 }
 
 function isFormDirty(form) {
-  return Array.from(form.elements).some((el) => {
+  const hasValue = (el) => {
     if (!("value" in el) || el.type === "hidden") return false;
     if (el.type === "checkbox" || el.type === "radio") return el.checked;
     return String(el.value).trim().length > 0;
-  });
+  };
+
+  const pageInputs = document.querySelectorAll("#apply-page-step input");
+  if (Array.from(pageInputs).some(hasValue)) return true;
+  return Array.from(form.elements).some(hasValue);
 }
 
 function saveDraft(form) {
@@ -53,6 +63,11 @@ function saveDraft(form) {
         draft[key] = value;
       }
     }
+
+    document.querySelectorAll("#apply-page-step input").forEach((input) => {
+      if (input.name) draft[input.name] = input.value;
+    });
+
     const traffic = form.querySelectorAll('input[name="trafficSources"]:checked');
     draft.trafficSources = Array.from(traffic).map((input) => input.value);
     sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
@@ -74,12 +89,22 @@ function restoreDraft(form) {
         });
         return;
       }
+
+      const pageInput = document.querySelector(`#apply-page-step [name="${key}"]`);
+      if (pageInput && "value" in pageInput && !Array.isArray(value)) {
+        pageInput.value = value;
+        return;
+      }
+
+      const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
+      if (radio) {
+        radio.checked = true;
+        return;
+      }
+
       const el = form.elements.namedItem(key);
       if (el && "value" in el && !Array.isArray(value)) {
         el.value = value;
-      } else if (el && el.type === "radio") {
-        const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
-        if (radio) radio.checked = true;
       }
     });
   } catch {
@@ -95,8 +120,14 @@ function clearDraft() {
   }
 }
 
+function renderReview(form) {
+  const reviewEl = document.querySelector("[data-survey-review]");
+  if (reviewEl) reviewEl.innerHTML = renderReviewSummary(form);
+}
+
 function updateStepUI(root, form, step) {
   currentStep = step;
+  const overallStep = step + 1;
 
   root.querySelectorAll("[data-survey-step]").forEach((panel) => {
     const panelStep = Number(panel.dataset.surveyStep);
@@ -107,31 +138,49 @@ function updateStepUI(root, form, step) {
 
   const stepLabel = root.querySelector("#build-survey-step-label");
   const title = root.querySelector("#build-survey-title");
-  if (stepLabel) stepLabel.textContent = `Step ${step} of ${TOTAL_STEPS}`;
+  const retention = root.querySelector("#build-survey-retention");
+  if (stepLabel) stepLabel.textContent = `Step ${overallStep} of ${OVERALL_STEPS}`;
   if (title) title.textContent = STEP_TITLES[step] || "";
+  if (retention) retention.textContent = STEP_RETENTION[step] || "";
 
   const progress = root.querySelector("[data-survey-progress]");
-  if (progress) progress.style.width = `${(step / TOTAL_STEPS) * 100}%`;
+  if (progress) progress.style.width = `${(overallStep / OVERALL_STEPS) * 100}%`;
 
-  const backBtn = root.querySelector("[data-survey-back]");
   const nextBtn = root.querySelector("[data-survey-next]");
-  const submitBtn = root.querySelector("[data-survey-submit]");
-  if (backBtn) backBtn.hidden = step === 1;
-  if (nextBtn) nextBtn.hidden = step === TOTAL_STEPS;
-  if (submitBtn) submitBtn.hidden = step !== TOTAL_STEPS;
+  if (nextBtn) {
+    nextBtn.innerHTML = step === MODAL_STEPS ? SUBMIT_LABEL : CONTINUE_LABEL;
+  }
 
-  const firstInput = form.querySelector(`[data-survey-step="${step}"] input, [data-survey-step="${step}"] textarea`);
-  if (firstInput) firstInput.focus();
+  if (step === MODAL_STEPS) {
+    renderReview(form);
+    const reviewFocus = root.querySelector(".build-survey__review-edit");
+    if (reviewFocus) reviewFocus.focus();
+  } else {
+    const firstInput = form.querySelector(
+      `[data-survey-step="${step}"] input:not([type="checkbox"]):not([type="radio"]), [data-survey-step="${step}"] textarea`
+    );
+    if (firstInput) firstInput.focus();
+  }
 }
 
 function lockBodyScroll(lock) {
   document.documentElement.classList.toggle("is-survey-open", lock);
 }
 
+function focusPageStep() {
+  const nameInput = document.getElementById("br-name");
+  if (nameInput) nameInput.focus();
+}
+
 export function openSurvey(trigger) {
   const root = getSurveyRoot();
   const form = getForm();
   if (!root || !form) return;
+
+  if (!validatePageStep(form)) {
+    focusPageStep();
+    return;
+  }
 
   const success = root.querySelector(".build-survey__success");
   const surveyForm = root.querySelector(".build-survey__form");
@@ -143,10 +192,10 @@ export function openSurvey(trigger) {
   }
 
   lastFocusedElement = trigger || document.activeElement;
-  formInitTime = Date.now();
-  currentStep = 1;
+  if (!formInitTime) formInitTime = Date.now();
   markReachedApply();
 
+  saveDraft(form);
   restoreDraft(form);
   updateStepUI(root, form, 1);
 
@@ -158,7 +207,7 @@ export function openSurvey(trigger) {
   if (frame) frame.focus();
 }
 
-export function closeSurvey({ force = false } = {}) {
+export function closeSurvey({ force = false, focusPage = false } = {}) {
   const root = getSurveyRoot();
   const form = getForm();
   if (!root || root.hidden) return;
@@ -173,6 +222,11 @@ export function closeSurvey({ force = false } = {}) {
   root.hidden = true;
   root.setAttribute("aria-hidden", "true");
   lockBodyScroll(false);
+
+  if (focusPage) {
+    focusPageStep();
+    return;
+  }
 
   if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
     lastFocusedElement.focus();
@@ -194,21 +248,22 @@ function handleSubmit(form, wrap) {
   if (!validateForm(form)) return;
 
   const root = getSurveyRoot();
-  const submitBtn = form.querySelector("[data-survey-submit]");
+  const nextBtn = root.querySelector("[data-survey-next]");
   const formError = form.querySelector(".form-form__error");
   const payload = collectPayload(form, formInitTime);
 
   form.dataset.processing = "true";
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.dataset.defaultLabel = submitBtn.dataset.defaultLabel || submitBtn.textContent;
-    submitBtn.textContent = "Submitting…";
+  if (nextBtn) {
+    nextBtn.disabled = true;
+    nextBtn.dataset.defaultHtml = nextBtn.dataset.defaultHtml || nextBtn.innerHTML;
+    nextBtn.textContent = "Submitting…";
   }
   if (formError) formError.hidden = true;
 
   return submitBuildRequest(payload)
     .then(() => {
       clearDraft();
+      formInitTime = null;
       showSurveySuccess(root);
       if (wrap) showPageSuccess(wrap);
     })
@@ -223,11 +278,15 @@ function handleSubmit(form, wrap) {
     })
     .finally(() => {
       form.dataset.processing = "false";
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = submitBtn.dataset.defaultLabel || "Submit build request";
+      if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.innerHTML = nextBtn.dataset.defaultHtml || SUBMIT_LABEL;
       }
     });
+}
+
+function goToStep(root, form, step) {
+  updateStepUI(root, form, step);
 }
 
 export function initBuildRequestSurvey() {
@@ -237,6 +296,7 @@ export function initBuildRequestSurvey() {
   if (!root || !form) return;
 
   bindFormInputClearing(form);
+  restoreDraft(form);
 
   document.querySelectorAll("[data-open-build-survey]").forEach((btn) => {
     btn.addEventListener("click", () => openSurvey(btn));
@@ -250,22 +310,49 @@ export function initBuildRequestSurvey() {
   });
 
   root.querySelector("[data-survey-back]")?.addEventListener("click", () => {
-    if (currentStep > 1) updateStepUI(root, form, currentStep - 1);
+    if (currentStep > 1) {
+      goToStep(root, form, currentStep - 1);
+      return;
+    }
+    closeSurvey({ focusPage: true });
   });
 
   root.querySelector("[data-survey-next]")?.addEventListener("click", () => {
+    if (currentStep === MODAL_STEPS) {
+      handleSubmit(form, wrap);
+      return;
+    }
     if (!validateStep(form, currentStep)) return;
     saveDraft(form);
-    if (currentStep < TOTAL_STEPS) updateStepUI(root, form, currentStep + 1);
+    goToStep(root, form, currentStep + 1);
+  });
+
+  root.addEventListener("click", (event) => {
+    const editBtn = event.target.closest("[data-review-edit]");
+    if (!editBtn) return;
+
+    const target = editBtn.dataset.reviewEdit;
+    if (target === "page") {
+      closeSurvey({ focusPage: true });
+      return;
+    }
+
+    const step = Number(target);
+    if (step >= 1 && step <= 3) {
+      goToStep(root, form, step);
+    }
   });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    handleSubmit(form, wrap);
+    if (currentStep === MODAL_STEPS) handleSubmit(form, wrap);
   });
 
   form.addEventListener("input", () => saveDraft(form));
   form.addEventListener("change", () => saveDraft(form));
+
+  document.getElementById("apply-page-step")?.addEventListener("input", () => saveDraft(form));
+  document.getElementById("apply-page-step")?.addEventListener("change", () => saveDraft(form));
 
   document.addEventListener("keydown", (event) => {
     if (root.hidden) return;

@@ -211,7 +211,8 @@ export function buildEmailHtml(payload) {
             <td style="padding:24px 28px 8px;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 ${fieldRow("Name", payload.name)}
-                ${fieldRow("Email / WhatsApp", payload.contact)}
+                ${fieldRow("Email", payload.email)}
+                ${fieldRow("WhatsApp", payload.whatsapp || "Not provided")}
                 ${fieldRow("Business / brand", payload.businessBrand)}
                 ${fieldRow("What are you selling?", payload.offer, { multiline: true })}
                 <tr>
@@ -270,7 +271,8 @@ export function buildEmailText(payload) {
     "FULL DETAILS",
     "------------",
     `Name: ${payload.name || "—"}`,
-    `Email / WhatsApp: ${payload.contact || "—"}`,
+    `Email: ${payload.email || "—"}`,
+    `WhatsApp: ${payload.whatsapp || "Not provided"}`,
     `Business / brand: ${payload.businessBrand || "—"}`,
     "",
     "What are you selling?",

@@ -5,19 +5,20 @@ const TRAFFIC_OPTIONS = ["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"];
 const BUDGET_OPTIONS = ["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"];
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
 const UTM_STORAGE_KEY = "dwf_utm";
-
-const STEP_FIELDS = {
-  1: ["name", "contact", "businessBrand"],
-  2: ["offer", "trafficSources"],
-  3: ["conversionProblem", "currentPage"],
-  4: ["estimatedBudget", "additionalNotes"],
-};
+const OVERALL_STEPS = 5;
 
 const STEP_TITLES = {
-  1: "About you",
-  2: "Your offer",
-  3: "What's broken",
-  4: "Budget & send",
+  1: "Your offer",
+  2: "What's broken",
+  3: "Budget",
+  4: "Check & send",
+};
+
+const STEP_RETENTION = {
+  1: "Good start. Now tell us what you're selling.",
+  2: "Halfway there. This is where we look for the leak.",
+  3: "Almost done — last few questions.",
+  4: "Last one. Check everything looks right, then send it.",
 };
 
 /**
@@ -57,6 +58,10 @@ export function isValidUrl(value) {
   }
 }
 
+export function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 export function setFieldError(field, message) {
   field.classList.add("is-invalid");
   const errorEl = field.querySelector(".form-field__error");
@@ -76,8 +81,8 @@ export function clearFieldError(field) {
 }
 
 export function clearAllErrors(form) {
-  form.querySelectorAll(".form-field.is-invalid").forEach(clearFieldError);
-  form.querySelectorAll(".form-fieldset.is-invalid").forEach((fieldset) => {
+  document.querySelectorAll(".form-field.is-invalid").forEach(clearFieldError);
+  document.querySelectorAll(".form-fieldset.is-invalid").forEach((fieldset) => {
     fieldset.classList.remove("is-invalid");
     const errorEl = fieldset.querySelector(".form-field__error");
     if (errorEl) {
@@ -85,7 +90,7 @@ export function clearAllErrors(form) {
       errorEl.hidden = true;
     }
   });
-  const formError = form.querySelector(".form-form__error");
+  const formError = form?.querySelector(".form-form__error");
   if (formError) {
     formError.hidden = true;
     formError.textContent = "";
@@ -163,20 +168,23 @@ export function collectClientMeta(formInitTime) {
   };
 }
 
-export function collectPayload(form, formInitTime) {
-  const trafficSources = TRAFFIC_OPTIONS.filter((key) => {
+function getTrafficSources(form) {
+  return TRAFFIC_OPTIONS.filter((key) => {
     const input = form.querySelector(`input[name="trafficSources"][value="${key}"]`);
     return input?.checked;
   });
+}
 
+export function collectPayload(form, formInitTime) {
   const budgetInput = form.querySelector('input[name="estimatedBudget"]:checked');
 
   return {
     name: getTrimmed(form, "name"),
-    contact: getTrimmed(form, "contact"),
+    email: getTrimmed(form, "email"),
+    whatsapp: getTrimmed(form, "whatsapp"),
     businessBrand: getTrimmed(form, "businessBrand"),
     offer: getTrimmed(form, "offer"),
-    trafficSources,
+    trafficSources: getTrafficSources(form),
     conversionProblem: getTrimmed(form, "conversionProblem"),
     currentPage: getTrimmed(form, "currentPage"),
     estimatedBudget: budgetInput ? budgetInput.value : "",
@@ -189,7 +197,7 @@ export function collectPayload(form, formInitTime) {
 
 const REQUIRED_TEXT = {
   name: "Enter your name.",
-  contact: "Enter an email or WhatsApp number.",
+  email: "Enter your email address.",
   businessBrand: "Enter your business or brand name.",
   offer: "Tell us what you are selling.",
   conversionProblem: "Tell us what is not working.",
@@ -198,7 +206,7 @@ const REQUIRED_TEXT = {
 function validateRequiredText(form, names) {
   let valid = true;
   names.forEach((name) => {
-    const field = form.querySelector(`.form-field[data-field="${name}"]`);
+    const field = document.querySelector(`.form-field[data-field="${name}"]`);
     if (!field) return;
     if (!getTrimmed(form, name)) {
       setFieldError(field, REQUIRED_TEXT[name]);
@@ -206,6 +214,21 @@ function validateRequiredText(form, names) {
     }
   });
   return valid;
+}
+
+function validateEmail(form) {
+  const field = document.querySelector('.form-field[data-field="email"]');
+  const email = getTrimmed(form, "email");
+  if (!field) return true;
+  if (!email) {
+    setFieldError(field, REQUIRED_TEXT.email);
+    return false;
+  }
+  if (!isValidEmail(email)) {
+    setFieldError(field, "Enter a valid email address.");
+    return false;
+  }
+  return true;
 }
 
 function validateTraffic(form) {
@@ -248,17 +271,22 @@ function validateCurrentPage(form) {
   return true;
 }
 
+export function validatePageStep(form) {
+  clearAllErrors(form);
+  let valid = validateRequiredText(form, ["name", "businessBrand"]);
+  valid = validateEmail(form) && valid;
+  return valid;
+}
+
 export function validateStep(form, step) {
   clearAllErrors(form);
   let valid = true;
 
   if (step === 1) {
-    valid = validateRequiredText(form, ["name", "contact", "businessBrand"]);
-  } else if (step === 2) {
     valid = validateRequiredText(form, ["offer"]) && validateTraffic(form);
-  } else if (step === 3) {
+  } else if (step === 2) {
     valid = validateRequiredText(form, ["conversionProblem"]) && validateCurrentPage(form);
-  } else if (step === 4) {
+  } else if (step === 3) {
     valid = validateBudget(form);
   }
 
@@ -267,15 +295,77 @@ export function validateStep(form, step) {
 
 export function validateForm(form) {
   clearAllErrors(form);
-  let valid = validateRequiredText(form, ["name", "contact", "businessBrand", "offer", "conversionProblem"]);
+  let valid = validatePageStep(form);
+  valid = validateRequiredText(form, ["offer", "conversionProblem"]) && valid;
   valid = validateTraffic(form) && valid;
   valid = validateBudget(form) && valid;
   valid = validateCurrentPage(form) && valid;
   return valid;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function reviewRow(label, value) {
+  return `<div class="build-survey__review-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "—")}</dd></div>`;
+}
+
+export function renderReviewSummary(form) {
+  const payload = collectPayload(form, null);
+  const traffic = payload.trafficSources.length ? payload.trafficSources.join(", ") : "—";
+
+  return `
+    <section class="build-survey__review-block">
+      <div class="build-survey__review-head">
+        <h3>You</h3>
+        <button type="button" class="build-survey__review-edit" data-review-edit="page">Edit</button>
+      </div>
+      <dl class="build-survey__review-list">
+        ${reviewRow("Name", payload.name)}
+        ${reviewRow("Email", payload.email)}
+        ${reviewRow("WhatsApp", payload.whatsapp || "Not provided")}
+        ${reviewRow("Business / brand", payload.businessBrand)}
+      </dl>
+    </section>
+    <section class="build-survey__review-block">
+      <div class="build-survey__review-head">
+        <h3>Your offer</h3>
+        <button type="button" class="build-survey__review-edit" data-review-edit="1">Edit</button>
+      </div>
+      <dl class="build-survey__review-list">
+        ${reviewRow("What you're selling", payload.offer)}
+        ${reviewRow("Traffic sources", traffic)}
+      </dl>
+    </section>
+    <section class="build-survey__review-block">
+      <div class="build-survey__review-head">
+        <h3>What's broken</h3>
+        <button type="button" class="build-survey__review-edit" data-review-edit="2">Edit</button>
+      </div>
+      <dl class="build-survey__review-list">
+        ${reviewRow("Problem", payload.conversionProblem)}
+        ${reviewRow("Current page", payload.currentPage || "Not provided")}
+      </dl>
+    </section>
+    <section class="build-survey__review-block">
+      <div class="build-survey__review-head">
+        <h3>Budget</h3>
+        <button type="button" class="build-survey__review-edit" data-review-edit="3">Edit</button>
+      </div>
+      <dl class="build-survey__review-list">
+        ${reviewRow("Estimated budget", payload.estimatedBudget)}
+        ${reviewRow("Anything else", payload.additionalNotes || "Not provided")}
+      </dl>
+    </section>`;
+}
+
 export function bindFormInputClearing(form) {
-  form.addEventListener("input", (event) => {
+  const clearHandler = (event) => {
     const field = event.target.closest(".form-field");
     if (field) clearFieldError(field);
 
@@ -288,13 +378,19 @@ export function bindFormInputClearing(form) {
         errorEl.textContent = "";
       }
     }
-  });
+  };
+
+  form.addEventListener("input", clearHandler);
+  form.addEventListener("change", clearHandler);
+
+  document.getElementById("apply-page-step")?.addEventListener("input", clearHandler);
+  document.getElementById("apply-page-step")?.addEventListener("change", clearHandler);
 }
 
 export function showPageSuccess(wrap) {
-  const ctaPanel = wrap.querySelector(".apply-cta-panel");
+  const pageStep = wrap.querySelector(".apply-page-step");
   const successPanel = wrap.querySelector(".apply-success");
-  if (ctaPanel) ctaPanel.hidden = true;
+  if (pageStep) pageStep.hidden = true;
   if (successPanel) {
     successPanel.hidden = false;
     successPanel.querySelector(".apply-success__heading")?.focus();
@@ -314,4 +410,10 @@ export function initBuildRequestForm() {
   bindWhatsAppLinks();
 }
 
-export { TRAFFIC_OPTIONS, BUDGET_OPTIONS, STEP_FIELDS, STEP_TITLES };
+export {
+  TRAFFIC_OPTIONS,
+  BUDGET_OPTIONS,
+  STEP_TITLES,
+  STEP_RETENTION,
+  OVERALL_STEPS,
+};
