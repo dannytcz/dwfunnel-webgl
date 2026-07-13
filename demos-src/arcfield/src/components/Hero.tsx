@@ -4,6 +4,7 @@ import { LogoWhite } from "./LogoWhite";
 
 const HERO_VIDEO =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260511_213626_db1bde2b-521c-4b22-91f3-35c072eb8771.mp4";
+const HERO_POSTER = "/assets/demos/arcfield/hero.webp";
 
 const NAV_LINKS = ["WORK", "PRICING"];
 
@@ -18,13 +19,22 @@ export function Hero() {
       className="relative w-full min-h-screen overflow-hidden"
       style={{ backgroundColor: "#e02b10" }}
     >
+      <img
+        src={HERO_POSTER}
+        alt=""
+        className="absolute inset-0 z-0 h-full w-full object-cover"
+        aria-hidden="true"
+        fetchPriority="high"
+      />
       <video
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 z-[1] h-full w-full object-cover"
         src={HERO_VIDEO}
+        poster={HERO_POSTER}
         autoPlay
         muted
         loop
         playsInline
+        preload="auto"
       />
 
       <div
@@ -146,9 +156,9 @@ export function Hero() {
                 width: "fit-content",
               }}
             >
-              growth
+              Growth
               <br />
-              studio
+              Studio
             </h1>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">

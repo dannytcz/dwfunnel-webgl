@@ -35,7 +35,7 @@
     stretch: { cycle: 40000 },
     liontech: { cycle: 40000 },
     harbour: { cycle: 28000, startDelay: 900 },
-    thebrew: { heroOnly: true, cycle: 36000, startDelay: 900 },
+    thebrew: { cycle: 28000, startDelay: 1200 },
     lexis: { cycle: 46200 },
   };
 
@@ -68,7 +68,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=24";
+      link.href = "/assets/css/dwf-embed.css?v=25";
       (document.head || html).appendChild(link);
     }
   }

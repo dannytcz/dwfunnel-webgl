@@ -19,45 +19,51 @@
     <style>
       .studio-badge {
         position: fixed;
-        left: 1.5rem;
+        left: 50%;
         bottom: 1rem;
         z-index: 2147482000;
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 0.15rem;
-        padding: 0.65rem 0.9rem;
+        padding: 0.55rem 1rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.92);
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        backdrop-filter: blur(8px);
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.82);
+        backdrop-filter: none;
         text-decoration: none;
-        color: #1a1a1a;
+        color: rgba(255, 255, 255, 0.92);
         font: 600 0.65rem/1.2 Inter, system-ui, sans-serif;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        transition: color 0.3s ease;
+        transform: translateX(-50%);
+        transition: color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+        pointer-events: auto;
+        text-align: center;
+        max-width: calc(100% - 2rem);
       }
       .studio-badge strong {
-        color: #111;
+        color: #fff;
         font-size: 0.72rem;
       }
       .studio-badge span {
         font-size: 0.58rem;
         font-weight: 500;
         letter-spacing: 0.04em;
-        color: rgba(17, 17, 17, 0.55);
+        color: rgba(255, 255, 255, 0.72);
         text-transform: none;
       }
       .studio-badge:hover {
-        color: #e02b10;
+        color: #fff;
+        border-color: #fff;
       }
       html.is-preview .studio-badge {
         display: none !important;
       }
     </style>
-    <script src="/assets/js/dwf-loader.js?v=25"></script>
-    <script type="module" crossorigin src="/assets/demos/arcfield/build/index-Delmr0Uc.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/demos/arcfield/build/index-4KV7fEeF.css" />
+    <script src="/assets/js/dwf-loader.js?v=27"></script>
+    <script type="module" crossorigin src="/assets/demos/arcfield/build/index-DmaOPk05.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/demos/arcfield/build/index-Bcm7ouvY.css" />
   </head>
   <body>
     <div id="root"></div>

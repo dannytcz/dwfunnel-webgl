@@ -63,35 +63,19 @@ html.is-embed .studio-badge strong {
   padding: 0.6rem 0.9rem !important;
 }
 
-/* —— Harbour Smile —— */
+/* —— Harbour Smile: lightbox matches embed preview —— */
+html[data-dwf-demo="harbour"].is-embed.is-lightbox {
+  font-size: clamp(11px, 0.95vw, 16px) !important;
+}
+
+html[data-dwf-demo="harbour"].is-lightbox,
+html[data-dwf-demo="harbour"].is-lightbox body {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
 html[data-dwf-demo="harbour"].is-lightbox #root {
   min-height: 100% !important;
-}
-
-html[data-dwf-demo="harbour"].is-lightbox h1.text-\[clamp\(3rem\,11vw\,11rem\)\],
-html[data-dwf-demo="harbour"].is-lightbox .text-\[clamp\(3rem\,11vw\,11rem\)\] {
-  font-size: clamp(2.25rem, 7vw, 5.5rem) !important;
-  line-height: 0.82 !important;
-}
-
-html[data-dwf-demo="harbour"].is-lightbox .text-\[clamp\(3rem\,7vw\,6rem\)\],
-html[data-dwf-demo="harbour"].is-lightbox .text-\[clamp\(3rem\,7vw\,6\.5rem\)\] {
-  font-size: clamp(2rem, 5.5vw, 4.25rem) !important;
-}
-
-html[data-dwf-demo="harbour"].is-lightbox .max-w-\[14rem\],
-html[data-dwf-demo="harbour"].is-lightbox .max-w-\[18rem\],
-html[data-dwf-demo="harbour"].is-lightbox .max-w-\[220px\],
-html[data-dwf-demo="harbour"].is-lightbox .max-w-\[320px\] {
-  max-width: 14rem !important;
-  font-size: 0.75rem !important;
-  line-height: 1.35 !important;
-}
-
-@media (min-width: 48rem) {
-  html[data-dwf-demo="harbour"].is-lightbox .max-w-\[18rem\] {
-    max-width: 18rem !important;
-  }
 }
 
 /* —— Kane Voss —— */
@@ -242,9 +226,10 @@ html[data-dwf-demo="sable"].is-lightbox h2 {
 html[data-dwf-demo="sable"].is-lightbox .text-lg,
 html[data-dwf-demo="sable"].is-lightbox .text-xl,
 html[data-dwf-demo="sable"].is-lightbox [class*="text-[18px]"],
-html[data-dwf-demo="sable"].is-lightbox [class*="text-[20px]"] {
-  font-size: 125% !important;
-  line-height: 1.35 !important;
+html[data-dwf-demo="sable"].is-lightbox [class*="text-[20px]"],
+html[data-dwf-demo="sable"].is-lightbox p[class*="text-[10px]"] {
+  font-size: 150% !important;
+  line-height: 1.4 !important;
 }
 
 html[data-dwf-demo="sable"].is-lightbox header a,
@@ -258,9 +243,10 @@ html[data-dwf-demo="sable"].is-lightbox [class*="text-3xl"] {
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) .text-lg,
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) .text-xl,
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[18px]"],
-html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[20px]"] {
-  font-size: 125% !important;
-  line-height: 1.35 !important;
+html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) [class*="text-[20px]"],
+html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) p[class*="text-[10px]"] {
+  font-size: 150% !important;
+  line-height: 1.4 !important;
 }
 
 html[data-dwf-demo="sable"].is-embed:not(.is-lightbox) header a,
@@ -288,6 +274,20 @@ html[data-dwf-demo="newshift"].is-lightbox #home h1 {
 }
 
 /* —— EcoGreen —— */
+html[data-dwf-demo="ecogreen"].is-embed:not(.is-lightbox),
+html[data-dwf-demo="ecogreen"].is-embed:not(.is-lightbox) body {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="ecogreen"].is-embed:not(.is-lightbox) #root,
+html[data-dwf-demo="ecogreen"].is-embed:not(.is-lightbox) #root > div {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
 html[data-dwf-demo="ecogreen"].is-lightbox,
 html[data-dwf-demo="ecogreen"].is-lightbox body {
   height: 100% !important;
@@ -305,6 +305,20 @@ html[data-dwf-demo="ecogreen"].is-lightbox #root > div {
 }
 
 /* —— Arcfield —— */
+html[data-dwf-demo="arcfield"].is-embed:not(.is-lightbox),
+html[data-dwf-demo="arcfield"].is-embed:not(.is-lightbox) body {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="arcfield"].is-embed:not(.is-lightbox) #root,
+html[data-dwf-demo="arcfield"].is-embed:not(.is-lightbox) #root > div {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
 html[data-dwf-demo="arcfield"].is-lightbox,
 html[data-dwf-demo="arcfield"].is-lightbox body {
   height: 100% !important;
@@ -352,6 +366,7 @@ html[data-dwf-demo="thebrew"].is-lightbox body {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   background: #070707 !important;
+  scroll-behavior: auto !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .site-shell {
@@ -359,10 +374,6 @@ html[data-dwf-demo="thebrew"].is-lightbox .site-shell {
   min-height: 100% !important;
   max-height: none !important;
   overflow: visible !important;
-}
-
-html[data-dwf-demo="thebrew"].is-lightbox .site-shell > *:not(.hero) {
-  display: none !important;
 }
 
 html[data-dwf-demo="thebrew"].is-lightbox .hero {
