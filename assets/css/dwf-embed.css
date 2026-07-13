@@ -256,31 +256,76 @@ html[data-dwf-demo="geneevo"].is-lightbox .hero-content {
 }
 
 /* —— Elyra —— */
+html[data-dwf-demo="elyra"].is-lightbox,
+html[data-dwf-demo="elyra"].is-lightbox body {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
 html[data-dwf-demo="elyra"].is-lightbox h1 {
   font-size: clamp(3.25rem, 9vw, 6.75rem) !important;
   line-height: 0.92 !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper {
-  min-height: 100vh !important;
-  padding-bottom: 2.5rem !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home .relative.z-\[2\] {
-  padding-bottom: 4.5rem !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  padding-bottom: 0 !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home main {
+  position: relative !important;
+  flex: 1 1 auto !important;
+  min-height: 100% !important;
+  padding-bottom: 0 !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
+  position: absolute !important;
+  left: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 4.25rem !important;
+  margin-top: 0 !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
   position: relative !important;
   z-index: 5 !important;
+  margin-right: 22% !important;
+  max-width: 16rem !important;
 }
 
-html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper svg {
-  height: 3.5rem !important;
+html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 svg {
+  height: 4.75rem !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #about {
-  margin-top: -0.5rem !important;
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
+    left: 3rem !important;
+    right: 3rem !important;
+    bottom: 5.25rem !important;
+  }
+
+  html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
+    margin-right: 26% !important;
+    max-width: 18rem !important;
+  }
+
+  html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 svg {
+    height: 5.75rem !important;
+  }
 }
 
 /* —— Autonex —— */
