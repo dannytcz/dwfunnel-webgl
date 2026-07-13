@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
   <head>
   <meta name="robots" content="noindex" />
-  <script src="/assets/js/dwf-loader.js?v=9" defer></script>
+  <script src="/assets/js/dwf-loader.js?v=18" defer></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
@@ -82,6 +82,7 @@ Schedule: ${d.map(E=>Bi(E))} pos: ${this.timelinePos}`),m.length&&this.log(`Remo
   if (window.__DWF_AUTOSCROLL__) return;
   window.__DWF_AUTOSCROLL__ = true;
   var CYCLE = 28000, scrollY = 0, startedAt = 0;
+  try { if (new URLSearchParams(location.search).has('lightbox')) CYCLE = 33600; } catch (e) {}
   function tick(now) {
     if (!startedAt) startedAt = now;
     var max = Math.max(0, document.documentElement.scrollHeight - innerHeight);

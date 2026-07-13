@@ -3044,9 +3044,14 @@ html.is-survey-open body {
 /* Selected Work previews: getlayers-style H.264 loops (30fps preview mp4).
    All visible cards play together while Studio Bench is focused. */
 .ws--embed { background: #06110e; overflow: hidden; }
+.ws--autonex .ws-embed-preview {
+  transform: scale(1.2);
+  transform-origin: center 42%;
+}
 .ws--sable .ws-embed-preview {
-  transform: scale(0.84);
-  transform-origin: center 18%;
+  transform: scale(0.5);
+  transform-origin: center 12%;
+  object-position: center 18%;
 }
 .ws-embed-preview {
   position: absolute;
