@@ -6,6 +6,7 @@
 (function () {
   var YEAR = String(new Date().getFullYear());
   var CREDIT = "Built by DW Funnel · © " + YEAR;
+  var HOME_URL = "https://dwfunnel.com";
   var embed = false;
   var lightbox = false;
   var preview = false;
@@ -71,7 +72,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=30";
+      link.href = "/assets/css/dwf-embed.css?v=32";
       (document.head || html).appendChild(link);
     }
   }
@@ -270,7 +271,7 @@
           } else {
             b.textContent = CREDIT;
           }
-          b.setAttribute("href", b.getAttribute("href") || "/");
+          b.setAttribute("href", HOME_URL);
           b.setAttribute("title", "Concept by DW Funnel · © " + YEAR);
           if (embed && lightbox) {
             b.setAttribute("target", "_parent");
@@ -280,7 +281,7 @@
       } else if (!preview) {
         var a = document.createElement("a");
         a.className = "dwf-credit";
-        a.href = "/";
+        a.href = HOME_URL;
         a.title = "Concept by DW Funnel · © " + YEAR;
         a.textContent = CREDIT;
         if (embed && lightbox) {

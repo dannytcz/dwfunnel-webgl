@@ -31,7 +31,7 @@ const W = 1280, H = 800;
 const OUT = path.join(__dirname, '..', 'assets', 'demos', 'previews');
 const SCALE = '960:600';
 const FPS = 24;
-const MAX_DUR = 6;
+const MAX_DUR = 8;
 const CRF = 21;
 
 const hold = (p, ms) => p.waitForTimeout(ms);
@@ -96,7 +96,11 @@ async function cinematicScroll(p, maxPx, seconds) {
 }
 
 const RECIPES = {
-  lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
+  lexis:    { url:'/demos/lexis.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.2, act: async p => {
+    await hold(p, 2200);
+    await sweep(p, 6);
+    await hold(p, 4500);
+  }},
   kanevoss: { url:'/demos/kanevoss.html?embed=1&preview=1', wait:2200, trim:{start:3.5,dur:4}, posterAt:4.2, act: async p => {
     await hold(p, 1000);
     await smoothOrbit(p, 9);
@@ -120,7 +124,14 @@ const RECIPES = {
       await hold(p, 8000);
     }
   }},
-  toybomb:  { url:'/demos/toybomb.html',             wait:1800, trim:{start:2.5,dur:6}, act: async p => { for (let i=0;i<3;i++){ await clickSel(p,'#nextButton'); await hold(p,1900);} } },
+  toybomb:  { url:'/demos/toybomb.html?preview=1', wait:2200, trim:{start:2.5,dur:6}, posterAt:3.5, act: async p => {
+    await hold(p, 2500);
+    await smoothOrbit(p, 5);
+    await clickSel(p, '#nextButton');
+    await hold(p, 2800);
+    await clickSel(p, '#nextButton');
+    await hold(p, 2000);
+  }},
   harbour:  { url:'/demos/harbour.html?embed=1',     wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   aurelia:  { url:'/demos/aurelia.html',             wait:1500, trim:{start:3.5,dur:6}, act: p => hold(p,8000) },
   auren:    { url:'/demos/auren.html?embed=1&preview=1', wait:2800, trim:{start:2.5,dur:4}, posterAt:3.2, act: async p => {
@@ -130,11 +141,11 @@ const RECIPES = {
   }},
   supabot:  { url:'/demos/supabot.html',             wait:2000, trim:{start:2.5,dur:6}, act: p => hold(p,6000) },
   thebrew:  { url:'/demos/thebrew.html?embed=1&preview=1', wait:2600, trim:{start:2.2,dur:4}, posterAt:3.0, act: p => heroHold(p, 7000) },
-  unwritten:{ url:'/demos/unwritten.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.5, act: async p => {
-    await hold(p, 2200);
-    const max = await p.evaluate(() => Math.min(1600, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
-    await cinematicScroll(p, max, 6);
-    await hold(p, 1500);
+  unwritten:{ url:'/demos/unwritten.html?embed=1&preview=1', wait:3200, trim:{start:3.2,dur:8}, posterAt:5.5, act: async p => {
+    await hold(p, 2600);
+    const max = await p.evaluate(() => Math.min(2000, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
+    await cinematicScroll(p, max, 8);
+    await hold(p, 2000);
   }},
   kairo:    { url:'/demos/kairo.html?embed=1&preview=1', wait:2400, trim:{start:2.0,dur:4}, posterAt:2.8, act: p => heroHold(p, 7500) },
   valence:  { url:'/demos/valence.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.2, act: async p => {
@@ -156,13 +167,17 @@ const RECIPES = {
   }},
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   lumenix:  { url:'/demos/lumenix.html?embed=1&preview=1', wait:3800, trim:{start:2.2,dur:6}, posterAt:1.8, act: p => hold(p,10000) },
-  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:3000, trim:{start:2.5,dur:6}, posterAt:4.0, act: async p => {
-    await hold(p, 1800);
-    const max = await p.evaluate(() => Math.min(1400, Math.max(0, (document.getElementById('reverie')?.offsetHeight || 0) - window.innerHeight)));
+  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:3200, trim:{start:2.8,dur:6}, posterAt:4.2, act: async p => {
+    await hold(p, 2200);
+    const max = await p.evaluate(() => Math.min(1800, Math.max(0, (document.getElementById('reverie')?.offsetHeight || 0) - window.innerHeight)));
     await cinematicScroll(p, max, 6.5);
-    await hold(p, 1500);
+    await sweep(p, 4);
+    await hold(p, 2000);
   }},
-  stretch:  { url:'/demos/stretch.html?embed=1',  wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
+  stretch:  { url:'/demos/stretch.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.5, act: async p => {
+    await waitVideo(p);
+    await hold(p, 7500);
+  }},
   webpal:   { url:'/demos/webpal.html?embed=1',   wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   picocore: { url:'/demos/picocore.html?embed=1&preview=1', wait:2600, trim:{start:2.2,dur:4}, posterAt:2.8, act: async p => {
     await hold(p, 3000);
@@ -170,7 +185,7 @@ const RECIPES = {
     await hold(p, 4500);
   }},
   liontech:{ url:'/demos/liontech.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
-  tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  tarismo:  { url:'/demos/tarismo.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.2, act: p => heroHold(p, 8500) },
   enermax:  { url:'/demos/enermax.html?embed=1&preview=1', wait:3200, trim:{start:2.0,dur:6}, posterAt:2.2, act: p => hold(p,12000) },
   autonex:  { url:'/demos/autonex.html?embed=1&preview=1', wait:7000, trim:{start:6.5,dur:6}, posterAt:1.0, act: async p => {
     // Sweep the cursor so the Spline robot arm visibly tracks it.

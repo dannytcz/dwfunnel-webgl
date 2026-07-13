@@ -25,9 +25,16 @@ export function initWorkRoller(appState) {
   let slideTween = null;
   let dragSuppressClick = false;
 
+  const PREVIEW_REV = "128";
   const live = new Set();
   const blobCache = new Map();
   const blobPending = new Map();
+
+  function previewFetchUrl(src) {
+    if (!src) return src;
+    const join = src.includes("?") ? "&" : "?";
+    return `${src}${join}v=${PREVIEW_REV}`;
+  }
 
   window.__workRollerSuppressClick = () => {
     const v = dragSuppressClick;
@@ -67,7 +74,7 @@ export function initWorkRoller(appState) {
     const pending = blobPending.get(src);
     if (pending) return pending;
 
-    const job = fetch(src)
+    const job = fetch(previewFetchUrl(src))
       .then((res) => {
         if (!res.ok) throw new Error(`warm ${src} ${res.status}`);
         return res.blob();

@@ -4,7 +4,7 @@ import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
 import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
-import { initWorkRoller } from "./work-roller.js?v=4";
+import { initWorkRoller } from "./work-roller.js?v=5";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
