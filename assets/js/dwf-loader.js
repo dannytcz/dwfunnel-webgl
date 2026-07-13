@@ -25,7 +25,8 @@
 
   var LIGHTBOX_NO_SCROLL = { kanevoss: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
-  var LIGHTBOX_CINEMATIC_CAP = { unwritten: 0.68, reverie: 0.68 };
+  var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
+  var LIGHTBOX_CINEMATIC_CAP = 0.68;
 
   function notifyParent(type) {
     try {
@@ -47,21 +48,77 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=6";
+      link.href = "/assets/css/dwf-embed.css?v=7";
       (document.head || html).appendChild(link);
     }
   }
   setupEmbedShell();
 
-  function setupLightboxAutoscroll() {
+  function setupCinematicLightbox() {
     if (!lightbox || preview) return;
     var demo = demoSlug();
-    if (LIGHTBOX_NO_SCROLL[demo] || LIGHTBOX_PAGE_SCROLL[demo]) return;
+    if (!LIGHTBOX_CINEMATIC[demo]) return;
     if (document.getElementById("dwf-embed-autoscroll")) return;
     window.__DWF_AUTOSCROLL__ = true;
 
-    var scrollCap = LIGHTBOX_CINEMATIC_CAP[demo] || 1;
-    var CYCLE = scrollCap < 1 ? 34000 : 42000;
+    var CAP = LIGHTBOX_CINEMATIC_CAP;
+    var CYCLE = 36000;
+    var startedAt = 0;
+    var lastNow = 0;
+    var currentP = 0;
+
+    function scrollRoot() {
+      if (demo === "reverie") return document.getElementById("reverie");
+      if (demo === "unwritten") return document.getElementById("experience");
+      return null;
+    }
+
+    function scrollRange() {
+      var root = scrollRoot();
+      if (!root) return 0;
+      return Math.max(1, root.offsetHeight - window.innerHeight);
+    }
+
+    function setProgress(p) {
+      var y = Math.max(0, p * scrollRange());
+      document.documentElement.scrollTop = y;
+      document.body.scrollTop = y;
+      window.dispatchEvent(new Event("scroll"));
+    }
+
+    function tick(now) {
+      if (!startedAt) {
+        startedAt = now;
+        lastNow = now;
+      }
+      var dt = Math.min(48, Math.max(8, now - lastNow));
+      lastNow = now;
+      var t = ((now - startedAt) % CYCLE) / CYCLE;
+      var wave = (1 - Math.cos(t * Math.PI * 2)) / 2;
+      var targetP = wave * CAP;
+      var alpha = 1 - Math.exp(-2.6 * dt / 1000);
+      currentP += (targetP - currentP) * alpha;
+      setProgress(currentP);
+      window.requestAnimationFrame(tick);
+    }
+
+    function start() {
+      window.requestAnimationFrame(tick);
+    }
+
+    if (document.readyState === "complete") window.setTimeout(start, 2200);
+    else window.addEventListener("load", function () { window.setTimeout(start, 2200); }, { once: true });
+  }
+
+  function setupLightboxAutoscroll() {
+    if (!lightbox || preview) return;
+    var demo = demoSlug();
+    if (LIGHTBOX_NO_SCROLL[demo] || LIGHTBOX_PAGE_SCROLL[demo] || LIGHTBOX_CINEMATIC[demo]) return;
+    if (document.getElementById("dwf-embed-autoscroll")) return;
+    window.__DWF_AUTOSCROLL__ = true;
+
+    var scrollCap = 1;
+    var CYCLE = 42000;
     var startedAt = 0;
     var lastNow = 0;
     var currentY = 0;
@@ -115,6 +172,7 @@
     if (document.readyState === "complete") window.setTimeout(start, 2200);
     else window.addEventListener("load", function () { window.setTimeout(start, 2200); }, { once: true });
   }
+  setupCinematicLightbox();
   setupLightboxAutoscroll();
 
   function ensureMeta(name, content) {
