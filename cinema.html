@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=114" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=115" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -508,8 +508,8 @@
 
         <div class="apply-form-wrap" id="apply-form-wrap">
           <div class="apply-form-panel apply-page-step reveal-panel" id="apply-page-step">
-            <p class="apply-page-step__label">Step 1 of 5 — About you</p>
-            <p class="apply-page-step__note">Takes about 3 minutes. We read every request ourselves.</p>
+            <p class="apply-page-step__label">Apply for a build now</p>
+            <p class="apply-page-step__note">We read every request ourselves.</p>
 
             <div class="form-field" data-field="name">
               <label for="br-name">Your name</label>
@@ -618,13 +618,13 @@
     <div class="build-survey__frame" role="dialog" aria-modal="true" aria-labelledby="build-survey-title" tabindex="-1">
       <header class="build-survey__chrome">
         <div class="build-survey__meta">
-          <p class="build-survey__eyebrow" id="build-survey-step-label">Step 2 of 5</p>
+          <p class="build-survey__eyebrow" id="build-survey-step-label">Build request</p>
           <h2 class="build-survey__title" id="build-survey-title">Your offer</h2>
           <p class="build-survey__retention" id="build-survey-retention">Good start. Now tell us what you're selling.</p>
         </div>
         <button type="button" class="build-survey__close" data-survey-close aria-label="Close build request form">Close</button>
       </header>
-      <div class="build-survey__progress" aria-hidden="true">
+      <div class="build-survey__progress" id="build-survey-progress" role="progressbar" aria-label="Build request progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="2">
         <span class="build-survey__progress-fill" data-survey-progress></span>
       </div>
 
@@ -761,6 +761,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=110"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=111"></script>
 </body>
 </html>

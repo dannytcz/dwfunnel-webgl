@@ -139,12 +139,15 @@ function updateStepUI(root, form, step) {
   const stepLabel = root.querySelector("#build-survey-step-label");
   const title = root.querySelector("#build-survey-title");
   const retention = root.querySelector("#build-survey-retention");
-  if (stepLabel) stepLabel.textContent = `Step ${overallStep} of ${OVERALL_STEPS}`;
+  if (stepLabel) stepLabel.textContent = "Build request";
   if (title) title.textContent = STEP_TITLES[step] || "";
   if (retention) retention.textContent = STEP_RETENTION[step] || "";
 
-  const progress = root.querySelector("[data-survey-progress]");
-  if (progress) progress.style.width = `${(overallStep / OVERALL_STEPS) * 100}%`;
+  const progressFill = root.querySelector("[data-survey-progress]");
+  if (progressFill) progressFill.style.width = `${(overallStep / OVERALL_STEPS) * 100}%`;
+
+  const progressBar = root.querySelector("#build-survey-progress");
+  if (progressBar) progressBar.setAttribute("aria-valuenow", String(overallStep));
 
   const nextBtn = root.querySelector("[data-survey-next]");
   if (nextBtn) {
