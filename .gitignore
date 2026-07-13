@@ -4,6 +4,11 @@ assets/frames/cinema/upload.log
 .vercel
 node_modules/
 
+# Never ship browser source maps (keeps production JS harder to reverse)
+*.map
+**/*.js.map
+**/*.css.map
+
 # Dev / debug artifacts
 PLAN.*.md
 *.log

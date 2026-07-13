@@ -114,8 +114,15 @@ Danny hands you a purchased single file template. The recipe, proven 5 times:
 2. **Self host every brand asset.** Images to webp (PIL, keep dimensions if any canvas math depends on them). Video compressed with ffmpeg (`scale=1280, crf 30, -an, +faststart`). Fonts: if the source used an attribution heavy host, self host the real OFL font instead (Fontsource on jsdelivr, e.g. `cdn.jsdelivr.net/fontsource/fonts/<font>@latest/latin-400-normal.woff2`). Put assets in `assets/demos/<key>/`.
 3. **Keep library CDNs** (gsap, lenis, lucide, react, tailwind, Google Fonts). Only brand assets get self hosted.
 4. **Rebrand only when the name is a real person or real business risk.** Fabricated concept brands (Aurelia, AUREN) are fine to keep. A personal name (the original "Marcus Vance") got renamed to a fabricated one (Kane Voss). If Danny says he made the brand, preserve it and his logo.
-5. **House style pass:** remove dashes used as punctuation (see rules below), add `<meta name="robots" content="noindex">`, add a "Built by DW Funnel" credit (footer for scroll sites, small fixed badge for single screen ones) linking to `/`.
+5. **House style pass:** remove dashes used as punctuation (see rules below), add `<meta name="robots" content="noindex">`, load `/assets/js/dwf-loader.js?v=2` (boot + provenance mark). Credit text is `Built by DW Funnel · © 2026`. Prefer Vite/production minified bundles for React demos (`sourcemap: false`). Never ship `*.map` or original `src/` folders.
 6. **Wire a card** (replace a placeholder) and **capture a preview clip** (section 8).
+
+### IP hygiene (show everything, raise copy cost)
+
+- **No source maps:** `.gitignore` blocks `*.map`. Vite builds must keep `build.sourcemap: false`.
+- **Minify hard:** for React/Vue demos, ship only the production `dist` (like Sable). Do not publish clean source trees on the live domain. Rewriting every legacy single-file HTML demo into a minified bundle is optional and slow; do it when touching that demo next.
+- **Watermark hard:** `dwf-loader.js` always stamps author/copyright meta, an HTML comment, and upgrades the fixed credit badge. Preview embeds still hide the badge via `?embed=1`.
+- Right-click blocking is not used. It hurts UX and does not stop DevTools.
 
 ## 7. Hard rules (these are Danny's, follow exactly)
 
@@ -152,7 +159,7 @@ The `mcp__Claude_Browser__*` screenshot / `computer` actions time out this whole
 - Grid is 4 wide, 16 live demos, H.264 30fps preview mp4s + posters. Cache at v=90+. Push after each iteration.
 - **The obvious next task:** next template Danny sends, same make-ours recipe; optional grid pagination when the set grows.
 - Deferred by Danny or still open: pagination or a "see more" second page for when the grid gets large (video previews keep it light for now, so not urgent); optional seamless looping of clips (boomerang); favicon and OG image; real content on the main page (a real WhatsApp number, real stats, a real founder portrait, currently placeholders); custom domain and analytics (Danny maps these himself later).
-- Code protection question came up: you cannot truly stop front end copying, disabling right click is not real protection and hurts UX. The agreed direction if pursued is minify plus obfuscate the demo code, a copyright and terms page, not right click blocking.
+- Code protection: cannot fully stop front end copying. Live approach is provenance watermarks via `dwf-loader.js`, no source maps, minified React demos, copyright on credits. No right-click blocking.
 
 ## 11. Deeper history
 

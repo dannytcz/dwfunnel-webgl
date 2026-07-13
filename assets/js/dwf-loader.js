@@ -1,13 +1,100 @@
 /**
- * DW Funnel branded boot loader for concept demos.
- * Skips ?embed=1 / ?preview=1 so Selected Work capture stays clean.
- * Injects itself as soon as the script runs (prefer <head>).
+ * DW Funnel branded boot loader + provenance mark for concept demos.
+ * Boot UI skips ?embed=1 / ?preview=1 so Studio Bench captures stay clean.
+ * Provenance (credit badge, meta, comment) always applies.
  */
 (function () {
+  var YEAR = "2026";
+  var CREDIT = "Built by DW Funnel · © " + YEAR;
+  var embed = false;
   try {
     var q = new URLSearchParams(location.search);
-    if (q.has("embed") || q.has("preview")) return;
+    embed = q.has("embed") || q.has("preview");
   } catch (e) {}
+
+  function ensureMeta(name, content) {
+    var el = document.querySelector('meta[name="' + name + '"]');
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute("name", name);
+      (document.head || document.documentElement).appendChild(el);
+    }
+    el.setAttribute("content", content);
+  }
+
+  function applyProvenance() {
+    try {
+      ensureMeta("author", "DW Funnel");
+      ensureMeta("copyright", "© " + YEAR + " DW Funnel. Concept demo. All rights reserved.");
+      ensureMeta("application-name", "DW Funnel Concept");
+
+      if (!document.getElementById("dwf-provenance-comment")) {
+        var c = document.createComment(
+          " Concept demo by DW Funnel (dwfunnel.com). © " +
+            YEAR +
+            " DW Funnel. Not a free template. "
+        );
+        // Marker node so we do not duplicate on HMR-like reloads
+        var marker = document.createElement("meta");
+        marker.id = "dwf-provenance-comment";
+        marker.name = "dwf-provenance";
+        marker.content = "1";
+        (document.head || document.documentElement).appendChild(marker);
+        (document.head || document.documentElement).insertBefore(
+          c,
+          (document.head || document.documentElement).firstChild
+        );
+      }
+
+      var style = document.getElementById("dwf-credit-style");
+      if (!style) {
+        style = document.createElement("style");
+        style.id = "dwf-credit-style";
+        style.textContent =
+          "html.is-embed .dwf-credit,html.is-embed .studio-badge{display:none!important}" +
+          ".dwf-credit,.studio-badge{z-index:9999}";
+        (document.head || document.documentElement).appendChild(style);
+      }
+
+      var badges = document.querySelectorAll(".dwf-credit, .studio-badge");
+      if (badges.length) {
+        badges.forEach(function (b) {
+          if (b.querySelector("strong")) {
+            b.querySelector("strong").textContent = CREDIT;
+          } else {
+            b.textContent = CREDIT;
+          }
+          b.setAttribute("href", b.getAttribute("href") || "/");
+          b.setAttribute("title", "Concept by DW Funnel · © " + YEAR);
+        });
+      } else if (!embed) {
+        var a = document.createElement("a");
+        a.className = "dwf-credit";
+        a.href = "/";
+        a.title = "Concept by DW Funnel · © " + YEAR;
+        a.textContent = CREDIT;
+        a.style.cssText =
+          "position:fixed;right:14px;bottom:12px;z-index:9999;" +
+          "font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;" +
+          "text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;" +
+          "border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);" +
+          "border-radius:999px";
+        (document.body || document.documentElement).appendChild(a);
+      }
+    } catch (err) {}
+  }
+
+  function whenReady(fn) {
+    if (document.body) fn();
+    else document.addEventListener("DOMContentLoaded", fn, { once: true });
+  }
+  whenReady(applyProvenance);
+  // Re-apply after late React mounts (e.g. Sable)
+  setTimeout(function () {
+    whenReady(applyProvenance);
+  }, 1200);
+
+  if (embed) return;
 
   if (window.__DWF_BOOT__) return;
   window.__DWF_BOOT__ = true;
@@ -100,7 +187,6 @@
     document.documentElement.classList.remove("dwf-booting");
     document.documentElement.classList.add("dwf-booted");
 
-    // Help demos that gate reveal behind a native loader
     try {
       document.body && document.body.classList.add("ready");
       document.querySelectorAll(".ready-only").forEach(function (el) {
@@ -113,6 +199,7 @@
       }
     } catch (e) {}
 
+    whenReady(applyProvenance);
     window.dispatchEvent(new CustomEvent("dwf:ready"));
     setTimeout(function () {
       try {
@@ -129,9 +216,11 @@
   else window.addEventListener("load", onLoaded, { once: true });
 
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () {
-      setProgress(Math.max(progress, 0.55));
-    }).catch(function () {});
+    document.fonts.ready
+      .then(function () {
+        setProgress(Math.max(progress, 0.55));
+      })
+      .catch(function () {});
   }
 
   requestAnimationFrame(tick);
