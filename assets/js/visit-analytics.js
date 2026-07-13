@@ -141,6 +141,10 @@ function recordVisit() {
   return { visitorId, visitCount, previousVisitAt };
 }
 
+export function markReachedApply() {
+  writeSession(SESSION.reachedApply, "1");
+}
+
 export function initVisitAnalytics() {
   recordVisit();
   updateScrollDepth();

@@ -6,6 +6,20 @@ const BUDGET_OPTIONS = ["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"];
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
 const UTM_STORAGE_KEY = "dwf_utm";
 
+const STEP_FIELDS = {
+  1: ["name", "contact", "businessBrand"],
+  2: ["offer", "trafficSources"],
+  3: ["conversionProblem", "currentPage"],
+  4: ["estimatedBudget", "additionalNotes"],
+};
+
+const STEP_TITLES = {
+  1: "About you",
+  2: "Your offer",
+  3: "What's broken",
+  4: "Budget & send",
+};
+
 /**
  * Submit a build request to the configured backend.
  * @param {object} payload
@@ -34,7 +48,7 @@ export async function submitBuildRequest(payload) {
   return { ok: true };
 }
 
-function isValidUrl(value) {
+export function isValidUrl(value) {
   try {
     const url = new URL(value);
     return url.protocol === "http:" || url.protocol === "https:";
@@ -43,7 +57,7 @@ function isValidUrl(value) {
   }
 }
 
-function setFieldError(field, message) {
+export function setFieldError(field, message) {
   field.classList.add("is-invalid");
   const errorEl = field.querySelector(".form-field__error");
   if (errorEl) {
@@ -52,7 +66,7 @@ function setFieldError(field, message) {
   }
 }
 
-function clearFieldError(field) {
+export function clearFieldError(field) {
   field.classList.remove("is-invalid");
   const errorEl = field.querySelector(".form-field__error");
   if (errorEl) {
@@ -61,10 +75,9 @@ function clearFieldError(field) {
   }
 }
 
-function clearAllErrors(form) {
+export function clearAllErrors(form) {
   form.querySelectorAll(".form-field.is-invalid").forEach(clearFieldError);
-  const groupErrors = form.querySelectorAll(".form-fieldset.is-invalid");
-  groupErrors.forEach((fieldset) => {
+  form.querySelectorAll(".form-fieldset.is-invalid").forEach((fieldset) => {
     fieldset.classList.remove("is-invalid");
     const errorEl = fieldset.querySelector(".form-field__error");
     if (errorEl) {
@@ -79,7 +92,7 @@ function clearAllErrors(form) {
   }
 }
 
-function getTrimmed(form, name) {
+export function getTrimmed(form, name) {
   const el = form.elements.namedItem(name);
   return el && "value" in el ? String(el.value).trim() : "";
 }
@@ -128,7 +141,7 @@ function getDeviceType() {
   return "desktop";
 }
 
-function collectClientMeta(formInitTime) {
+export function collectClientMeta(formInitTime) {
   let clientTimezone = "";
   try {
     clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
@@ -150,7 +163,7 @@ function collectClientMeta(formInitTime) {
   };
 }
 
-function collectPayload(form, formInitTime) {
+export function collectPayload(form, formInitTime) {
   const trafficSources = TRAFFIC_OPTIONS.filter((key) => {
     const input = form.querySelector(`input[name="trafficSources"][value="${key}"]`);
     return input?.checked;
@@ -174,27 +187,28 @@ function collectPayload(form, formInitTime) {
   };
 }
 
-function validateForm(form) {
-  clearAllErrors(form);
+const REQUIRED_TEXT = {
+  name: "Enter your name.",
+  contact: "Enter an email or WhatsApp number.",
+  businessBrand: "Enter your business or brand name.",
+  offer: "Tell us what you are selling.",
+  conversionProblem: "Tell us what is not working.",
+};
+
+function validateRequiredText(form, names) {
   let valid = true;
-
-  const requiredText = [
-    ["name", "Enter your name."],
-    ["contact", "Enter an email or WhatsApp number."],
-    ["businessBrand", "Enter your business or brand name."],
-    ["offer", "Tell us what you are selling."],
-    ["conversionProblem", "Tell us what is not working."],
-  ];
-
-  requiredText.forEach(([name, message]) => {
+  names.forEach((name) => {
     const field = form.querySelector(`.form-field[data-field="${name}"]`);
     if (!field) return;
     if (!getTrimmed(form, name)) {
-      setFieldError(field, message);
+      setFieldError(field, REQUIRED_TEXT[name]);
       valid = false;
     }
   });
+  return valid;
+}
 
+function validateTraffic(form) {
   const trafficFieldset = form.querySelector('.form-fieldset[data-field="trafficSources"]');
   const trafficChecked = form.querySelectorAll('input[name="trafficSources"]:checked').length;
   if (!trafficChecked && trafficFieldset) {
@@ -204,9 +218,12 @@ function validateForm(form) {
       errorEl.textContent = "Select at least one traffic source.";
       errorEl.hidden = false;
     }
-    valid = false;
+    return false;
   }
+  return true;
+}
 
+function validateBudget(form) {
   const budgetFieldset = form.querySelector('.form-fieldset[data-field="estimatedBudget"]');
   const budgetChecked = form.querySelector('input[name="estimatedBudget"]:checked');
   if (!budgetChecked && budgetFieldset) {
@@ -216,23 +233,68 @@ function validateForm(form) {
       errorEl.textContent = "Select a budget range.";
       errorEl.hidden = false;
     }
-    valid = false;
+    return false;
   }
+  return true;
+}
 
+function validateCurrentPage(form) {
   const currentPage = getTrimmed(form, "currentPage");
   const pageField = form.querySelector('.form-field[data-field="currentPage"]');
   if (currentPage && pageField && !isValidUrl(currentPage)) {
     setFieldError(pageField, "Enter a valid URL starting with https://");
-    valid = false;
+    return false;
+  }
+  return true;
+}
+
+export function validateStep(form, step) {
+  clearAllErrors(form);
+  let valid = true;
+
+  if (step === 1) {
+    valid = validateRequiredText(form, ["name", "contact", "businessBrand"]);
+  } else if (step === 2) {
+    valid = validateRequiredText(form, ["offer"]) && validateTraffic(form);
+  } else if (step === 3) {
+    valid = validateRequiredText(form, ["conversionProblem"]) && validateCurrentPage(form);
+  } else if (step === 4) {
+    valid = validateBudget(form);
   }
 
   return valid;
 }
 
-function showSuccess(wrap) {
-  const formPanel = wrap.querySelector(".apply-form-panel");
+export function validateForm(form) {
+  clearAllErrors(form);
+  let valid = validateRequiredText(form, ["name", "contact", "businessBrand", "offer", "conversionProblem"]);
+  valid = validateTraffic(form) && valid;
+  valid = validateBudget(form) && valid;
+  valid = validateCurrentPage(form) && valid;
+  return valid;
+}
+
+export function bindFormInputClearing(form) {
+  form.addEventListener("input", (event) => {
+    const field = event.target.closest(".form-field");
+    if (field) clearFieldError(field);
+
+    const fieldset = event.target.closest(".form-fieldset");
+    if (fieldset) {
+      fieldset.classList.remove("is-invalid");
+      const errorEl = fieldset.querySelector(".form-field__error");
+      if (errorEl) {
+        errorEl.hidden = true;
+        errorEl.textContent = "";
+      }
+    }
+  });
+}
+
+export function showPageSuccess(wrap) {
+  const ctaPanel = wrap.querySelector(".apply-cta-panel");
   const successPanel = wrap.querySelector(".apply-success");
-  if (formPanel) formPanel.hidden = true;
+  if (ctaPanel) ctaPanel.hidden = true;
   if (successPanel) {
     successPanel.hidden = false;
     successPanel.querySelector(".apply-success__heading")?.focus();
@@ -250,65 +312,6 @@ function bindWhatsAppLinks() {
 export function initBuildRequestForm() {
   persistUtmParams();
   bindWhatsAppLinks();
-
-  const form = document.getElementById("build-request-form");
-  const wrap = document.getElementById("apply-form-wrap");
-  if (!form || !wrap) return;
-
-  const formInitTime = Date.now();
-
-  form.addEventListener("input", (event) => {
-    const field = event.target.closest(".form-field");
-    if (field) clearFieldError(field);
-
-    const fieldset = event.target.closest(".form-fieldset");
-    if (fieldset) {
-      fieldset.classList.remove("is-invalid");
-      const errorEl = fieldset.querySelector(".form-field__error");
-      if (errorEl) {
-        errorEl.hidden = true;
-        errorEl.textContent = "";
-      }
-    }
-  });
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (form.dataset.processing === "true") return;
-
-    if (!validateForm(form)) return;
-
-    const submitBtn = form.querySelector('[type="submit"]');
-    const formError = form.querySelector(".form-form__error");
-    const payload = collectPayload(form, formInitTime);
-
-    form.dataset.processing = "true";
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.dataset.defaultLabel = submitBtn.dataset.defaultLabel || submitBtn.textContent;
-      submitBtn.textContent = "Submitting…";
-    }
-    if (formError) formError.hidden = true;
-
-    try {
-      await submitBuildRequest(payload);
-      showSuccess(wrap);
-    } catch (err) {
-      if (formError) {
-        formError.hidden = false;
-        formError.textContent =
-          err.message === "Build request endpoint is not configured."
-            ? "Submission is not live yet. For urgent projects, use the WhatsApp link below."
-            : "Something went wrong. Try again or message us on WhatsApp.";
-      }
-    } finally {
-      form.dataset.processing = "false";
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = submitBtn.dataset.defaultLabel || "Submit build request";
-      }
-    }
-  });
 }
 
-export { TRAFFIC_OPTIONS, BUDGET_OPTIONS };
+export { TRAFFIC_OPTIONS, BUDGET_OPTIONS, STEP_FIELDS, STEP_TITLES };
