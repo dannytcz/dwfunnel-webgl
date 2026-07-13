@@ -1,4 +1,4 @@
-import { formatMetaTextBlock } from "./submission-meta.js";
+import { buildEmailSummary, formatMetaTextBlock } from "./submission-meta.js";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -53,6 +53,50 @@ function metaRow(label, value) {
   </tr>`;
 }
 
+function formatDuration(seconds) {
+  if (seconds == null) return "—";
+  if (seconds < 60) return `${seconds} seconds`;
+  const minutes = Math.round(seconds / 60);
+  return minutes === 1 ? "1 minute" : `${minutes} minutes`;
+}
+
+function buildSummarySection(payload) {
+  const { headline, bullets } = buildEmailSummary(payload);
+  if (!headline) return "";
+
+  const bulletHtml = bullets
+    .map(
+      (line) =>
+        `<li style="margin:0 0 8px;color:#e6ded2;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;">${escapeHtml(line)}</li>`
+    )
+    .join("");
+
+  return `
+    <tr>
+      <td style="padding:0 28px 8px;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border:1px solid rgba(240,74,42,0.35);background:#11100f;">
+          <tr>
+            <td style="padding:16px 18px 8px;color:#f04a2a;font-family:Consolas,Monaco,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;">
+              Quick summary
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 18px 10px;color:#e6ded2;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;">
+              ${escapeHtml(headline)}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 18px 16px;">
+              <ul style="margin:0;padding:0 0 0 18px;">
+                ${bulletHtml}
+              </ul>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
 function buildMetaSection(meta) {
   if (!meta) return "";
 
@@ -66,7 +110,7 @@ function buildMetaSection(meta) {
         dateStyle: "medium",
         timeStyle: "short",
       });
-      return client.clientTimezone ? `${label} — ${client.clientTimezone}` : label;
+      return client.clientTimezone ? `${label} (${client.clientTimezone})` : label;
     } catch {
       return client.clientSubmittedAt;
     }
@@ -76,13 +120,26 @@ function buildMetaSection(meta) {
   const location = locationParts.length ? locationParts.join(", ") : server.country || "Unknown";
   const locationLine = server.ip && server.ip !== "Unknown" ? `${location} · ${server.ip}` : location;
   const deviceLine = client.device
-    ? `${client.device}${client.screenWidth ? ` · ${client.screenWidth}px` : ""}`
+    ? `${client.device}${client.screenWidth ? ` · ${client.screenWidth}px wide` : ""}`
     : "—";
-  const utm = client.utm
-    ? Object.entries(client.utm)
+  const utm = client.utm || client.firstTouchUtm;
+  const utmLine = utm
+    ? Object.entries(utm)
         .map(([key, value]) => `${key}: ${value}`)
         .join(" · ")
     : "None";
+  const visitLine =
+    client.visitCount != null
+      ? client.visitCount === 1
+        ? "First visit on this device"
+        : `Visit #${client.visitCount} on this device`
+      : "—";
+  const daysLine =
+    client.daysSinceFirstVisit != null
+      ? client.daysSinceFirstVisit === 0
+        ? "Found the site today"
+        : `${client.daysSinceFirstVisit} day(s) since first visit`
+      : "—";
 
   return `
     <tr>
@@ -90,21 +147,32 @@ function buildMetaSection(meta) {
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border:1px solid rgba(232,223,210,0.12);background:#080807;">
           <tr>
             <td style="padding:14px 16px 8px;color:#f04a2a;font-family:Consolas,Monaco,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;">
-              Submission context
+              Extra context
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 16px 10px;color:#9d9388;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;">
+              How they found you and what they did on the site.
             </td>
           </tr>
           <tr>
             <td style="padding:0 16px 14px;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                ${metaRow("Visitor time", visitorTime)}
-                ${metaRow("Studio time", `${server.studioLocalTime || "—"} MYT`)}
-                ${metaRow("Location", locationLine)}
+                ${metaRow("Their time", visitorTime)}
+                ${metaRow("Your time (MYT)", server.studioLocalTime || "—")}
+                ${metaRow("Where they are", locationLine)}
                 ${metaRow("Device", deviceLine)}
-                ${metaRow("Locale", client.clientLocale || "—")}
+                ${metaRow("Language", client.clientLocale || "—")}
                 ${metaRow("Referrer", client.referrer || "Direct / none")}
                 ${metaRow("Page", client.pageUrl || "—")}
-                ${metaRow("UTM", utm)}
-                ${client.formDurationSec != null ? metaRow("Form time", `${client.formDurationSec}s`) : ""}
+                ${metaRow("Ad / campaign tag", utmLine)}
+                ${metaRow("Visits on this device", visitLine)}
+                ${metaRow("How long they've known the site", daysLine)}
+                ${client.sessionDurationSec != null ? metaRow("Time on site", formatDuration(client.sessionDurationSec)) : ""}
+                ${client.scrollDepthPct != null ? metaRow("How far they scrolled", `${client.scrollDepthPct}%`) : ""}
+                ${client.reachedApply === true ? metaRow("Saw apply section", "Yes") : client.reachedApply === false ? metaRow("Saw apply section", "No") : ""}
+                ${client.formDurationSec != null ? metaRow("Time on form", formatDuration(client.formDurationSec)) : ""}
+                ${client.landingUrl ? metaRow("First landing page", client.landingUrl) : ""}
               </table>
             </td>
           </tr>
@@ -116,6 +184,7 @@ function buildMetaSection(meta) {
 export function buildEmailHtml(payload) {
   const studioTime = payload.meta?.server?.studioLocalTime;
   const headerTime = studioTime ? `${studioTime} MYT` : "dwfunnel-webgl";
+  const { headline } = buildEmailSummary(payload);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -125,6 +194,7 @@ export function buildEmailHtml(payload) {
   <title>New build request</title>
 </head>
 <body style="margin:0;padding:0;background:#050505;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(headline)}</div>
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#050505;padding:36px 16px;">
     <tr>
       <td align="center">
@@ -136,6 +206,7 @@ export function buildEmailHtml(payload) {
               <p style="margin:0;color:#9d9388;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;">Received ${escapeHtml(headerTime)}</p>
             </td>
           </tr>
+          ${buildSummarySection(payload)}
           <tr>
             <td style="padding:24px 28px 8px;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -187,10 +258,17 @@ export function buildEmailHtml(payload) {
 }
 
 export function buildEmailText(payload) {
+  const { headline, bullets } = buildEmailSummary(payload);
   const lines = [
     "NEW BUILD REQUEST",
     "=================",
     "",
+    "QUICK SUMMARY",
+    headline,
+    ...bullets.map((line) => `- ${line}`),
+    "",
+    "FULL DETAILS",
+    "------------",
     `Name: ${payload.name || "—"}`,
     `Email / WhatsApp: ${payload.contact || "—"}`,
     `Business / brand: ${payload.businessBrand || "—"}`,

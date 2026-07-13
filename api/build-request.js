@@ -100,7 +100,7 @@ async function sendEmail(payload) {
     throw new Error("RESEND_API_KEY is not configured.");
   }
 
-  const subject = `Build request — ${payload.businessBrand} (${payload.name})`;
+  const subject = `Build request — ${payload.businessBrand} · ${payload.estimatedBudget} (${payload.name})`;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {

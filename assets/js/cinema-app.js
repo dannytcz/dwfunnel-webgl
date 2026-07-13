@@ -1,5 +1,6 @@
 import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
 import { initBuildRequestForm } from "./build-request-form.js";
+import { initVisitAnalytics } from "./visit-analytics.js";
 import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=3";
 
@@ -1026,6 +1027,8 @@ function initStats() {
 }
 
 async function init() {
+  initVisitAnalytics();
+
   if (!window.gsap || !window.ScrollTrigger) {
     console.error("GSAP ScrollTrigger required");
     return;

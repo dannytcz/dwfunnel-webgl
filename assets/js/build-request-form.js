@@ -1,4 +1,5 @@
 import { CONTACT_CONFIG } from "./contact-config.js";
+import { getVisitSnapshot } from "./visit-analytics.js";
 
 const TRAFFIC_OPTIONS = ["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"];
 const BUDGET_OPTIONS = ["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"];
@@ -136,6 +137,7 @@ function collectClientMeta(formInitTime) {
   }
 
   return {
+    ...getVisitSnapshot(),
     clientTimezone,
     clientSubmittedAt: new Date().toISOString(),
     clientLocale: navigator.language || "",
