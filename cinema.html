@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=105" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=106" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -102,44 +102,50 @@
       <aside class="leak-diagnostic" id="leak-diagnostic" aria-label="Conversion leak diagnostic schematic">
         <p class="leak-traffic" data-anim="node"><span class="leak-traffic__tick" aria-hidden="true"></span>Traffic</p>
         <div class="leak-wire" data-anim="wire" aria-hidden="true"></div>
-        <div class="leak-step">
-          <div class="leak-stage" data-anim="stage">
-            <span class="leak-stage__label">01 / Understand</span>
-            <h3 class="leak-stage__question">Can they get it in five seconds?</h3>
-            <p class="leak-stage__support">What you sell. Who it's for. Why it matters now.</p>
+        <div class="leak-stage" data-anim="stage">
+          <span class="leak-stage__label">01 / Understand</span>
+          <h3 class="leak-stage__question">Can they get it in five seconds?</h3>
+          <p class="leak-stage__support">What you sell. Who it's for. Why it matters now.</p>
+        </div>
+        <div class="leak-gap">
+          <div class="leak-gap__spine" aria-hidden="true">
+            <div class="leak-wire leak-wire--loss1" data-anim="wire"></div>
           </div>
           <div class="leak-branch" data-anim="branch">
             <svg class="leak-branch__line" viewBox="0 0 320 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 L96 23 L148 3 L320 3" /></svg>
             <span class="leak-branch__text"><i>Leak</i><b>Vague offer</b></span>
           </div>
         </div>
-        <div class="leak-wire leak-wire--loss1" data-anim="wire" aria-hidden="true"></div>
-        <div class="leak-step">
-          <div class="leak-stage" data-anim="stage">
-            <span class="leak-stage__label">02 / Believe</span>
-            <h3 class="leak-stage__question">Do they believe you?</h3>
-            <p class="leak-stage__support">Proof should answer the doubt before the visitor starts looking for an exit.</p>
+        <div class="leak-stage" data-anim="stage">
+          <span class="leak-stage__label">02 / Believe</span>
+          <h3 class="leak-stage__question">Do they believe you?</h3>
+          <p class="leak-stage__support">Proof should answer the doubt before the visitor starts looking for an exit.</p>
+        </div>
+        <div class="leak-gap">
+          <div class="leak-gap__spine" aria-hidden="true">
+            <div class="leak-wire leak-wire--loss2" data-anim="wire"></div>
           </div>
           <div class="leak-branch leak-branch--2" data-anim="branch">
             <svg class="leak-branch__line" viewBox="0 0 320 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 L96 23 L148 3 L320 3" /></svg>
             <span class="leak-branch__text"><i>Leak</i><b>Proof too late</b></span>
           </div>
         </div>
-        <div class="leak-wire leak-wire--loss2" data-anim="wire" aria-hidden="true"></div>
-        <div class="leak-step">
-          <div class="leak-stage" data-anim="stage">
-            <span class="leak-stage__label">03 / Act</span>
-            <h3 class="leak-stage__question">Is the next move obvious?</h3>
-            <p class="leak-stage__support">One clear action. No dead ends. No competing buttons. No hunting around.</p>
+        <div class="leak-stage" data-anim="stage">
+          <span class="leak-stage__label">03 / Act</span>
+          <h3 class="leak-stage__question">Is the next move obvious?</h3>
+          <p class="leak-stage__support">One clear action. No dead ends. No competing buttons. No hunting around.</p>
+        </div>
+        <div class="leak-gap">
+          <div class="leak-gap__spine" aria-hidden="true">
+            <div class="leak-wire leak-wire--loss3" data-anim="wire"></div>
           </div>
           <div class="leak-branch leak-branch--3" data-anim="branch">
             <svg class="leak-branch__line" viewBox="0 0 320 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 L96 23 L148 3 L320 3" /></svg>
             <span class="leak-branch__text"><i>Leak</i><b>Unclear next step</b></span>
           </div>
         </div>
-        <div class="leak-wire leak-wire--loss3" data-anim="wire" aria-hidden="true"></div>
-        <div class="leak-action" data-anim="node">
-          <span class="leak-action__node" aria-hidden="true">◎</span>
+        <div class="leak-action" data-anim="node" aria-hidden="true">
+          <span class="leak-action__node">◎</span>
           <span class="leak-action__label">Action</span>
         </div>
       </aside>
@@ -690,6 +696,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=103"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=104"></script>
 </body>
 </html>

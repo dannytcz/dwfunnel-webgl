@@ -1,14 +1,8 @@
 /**
  * Conversion leak diagnostic schematic — scroll-scrubbed signal path.
  *
- * The schematic is plain document flow (traffic → wire → stage → leak branch
- * → wire → ... → action), so the reveal order is simply DOM order. CSS holds
- * the final visible state; this module builds one scrubbed timeline that
- * hides everything and reveals it sequentially as the section scrolls in:
- * wires grow downward, stages fade up, leak branches extend sideways.
- *
- * Reduced motion / static mode: do nothing — the CSS default is the complete
- * schematic.
+ * DOM order: traffic → wire → stage → gap (wire + leak) → … → action.
+ * Leak branches animate in the spine gaps between stages.
  */
 
 export function initConversionLeakSchematic({ reducedMotion = false, staticDraw = false } = {}) {
@@ -51,8 +45,13 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
         { autoAlpha: 0, y: 14 },
         { autoAlpha: 1, y: 0, duration: 0.55, ease: "power1.out" }
       );
+    } else if (el.classList.contains("leak-action")) {
+      tl.fromTo(
+        el,
+        { autoAlpha: 0, scale: 0.94, y: 10 },
+        { autoAlpha: 1, scale: 1, y: 0, duration: 0.55, ease: "power2.out" }
+      );
     } else {
-      // node: TRAFFIC label and the ACTION endpoint
       tl.fromTo(
         el,
         { autoAlpha: 0, y: 8 },
