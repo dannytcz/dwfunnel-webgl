@@ -4,7 +4,7 @@
  * Capture (?preview=1): no boot UI. Provenance always applies.
  */
 (function () {
-  var YEAR = "2026";
+  var YEAR = String(new Date().getFullYear());
   var CREDIT = "Built by DW Funnel · © " + YEAR;
   var embed = false;
   var lightbox = false;
@@ -36,11 +36,42 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=3";
+      link.href = "/assets/css/dwf-embed.css?v=4";
       (document.head || html).appendChild(link);
     }
   }
   setupEmbedShell();
+
+  function setupLightboxAutoscroll() {
+    if (!lightbox || preview) return;
+    if (document.getElementById("dwf-embed-autoscroll")) return;
+    var DUR = 22000;
+    var HOLD = 1200;
+    var phase = "down";
+    var anchor = null;
+    var holdUntil = 0;
+    function tick() {
+      var now = performance.now();
+      var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if (max < 8) return;
+      if (anchor === null) anchor = now;
+      if (now < holdUntil) return;
+      var t = Math.min((now - anchor) / DUR, 1);
+      var p = phase === "down" ? t : 1 - t;
+      window.scrollTo(0, p * max);
+      if (t >= 1) {
+        phase = phase === "down" ? "up" : "down";
+        anchor = now;
+        holdUntil = now + HOLD;
+      }
+    }
+    function start() {
+      window.setInterval(tick, 16);
+    }
+    if (document.readyState === "complete") window.setTimeout(start, 1800);
+    else window.addEventListener("load", function () { window.setTimeout(start, 1800); }, { once: true });
+  }
+  setupLightboxAutoscroll();
 
   function ensureMeta(name, content) {
     var el = document.querySelector('meta[name="' + name + '"]');

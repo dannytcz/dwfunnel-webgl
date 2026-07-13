@@ -404,11 +404,11 @@
             .studio-badge { left: 50%; transform: translateX(-50%); bottom: 0.9rem; text-align: center; }
         }
 
-        /* Embedded preview card: hide floating berries and leaves at any size. */
-        .is-embed .berries-container,
-        .is-embed .leaves-container { display: none !important; }
+        /* Embedded preview card only: hide floating berries in grid thumbnails. */
+        .is-embed:not(.is-lightbox) .berries-container,
+        .is-embed:not(.is-lightbox) .leaves-container { display: none !important; }
     </style>
-  <script src="/assets/js/dwf-loader.js?v=5"></script>
+  <script src="/assets/js/dwf-loader.js?v=6"></script>
 </head>
 <body>
     <div id="bubbles-container"></div>

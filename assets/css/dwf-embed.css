@@ -16,7 +16,11 @@ html.is-embed.is-lightbox,
 html.is-embed.is-lightbox body {
   overflow: hidden !important;
   overscroll-behavior: none;
-  height: 100%;
+  min-height: 100%;
+}
+
+html.is-embed.is-lightbox body {
+  height: auto !important;
 }
 
 html.is-embed .dwf-credit,
@@ -60,20 +64,20 @@ html[data-dwf-demo="harbour"].is-lightbox .max-w-\[320px\] {
 
 /* —— Kane Voss —— */
 html[data-dwf-demo="kanevoss"].is-lightbox .design-with {
-  font-size: clamp(2.25rem, 5vw, 4.25rem) !important;
+  font-size: clamp(2.8rem, 6.25vw, 5.3rem) !important;
 }
 
 html[data-dwf-demo="kanevoss"].is-lightbox .hero-word {
-  font-size: clamp(3.5rem, 9.5vw, 6.5rem) !important;
+  font-size: clamp(4.375rem, 11.875vw, 8.125rem) !important;
   -webkit-text-stroke-width: 1px !important;
 }
 
 html[data-dwf-demo="kanevoss"].is-lightbox .marquee-track {
-  font-size: clamp(2rem, 4.5vw, 3.5rem) !important;
+  font-size: clamp(2.5rem, 5.625vw, 4.375rem) !important;
 }
 
 html[data-dwf-demo="kanevoss"].is-lightbox .hero-image-wrap {
-  height: 62vh !important;
+  height: 58vh !important;
 }
 
 /* —— Petalform —— */
@@ -85,8 +89,13 @@ html[data-dwf-demo="petalform"].is-lightbox .hero h1 {
 html[data-dwf-demo="sable"].is-lightbox [class*="text-[64px]"],
 html[data-dwf-demo="sable"].is-lightbox [class*="text-[140px]"],
 html[data-dwf-demo="sable"].is-lightbox [class*="md:text-[140px]"] {
-  font-size: clamp(2.75rem, 7.5vw, 5.5rem) !important;
+  font-size: clamp(3.3rem, 9vw, 6.6rem) !important;
   line-height: 0.95 !important;
+}
+
+html[data-dwf-demo="sable"].is-lightbox h1,
+html[data-dwf-demo="sable"].is-lightbox h2 {
+  letter-spacing: -0.02em !important;
 }
 
 /* —— LionTech section 2 —— */
@@ -107,4 +116,79 @@ html[data-dwf-demo="newshift"].is-lightbox .text-8xl,
 html[data-dwf-demo="newshift"].is-lightbox .text-9xl {
   font-size: clamp(2rem, 5vw, 3.25rem) !important;
   line-height: 1.05 !important;
+}
+
+/* —— Verde —— */
+html[data-dwf-demo="verde"].is-lightbox .berries-container,
+html[data-dwf-demo="verde"].is-lightbox .leaves-container {
+  display: block !important;
+}
+
+html[data-dwf-demo="verde"].is-lightbox .berry,
+html[data-dwf-demo="verde"].is-lightbox .leaf {
+  display: block !important;
+}
+
+html[data-dwf-demo="verde"].is-lightbox model-viewer.berry,
+html[data-dwf-demo="verde"].is-lightbox model-viewer.leaf {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* —— Geneevo —— */
+html[data-dwf-demo="geneevo"].is-lightbox .hero-title {
+  font-size: clamp(4.5rem, 6vw, 5.4rem) !important;
+  line-height: 1.08 !important;
+  padding: 0.65rem 0.85rem !important;
+  max-width: min(92%, 42rem) !important;
+}
+
+html[data-dwf-demo="geneevo"].is-lightbox .hero-content {
+  padding-top: 0.5rem !important;
+}
+
+/* —— Elyra —— */
+html[data-dwf-demo="elyra"].is-lightbox h1 {
+  font-size: clamp(3.25rem, 9vw, 6.75rem) !important;
+  line-height: 0.92 !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper {
+  min-height: 100vh !important;
+  padding-bottom: 2.5rem !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home .relative.z-\[2\] {
+  padding-bottom: 4.5rem !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper svg {
+  height: 3.5rem !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #about {
+  margin-top: -0.5rem !important;
+}
+
+/* —— Autonex —— */
+html[data-dwf-demo="autonex"].is-lightbox .text-\[40px\] {
+  font-size: clamp(2.75rem, 7.5vw, 3.75rem) !important;
+  line-height: 0.95 !important;
+}
+
+html[data-dwf-demo="autonex"].is-lightbox .sm\:text-\[56px\] {
+  font-size: clamp(3.35rem, 8.5vw, 4.5rem) !important;
+}
+
+html[data-dwf-demo="autonex"].is-lightbox .md\:text-\[72px\] {
+  font-size: clamp(3.85rem, 10vw, 5.5rem) !important;
+}
+
+html[data-dwf-demo="autonex"].is-lightbox main {
+  padding-inline: clamp(1rem, 3vw, 2rem) !important;
 }
