@@ -288,52 +288,22 @@ html[data-dwf-demo="newshift"].is-lightbox #home h1 {
   line-height: 1.05 !important;
 }
 
-/* —— Verde —— */
-html[data-dwf-demo="verde"].is-lightbox,
-html[data-dwf-demo="verde"].is-lightbox body {
+/* —— EcoVolta —— */
+html[data-dwf-demo="ecovolta"].is-lightbox,
+html[data-dwf-demo="ecovolta"].is-lightbox body {
   height: 100% !important;
   max-height: 100vh !important;
   min-height: 100% !important;
   overflow: hidden !important;
 }
 
-html[data-dwf-demo="verde"].is-lightbox .hero {
-  height: 100vh !important;
+html[data-dwf-demo="ecovolta"].is-lightbox #root,
+html[data-dwf-demo="ecovolta"].is-lightbox #root > div {
+  height: 100% !important;
+  min-height: 100% !important;
   max-height: 100vh !important;
-  min-height: 100vh !important;
   overflow: hidden !important;
-  padding-top: 4.5rem !important;
 }
-
-html[data-dwf-demo="verde"].is-lightbox .berries-container,
-html[data-dwf-demo="verde"].is-lightbox .leaves-container {
-  display: block !important;
-  transform: none !important;
-}
-
-html[data-dwf-demo="verde"].is-lightbox .berry,
-html[data-dwf-demo="verde"].is-lightbox .leaf {
-  display: block !important;
-  transform: none !important;
-}
-
-html[data-dwf-demo="verde"].is-lightbox model-viewer.berry,
-html[data-dwf-demo="verde"].is-lightbox model-viewer.leaf {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-html[data-dwf-demo="verde"].is-lightbox .main-product-3d {
-  width: min(72vw, 52rem) !important;
-  height: min(72vh, 40rem) !important;
-}
-
-html[data-dwf-demo="verde"].is-lightbox .b1 { top: 22% !important; left: 28% !important; width: 170px !important; height: 170px !important; }
-html[data-dwf-demo="verde"].is-lightbox .b2 { top: 58% !important; left: 40% !important; width: 90px !important; height: 90px !important; }
-html[data-dwf-demo="verde"].is-lightbox .b3 { top: 28% !important; left: 60% !important; width: 190px !important; height: 190px !important; }
-html[data-dwf-demo="verde"].is-lightbox .b4 { top: 14% !important; left: 46% !important; width: 120px !important; height: 120px !important; }
-html[data-dwf-demo="verde"].is-lightbox .b5 { top: 72% !important; left: 18% !important; width: 100px !important; height: 100px !important; }
-html[data-dwf-demo="verde"].is-lightbox .b6 { top: 42% !important; left: 72% !important; width: 150px !important; height: 150px !important; }
 
 /* —— Geneevo —— */
 html[data-dwf-demo="geneevo"].is-lightbox .hero-title {

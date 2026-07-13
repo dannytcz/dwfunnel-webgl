@@ -63,7 +63,7 @@ async function spin(page, sel) {
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
   kanevoss: { url:'/demos/kanevoss.html?preview=1', wait:1200, trim:{start:1.2,dur:5}, posterAt:2.2, act: p => orbit(p, 7) },
-  verde:    { url:'/demos/verde.html',              wait:5000, trim:{start:1.5,dur:7}, act: async p => { await hold(p,1200); await spin(p,'#product-model'); await clickSel(p,'[data-flavor="blue"]'); await hold(p,1600); await spin(p,'#product-model'); await clickSel(p,'[data-flavor="classic"]'); await hold(p,1600);} },
+  ecovolta: { url:'/demos/ecovolta.html', wait:3500, trim:{start:2.0,dur:6}, act: p => hold(p,7000) },
   toybomb:  { url:'/demos/toybomb.html',             wait:1800, trim:{start:2.5,dur:6}, act: async p => { for (let i=0;i<3;i++){ await clickSel(p,'#nextButton'); await hold(p,1900);} } },
   harbour:  { url:'/demos/harbour.html?embed=1',     wait:1500, trim:{start:3.0,dur:7}, act: p => hold(p,9000) },
   aurelia:  { url:'/demos/aurelia.html',             wait:1500, trim:{start:3.5,dur:6}, act: p => hold(p,8000) },

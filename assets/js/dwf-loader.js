@@ -23,7 +23,7 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1, verde: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1, ecovolta: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
   var LIGHTBOX_CINEMATIC_HALF = 10000;
@@ -68,7 +68,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=19";
+      link.href = "/assets/css/dwf-embed.css?v=20";
       (document.head || html).appendChild(link);
     }
   }
