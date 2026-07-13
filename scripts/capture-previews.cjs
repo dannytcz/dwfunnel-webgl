@@ -18,7 +18,6 @@
  * Run some:  node scripts/capture-previews.cjs lexis,aurelia
  *
  * Output:    assets/demos/previews/<key>.mp4          ~960x600, 30fps, h264
- *            assets/demos/previews/<key>.webp         ~480px, 10fps animated
  *            assets/demos/previews/<key>-poster.webp  static poster frame
  */
 const { chromium } = require('playwright');
@@ -139,10 +138,7 @@ const RECIPES = {
       '-c:v','libx264','-crf',String(CRF),'-preset','slow','-pix_fmt','yuv420p','-movflags','+faststart', mp4]);
     execFileSync('ffmpeg', ['-y','-loglevel','error','-ss',String(r.trim.start + (r.posterAt || 0.5)),'-i',webm,
       '-vf',vfPoster,'-frames:v','1','-c:v','libwebp','-q:v','72', poster]);
-    const webp = path.join(OUT, key + '.webp');
-    execFileSync('ffmpeg', ['-y','-loglevel','error','-i',mp4,
-      '-vf','fps=10,scale=480:-1','-c:v','libwebp','-lossless','0','-quality','58','-loop','0', webp]);
-    console.log(`[${key}] ${(fs.statSync(mp4).size/1024|0)}KB mp4 + ${(fs.statSync(webp).size/1024|0)}KB webp + poster`);
+    console.log(`[${key}] ${(fs.statSync(mp4).size/1024|0)}KB mp4 + poster`);
   }
   await browser.close();
   console.log('DONE ->', OUT);

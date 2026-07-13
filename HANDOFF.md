@@ -65,18 +65,17 @@ Each live card is:
     <div class="work-card__screen ws--embed">
       <span class="ws-chrome"><i></i><i></i><i></i></span>
       <span class="work-card__live">Live site</span>
-      <img class="ws-embed-preview" src="/assets/demos/previews/<key>-poster.webp"
-           data-poster="/assets/demos/previews/<key>-poster.webp"
-           data-anim="/assets/demos/previews/<key>.webp"
-           alt="" width="640" height="400" loading="lazy" decoding="async"
-           aria-hidden="true" />
+      <video class="ws-embed-preview" poster="/assets/demos/previews/<key>-poster.webp"
+             data-src="/assets/demos/previews/<key>.mp4"
+             muted loop playsinline preload="none" width="960" height="600"
+             tabindex="-1" aria-hidden="true"></video>
     </div>
   </a>
   <figcaption><strong><Brand></strong><span>Sector &middot; Deliverable</span><em>One line hook.</em></figcaption>
 </figure>
 ```
 
-Performance model (this is deliberate, keep it): capture outputs a master H.264 mp4, then ffmpeg makes a 480px / 10fps animated WebP for the grid. While Studio Bench is on screen, **every visible card** plays its loop together (the wow pass). Three.js, scroll-scrub tickers, and the testimonial wall freeze via `html.is-work-focus`. Offscreen cards snap back to posters. Data-saver leaves posters forever. Use animated WebP in `<img>`, not many concurrent `<video>` players.
+Performance model (this is deliberate, keep it): getlayers-style **30fps H.264 preview mp4** per card (~960px, ~3–4s, `preload="none"`). While Studio Bench is on screen, **every visible card** plays together. `src` is only attached when a card is in view; offscreen cards unload back to poster. Three.js, scroll-scrub tickers, and the testimonial wall freeze via `html.is-work-focus` (we need this more than getlayers because the rest of cinema.html is heavier). Data-saver leaves posters forever. Animated WebP is not used in the grid.
 
 The 8 live demos and what each replaced:
 - **AUREN** haute horlogerie (luxury watch), replaced Aurum

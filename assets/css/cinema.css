@@ -1797,9 +1797,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   animation: ws-live 1.6s ease-in-out infinite;
 }
 @keyframes ws-live { 50% { opacity: 0.25; } }
-/* Selected Work previews: animated WebP loops. All visible cards play together
-   while Studio Bench is focused; posters elsewhere. Page chrome pauses under
-   html.is-work-focus so decode budget goes to the gallery. */
+/* Selected Work previews: getlayers-style H.264 loops (30fps preview mp4).
+   All visible cards play together while Studio Bench is focused. */
 .ws--embed { background: #06110e; overflow: hidden; }
 .ws-embed-preview {
   position: absolute;

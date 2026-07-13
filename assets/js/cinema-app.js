@@ -545,37 +545,54 @@ function initTestimonialWall() {
   });
 }
 
-/* Selected Work grid: every visible card runs its animated WebP loop together
-   while Studio Bench is on screen (the wow pass). Three.js, scroll-scrub
-   tickers, and the testimonial wall pause via is-work-focus so decode budget
-   goes to the gallery. Offscreen cards snap back to posters. */
+/* Selected Work grid: getlayers-style H.264 preview loops. Every visible card
+   plays together while Studio Bench is focused. src is attached only when a
+   card is visible (preload=none). Page chrome pauses under is-work-focus. */
 function initWorkGrid() {
   const grid = document.querySelector(".work-grid");
   if (!grid) return;
   const section = grid.closest("section") || grid;
-  const imgs = Array.from(grid.querySelectorAll("img.ws-embed-preview"));
-  if (!imgs.length) return;
+  const vids = Array.from(grid.querySelectorAll("video.ws-embed-preview"));
+  if (!vids.length) return;
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) return;
 
   const visible = new Set();
   const live = new Set();
+  const playTimers = new WeakMap();
   let workFocus = false;
+  const PLAY_DELAY_MS = 150;
 
-  function posterFor(img) {
-    return img.dataset.poster || img.getAttribute("src") || "";
+  function stop(v) {
+    if (!v) return;
+    const timer = playTimers.get(v);
+    if (timer) {
+      clearTimeout(timer);
+      playTimers.delete(v);
+    }
+    v.pause();
+    if (v.getAttribute("src")) {
+      v.removeAttribute("src");
+      v.load();
+    }
+    live.delete(v);
   }
-  function freeze(img) {
-    if (!img) return;
-    const poster = posterFor(img);
-    if (poster && img.src !== poster) img.src = poster;
-    live.delete(img);
-  }
-  function animate(img) {
-    const anim = img.dataset.anim;
-    if (!anim) return;
-    if (img.src !== anim) img.src = anim;
-    live.add(img);
+  function play(v) {
+    if (!v) return;
+    const src = v.getAttribute("data-src");
+    if (!src) return;
+    if (playTimers.has(v)) return;
+    const timer = setTimeout(() => {
+      playTimers.delete(v);
+      if (!workFocus || !visible.has(v)) return;
+      if (v.getAttribute("src") !== src) {
+        v.src = src;
+        v.load();
+      }
+      live.add(v);
+      if (v.paused) v.play().catch(() => {});
+    }, PLAY_DELAY_MS);
+    playTimers.set(v, timer);
   }
   function setScrubPaused(paused) {
     appState.scrubRecords.forEach((record) => {
@@ -592,17 +609,24 @@ function initWorkGrid() {
   }
   function syncLive() {
     if (!workFocus) {
-      Array.from(live).forEach(freeze);
+      Array.from(live).forEach(stop);
+      vids.forEach((v) => {
+        const timer = playTimers.get(v);
+        if (timer) {
+          clearTimeout(timer);
+          playTimers.delete(v);
+        }
+      });
       return;
     }
-    visible.forEach(animate);
-    live.forEach((img) => {
-      if (!visible.has(img)) freeze(img);
+    visible.forEach(play);
+    live.forEach((v) => {
+      if (!visible.has(v)) stop(v);
     });
   }
 
   if (!("IntersectionObserver" in window)) {
-    imgs.forEach(animate);
+    vids.forEach(play);
     return;
   }
 
@@ -620,14 +644,14 @@ function initWorkGrid() {
         if (e.isIntersecting) visible.add(e.target);
         else {
           visible.delete(e.target);
-          freeze(e.target);
+          stop(e.target);
         }
       });
       syncLive();
     },
-    { rootMargin: "120px 0px", threshold: 0.12 }
+    { rootMargin: "100px 0px", threshold: 0.1 }
   );
-  imgs.forEach((img) => cardIo.observe(img));
+  vids.forEach((v) => cardIo.observe(v));
 }
 
 /* Method stack: earlier cards recede (scale + dim) as the next card slides
