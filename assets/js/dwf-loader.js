@@ -54,6 +54,7 @@
     var html = document.documentElement;
     html.classList.add("is-embed");
     if (lightbox) html.classList.add("is-lightbox");
+    if (preview) html.classList.add("is-preview");
     var m = location.pathname.match(/\/demos\/([^/.]+)/);
     var slug = m ? m[1] : "";
     if (m) html.setAttribute("data-dwf-demo", slug);
@@ -70,7 +71,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=28";
+      link.href = "/assets/css/dwf-embed.css?v=29";
       (document.head || html).appendChild(link);
     }
   }

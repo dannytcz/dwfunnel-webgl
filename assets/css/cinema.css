@@ -2852,9 +2852,11 @@ html.is-survey-open body {
   background: rgba(242, 168, 74, 0.08);
   transform: translateY(-2px);
 }
+.work-roller__viewport.is-dragging .work-card {
+  transition: none;
+}
 .work-roller__nav:disabled {
-  opacity: 0.28;
-  cursor: default;
+  opacity: 1;
 }
 .work-card {
   content-visibility: visible;

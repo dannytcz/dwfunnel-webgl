@@ -453,6 +453,7 @@ html[data-dwf-demo="thebrew"].is-lightbox .hero-scroll {
 }
 
 /* —— Lumenix —— */
+html[data-dwf-demo="lumenix"].is-embed:not(.is-lightbox) header nav,
 html[data-dwf-demo="lumenix"].is-lightbox header nav {
   display: flex !important;
   flex-direction: row !important;
@@ -461,6 +462,7 @@ html[data-dwf-demo="lumenix"].is-lightbox header nav {
   gap: clamp(0.85rem, 2.5vw, 1.75rem) !important;
 }
 
+html[data-dwf-demo="lumenix"].is-embed:not(.is-lightbox) header nav > div,
 html[data-dwf-demo="lumenix"].is-lightbox header nav > div {
   min-width: 0 !important;
   flex-direction: row !important;
@@ -468,9 +470,47 @@ html[data-dwf-demo="lumenix"].is-lightbox header nav > div {
   gap: clamp(0.85rem, 2.5vw, 1.75rem) !important;
 }
 
+html[data-dwf-demo="lumenix"].is-embed:not(.is-lightbox) header nav a,
 html[data-dwf-demo="lumenix"].is-lightbox header nav a {
   white-space: nowrap !important;
   font-size: clamp(0.95rem, 1.35vw, 1.125rem) !important;
+}
+
+html[data-dwf-demo="lumenix"].is-embed:not(.is-lightbox) header .mx-auto {
+  align-items: center !important;
+}
+
+/* —— Reverie preview: pin hero frame like lightbox —— */
+html[data-dwf-demo="reverie"].is-embed.is-preview,
+html[data-dwf-demo="reverie"].is-embed.is-preview body {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="reverie"].is-embed.is-preview #reverie {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="reverie"].is-embed.is-preview .sticky,
+html[data-dwf-demo="reverie"].is-embed.is-preview section.sticky {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="reverie"].is-embed.is-preview nav {
+  padding: clamp(14px, 2.2vw, 22px) clamp(20px, 4vw, 48px) !important;
+}
+
+html[data-dwf-demo="reverie"].is-embed.is-preview .nav-link {
+  font-size: clamp(10px, 1.1vw, 12px) !important;
+  letter-spacing: 0.12em !important;
 }
 
 /* —— Valence —— */

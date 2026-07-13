@@ -591,7 +591,7 @@ function initTestimonialWall() {
   });
 }
 
-/* Studio Bench roller: three live preview loops, one lazy preload, GSAP snap. */
+/* Studio Bench roller: infinite loop, tiered video pipeline, GSAP snap. */
 function initWorkRoller() {
   const roller = document.querySelector(".work-roller");
   const viewport = roller?.querySelector(".work-roller__viewport");
@@ -599,8 +599,8 @@ function initWorkRoller() {
   if (!roller || !viewport || !track) return;
 
   const section = roller.closest("section") || roller;
-  const cards = Array.from(track.querySelectorAll(".work-card"));
-  const count = cards.length;
+  const originals = Array.from(track.querySelectorAll(".work-card"));
+  const count = originals.length;
   if (!count) return;
 
   const saveData = navigator.connection && navigator.connection.saveData;
@@ -609,18 +609,39 @@ function initWorkRoller() {
   const gsap = window.gsap;
   if (!gsap) return;
 
+  originals
+    .map((card) => card.cloneNode(true))
+    .reverse()
+    .forEach((card) => track.insertBefore(card, track.firstChild));
+  originals.forEach((card) => track.appendChild(card.cloneNode(true)));
+
+  const cards = Array.from(track.querySelectorAll(".work-card"));
+  const total = cards.length;
+
   const prevBtn = roller.querySelector(".work-roller__nav--prev");
   const nextBtn = roller.querySelector(".work-roller__nav--next");
 
-  let activeIndex = 0;
+  let activeIndex = count;
   let animating = false;
   let workFocus = false;
   let lastDir = 1;
   let cardStep = 0;
   let slideTween = null;
+  let dragSuppressClick = false;
 
   const live = new Set();
   const lazy = new Set();
+  const prefetchLinks = new Set();
+
+  window.__workRollerSuppressClick = () => {
+    const v = dragSuppressClick;
+    dragSuppressClick = false;
+    return v;
+  };
+
+  function logical(i) {
+    return ((i % count) + count) % count;
+  }
 
   function videoFor(card) {
     return card.querySelector("video.ws-embed-preview");
@@ -637,6 +658,17 @@ function initWorkRoller() {
     lazy.delete(v);
   }
 
+  function startPlay(v) {
+    live.add(v);
+    lazy.delete(v);
+    const run = () => {
+      if (!workFocus) return;
+      if (v.paused) v.play().catch(() => {});
+    };
+    if (v.readyState >= 2) run();
+    else v.addEventListener("canplay", run, { once: true });
+  }
+
   function attachVideo(v, play) {
     const src = v.getAttribute("data-src");
     if (!src) return;
@@ -644,15 +676,22 @@ function initWorkRoller() {
       v.src = src;
       v.load();
     }
-    if (play) {
-      lazy.delete(v);
-      live.add(v);
-      if (v.paused) v.play().catch(() => {});
-    } else {
+    if (play) startPlay(v);
+    else {
       live.delete(v);
       lazy.add(v);
       v.pause();
     }
+  }
+
+  function prefetchMp4(src) {
+    if (!src || prefetchLinks.has(src)) return;
+    prefetchLinks.add(src);
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.as = "video";
+    link.href = src;
+    document.head.appendChild(link);
   }
 
   function setScrubPaused(paused) {
@@ -675,36 +714,55 @@ function initWorkRoller() {
       cards.forEach((card) => stopVideo(videoFor(card)));
       return;
     }
-    const liveIdx = [];
-    if (activeIndex > 0) liveIdx.push(activeIndex - 1);
-    liveIdx.push(activeIndex);
-    if (activeIndex < count - 1) liveIdx.push(activeIndex + 1);
 
-    const lazySlot = activeIndex + lastDir * 2;
-    const lazyIdx =
-      lazySlot >= 0 && lazySlot < count && !liveIdx.includes(lazySlot) ? lazySlot : -1;
-    const keepSrc = new Set(liveIdx);
-    if (lazyIdx >= 0) keepSrc.add(lazyIdx);
+    const center = logical(activeIndex);
+    const liveLogical = new Set([
+      (center - 1 + count) % count,
+      center,
+      (center + 1) % count,
+    ]);
+    const lazyLogical = new Set();
+    [2, 3, 4, -2, -3, -4].forEach((d) => {
+      const idx = (center + d + count) % count;
+      if (!liveLogical.has(idx)) lazyLogical.add(idx);
+    });
+
+    liveLogical.forEach((idx) => prefetchMp4(cards[idx]?.querySelector("video.ws-embed-preview")?.getAttribute("data-src"));
+    lazyLogical.forEach((idx) => prefetchMp4(cards[idx]?.querySelector("video.ws-embed-preview")?.getAttribute("data-src"));
 
     cards.forEach((card, i) => {
       const v = videoFor(card);
       if (!v) return;
-      if (!keepSrc.has(i)) {
+      const physicalDist = Math.abs(i - activeIndex);
+      if (physicalDist > 4) {
         stopVideo(v);
         return;
       }
-      if (liveIdx.includes(i)) attachVideo(v, true);
-      else if (i === lazyIdx) attachVideo(v, false);
+      const log = logical(i);
+      if (liveLogical.has(log)) attachVideo(v, true);
+      else if (lazyLogical.has(log)) attachVideo(v, false);
+      else stopVideo(v);
     });
   }
 
   function targetX(index) {
-    const card = cards[0];
+    const card = cards[count];
     if (!card) return 0;
     const cardW = card.offsetWidth;
     const gap = parseFloat(getComputedStyle(track).gap) || 0;
     cardStep = cardW + gap;
     return viewport.clientWidth / 2 - (index * cardStep + cardW / 2);
+  }
+
+  function normalizeLoop({ immediate = false } = {}) {
+    if (activeIndex >= count * 2) {
+      activeIndex -= count;
+      gsap.set(track, { x: targetX(activeIndex) });
+    } else if (activeIndex < count) {
+      activeIndex += count;
+      gsap.set(track, { x: targetX(activeIndex) });
+    }
+    if (!immediate) syncMedia();
   }
 
   function updateCardStates() {
@@ -715,12 +773,12 @@ function initWorkRoller() {
       card.classList.toggle("is-peek", dist === 2);
       card.classList.toggle("is-off", dist > 2);
     });
-    if (prevBtn) prevBtn.disabled = activeIndex <= 0;
-    if (nextBtn) nextBtn.disabled = activeIndex >= count - 1;
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
   }
 
   function snapTo(index, dir, { immediate = false, force = false } = {}) {
-    const next = Math.max(0, Math.min(count - 1, index));
+    const next = Math.max(0, Math.min(total - 1, index));
     if (!immediate && !force && (animating || next === activeIndex)) return;
     if (dir) lastDir = dir;
     activeIndex = next;
@@ -732,16 +790,18 @@ function initWorkRoller() {
     if (immediate) {
       gsap.set(track, { x });
       animating = false;
+      normalizeLoop({ immediate: true });
       return;
     }
     animating = true;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     slideTween = gsap.to(track, {
       x,
-      duration: reduced ? 0.01 : 0.52,
+      duration: reduced ? 0.01 : 0.48,
       ease: "power3.out",
       onComplete: () => {
         animating = false;
+        normalizeLoop();
       },
     });
   }
@@ -770,12 +830,13 @@ function initWorkRoller() {
   let dragActive = false;
   let dragStartX = 0;
   let dragStartTrackX = 0;
-  let dragMoved = false;
+  let dragDistance = 0;
 
   viewport.addEventListener("pointerdown", (e) => {
     if (animating || e.button !== 0) return;
     dragActive = true;
-    dragMoved = false;
+    dragDistance = 0;
+    dragSuppressClick = false;
     dragStartX = e.clientX;
     dragStartTrackX = gsap.getProperty(track, "x") || 0;
     viewport.classList.add("is-dragging");
@@ -787,13 +848,8 @@ function initWorkRoller() {
   viewport.addEventListener("pointermove", (e) => {
     if (!dragActive) return;
     const dx = e.clientX - dragStartX;
-    if (Math.abs(dx) > 4) dragMoved = true;
-    let x = dragStartTrackX + dx;
-    const minX = targetX(count - 1);
-    const maxX = targetX(0);
-    if (x > maxX) x = maxX + (x - maxX) * 0.22;
-    if (x < minX) x = minX + (x - minX) * 0.22;
-    gsap.set(track, { x });
+    dragDistance = Math.abs(dx);
+    gsap.set(track, { x: dragStartTrackX + dx });
   });
 
   function endDrag(e) {
@@ -804,29 +860,19 @@ function initWorkRoller() {
       viewport.releasePointerCapture(e.pointerId);
     } catch (err) {}
 
-    if (!dragMoved) return;
+    if (dragDistance > 14) dragSuppressClick = true;
+
+    if (dragDistance < 8) return;
 
     const dx = e.clientX - dragStartX;
-    const threshold = Math.min(120, cardStep * 0.18);
-    if (dx <= -threshold && activeIndex < count - 1) snapTo(activeIndex + 1, 1);
-    else if (dx >= threshold && activeIndex > 0) snapTo(activeIndex - 1, -1);
+    const threshold = Math.min(100, cardStep * 0.16);
+    if (dx <= -threshold) snapTo(activeIndex + 1, 1);
+    else if (dx >= threshold) snapTo(activeIndex - 1, -1);
     else snapTo(activeIndex, lastDir, { force: true });
   }
 
   viewport.addEventListener("pointerup", endDrag);
   viewport.addEventListener("pointercancel", endDrag);
-
-  viewport.addEventListener(
-    "click",
-    (e) => {
-      if (dragMoved) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        dragMoved = false;
-      }
-    },
-    true
-  );
 
   let resizeTimer = 0;
   window.addEventListener("resize", () => {
@@ -846,7 +892,7 @@ function initWorkRoller() {
     setWorkFocus(true);
   }
 
-  snapTo(0, 1, { immediate: true });
+  snapTo(count, 1, { immediate: true });
 }
 
 function initDemoLightbox() {
@@ -1074,6 +1120,10 @@ function initDemoLightbox() {
 
   document.querySelectorAll(".work-card__link[data-demo]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
+      if (typeof window.__workRollerSuppressClick === "function" && window.__workRollerSuppressClick()) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       const url = btn.getAttribute("data-demo");
       if (!url) return;
