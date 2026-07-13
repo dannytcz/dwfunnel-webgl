@@ -1,6 +1,6 @@
 import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
 import { initBuildRequestForm } from "./build-request-form.js";
-import { initConversionLeakSchematic } from "./conversion-leak-schematic.js";
+import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=2";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
