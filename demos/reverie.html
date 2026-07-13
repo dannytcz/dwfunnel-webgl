@@ -147,11 +147,11 @@
 (function(){
   if(!new URLSearchParams(location.search).has('embed')) return;
   if(new URLSearchParams(location.search).has('lightbox'))return;
-  if(new URLSearchParams(location.search).has('preview'))return;
   document.documentElement.classList.add('is-embed');
   var st=document.createElement('style');
   st.textContent='::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
   document.head.appendChild(st);
+  if(new URLSearchParams(location.search).has('preview'))return;
   var DUR=14000,HOLD=800,phase='down',anchor=null,holdUntil=0;
   function tick(){
     var now=performance.now();

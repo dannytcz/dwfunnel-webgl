@@ -90,6 +90,7 @@ Error generating stack: `+n.message+`
 (function(){
   if(!new URLSearchParams(location.search).has('embed')) return;
   if(new URLSearchParams(location.search).has('lightbox'))return;
+  if(new URLSearchParams(location.search).has('preview'))return;
   document.documentElement.classList.add('is-embed');
   var st=document.createElement('style');
   st.textContent='::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';

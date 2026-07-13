@@ -31,7 +31,7 @@ const W = 1280, H = 800;
 const OUT = path.join(__dirname, '..', 'assets', 'demos', 'previews');
 const SCALE = '960:600';
 const FPS = 24;
-const MAX_DUR = 4;
+const MAX_DUR = 6;
 const CRF = 21;
 
 const hold = (p, ms) => p.waitForTimeout(ms);
@@ -86,6 +86,14 @@ async function heroHold(p, ms) {
   await sweep(p, 3);
   await hold(p, ms);
 }
+async function cinematicScroll(p, maxPx, seconds) {
+  const steps = Math.max(48, Math.floor(seconds * 24));
+  for (let i = 0; i <= steps; i++) {
+    const y = Math.round((i / steps) * maxPx);
+    await p.evaluate((scrollY) => window.scrollTo(0, scrollY), y);
+    await hold(p, Math.floor((seconds * 1000) / steps));
+  }
+}
 
 const RECIPES = {
   lexis:    { url:'/demos/lexis.html',              wait:2600, trim:{start:3.0,dur:6}, act: p => sweep(p,8) },
@@ -122,31 +130,37 @@ const RECIPES = {
   }},
   supabot:  { url:'/demos/supabot.html',             wait:2000, trim:{start:2.5,dur:6}, act: p => hold(p,6000) },
   thebrew:  { url:'/demos/thebrew.html?embed=1&preview=1', wait:2600, trim:{start:2.2,dur:4}, posterAt:3.0, act: p => heroHold(p, 7000) },
-  unwritten:{ url:'/demos/unwritten.html?embed=1',  wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
-  kairo:    { url:'/demos/kairo.html?embed=1&preview=1', wait:2400, trim:{start:2.0,dur:4}, posterAt:2.8, act: p => heroHold(p, 7500) },
-  valence:  { url:'/demos/valence.html?embed=1',    wait:2200, trim:{start:2.5,dur:7}, act: p => hold(p,10000) },
-  elyra:    { url:'/demos/elyra.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
-  alzer:    { url:'/demos/alzer.html?embed=1&preview=1', wait:2800, trim:{start:2.5,dur:4}, posterAt:3.0, act: async p => {
-    await hold(p, 3000);
-    await sweep(p, 4);
-    await hold(p, 4500);
+  unwritten:{ url:'/demos/unwritten.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.5, act: async p => {
+    await hold(p, 2200);
+    const max = await p.evaluate(() => Math.min(1600, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
+    await cinematicScroll(p, max, 6);
+    await hold(p, 1500);
   }},
-  petalform:{ url:'/demos/petalform.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, viewport:{width:1680,height:1050}, act: p => hold(p,8000) },
-  geneevo:  { url:'/demos/geneevo.html?embed=1',   wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
-  arcfield: { url:'/demos/arcfield.html?embed=1&preview=1', wait:4000, trim:{start:3.0,dur:4}, posterAt:3.5, act: async p => {
+  kairo:    { url:'/demos/kairo.html?embed=1&preview=1', wait:2400, trim:{start:2.0,dur:4}, posterAt:2.8, act: p => heroHold(p, 7500) },
+  valence:  { url:'/demos/valence.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.2, act: async p => {
+    await waitVideo(p);
     await hold(p, 2500);
-    await sweep(p, 5);
+    await sweep(p, 4);
     await hold(p, 5500);
+  }},
+  elyra:    { url:'/demos/elyra.html?embed=1',      wait:2000, trim:{start:2.5,dur:7}, act: p => hold(p,9000) },
+  alzer:    { url:'/demos/alzer.html?embed=1&preview=1', wait:3800, trim:{start:3.8,dur:6}, posterAt:5.2, act: async p => {
+    await p.waitForFunction(() => document.getElementById('heroOutline')?.classList.contains('sweep'), { timeout: 10000 }).catch(() => {});
+    await hold(p, 9000);
+  }},
+  petalform:{ url:'/demos/petalform.html?embed=1&preview=1', wait:2800, trim:{start:3,dur:6}, posterAt:4.2, act: p => heroHold(p, 9000) },
+  geneevo:  { url:'/demos/geneevo.html?embed=1',   wait:1800, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
+  arcfield: { url:'/demos/arcfield.html?embed=1&preview=1', wait:4000, trim:{start:3.5,dur:6}, posterAt:4.8, act: async p => {
+    await waitVideo(p);
+    await hold(p, 9000);
   }},
   malleepaw:{ url:'/demos/malleepaw.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   lumenix:  { url:'/demos/lumenix.html?embed=1&preview=1', wait:3800, trim:{start:2.2,dur:6}, posterAt:1.8, act: p => hold(p,10000) },
-  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:3500, trim:{start:3.2,dur:4}, posterAt:3.8, act: async p => {
-    await hold(p, 2000);
-    for (let i = 0; i <= 16; i++) {
-      await p.evaluate((y) => window.scrollTo(0, y), Math.round((i / 16) * 500));
-      await hold(p, 180);
-    }
-    await hold(p, 4500);
+  reverie:  { url:'/demos/reverie.html?embed=1&preview=1', wait:3000, trim:{start:2.5,dur:6}, posterAt:4.0, act: async p => {
+    await hold(p, 1800);
+    const max = await p.evaluate(() => Math.min(1400, Math.max(0, (document.getElementById('reverie')?.offsetHeight || 0) - window.innerHeight)));
+    await cinematicScroll(p, max, 6.5);
+    await hold(p, 1500);
   }},
   stretch:  { url:'/demos/stretch.html?embed=1',  wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   webpal:   { url:'/demos/webpal.html?embed=1',   wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
