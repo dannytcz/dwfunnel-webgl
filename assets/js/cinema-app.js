@@ -334,21 +334,31 @@ function setStaticAct(section) {
   section.classList.add("is-static");
 }
 
-function buildUrls(section) {
-  if (section.dataset.cdnKey) return heroUrls();
-  const key = section.dataset.filmFrames;
-  const count = parseInt(section.dataset.filmCount || "0", 10);
-  if (!key || !count) return [];
-  return sectionUrls(key, count);
+function buildUrls(section, { mobile = false } = {}) {
+  let urls;
+  if (section.dataset.cdnKey) urls = heroUrls();
+  else {
+    const key = section.dataset.filmFrames;
+    const count = parseInt(section.dataset.filmCount || "0", 10);
+    if (!key || !count) return [];
+    urls = sectionUrls(key, count);
+  }
+  if (mobile && urls.length > 24) urls = halve(urls);
+  return urls;
 }
 
-function initScrub(section, { loader, eager = false } = {}) {
+function hideHeroPoster() {
+  document.getElementById("hero-poster")?.classList.add("is-hidden");
+}
+
+function initScrub(section, { loader, eager = false, mobile = false } = {}) {
   const stage = section.querySelector(".scrub-stage");
   const canvas = section.querySelector(".scrub-canvas");
-  const urls = buildUrls(section);
+  const urls = buildUrls(section, { mobile });
   if (!stage || !canvas || !urls.length) return () => {};
 
   const isHero = section.id === "hero-pin";
+  const frameCounter = section.querySelector(".frame-counter");
   const decodeWidth = scrubDecodeWidth(section, urls);
   const scrubber = new FrameScrubber(stage, canvas, urls, {
     decodeWidth,
@@ -404,6 +414,7 @@ function initScrub(section, { loader, eager = false } = {}) {
         if (generation !== loadGeneration) return;
         loaded = true;
         scrubber.renderNow();
+        if (isHero) hideHeroPoster();
       })
       .finally(() => {
         if (generation === loadGeneration) loading = false;
@@ -452,9 +463,13 @@ function initScrub(section, { loader, eager = false } = {}) {
     },
     onUpdate: (self) => {
       const p = self.progress;
-      scrubber.setTargetFrame(Math.round(p * (urls.length - 1)));
+      const frame = Math.round(p * (urls.length - 1));
+      scrubber.setTargetFrame(frame);
       scrubber.setFx({ scale: 1 + p * (isHero ? 0.04 : 0.012), offsetY: isHero ? -p * 12 : 0, offsetX: 0 });
       section.style.setProperty("--progress", String(p));
+      if (frameCounter) {
+        frameCounter.textContent = `FR ${String(frame + 1).padStart(3, "0")}`;
+      }
       applyBeats(p);
       appState.atmosphere?.setIntensity(isHero ? p : 0.45 + p * 0.35);
     },
@@ -747,12 +762,14 @@ async function init() {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobile = window.matchMedia("(max-width: 899px)").matches;
   const saveData = connectionSaveData();
+  const forceMotion = new URLSearchParams(location.search).has("motion");
+  const staticMode = (reduced || saveData) && !forceMotion;
   const loader = initLoader();
   const sections = Array.from(document.querySelectorAll("[data-scrub]"));
   initMagneticCards();
   initScrambleText();
 
-  if (reduced || mobile || saveData) {
+  if (staticMode) {
     loader.setProgress(0.5);
     sections.forEach(setStaticAct);
     await loader.finish();
@@ -769,10 +786,10 @@ async function init() {
 
   initThreeAtmosphere({ reduced, mobile, saveData });
   const hero = document.getElementById("hero-pin");
-  sections.forEach((section) => initScrub(section, { loader, eager: section === hero }));
+  sections.forEach((section) => initScrub(section, { loader, eager: section === hero, mobile }));
 
   await loader.finish();
-  const lenis = initLenis(reduced);
+  const lenis = mobile ? null : initLenis(reduced);
   bindAnchors(lenis);
   initStats();
   initGlobalProgress();

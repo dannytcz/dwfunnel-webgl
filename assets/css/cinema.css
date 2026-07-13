@@ -375,6 +375,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .scrub-canvas.is-active { opacity: 1; }
 .hero__poster { z-index: 1; }
+.hero__poster.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s var(--ease), visibility 0.35s var(--ease);
+}
 .scrub-act.is-static .scrub-canvas { display: none; }
 
 .scrub-hud {
