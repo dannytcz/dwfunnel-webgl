@@ -88,6 +88,19 @@ const RECIPES = {
   tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   newshift:{ url:'/demos/newshift.html?embed=1', wait:2200, trim:{start:2.0,dur:7}, act: p => hold(p,10000) },
   autonex:  { url:'/demos/autonex.html?embed=1',  wait:8000, trim:{start:7.5,dur:6}, posterAt:1.0, act: p => hold(p,10000) },
+  sable:    { url:'/demos/sable.html?embed=1', wait:2000, trim:{start:2.0,dur:7}, act: async p => {
+    await hold(p, 1800);
+    await clickSel(p, '.sm-toggle');
+    await hold(p, 900);
+    // Our Fleet is usually the second menu item
+    const fleet = p.locator('.sm-panel-itemList a, .sm-panel-itemList button, .staggered-menu-panel a, .staggered-menu-panel button').filter({ hasText: /Our Fleet/i });
+    if (await fleet.count()) { await fleet.first().click(); await hold(p, 2200); }
+    // hover middle vessel column
+    await p.mouse.move(720, 420);
+    await hold(p, 3500);
+    await p.mouse.move(1100, 420);
+    await hold(p, 2500);
+  }},
 };
 
 (async () => {
