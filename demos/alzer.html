@@ -93,7 +93,7 @@
   addEventListener('load',function(){setTimeout(function(){setInterval(tick,16)},1200)});
 })();
 </script>
-  <script src="/assets/js/dwf-loader.js?v=8"></script>
+  <script src="/assets/js/dwf-loader.js?v=17"></script>
 </head>
 <body>
   <div id="intro" aria-hidden="true">
@@ -176,7 +176,7 @@
       function endHeroVideo(){heroVideo.classList.add('done');heroOutline.classList.add('sweep')}
       heroVideo.addEventListener('ended', endHeroVideo, {once:true});heroVideo.addEventListener('error', endHeroVideo, {once:true});setTimeout(()=>{if(heroVideo.readyState<2)endHeroVideo()},3500);
 
-      function endIntro(){if(introDone)return;introDone=true;intro.classList.add('exit');setTimeout(()=>{intro.remove()},1250)}
+      function endIntro(){if(introDone)return;introDone=true;intro.classList.add('exit');setTimeout(()=>{intro.remove()},1250);if(window.__DWF_LIGHTBOX__)window.dispatchEvent(new Event('dwf:scroll-ready'));}
       introVideo.addEventListener('canplay', ()=>{if(introDone)return;intro.classList.add('ready');introVideo.play().catch(endIntro)}, {once:true});
       introVideo.addEventListener('ended', endIntro, {once:true});introVideo.addEventListener('error', endIntro, {once:true});skipIntro.addEventListener('click', endIntro);
       setTimeout(()=>{if(!intro.classList.contains('ready'))endIntro()},2500);setTimeout(endIntro,15000);

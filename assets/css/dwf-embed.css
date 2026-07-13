@@ -262,70 +262,127 @@ html[data-dwf-demo="elyra"].is-lightbox body {
   overflow: hidden !important;
 }
 
-html[data-dwf-demo="elyra"].is-lightbox h1 {
-  font-size: clamp(3.25rem, 9vw, 6.75rem) !important;
-  line-height: 0.92 !important;
-}
-
 html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper {
   height: 100% !important;
   min-height: 100% !important;
   max-height: 100% !important;
-  padding-bottom: 0 !important;
   overflow: hidden !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox #home {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox section:not(#home) {
+  display: none !important;
+}
+
+html[data-dwf-demo="elyra"].is-lightbox h1 {
+  font-size: clamp(2.5rem, 7.5vw, 5.5rem) !important;
+  line-height: 0.92 !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home .relative.z-\[2\] {
   height: 100% !important;
   min-height: 100% !important;
-  padding-bottom: 0 !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main {
-  position: relative !important;
   flex: 1 1 auto !important;
   min-height: 100% !important;
-  padding-bottom: 0 !important;
+  padding-bottom: 4.5rem !important;
+  justify-content: space-between !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
-  position: absolute !important;
-  left: 1.25rem !important;
-  right: 1.25rem !important;
-  bottom: 4.25rem !important;
-  margin-top: 0 !important;
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
-  position: relative !important;
-  z-index: 5 !important;
-  margin-right: 22% !important;
-  max-width: 16rem !important;
+  margin-right: 24% !important;
+  max-width: 15rem !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 svg {
-  height: 4.75rem !important;
-}
-
-html[data-dwf-demo="elyra"].is-lightbox #about {
-  display: none !important;
+  height: 4.25rem !important;
 }
 
 @media (min-width: 768px) {
-  html[data-dwf-demo="elyra"].is-lightbox #home main > div:last-child {
-    left: 3rem !important;
-    right: 3rem !important;
-    bottom: 5.25rem !important;
-  }
-
   html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
-    margin-right: 26% !important;
-    max-width: 18rem !important;
+    margin-right: 28% !important;
+    max-width: 17rem !important;
   }
 
   html[data-dwf-demo="elyra"].is-lightbox .app-hero-wrapper > .absolute.bottom-0 svg {
-    height: 5.75rem !important;
+    height: 5rem !important;
   }
+}
+
+/* —— The Brew —— */
+html[data-dwf-demo="thebrew"].is-lightbox,
+html[data-dwf-demo="thebrew"].is-lightbox body {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero {
+  min-height: 100% !important;
+  max-height: 100% !important;
+  height: 100% !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero-content {
+  width: min(100% - 2rem, 100%) !important;
+  padding: 0 1rem !important;
+  align-items: center !important;
+  transform: scale(0.88);
+  transform-origin: center center;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem) !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero-intro {
+  font-size: 0.85rem !important;
+  max-width: 28ch !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero-card-wrap {
+  width: min(72%, 300px) !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .hero-scroll {
+  display: none !important;
+}
+
+html[data-dwf-demo="thebrew"].is-lightbox .site-shell > section:not(.hero) {
+  display: none !important;
+}
+
+/* —— Lumenix —— */
+html[data-dwf-demo="lumenix"].is-lightbox header nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  gap: clamp(1rem, 3.5vw, 2.25rem) !important;
+}
+
+html[data-dwf-demo="lumenix"].is-lightbox header nav > div {
+  min-width: 0 !important;
+  flex-direction: column !important;
+  gap: 0.35rem !important;
+}
+
+html[data-dwf-demo="lumenix"].is-lightbox header nav a {
+  white-space: nowrap !important;
+  font-size: 0.78rem !important;
 }
 
 /* —— Autonex —— */

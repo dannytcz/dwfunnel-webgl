@@ -23,10 +23,16 @@
     return m ? m[1] : "";
   }
 
-  var LIGHTBOX_NO_SCROLL = { kanevoss: 1 };
+  var LIGHTBOX_NO_SCROLL = { kanevoss: 1, elyra: 1 };
   var LIGHTBOX_PAGE_SCROLL = { newshift: 1 };
   var LIGHTBOX_CINEMATIC = { unwritten: 1, reverie: 1 };
   var LIGHTBOX_CINEMATIC_HALF = 10000;
+  var LIGHTBOX_SCROLL_OPTS = {
+    aurelia: { cycle: 50400 },
+    auren: { startDelay: 8000 },
+    alzer: { startDelayAfterIntro: 4000 },
+    thebrew: { heroOnly: true },
+  };
 
   function notifyParent(type) {
     try {
@@ -48,7 +54,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=13";
+      link.href = "/assets/css/dwf-embed.css?v=14";
       (document.head || html).appendChild(link);
     }
   }
@@ -93,8 +99,9 @@
     if (document.getElementById("dwf-embed-autoscroll")) return;
     window.__DWF_AUTOSCROLL__ = true;
 
+    var opts = LIGHTBOX_SCROLL_OPTS[demo] || {};
     var scrollCap = 1;
-    var CYCLE = 42000;
+    var CYCLE = opts.cycle || 42000;
     var startedAt = 0;
     var lastNow = 0;
     var currentY = 0;
@@ -104,7 +111,12 @@
     function refreshMax(now) {
       if (now - lastMaxCheck < 350) return;
       lastMaxCheck = now;
-      maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if (opts.heroOnly) {
+        var hero = document.querySelector(".hero") || document.getElementById("home");
+        maxY = hero ? Math.max(0, hero.offsetHeight - window.innerHeight) : 0;
+      } else {
+        maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      }
     }
 
     function setScrollY(y) {
@@ -145,8 +157,25 @@
       window.requestAnimationFrame(tick);
     }
 
-    if (document.readyState === "complete") window.setTimeout(start, 2200);
-    else window.addEventListener("load", function () { window.setTimeout(start, 2200); }, { once: true });
+    function scheduleStart() {
+      var delay = opts.startDelay || 2200;
+      if (opts.startDelayAfterIntro) {
+        var started = false;
+        function go() {
+          if (started) return;
+          started = true;
+          window.setTimeout(start, opts.startDelayAfterIntro);
+        }
+        if (window.__DWF_LIGHTBOX_SCROLL_READY__) go();
+        else window.addEventListener("dwf:scroll-ready", go, { once: true });
+        window.setTimeout(go, 18000);
+        return;
+      }
+      window.setTimeout(start, delay);
+    }
+
+    if (document.readyState === "complete") scheduleStart();
+    else window.addEventListener("load", scheduleStart, { once: true });
   }
   setupCinematicLightbox();
   setupLightboxAutoscroll();
