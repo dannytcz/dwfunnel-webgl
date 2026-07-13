@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enermax | Zero Electricity Bills</title>
+    <meta
+      name="description"
+      content="Enermax is a DW Funnel concept build for solar energy — a day/night hero with a pull-down theme transition and smart-controller promise."
+    />
+    <meta name="robots" content="noindex" />
+    <script>
+      (function () {
+        var q = new URLSearchParams(location.search);
+        if (q.has("embed")) document.documentElement.classList.add("is-embed");
+        if (q.has("preview")) document.documentElement.classList.add("is-preview");
+      })();
+    </script>
+    <style>
+      .studio-badge {
+        position: fixed;
+        left: 50%;
+        bottom: 1rem;
+        z-index: 2147482000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.15rem;
+        padding: 0.55rem 1rem;
+        border-radius: 999px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.82);
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.92);
+        font: 600 0.65rem/1.2 Outfit, system-ui, sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        transform: translateX(-50%);
+        transition: color 0.3s ease, border-color 0.3s ease;
+        pointer-events: auto;
+        text-align: center;
+        max-width: calc(100% - 2rem);
+      }
+      .studio-badge strong {
+        color: #fff;
+        font-size: 0.72rem;
+      }
+      .studio-badge span {
+        font-size: 0.58rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.72);
+        text-transform: none;
+      }
+      .studio-badge:hover {
+        color: #fff;
+        border-color: #fff;
+      }
+      html.is-preview .studio-badge {
+        display: none !important;
+      }
+    </style>
+    <script src="/assets/js/dwf-loader.js?v=28"></script>
+    <script type="module" crossorigin src="/assets/demos/enermax/build/index-DHxiuaBK.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/demos/enermax/build/index-BzaW72S9.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <a class="studio-badge" href="/" target="_blank" rel="noopener">
+      <strong>Built by DW Funnel · © 2026</strong>
+      <span>See how we build pages like this</span>
+    </a>
+  </body>
+</html>

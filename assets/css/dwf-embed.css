@@ -166,21 +166,44 @@ html[data-dwf-demo="reverie"].is-lightbox .bob {
   display: none !important;
 }
 
-/* —— NewShift: allow document scroll for lightbox autoscroll —— */
-html[data-dwf-demo="newshift"].is-lightbox,
-html[data-dwf-demo="newshift"].is-lightbox body {
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  height: auto !important;
+/* —— Enermax: fixed viewport hero (day/night pull-down) —— */
+html[data-dwf-demo="enermax"].is-embed:not(.is-lightbox),
+html[data-dwf-demo="enermax"].is-embed:not(.is-lightbox) body {
+  height: 100% !important;
   min-height: 100% !important;
-  scrollbar-width: none;
+  overflow: hidden !important;
 }
 
-html[data-dwf-demo="newshift"].is-lightbox::-webkit-scrollbar,
-html[data-dwf-demo="newshift"].is-lightbox body::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+html[data-dwf-demo="enermax"].is-embed:not(.is-lightbox) #root,
+html[data-dwf-demo="enermax"].is-embed:not(.is-lightbox) #root > div {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="enermax"].is-lightbox,
+html[data-dwf-demo="enermax"].is-lightbox body {
+  height: 100% !important;
+  max-height: 100vh !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="enermax"].is-lightbox #root,
+html[data-dwf-demo="enermax"].is-lightbox #root > div {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+html[data-dwf-demo="enermax"].is-embed.is-lightbox {
+  font-size: clamp(11px, 0.95vw, 16px) !important;
+}
+
+html[data-dwf-demo="enermax"].is-lightbox .hero-title {
+  font-size: clamp(2.25rem, 5vw, 3.5rem) !important;
+  line-height: 1.05 !important;
 }
 
 /* —— Tarismo: sharper hero video in lightbox —— */
@@ -265,12 +288,6 @@ html[data-dwf-demo="liontech"].is-lightbox .services-layout {
 
 html[data-dwf-demo="liontech"].is-lightbox .services-intro h2 {
   font-size: clamp(1.5rem, 2.8vw, 1.875rem) !important;
-}
-
-/* —— NewShift (Tailwind scale-down) —— */
-html[data-dwf-demo="newshift"].is-lightbox #home h1 {
-  font-size: clamp(2rem, 4.5vw, 3.75rem) !important;
-  line-height: 1.05 !important;
 }
 
 /* —— EcoGreen —— */

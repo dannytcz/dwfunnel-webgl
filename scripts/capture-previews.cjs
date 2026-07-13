@@ -86,7 +86,14 @@ const RECIPES = {
   picocore: { url:'/demos/picocore.html?embed=1', wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
   liontech:{ url:'/demos/liontech.html?embed=1', wait:2000, trim:{start:2.0,dur:6}, act: p => hold(p,9000) },
   tarismo:  { url:'/demos/tarismo.html?embed=1',  wait:2200, trim:{start:2.0,dur:6}, act: p => hold(p,8000) },
-  newshift:{ url:'/demos/newshift.html?embed=1', wait:2200, trim:{start:2.0,dur:7}, act: p => hold(p,10000) },
+  enermax:  { url:'/demos/enermax.html?embed=1&preview=1', wait:2800, trim:{start:2.0,dur:6}, posterAt:2.5, act: async p => {
+    await hold(p, 2200);
+    await clickSel(p, '.toggle-btn');
+    await hold(p, 2800);
+    const night = p.locator('.toggle-btn').nth(1);
+    if (await night.count()) await night.click();
+    await hold(p, 3500);
+  }},
   autonex:  { url:'/demos/autonex.html?embed=1',  wait:8000, trim:{start:7.5,dur:6}, posterAt:1.0, act: p => hold(p,10000) },
   sable:    { url:'/demos/sable.html?embed=1', wait:2000, trim:{start:2.0,dur:7}, act: async p => {
     await hold(p, 1800);
