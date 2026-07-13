@@ -98,6 +98,7 @@ function collectPayload(form) {
     conversionProblem: getTrimmed(form, "conversionProblem"),
     currentPage: getTrimmed(form, "currentPage"),
     estimatedBudget: budgetInput ? budgetInput.value : "",
+    additionalNotes: getTrimmed(form, "additionalNotes"),
   };
 }
 
@@ -168,7 +169,9 @@ function showSuccess(wrap) {
 
 function bindWhatsAppLinks() {
   document.querySelectorAll("[data-whatsapp-link]").forEach((link) => {
-    link.href = CONTACT_CONFIG.whatsAppUrl;
+    const isDeadline =
+      link.dataset.whatsappVariant === "deadline" || Boolean(link.closest(".apply-deadline"));
+    link.href = isDeadline ? CONTACT_CONFIG.whatsAppDeadlineUrl : CONTACT_CONFIG.whatsAppUrl;
   });
 }
 

@@ -94,6 +94,7 @@ export function buildEmailHtml(payload) {
                 ${fieldRow("What isn't working?", payload.conversionProblem, { multiline: true })}
                 ${fieldRow("Current page / website", payload.currentPage || "Not provided")}
                 ${fieldRow("Estimated build budget", payload.estimatedBudget)}
+                ${fieldRow("Anything else", payload.additionalNotes || "Not provided", { multiline: true })}
               </table>
             </td>
           </tr>
@@ -135,6 +136,9 @@ export function buildEmailText(payload) {
     "",
     `Current page / website: ${payload.currentPage || "Not provided"}`,
     `Estimated build budget: ${payload.estimatedBudget || "—"}`,
+    "",
+    "Anything else:",
+    payload.additionalNotes || "Not provided",
     "",
     "—",
     "DW Funnel build request form",

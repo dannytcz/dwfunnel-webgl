@@ -52,6 +52,7 @@ function validatePayload(body) {
   const conversionProblem = trim(body.conversionProblem);
   const currentPage = trim(body.currentPage);
   const estimatedBudget = trim(body.estimatedBudget);
+  const additionalNotes = trim(body.additionalNotes);
   const trafficSources = Array.isArray(body.trafficSources)
     ? body.trafficSources.filter((item) => TRAFFIC_OPTIONS.has(item))
     : [];
@@ -80,6 +81,7 @@ function validatePayload(body) {
       conversionProblem,
       currentPage,
       estimatedBudget,
+      additionalNotes,
     },
   };
 }
