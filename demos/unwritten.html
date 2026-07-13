@@ -141,7 +141,7 @@
   if(!new URLSearchParams(location.search).has('embed')) return;
   document.documentElement.classList.add('is-embed');
   var st=document.createElement('style');
-  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  st.textContent='::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
   document.head.appendChild(st);
   var DUR=16000,HOLD=900,phase='down',anchor=null,holdUntil=0;
   function tick(){
@@ -159,7 +159,7 @@
 })();
 </script>
 
-  <script src="/assets/js/dwf-loader.js?v=2"></script>
+  <script src="/assets/js/dwf-loader.js?v=3"></script>
 </head>
 <body>
   <main id="experience">

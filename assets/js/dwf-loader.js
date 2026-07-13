@@ -1,16 +1,46 @@
 /**
- * DW Funnel branded boot loader + provenance mark for concept demos.
- * Boot UI skips ?embed=1 / ?preview=1 so Studio Bench captures stay clean.
- * Provenance (credit badge, meta, comment) always applies.
+ * DW Funnel branded boot loader + provenance for concept demos.
+ * Studio Bench lightbox (?embed=1&lightbox=1): branded boot, rem scale, credit visible.
+ * Capture (?preview=1): no boot UI. Provenance always applies.
  */
 (function () {
   var YEAR = "2026";
   var CREDIT = "Built by DW Funnel · © " + YEAR;
   var embed = false;
+  var lightbox = false;
+  var preview = false;
   try {
     var q = new URLSearchParams(location.search);
-    embed = q.has("embed") || q.has("preview");
+    preview = q.has("preview");
+    embed = q.has("embed") || preview;
+    lightbox = q.has("lightbox");
   } catch (e) {}
+
+  function notifyParent(type) {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: type, href: location.href }, "*");
+      }
+    } catch (err) {}
+  }
+
+  function setupEmbedShell() {
+    if (!embed) return;
+    var html = document.documentElement;
+    html.classList.add("is-embed");
+    if (lightbox) html.classList.add("is-lightbox");
+    var m = location.pathname.match(/\/demos\/([^/.]+)/);
+    if (m) html.setAttribute("data-dwf-demo", m[1]);
+
+    if (!document.getElementById("dwf-embed-css")) {
+      var link = document.createElement("link");
+      link.id = "dwf-embed-css";
+      link.rel = "stylesheet";
+      link.href = "/assets/css/dwf-embed.css?v=2";
+      (document.head || html).appendChild(link);
+    }
+  }
+  setupEmbedShell();
 
   function ensureMeta(name, content) {
     var el = document.querySelector('meta[name="' + name + '"]');
@@ -34,7 +64,6 @@
             YEAR +
             " DW Funnel. Not a free template. "
         );
-        // Marker node so we do not duplicate on HMR-like reloads
         var marker = document.createElement("meta");
         marker.id = "dwf-provenance-comment";
         marker.name = "dwf-provenance";
@@ -50,9 +79,7 @@
       if (!style) {
         style = document.createElement("style");
         style.id = "dwf-credit-style";
-        style.textContent =
-          "html.is-embed .dwf-credit,html.is-embed .studio-badge{display:none!important}" +
-          ".dwf-credit,.studio-badge{z-index:9999}";
+        style.textContent = ".dwf-credit,.studio-badge{z-index:2147482000}";
         (document.head || document.documentElement).appendChild(style);
       }
 
@@ -66,17 +93,25 @@
           }
           b.setAttribute("href", b.getAttribute("href") || "/");
           b.setAttribute("title", "Concept by DW Funnel · © " + YEAR);
+          if (embed && lightbox) {
+            b.setAttribute("target", "_parent");
+            b.setAttribute("rel", "noopener");
+          }
         });
-      } else if (!embed) {
+      } else if (!preview) {
         var a = document.createElement("a");
         a.className = "dwf-credit";
         a.href = "/";
         a.title = "Concept by DW Funnel · © " + YEAR;
         a.textContent = CREDIT;
+        if (embed && lightbox) {
+          a.target = "_parent";
+          a.rel = "noopener";
+        }
         a.style.cssText =
-          "position:fixed;right:14px;bottom:12px;z-index:9999;" +
-          "font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;" +
-          "text-decoration:none;background:rgba(0,0,0,.45);padding:8px 12px;" +
+          "position:fixed;right:0.875rem;bottom:0.75rem;z-index:2147482000;" +
+          "font:600 0.625rem/1.2 system-ui,sans-serif;letter-spacing:.05em;color:#fff;" +
+          "text-decoration:none;background:rgba(0,0,0,.45);padding:0.5rem 0.75rem;" +
           "border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);" +
           "border-radius:999px";
         (document.body || document.documentElement).appendChild(a);
@@ -89,28 +124,33 @@
     else document.addEventListener("DOMContentLoaded", fn, { once: true });
   }
   whenReady(applyProvenance);
-  // Re-apply after late React mounts (e.g. Sable)
   setTimeout(function () {
     whenReady(applyProvenance);
   }, 1200);
+  setTimeout(function () {
+    whenReady(applyProvenance);
+  }, 2800);
 
-  if (embed) return;
+  var runBoot = !preview && (!embed || lightbox);
+  if (!runBoot) return;
 
   if (window.__DWF_BOOT__) return;
   window.__DWF_BOOT__ = true;
+
+  notifyParent("dwf:booting");
 
   var css =
     "#dwf-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;" +
     "background:#050505;color:#e8dfd2;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;" +
     "letter-spacing:.14em;text-transform:uppercase;transition:opacity .55s cubic-bezier(.22,1,.36,1),visibility .55s}" +
     "#dwf-boot.is-done{opacity:0;visibility:hidden;pointer-events:none}" +
-    "#dwf-boot .dwf-boot__panel{width:min(320px,calc(100vw - 48px));text-align:left}" +
-    "#dwf-boot .dwf-boot__brand{margin:0 0 16px;font-size:.72rem;font-weight:600;color:#e8dfd2}" +
+    "#dwf-boot .dwf-boot__panel{width:min(20rem,calc(100vw - 3rem));text-align:left}" +
+    "#dwf-boot .dwf-boot__brand{margin:0 0 1rem;font-size:.72rem;font-weight:600;color:#e8dfd2}" +
     "#dwf-boot .dwf-boot__brand span{color:#f2a84a}" +
     "#dwf-boot .dwf-boot__track{height:1px;background:rgba(232,223,210,.16);overflow:hidden}" +
     "#dwf-boot .dwf-boot__fill{height:100%;width:0;background:linear-gradient(90deg,#c9442d,#f2a84a);" +
     "box-shadow:0 0 16px rgba(201,68,45,.45);transition:width .12s linear}" +
-    "#dwf-boot .dwf-boot__row{display:flex;justify-content:space-between;gap:1rem;margin-top:14px;" +
+    "#dwf-boot .dwf-boot__row{display:flex;justify-content:space-between;gap:1rem;margin-top:.875rem;" +
     "font-size:.62rem;color:rgba(232,223,210,.55)}" +
     "#dwf-boot .dwf-boot__pct{color:#e8dfd2}" +
     "html.dwf-booting,html.dwf-booting body{overflow:hidden!important}" +
@@ -149,8 +189,8 @@
   var pct = root.querySelector("#dwf-boot-pct");
   var progress = 0;
   var loaded = document.readyState === "complete";
-  var minMs = 900;
-  var maxMs = 3200;
+  var minMs = lightbox ? 1100 : 900;
+  var maxMs = lightbox ? 4500 : 3200;
   var started = performance.now();
   var done = false;
 
@@ -159,6 +199,7 @@
     var v = Math.round(progress * 100);
     if (fill) fill.style.width = v + "%";
     if (pct) pct.textContent = v + "%";
+    notifyParent("dwf:progress");
   }
 
   function tick() {
@@ -201,6 +242,7 @@
 
     whenReady(applyProvenance);
     window.dispatchEvent(new CustomEvent("dwf:ready"));
+    notifyParent("dwf:ready");
     setTimeout(function () {
       try {
         root.remove();

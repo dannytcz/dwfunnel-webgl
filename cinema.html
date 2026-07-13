@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=100" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=101" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -507,7 +507,14 @@
         <button type="button" class="demo-lightbox__close" data-demo-close aria-label="Close preview">Close</button>
       </header>
       <div class="demo-lightbox__viewport">
-        <iframe class="demo-lightbox__iframe" title="Demo preview" loading="lazy" tabindex="0"></iframe>
+        <div class="demo-lightbox__loader" id="demo-lightbox-loader" aria-live="polite" aria-busy="true">
+          <div class="demo-lightbox__loader-panel">
+            <p class="demo-lightbox__loader-brand">DW <span>Funnel</span></p>
+            <div class="demo-lightbox__loader-track"><div class="demo-lightbox__loader-fill"></div></div>
+            <div class="demo-lightbox__loader-row"><span>Preparing concept</span><span class="demo-lightbox__loader-pct">0%</span></div>
+          </div>
+        </div>
+        <iframe class="demo-lightbox__iframe is-loading" title="Demo preview" loading="lazy" tabindex="0"></iframe>
       </div>
     </div>
   </div>
@@ -520,6 +527,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script type="module" src="assets/js/cinema-app.js?v=96"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=97"></script>
 </body>
 </html>

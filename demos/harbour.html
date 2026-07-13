@@ -13,7 +13,7 @@
   <style>
     @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:400;font-display:swap;src:url('/assets/demos/harbour/open-sauce-one-400.woff2') format('woff2');}
     @font-face{font-family:'Open Sauce One';font-style:normal;font-weight:700;font-display:swap;src:url('/assets/demos/harbour/open-sauce-one-700.woff2') format('woff2');}
-    .studio-badge{position:fixed;z-index:60;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.14);border-radius:999px;font:600 10px/1 'Open Sauce One',sans-serif;letter-spacing:.05em;color:#111;text-decoration:none;transition:.2s}
+    .studio-badge{position:fixed;z-index:60;right:0.75rem;bottom:0.75rem;display:inline-flex;align-items:center;gap:0.375rem;padding:0.4375rem 0.75rem;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.14);border-radius:999px;font:600 0.625rem/1 'Open Sauce One',sans-serif;letter-spacing:.05em;color:#111;text-decoration:none;transition:.2s}
     .studio-badge:hover{background:#111;color:#fff;border-color:#111}
     html, body, #root {
       height: 100%;
@@ -37,7 +37,7 @@
       html { scroll-behavior: auto; }
     }
   </style>
-  <script src="/assets/js/dwf-loader.js?v=2"></script>
+  <script src="/assets/js/dwf-loader.js?v=3"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -405,13 +405,13 @@
               cardRef={(node) => { s1Cards.current[3] = node; }}
               style={s1Reveal.getAnimStyle(3)}
             >
-              <p className="absolute top-4 left-4 md:top-7 md:left-7 text-black text-xs md:text-sm font-semibold leading-4 md:leading-5 max-w-[220px] md:max-w-[320px] z-10">
+              <p className="absolute top-4 left-4 md:top-7 md:left-7 text-black text-xs md:text-sm font-semibold leading-snug max-w-[14rem] md:max-w-[18rem] z-10">
                 Boutique dental care designed for modern Australians,<br />with advanced technology and a genuinely caring team.
               </p>
 
               <div className="absolute bottom-5 left-3 md:bottom-8 md:left-4 z-10">
                 <span className="block text-black text-xs md:text-sm font-semibold mb-1 md:mb-2">Trusted Dentist in Sydney, Australia</span>
-                <h1 className="text-black text-[clamp(3rem,11vw,11rem)] font-bold leading-[0.79] tracking-tight">Smile<br />Beautifully</h1>
+                <h1 className="text-black text-[clamp(2.25rem,7vw,5.5rem)] font-bold leading-[0.82] tracking-tight">Smile<br />Beautifully</h1>
               </div>
 
               <span className="absolute bottom-6 right-4 md:bottom-10 md:right-8 text-white text-xs md:text-sm font-semibold z-10">Book Consultation</span>

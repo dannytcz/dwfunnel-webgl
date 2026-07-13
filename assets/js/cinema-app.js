@@ -659,22 +659,84 @@ function initDemoLightbox() {
   const frame = root?.querySelector(".demo-lightbox__frame");
   const iframe = root?.querySelector(".demo-lightbox__iframe");
   const titleEl = root?.querySelector(".demo-lightbox__title");
+  const loader = root?.querySelector(".demo-lightbox__loader");
+  const loaderFill = loader?.querySelector(".demo-lightbox__loader-fill");
+  const loaderPct = loader?.querySelector(".demo-lightbox__loader-pct");
   if (!root || !frame || !iframe || !titleEl) return;
 
   let lastFocus = null;
   let open = false;
+  let loaderRaf = 0;
+  let loaderStarted = 0;
+  let onMessage = null;
+  let readyTimer = null;
+  let scrollBlockers = null;
+
+  function buildLightboxUrl(url) {
+    const u = new URL(url, window.location.origin);
+    u.searchParams.set("embed", "1");
+    u.searchParams.set("lightbox", "1");
+    return u.pathname + u.search;
+  }
+
+  function setLoaderProgress(p) {
+    const v = Math.round(Math.max(0, Math.min(1, p)) * 100);
+    if (loaderFill) loaderFill.style.width = `${v}%`;
+    if (loaderPct) loaderPct.textContent = `${v}%`;
+  }
+
+  function startLoaderAnim() {
+    cancelAnimationFrame(loaderRaf);
+    loaderStarted = performance.now();
+    setLoaderProgress(0);
+    const tick = () => {
+      if (!open) return;
+      const elapsed = performance.now() - loaderStarted;
+      const soft = Math.min(0.88, elapsed / 1600);
+      setLoaderProgress(soft);
+      loaderRaf = requestAnimationFrame(tick);
+    };
+    loaderRaf = requestAnimationFrame(tick);
+  }
+
+  function stopLoaderAnim() {
+    cancelAnimationFrame(loaderRaf);
+    loaderRaf = 0;
+  }
+
+  function bindScrollLock() {
+    const block = (e) => {
+      if (!open) return;
+      if (frame.contains(e.target)) return;
+      e.preventDefault();
+    };
+    scrollBlockers = { block };
+    window.addEventListener("wheel", block, { passive: false });
+    window.addEventListener("touchmove", block, { passive: false });
+  }
+
+  function unbindScrollLock() {
+    if (!scrollBlockers) return;
+    window.removeEventListener("wheel", scrollBlockers.block);
+    window.removeEventListener("touchmove", scrollBlockers.block);
+    scrollBlockers = null;
+  }
 
   function pausePage() {
     document.documentElement.classList.add("is-demo-open");
+    document.body.classList.add("is-demo-open");
     appState.lenis?.stop?.();
     appState.atmosphere?.setPaused?.(true);
     appState.scrubRecords.forEach((r) => r.scrubber.pauseTicker());
     document.querySelectorAll("video.ws-embed-preview").forEach((v) => {
       v.pause();
     });
+    bindScrollLock();
   }
   function resumePage() {
     document.documentElement.classList.remove("is-demo-open");
+    document.body.classList.remove("is-demo-open");
+    unbindScrollLock();
     appState.lenis?.start?.();
     appState.atmosphere?.setPaused?.(false);
     appState.scrubRecords.forEach((r) => {
@@ -682,26 +744,78 @@ function initDemoLightbox() {
     });
     window.ScrollTrigger?.refresh?.();
   }
+
+  function cleanupOpen() {
+    stopLoaderAnim();
+    if (onMessage) {
+      window.removeEventListener("message", onMessage);
+      onMessage = null;
+    }
+    if (readyTimer) {
+      clearTimeout(readyTimer);
+      readyTimer = null;
+    }
+  }
+
+  function revealIframe() {
+    setLoaderProgress(1);
+    loader?.setAttribute("aria-busy", "false");
+    loader?.classList.add("is-done");
+    iframe.classList.remove("is-loading");
+    stopLoaderAnim();
+    window.setTimeout(() => {
+      loader?.classList.remove("is-done");
+    }, 600);
+  }
+
   function closeLightbox() {
     if (!open) return;
     open = false;
+    cleanupOpen();
     iframe.removeAttribute("src");
+    iframe.classList.add("is-loading");
     iframe.title = "Demo preview";
+    loader?.setAttribute("aria-busy", "true");
     root.hidden = true;
     root.setAttribute("aria-hidden", "true");
     resumePage();
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
     lastFocus = null;
   }
+
   function openLightbox(url, title) {
+    cleanupOpen();
     lastFocus = document.activeElement;
     titleEl.textContent = title || "Studio preview";
     iframe.title = title ? `${title} preview` : "Demo preview";
-    iframe.src = url;
+    iframe.classList.add("is-loading");
+    loader?.setAttribute("aria-busy", "true");
+    loader?.classList.remove("is-done");
     root.hidden = false;
     root.setAttribute("aria-hidden", "false");
     open = true;
     pausePage();
+    startLoaderAnim();
+
+    let revealed = false;
+    const finish = () => {
+      if (!open || revealed) return;
+      revealed = true;
+      revealIframe();
+    };
+
+    onMessage = (e) => {
+      if (e.source !== iframe.contentWindow) return;
+      const type = e.data && e.data.type;
+      if (type === "dwf:progress") {
+        setLoaderProgress(Math.max(0.35, performance.now() - loaderStarted > 400 ? 0.62 : 0.35));
+      }
+      if (type === "dwf:ready") finish();
+    };
+    window.addEventListener("message", onMessage);
+    readyTimer = window.setTimeout(finish, 6500);
+
+    iframe.src = buildLightboxUrl(url);
     requestAnimationFrame(() => frame.focus());
   }
 

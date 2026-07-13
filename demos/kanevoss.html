@@ -49,8 +49,14 @@ header{position:absolute;inset:0 0 auto 0;z-index:30;height:88px;display:flex;al
 .hero{position:relative;z-index:20;min-height:100dvh;display:flex;justify-content:center;align-items:flex-start;padding:8vh 24px 0}
 .hero-inner{width:min(1380px,100%);text-align:center;position:relative}
 h1{margin:0;display:flex;flex-direction:column;align-items:center;text-transform:uppercase;line-height:.88}
-.design-with{font-family:var(--display);font-size:clamp(46px,7vw,110px);letter-spacing:.01em;color:var(--acid);-webkit-text-stroke:0 rgba(255,255,255,0)}
-.hero-word{font-family:var(--display);font-size:clamp(86px,15vw,230px);letter-spacing:-.025em;color:transparent;-webkit-text-stroke:1.6px rgba(255,255,255,.95);min-height:.88em}
+.design-with{font-family:var(--display);font-size:clamp(2.875rem,7vw,6.875rem);letter-spacing:.01em;color:var(--acid);-webkit-text-stroke:0 rgba(255,255,255,0)}
+.hero-word{font-family:var(--display);font-size:clamp(5.375rem,15vw,14.375rem);letter-spacing:-.025em;color:transparent;-webkit-text-stroke:0.1rem rgba(255,255,255,.95);min-height:.88em}
+@media (max-width:1100px){
+.design-with{font-size:clamp(2.25rem,5vw,4.25rem)}
+.hero-word{font-size:clamp(3.5rem,9.5vw,6.5rem);-webkit-text-stroke-width:1px}
+.marquee-track{font-size:clamp(2.75rem,5.8vw,6rem)}
+.hero-image-wrap{height:62vh}
+}
 .bio{margin:12px auto 0;max-width:780px;padding:0 18px;font:13px/1.75 var(--mono);color:rgba(255,255,255,.8)}
 .bio span{display:inline-block;opacity:0;transform:translateY(3px);filter:blur(3px);animation:typeIn .08s forwards}
 @keyframes typeIn{to{opacity:1;transform:none;filter:none}}
@@ -129,7 +135,7 @@ textarea{min-height:112px;resize:vertical}
 .studio-badge:hover b{color:#000}
 @media(max-width:760px){.studio-badge{right:12px;bottom:calc(10px + env(safe-area-inset-bottom));padding:7px 10px;font-size:9px}}
 </style>
-  <script src="/assets/js/dwf-loader.js?v=2"></script>
+  <script src="/assets/js/dwf-loader.js?v=3"></script>
 </head>
 <body>
 <div id="app">

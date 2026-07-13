@@ -8435,14 +8435,14 @@ end_header
         }
       }
     </style>
-  <script src="/assets/js/dwf-loader.js?v=2"></script>
+  <script src="/assets/js/dwf-loader.js?v=3"></script>
 
 <script>
 (function(){
   if(!new URLSearchParams(location.search).has('embed')) return;
   document.documentElement.classList.add('is-embed');
   var st=document.createElement('style');
-  st.textContent='html.is-embed .dwf-credit{display:none!important}::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
+  st.textContent='::-webkit-scrollbar{width:0;height:0}html{scrollbar-width:none}';
   document.documentElement.appendChild(st);
 })();
 </script>

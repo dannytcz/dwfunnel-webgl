@@ -1,0 +1,109 @@
+/**
+ * Shared embed + lightbox shell for Studio Bench iframe previews.
+ * Loaded by dwf-loader.js when ?embed=1. Scales type via rem on html root.
+ */
+
+html.is-embed {
+  font-size: clamp(11px, 0.95vw, 16px);
+  scroll-behavior: auto !important;
+}
+
+html.is-embed.is-lightbox {
+  font-size: clamp(10px, 0.82vw, 14px);
+}
+
+html.is-embed.is-lightbox,
+html.is-embed.is-lightbox body {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+html.is-embed .dwf-credit,
+html.is-embed .studio-badge {
+  display: inline-flex !important;
+  align-items: center;
+  z-index: 2147482000 !important;
+  font-size: 0.625rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.05em !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+/* —— Harbour Smile —— */
+html[data-dwf-demo="harbour"].is-lightbox h1.text-\[clamp\(3rem\,11vw\,11rem\)\],
+html[data-dwf-demo="harbour"].is-lightbox .text-\[clamp\(3rem\,11vw\,11rem\)\] {
+  font-size: clamp(2.25rem, 7vw, 5.5rem) !important;
+  line-height: 0.82 !important;
+}
+
+html[data-dwf-demo="harbour"].is-lightbox .text-\[clamp\(3rem\,7vw\,6rem\)\],
+html[data-dwf-demo="harbour"].is-lightbox .text-\[clamp\(3rem\,7vw\,6\.5rem\)\] {
+  font-size: clamp(2rem, 5.5vw, 4.25rem) !important;
+}
+
+html[data-dwf-demo="harbour"].is-lightbox .max-w-\[14rem\],
+html[data-dwf-demo="harbour"].is-lightbox .max-w-\[18rem\],
+html[data-dwf-demo="harbour"].is-lightbox .max-w-\[220px\],
+html[data-dwf-demo="harbour"].is-lightbox .max-w-\[320px\] {
+  max-width: 14rem !important;
+  font-size: 0.75rem !important;
+  line-height: 1.35 !important;
+}
+
+@media (min-width: 48rem) {
+  html[data-dwf-demo="harbour"].is-lightbox .max-w-\[18rem\] {
+    max-width: 18rem !important;
+  }
+}
+
+/* —— Kane Voss —— */
+html[data-dwf-demo="kanevoss"].is-lightbox .design-with {
+  font-size: clamp(2.25rem, 5vw, 4.25rem) !important;
+}
+
+html[data-dwf-demo="kanevoss"].is-lightbox .hero-word {
+  font-size: clamp(3.5rem, 9.5vw, 6.5rem) !important;
+  -webkit-text-stroke-width: 1px !important;
+}
+
+html[data-dwf-demo="kanevoss"].is-lightbox .marquee-track {
+  font-size: clamp(2rem, 4.5vw, 3.5rem) !important;
+}
+
+html[data-dwf-demo="kanevoss"].is-lightbox .hero-image-wrap {
+  height: 62vh !important;
+}
+
+/* —— Petalform —— */
+html[data-dwf-demo="petalform"].is-lightbox .hero h1 {
+  font-size: clamp(2.25rem, 4.2vw, 3.75rem) !important;
+}
+
+/* —— Sable Yacht Club —— */
+html[data-dwf-demo="sable"].is-lightbox [class*="text-[64px]"],
+html[data-dwf-demo="sable"].is-lightbox [class*="text-[140px]"],
+html[data-dwf-demo="sable"].is-lightbox [class*="md:text-[140px]"] {
+  font-size: clamp(2.75rem, 7.5vw, 5.5rem) !important;
+  line-height: 0.95 !important;
+}
+
+/* —— LionTech section 2 —— */
+html[data-dwf-demo="liontech"].is-lightbox .services-layout {
+  flex-direction: row !important;
+  align-items: flex-start !important;
+}
+
+html[data-dwf-demo="liontech"].is-lightbox .services-intro h2 {
+  font-size: clamp(1.5rem, 2.8vw, 1.875rem) !important;
+}
+
+/* —— NewShift (Tailwind scale-down) —— */
+html[data-dwf-demo="newshift"].is-lightbox h1,
+html[data-dwf-demo="newshift"].is-lightbox .text-6xl,
+html[data-dwf-demo="newshift"].is-lightbox .text-7xl,
+html[data-dwf-demo="newshift"].is-lightbox .text-8xl,
+html[data-dwf-demo="newshift"].is-lightbox .text-9xl {
+  font-size: clamp(2rem, 5vw, 3.25rem) !important;
+  line-height: 1.05 !important;
+}

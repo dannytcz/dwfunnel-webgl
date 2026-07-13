@@ -1916,6 +1916,61 @@ html.is-work-focus .tech-marquee__group {
   flex: 1;
   min-height: 0;
   background: #061018;
+  position: relative;
+}
+.demo-lightbox__loader {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: #050505;
+  color: #e8dfd2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.55s;
+}
+.demo-lightbox__loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.demo-lightbox__loader-panel {
+  width: min(20rem, calc(100% - 3rem));
+  text-align: left;
+}
+.demo-lightbox__loader-brand {
+  margin: 0 0 1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #e8dfd2;
+}
+.demo-lightbox__loader-brand span {
+  color: #f2a84a;
+}
+.demo-lightbox__loader-track {
+  height: 1px;
+  background: rgba(232, 223, 210, 0.16);
+  overflow: hidden;
+}
+.demo-lightbox__loader-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #c9442d, #f2a84a);
+  box-shadow: 0 0 16px rgba(201, 68, 45, 0.45);
+  transition: width 0.12s linear;
+}
+.demo-lightbox__loader-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.875rem;
+  font-size: 0.62rem;
+  color: rgba(232, 223, 210, 0.55);
+}
+.demo-lightbox__loader-pct {
+  color: #e8dfd2;
 }
 .demo-lightbox__iframe {
   display: block;
@@ -1923,9 +1978,19 @@ html.is-work-focus .tech-marquee__group {
   height: 100%;
   border: 0;
   background: #061018;
+  position: relative;
+  z-index: 1;
+}
+.demo-lightbox__iframe.is-loading {
+  opacity: 0;
+  pointer-events: none;
 }
 html.is-demo-open {
   overflow: hidden;
+}
+html.is-demo-open body {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 html.is-demo-open .webgl-atmosphere,
 html.is-demo-open .wall__track,
