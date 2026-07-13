@@ -3,7 +3,7 @@ import { initBuildRequestForm } from "./build-request-form.js";
 import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
 import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
-import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=7";
+import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;

@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/images/hero/poster-1280.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=122" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=123" />
 </head>
 <body>
   <canvas class="webgl-atmosphere" id="webgl-atmosphere" aria-hidden="true"></canvas>
@@ -112,7 +112,11 @@
           <div class="leak-decision" aria-hidden="true">
             <span class="leak-decision__node"></span>
             <div class="leak-decision__no">
-              <svg class="leak-decision__branch" viewBox="0 0 240 2" preserveAspectRatio="none"><path d="M0 1 H240" /></svg>
+              <div class="leak-decision__branch">
+                <span class="leak-decision__seg"></span>
+                <span class="leak-decision__mid">Leak</span>
+                <span class="leak-decision__seg"></span>
+              </div>
               <span class="leak-decision__label" data-anim="branch"><i>No</i><b>Vague offer</b></span>
             </div>
             <div class="leak-decision__yes">
@@ -131,7 +135,11 @@
           <div class="leak-decision leak-decision--2" aria-hidden="true">
             <span class="leak-decision__node"></span>
             <div class="leak-decision__no">
-              <svg class="leak-decision__branch" viewBox="0 0 240 2" preserveAspectRatio="none"><path d="M0 1 H240" /></svg>
+              <div class="leak-decision__branch">
+                <span class="leak-decision__seg"></span>
+                <span class="leak-decision__mid">Leak</span>
+                <span class="leak-decision__seg"></span>
+              </div>
               <span class="leak-decision__label" data-anim="branch"><i>No</i><b>Proof too late</b></span>
             </div>
             <div class="leak-decision__yes">
@@ -150,7 +158,11 @@
           <div class="leak-decision leak-decision--3" aria-hidden="true">
             <span class="leak-decision__node"></span>
             <div class="leak-decision__no">
-              <svg class="leak-decision__branch" viewBox="0 0 240 2" preserveAspectRatio="none"><path d="M0 1 H240" /></svg>
+              <div class="leak-decision__branch">
+                <span class="leak-decision__seg"></span>
+                <span class="leak-decision__mid">Leak</span>
+                <span class="leak-decision__seg"></span>
+              </div>
               <span class="leak-decision__label" data-anim="branch"><i>No</i><b>Unclear next step</b></span>
             </div>
             <div class="leak-decision__yes">
@@ -760,6 +772,6 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js" defer></script>
-  <script type="module" src="assets/js/cinema-app.js?v=114"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=115"></script>
 </body>
 </html>

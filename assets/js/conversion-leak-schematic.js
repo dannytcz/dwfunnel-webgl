@@ -36,19 +36,32 @@ export function initConversionLeakSchematic({ reducedMotion = false, staticDraw 
     if (kind === "wire") {
       tl.fromTo(el, { scaleY: 0 }, { scaleY: 1, duration: 0.5 });
     } else if (kind === "branch") {
-      const line = el.closest(".leak-decision")?.querySelector(".leak-decision__branch");
-      if (line) {
+      const decision = el.closest(".leak-decision");
+      const segs = decision ? Array.from(decision.querySelectorAll(".leak-decision__seg")) : [];
+      const mid = decision?.querySelector(".leak-decision__mid");
+      if (segs.length) {
+        segs.forEach((seg, i) => {
+          tl.fromTo(
+            seg,
+            { scaleX: 0, transformOrigin: i === 0 ? "left center" : "left center" },
+            { scaleX: 1, duration: 0.28 },
+            i === 0 ? undefined : "-=0.08"
+          );
+        });
+      }
+      if (mid) {
         tl.fromTo(
-          line,
-          { scaleX: 0, transformOrigin: "left center" },
-          { scaleX: 1, duration: 0.45 }
+          mid,
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.2 },
+          "-=0.18"
         );
       }
       tl.fromTo(
         el,
         { autoAlpha: 0, x: -8 },
         { autoAlpha: 1, x: 0, duration: 0.35 },
-        "-=0.12"
+        "-=0.1"
       );
     } else if (kind === "yes") {
       tl.fromTo(
