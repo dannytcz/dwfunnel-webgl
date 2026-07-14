@@ -72,7 +72,7 @@
       var link = document.createElement("link");
       link.id = "dwf-embed-css";
       link.rel = "stylesheet";
-      link.href = "/assets/css/dwf-embed.css?v=33";
+      link.href = "/assets/css/dwf-embed.css?v=34";
       (document.head || html).appendChild(link);
     }
   }

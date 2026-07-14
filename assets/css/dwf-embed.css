@@ -246,6 +246,13 @@ html[data-dwf-demo="enermax"].is-lightbox .hero-bg::after {
     ) !important;
 }
 
+html[data-dwf-demo="enermax"] .studio-badge,
+html[data-dwf-demo="enermax"] .dwf-credit {
+  left: 1rem !important;
+  right: auto !important;
+  bottom: 1rem !important;
+}
+
 /* —— Tarismo: sharper hero video in lightbox —— */
 html[data-dwf-demo="tarismo"].is-lightbox video {
   transform: scale(1.04);
