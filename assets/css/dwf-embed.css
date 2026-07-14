@@ -415,17 +415,21 @@ html[data-dwf-demo="elyra"].is-lightbox #home {
 html[data-dwf-demo="elyra"].is-lightbox #home > div.relative.z-\[2\] {
   height: auto !important;
   min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main {
+  flex: 1 1 auto !important;
   justify-content: flex-start !important;
-  gap: clamp(2.25rem, 5.5vh, 4rem) !important;
+  gap: 0 !important;
   padding-top: clamp(1.25rem, 3vh, 2.5rem) !important;
-  padding-bottom: clamp(6.5rem, 14vh, 9rem) !important;
+  /* Keep trust/stat row ~80px above the black diagonal (60–120px tall) */
+  padding-bottom: calc(80px + clamp(3.75rem, 10vh, 7.5rem)) !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main > div.flex.flex-col.gap-7 {
-  margin-top: 0 !important;
+  margin-top: auto !important;
   margin-bottom: 0 !important;
   width: min(100%, 54rem) !important;
   max-width: 100% !important;
