@@ -32,7 +32,7 @@ Run it from the project root. Vercel deploys the working directory and is indepe
 
 ```
 cinema.html                     the product (the flagship page)
-index.html                      redirect to cinema.html
+index.html                      removed — Vercel rewrite serves cinema.html at /
 legal.html                      privacy + terms (noindex, shares cinema.css)
 vercel.json                     rewrites "/" -> "/cinema.html"
 assets/css/cinema.css           all styles for cinema.html
