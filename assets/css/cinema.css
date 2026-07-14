@@ -1438,9 +1438,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .build-survey__retention {
   margin: 0.35rem 0 0;
-  color: var(--dim);
+  color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   line-height: 1.55;
 }
 
@@ -1554,9 +1554,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   border-top: 1px solid var(--line);
 }
 
-html.is-survey-open,
+html.is-survey-open {
+  overflow: hidden;
+}
+
 html.is-survey-open body {
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .build-survey {
@@ -1565,7 +1570,8 @@ html.is-survey-open body {
   z-index: 120;
   display: grid;
   place-items: center;
-  padding: clamp(0.75rem, 2vw, 1.5rem);
+  padding: clamp(0.75rem, 2.5vw, 2rem);
+  overscroll-behavior: contain;
 }
 
 .build-survey[hidden] {
@@ -1582,14 +1588,15 @@ html.is-survey-open body {
 .build-survey__frame {
   position: relative;
   z-index: 1;
-  width: min(560px, 100%);
-  max-height: min(92dvh, 760px);
+  width: min(720px, 100%);
+  max-height: min(94dvh, 920px);
   display: grid;
   grid-template-rows: auto auto 1fr;
   border: 1px solid rgba(232, 223, 210, 0.16);
   background: #0c0b0a;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
   outline: none;
+  touch-action: auto;
 }
 
 .build-survey__chrome {
@@ -1670,8 +1677,11 @@ html.is-survey-open body {
 
 .build-survey__body {
   overflow: auto;
-  padding: 1.25rem;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 1.35rem 1.5rem;
   min-height: 0;
+  touch-action: pan-y;
 }
 
 .build-survey__step {

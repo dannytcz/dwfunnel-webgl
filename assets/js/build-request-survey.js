@@ -22,6 +22,7 @@ const SUBMIT_LABEL = 'Submit build request <span class="btn__arrow" aria-hidden=
 let currentStep = 1;
 let formInitTime = null;
 let lastFocusedElement = null;
+let surveyScrollBlockers = null;
 
 function getSurveyRoot() {
   return document.getElementById("build-survey");
@@ -166,8 +167,42 @@ function updateStepUI(root, form, step) {
   }
 }
 
+function isSurveyScrollTarget(target) {
+  const root = getSurveyRoot();
+  if (!root || !target || !(target instanceof Node)) return false;
+  const body = root.querySelector(".build-survey__body");
+  if (body && body.contains(target)) return true;
+  const el = target instanceof Element ? target : target.parentElement;
+  return Boolean(el?.closest?.(".build-survey__body, .build-survey__success"));
+}
+
+function bindSurveyScrollLock() {
+  if (surveyScrollBlockers) return;
+  const block = (event) => {
+    if (isSurveyScrollTarget(event.target)) return;
+    event.preventDefault();
+  };
+  surveyScrollBlockers = { block };
+  window.addEventListener("wheel", block, { passive: false });
+  window.addEventListener("touchmove", block, { passive: false });
+}
+
+function unbindSurveyScrollLock() {
+  if (!surveyScrollBlockers) return;
+  window.removeEventListener("wheel", surveyScrollBlockers.block);
+  window.removeEventListener("touchmove", surveyScrollBlockers.block);
+  surveyScrollBlockers = null;
+}
+
 function lockBodyScroll(lock) {
   document.documentElement.classList.toggle("is-survey-open", lock);
+  if (lock) {
+    window.lenis?.stop?.();
+    bindSurveyScrollLock();
+    return;
+  }
+  unbindSurveyScrollLock();
+  window.lenis?.start?.();
 }
 
 function focusPageStep() {
