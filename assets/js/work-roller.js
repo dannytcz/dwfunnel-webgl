@@ -349,4 +349,10 @@ export function initWorkRoller(appState) {
       else attachVideo(i);
     });
   };
+
+  /** Prefer warmed blob URL for lightbox / reuse; falls back to cache-busted src. */
+  window.__workRollerPreviewUrl = (src) => {
+    if (!src) return "";
+    return blobCache.get(src) || previewFetchUrl(src);
+  };
 }

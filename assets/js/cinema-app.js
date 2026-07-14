@@ -4,7 +4,7 @@ import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
 import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
-import { initWorkRoller } from "./work-roller.js?v=9";
+import { initWorkRoller } from "./work-roller.js?v=10";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
@@ -685,6 +685,7 @@ function initDemoLightbox() {
   const root = document.getElementById("demo-lightbox");
   const frame = root?.querySelector(".demo-lightbox__frame");
   const iframe = root?.querySelector(".demo-lightbox__iframe");
+  const video = root?.querySelector(".demo-lightbox__video");
   const titleEl = root?.querySelector(".demo-lightbox__title");
   const loader = root?.querySelector(".demo-lightbox__loader");
   const loaderFill = loader?.querySelector(".demo-lightbox__loader-fill");
@@ -694,6 +695,7 @@ function initDemoLightbox() {
 
   let lastFocus = null;
   let open = false;
+  let mode = "iframe";
   let loaderRaf = 0;
   let loaderStarted = 0;
   let loaderRotateTimer = null;
@@ -702,6 +704,11 @@ function initDemoLightbox() {
   let readyTimer = null;
   let scrollBlockers = null;
   let revealed = false;
+  let onVideoReady = null;
+
+  const isMobileLightbox = () =>
+    document.documentElement.classList.contains("is-mobile") ||
+    window.matchMedia("(max-width: 899px)").matches;
 
   function stopWaitingRotate() {
     if (!loaderRotateTimer) return;
@@ -820,7 +827,7 @@ function initDemoLightbox() {
     }
   }
 
-  function revealIframe() {
+  function revealMedia() {
     if (revealed) return;
     revealed = true;
     stopLoaderAnim();
@@ -833,9 +840,19 @@ function initDemoLightbox() {
       window.removeEventListener("message", onMessage);
       onMessage = null;
     }
+    if (onVideoReady && video) {
+      video.removeEventListener("loadeddata", onVideoReady);
+      video.removeEventListener("canplay", onVideoReady);
+      onVideoReady = null;
+    }
     loader?.setAttribute("aria-busy", "false");
     loader?.classList.add("is-done");
-    iframe.classList.remove("is-loading");
+    if (mode === "video" && video) {
+      video.classList.remove("is-loading");
+      video.play()?.catch?.(() => {});
+    } else {
+      iframe.classList.remove("is-loading");
+    }
   }
 
   function resetLoaderUi() {
@@ -849,14 +866,34 @@ function initDemoLightbox() {
     if (loaderStatus) loaderStatus.textContent = demoLoaderStatus(0);
   }
 
+  function clearMedia() {
+    iframe.removeAttribute("src");
+    iframe.classList.add("is-loading");
+    iframe.title = "Demo preview";
+    if (video) {
+      video.pause();
+      video.removeAttribute("src");
+      video.removeAttribute("poster");
+      video.load();
+      video.classList.add("is-loading");
+      video.setAttribute("hidden", "");
+    }
+    iframe.removeAttribute("hidden");
+    root.classList.remove("is-video-mode");
+  }
+
   function closeLightbox() {
     if (!open) return;
     open = false;
     cleanupOpen();
+    if (onVideoReady && video) {
+      video.removeEventListener("loadeddata", onVideoReady);
+      video.removeEventListener("canplay", onVideoReady);
+      onVideoReady = null;
+    }
     resetLoaderUi();
-    iframe.removeAttribute("src");
-    iframe.classList.add("is-loading");
-    iframe.title = "Demo preview";
+    clearMedia();
+    mode = "iframe";
     loader?.setAttribute("aria-busy", "true");
     root.hidden = true;
     root.setAttribute("aria-hidden", "true");
@@ -865,22 +902,19 @@ function initDemoLightbox() {
     lastFocus = null;
   }
 
-  function openLightbox(url, title) {
-    cleanupOpen();
-    resetLoaderUi();
-    lastFocus = document.activeElement;
+  function openIframeLightbox(url, title) {
+    mode = "iframe";
+    root.classList.remove("is-video-mode");
+    iframe.removeAttribute("hidden");
+    video?.setAttribute("hidden", "");
     titleEl.textContent = title || "Studio preview";
     iframe.title = title ? `${title} preview` : "Demo preview";
     iframe.classList.add("is-loading");
-    root.hidden = false;
-    root.setAttribute("aria-hidden", "false");
-    open = true;
-    pausePage();
     startLoaderAnim();
 
     const finish = () => {
       if (!open || revealed) return;
-      revealIframe();
+      revealMedia();
     };
 
     const onIframeLoad = () => {
@@ -900,8 +934,62 @@ function initDemoLightbox() {
     window.addEventListener("message", onMessage);
     readyTimer = window.setTimeout(finish, 2800);
     iframe.addEventListener("load", onIframeLoad, { once: true });
-
     iframe.src = buildLightboxUrl(url);
+  }
+
+  function openVideoLightbox(src, poster, title) {
+    if (!video || !src) {
+      return false;
+    }
+    mode = "video";
+    root.classList.add("is-video-mode");
+    iframe.setAttribute("hidden", "");
+    video.removeAttribute("hidden");
+    titleEl.textContent = title || "Studio preview";
+    video.classList.add("is-loading");
+    if (poster) video.poster = poster;
+    startLoaderAnim();
+
+    const finish = () => {
+      if (!open || revealed) return;
+      setLoaderProgress(1);
+      revealMedia();
+    };
+
+    onVideoReady = () => {
+      if (!open || revealed) return;
+      setLoaderProgress(0.99);
+      window.setTimeout(finish, 80);
+    };
+    video.addEventListener("loadeddata", onVideoReady, { once: true });
+    video.addEventListener("canplay", onVideoReady, { once: true });
+    readyTimer = window.setTimeout(finish, 2200);
+
+    const resolved =
+      (typeof window.__workRollerPreviewUrl === "function" && window.__workRollerPreviewUrl(src)) || src;
+    video.src = resolved;
+    video.load();
+    return true;
+  }
+
+  function openLightbox({ url, title, videoSrc, poster } = {}) {
+    cleanupOpen();
+    resetLoaderUi();
+    clearMedia();
+    lastFocus = document.activeElement;
+    root.hidden = false;
+    root.setAttribute("aria-hidden", "false");
+    open = true;
+    pausePage();
+
+    const useVideo = isMobileLightbox() && videoSrc && openVideoLightbox(videoSrc, poster, title);
+    if (!useVideo) {
+      if (!url) {
+        closeLightbox();
+        return;
+      }
+      openIframeLightbox(url, title);
+    }
     requestAnimationFrame(() => frame.focus());
   }
 
@@ -913,10 +1001,12 @@ function initDemoLightbox() {
       }
       e.preventDefault();
       const url = btn.getAttribute("data-demo");
-      if (!url) return;
       const card = btn.closest(".work-card");
+      const preview = card?.querySelector("video.ws-embed-preview");
+      const videoSrc = preview?.getAttribute("data-src") || "";
+      const poster = preview?.getAttribute("poster") || "";
       const title = card?.querySelector("figcaption strong")?.textContent?.trim() || "Studio preview";
-      openLightbox(url, title);
+      openLightbox({ url, title, videoSrc, poster });
     });
   });
 
