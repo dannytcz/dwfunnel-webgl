@@ -1,4 +1,4 @@
-import { FrameScrubber, decodeTierWidth } from "./frame-scrub.js?v=69";
+import { FrameScrubber, decodeTierWidth, mobileScrubOpts } from "./frame-scrub.js?v=70";
 import { initBuildRequestForm } from "./build-request-form.js";
 import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
@@ -39,11 +39,22 @@ function heroUrls() {
   return window.DWF_CDN?.acts?.act0 || [];
 }
 
-function scrubDecodeWidth(section, urls) {
+function scrubDecodeWidth(section, urls, { mobile = false } = {}) {
   const isHero = section.id === "hero-pin";
   const requested = isHero ? decodeTierWidth() : parseInt(section.dataset.filmDecode || "", 10) || SECTION_DECODE_W;
+  if (mobile) {
+    if (isHero) return Math.min(requested, 720);
+    return Math.min(requested, 640);
+  }
   if (urls.length >= 100) return Math.min(requested, isHero ? 1280 : 820);
   return requested;
+}
+
+/** Shorter pin travel on phones so scrub sections feel less sticky. */
+function scrubPinVh(section, { mobile = false } = {}) {
+  const base = parseInt(section.dataset.vh || "180", 10);
+  if (!mobile) return base;
+  return Math.max(120, Math.round(base * 0.68));
 }
 
 function sectionUrls(key, count) {
@@ -401,11 +412,12 @@ function initScrub(section, { loader, eager = false, mobile = false, onProgress 
 
   const isHero = section.id === "hero-pin";
   const frameCounter = section.querySelector(".frame-counter");
-  const decodeWidth = scrubDecodeWidth(section, urls);
+  const decodeWidth = scrubDecodeWidth(section, urls, { mobile });
   const scrubber = new FrameScrubber(stage, canvas, urls, {
     decodeWidth,
     priorityIndex: 0,
     debugLabel: section.id || section.dataset.filmFrames || "scrub",
+    ...(mobile ? mobileScrubOpts() : {}),
   });
   scrubber.bindResize();
   canvas.classList.add("is-active");
@@ -496,13 +508,15 @@ function initScrub(section, { loader, eager = false, mobile = false, onProgress 
     onEnterBack: () => load(),
   });
 
+  const pinVh = scrubPinVh(section, { mobile });
   const pinST = window.ScrollTrigger.create({
     trigger: section,
     start: "top top",
-    end: `+=${parseInt(section.dataset.vh || "180", 10)}%`,
+    end: `+=${pinVh}%`,
     pin: true,
-    scrub: isHero ? 0.2 : 0.12,
-    anticipatePin: 1,
+    // Slightly softer scrub on mobile so touch scroll feels less twitchy.
+    scrub: mobile ? (isHero ? 0.35 : 0.22) : isHero ? 0.2 : 0.12,
+    anticipatePin: mobile ? 0 : 1,
     invalidateOnRefresh: true,
     onToggle: (self) => {
       if (self.isActive) {
@@ -517,7 +531,9 @@ function initScrub(section, { loader, eager = false, mobile = false, onProgress 
       const p = self.progress;
       const frame = Math.round(p * (urls.length - 1));
       scrubber.setTargetFrame(frame);
-      scrubber.setFx({ scale: 1 + p * (isHero ? 0.04 : 0.012), offsetY: isHero ? -p * 12 : 0, offsetX: 0 });
+      const scaleDelta = mobile ? (isHero ? 0.02 : 0.006) : isHero ? 0.04 : 0.012;
+      const offsetY = mobile ? 0 : isHero ? -p * 12 : 0;
+      scrubber.setFx({ scale: 1 + p * scaleDelta, offsetY, offsetX: 0 });
       section.style.setProperty("--progress", String(p));
       if (frameCounter) {
         frameCounter.textContent = `FR ${String(frame + 1).padStart(3, "0")}`;
@@ -1031,8 +1047,12 @@ async function init() {
   const staticMode = (reduced || saveData) && !forceMotion;
   const loader = initLoader();
   const sections = Array.from(document.querySelectorAll("[data-scrub]"));
-  initMagneticCards();
-  initScrambleText();
+  document.documentElement.classList.toggle("is-mobile", mobile);
+  // Hover polish is desktop-only; skip pointermove/scramble cost on phones.
+  if (!mobile) {
+    initMagneticCards();
+    initScrambleText();
+  }
 
   if (staticMode) {
     loader.setProgress(0.5);

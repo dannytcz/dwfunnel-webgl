@@ -12,10 +12,14 @@
 const PLACEHOLDER_FILL = "#061018";
 const DEFAULT_DECODE_W = 1280;
 const DPR_CAP = 1.5;
+const DPR_CAP_MOBILE = 1;
 // Hard cap on the canvas backing-store width so 4K/5K displays never allocate a
 // huge canvas. Height follows proportionally so the drawn frame stays cover-fit.
 const MAX_BACKING_W = 3200;
+const MAX_BACKING_W_MOBILE = 1600;
 const RESIZE_DEBOUNCE_MS = 200;
+const LOAD_CONCURRENCY = 6;
+const LOAD_CONCURRENCY_MOBILE = 3;
 
 export class FrameScrubber {
   constructor(container, canvas, urls, opts = {}) {
@@ -31,6 +35,9 @@ export class FrameScrubber {
     this.reducedMotion = opts.reducedMotion ?? false;
     this.decodeWidth = opts.decodeWidth ?? DEFAULT_DECODE_W;
     this.priorityIndex = opts.priorityIndex ?? 0;
+    this.dprCap = opts.dprCap ?? DPR_CAP;
+    this.maxBackingW = opts.maxBackingW ?? MAX_BACKING_W;
+    this.loadConcurrency = opts.loadConcurrency ?? LOAD_CONCURRENCY;
     this._onProgress = null;
     this._tickerActive = false;
     this._resizeTimer = null;
@@ -126,7 +133,7 @@ export class FrameScrubber {
     let done = 1;
     this._onProgress?.(done / total);
 
-    const concurrency = 6;
+    const concurrency = this.loadConcurrency;
     let next = 0;
 
     const worker = async () => {
@@ -283,11 +290,11 @@ export class FrameScrubber {
     const w = this.container.clientWidth;
     const h = this.container.clientHeight;
     if (!w || !h) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
-    // Cap backing width at 3200; scale height by the same factor to preserve the
+    const dpr = Math.min(window.devicePixelRatio || 1, this.dprCap);
+    // Cap backing width; scale height by the same factor to preserve the
     // element's aspect ratio so cover-fit drawing has no letterboxing.
     let renderScale = dpr;
-    if (w * renderScale > MAX_BACKING_W) renderScale = MAX_BACKING_W / w;
+    if (w * renderScale > this.maxBackingW) renderScale = this.maxBackingW / w;
     this._clientW = w;
     this._clientH = h;
     this.canvas.width = Math.max(1, Math.round(w * renderScale));
@@ -323,9 +330,18 @@ export function scrollFx(progress, opts = {}) {
 
 /** Viewport resolution tier for decode width (Phase 3.2). */
 export function decodeTierWidth(vw = window.innerWidth) {
-  if (vw < 900) return 960;
+  if (vw < 600) return 720;
+  if (vw < 900) return 840;
   if (vw < 1440) return 1280;
   // 1600 requested for large screens, but 120 frames * 1600x900x4B ~= 691MB
   // exceeds the 600MB decoded-memory budget; 1440 keeps one sequence ~560MB.
   return 1440;
+}
+
+export function mobileScrubOpts() {
+  return {
+    dprCap: DPR_CAP_MOBILE,
+    maxBackingW: MAX_BACKING_W_MOBILE,
+    loadConcurrency: LOAD_CONCURRENCY_MOBILE,
+  };
 }
