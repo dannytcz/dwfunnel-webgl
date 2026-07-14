@@ -151,7 +151,7 @@ function initGlobalProgress() {
 
 function initMagneticCards() {
   document
-    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature")
+    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature, .proof-cell")
     .forEach((card) => {
       card.addEventListener("pointermove", (event) => {
         const rect = card.getBoundingClientRect();
