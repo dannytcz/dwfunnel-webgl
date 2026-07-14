@@ -215,7 +215,8 @@ export function closeSurvey({ force = false, focusPage = false } = {}) {
   const form = getForm();
   if (!root || root.hidden) return;
 
-  if (!force && form && isFormDirty(form)) {
+  // Skip confirm when returning to the page step to edit — that is not abandoning the form.
+  if (!force && !focusPage && form && isFormDirty(form)) {
     const leave = window.confirm("Close this form? Your answers will stay saved for this session.");
     if (!leave) return;
   }
@@ -334,9 +335,12 @@ export function initBuildRequestSurvey() {
     const editBtn = event.target.closest("[data-review-edit]");
     if (!editBtn) return;
 
+    event.preventDefault();
+    event.stopPropagation();
+
     const target = editBtn.dataset.reviewEdit;
     if (target === "page") {
-      closeSurvey({ focusPage: true });
+      closeSurvey({ force: true, focusPage: true });
       return;
     }
 
