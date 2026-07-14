@@ -1,4 +1,5 @@
 import { buildEmailHtml, buildEmailText } from "./lib/email-template.js";
+import { enforceBuildRequestRateLimit } from "./lib/rate-limit.js";
 import {
   extractServerMeta,
   mergeSubmissionMeta,
@@ -9,10 +10,14 @@ const BUDGET_OPTIONS = new Set(["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"]);
 const TRAFFIC_OPTIONS = new Set(["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"]);
 const TO_EMAIL = process.env.BUILD_REQUEST_TO_EMAIL || "drdannytan@gmail.com";
 const FROM_EMAIL = process.env.RESEND_FROM || "DW Funnel <build@deedaptech.com>";
+const RATE_LIMIT_PER_DAY = 3;
 
 function json(res, status, body) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
+  if (status === 429 && body?.retryAfterSec) {
+    res.setHeader("Retry-After", String(Math.ceil(body.retryAfterSec)));
+  }
   res.end(JSON.stringify(body));
 }
 
@@ -156,13 +161,33 @@ export default async function handler(req, res) {
     }
 
     const serverMeta = extractServerMeta(req);
+    const rate = await enforceBuildRequestRateLimit({
+      ip: serverMeta.ip,
+      email: validated.payload.email,
+      limit: RATE_LIMIT_PER_DAY,
+    });
+
+    if (!rate.ok) {
+      json(res, rate.status || 429, {
+        error: rate.error,
+        code: rate.code,
+        limit: rate.limit ?? RATE_LIMIT_PER_DAY,
+        retryAfterSec: rate.retryAfterSec,
+      });
+      return;
+    }
+
     const payload = {
       ...validated.payload,
       meta: mergeSubmissionMeta(validated.payload.meta.client, serverMeta),
     };
 
     const emailResult = await sendEmail(payload);
-    json(res, 200, { ok: true, id: emailResult?.id || null });
+    json(res, 200, {
+      ok: true,
+      id: emailResult?.id || null,
+      remainingToday: rate.remaining,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected server error.";
     const status = message.includes("RESEND_API_KEY") ? 503 : 500;

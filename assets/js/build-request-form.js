@@ -38,15 +38,20 @@ export async function submitBuildRequest(payload) {
     body: JSON.stringify(payload),
   });
 
+  const contentType = response.headers.get("content-type") || "";
+  const data = contentType.includes("application/json")
+    ? await response.json().catch(() => ({}))
+    : {};
+
   if (!response.ok) {
-    throw new Error(`Submission failed (${response.status}).`);
+    const error = new Error(data?.error || `Submission failed (${response.status}).`);
+    error.status = response.status;
+    error.code = data?.code || "";
+    error.retryAfterSec = data?.retryAfterSec;
+    throw error;
   }
 
-  const contentType = response.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
-    return response.json();
-  }
-  return { ok: true };
+  return Object.keys(data).length ? data : { ok: true };
 }
 
 export function isValidUrl(value) {
