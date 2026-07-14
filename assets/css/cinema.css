@@ -3575,7 +3575,7 @@ html.is-demo-open .tech-marquee__group {
 @keyframes wall-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 .tcard {
   flex: none;
-  width: clamp(290px, 25vw, 370px);
+  width: clamp(320px, 30vw, 440px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
