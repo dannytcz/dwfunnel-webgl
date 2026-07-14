@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="DW Funnel">
+  <rect width="32" height="32" rx="7" fill="#050505"/>
+  <!-- D -->
+  <path fill="#F5F5F5" d="M6.5 8h4.1c3.55 0 5.7 1.85 5.7 4.85S14.15 17.7 10.6 17.7H9.1V24H6.5V8zm2.6 2.2v5.3h1.35c1.7 0 2.75-.9 2.75-2.65s-1.05-2.65-2.75-2.65H9.1z"/>
+  <!-- W -->
+  <path fill="#F5F5F5" d="M16.2 8h2.55l1.55 10.4L21.85 8H24.4l2.1 16h-2.55l-1.05-9.1L21.2 24h-2.35l-1.7-9.1L15.95 24H13.4L16.2 8z"/>
+  <!-- accent -->
+  <rect x="6.5" y="26" width="19" height="1.6" rx="0.8" fill="#39FF14"/>
+</svg>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /demos/
+Disallow: /demos-src/
+Disallow: /api/
+Disallow: /scripts/
+
+Sitemap: https://dwfunnel.com/sitemap.xml
