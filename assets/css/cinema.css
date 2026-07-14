@@ -3601,23 +3601,27 @@ html.is-demo-open .tech-marquee__group {
 }
 .proof-spotlight__head .section-title {
   width: min(980px, 100%);
-  margin: 0 0 1rem;
-  /* Match 005 Studio Bench / global .section-title scale */
-  font-size: 3.2rem;
-  line-height: 1;
+  margin: 0 0 1.25rem;
+  /* Same type scale as 005 Built On The Bench via global .section-title */
+}
+.proof-spotlight__line {
+  display: block;
+}
+.proof-spotlight__line--accent {
+  color: var(--red);
 }
 .proof-spotlight__lede {
   margin: 0;
   color: var(--muted);
   font-size: clamp(1rem, 1.2vw, 1.15rem);
   line-height: 1.6;
-  max-width: 42ch;
+  max-width: 48ch;
 }
 .proof-spotlight__feature {
   position: relative;
   width: min(52rem, 100%);
-  min-height: 11.5rem;
-  margin: 0 auto;
+  min-height: 13.5rem;
+  margin: clamp(1.75rem, 3.5vh, 2.75rem) auto 0;
 }
 .proof-feature-slide {
   position: absolute;
@@ -3688,43 +3692,48 @@ html.is-demo-open .tech-marquee__group {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
-  padding-top: clamp(1.4rem, 2.5vw, 2rem);
+  gap: clamp(1.25rem, 2.2vw, 1.85rem);
+  padding-top: clamp(1.6rem, 2.8vw, 2.25rem);
   border-top: 1px solid var(--line);
   text-align: center;
+  align-items: start;
 }
 .proof-strip-item {
   margin: 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.55;
-  transition: opacity 0.35s ease, color 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   text-align: center;
+  transition: opacity 0.35s ease;
 }
 .proof-strip-item.is-active {
   opacity: 0.28;
 }
-.proof-strip-item strong {
-  display: block;
-  margin-top: 0.75rem;
+.proof-strip-item__quote {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(0.84rem, 0.95vw, 0.92rem);
+  line-height: 1.58;
+}
+.proof-strip-item__quote b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.proof-strip-item__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
   color: var(--ink);
   font-size: 0.82rem;
   font-weight: 600;
 }
-.proof-strip-item strong span {
-  display: block;
-  margin-top: 0.15rem;
+.proof-strip-item__who span {
   color: var(--dim);
   font-weight: 400;
   font-size: 0.74rem;
 }
 .proof-strip-item[hidden] {
   display: none !important;
-}
-@media (max-width: 980px) {
-  .proof-spotlight__head .section-title {
-    font-size: clamp(2.8rem, 4vw, 4.1rem);
-  }
 }
 @media (max-width: 780px) {
   .proof-spotlight__strip {
