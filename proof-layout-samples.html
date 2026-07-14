@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>DW Funnel — Testimonial layout samples</title>
+  <meta name="theme-color" content="#050505" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=150" />
+  <style>
+    .samples-top {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem clamp(1rem, 3vw, 2rem);
+      background: rgba(5, 5, 5, 0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .samples-top__brand {
+      color: var(--ink);
+      font-family: var(--font-tech);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .samples-top__nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .samples-top__nav a {
+      color: var(--muted);
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .samples-top__nav a:hover,
+    .samples-top__nav a.is-active {
+      color: #fff4ec;
+      border-color: var(--line-hot);
+      background: rgba(240, 74, 42, 0.12);
+    }
+    .sample-block {
+      padding: clamp(3.5rem, 8vh, 6rem) 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .sample-label {
+      width: min(var(--max), 100%);
+      margin: 0 auto 1.75rem;
+      padding: 0 clamp(1.2rem, 3vw, 2rem);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .sample-label h2 {
+      margin: 0;
+      font-family: var(--font-tech);
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .sample-label p {
+      margin: 0;
+      max-width: 52ch;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .sample-frame {
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      padding: 0 clamp(1.2rem, 3vw, 2rem);
+    }
+
+    /* Option 1: Spotlight + supporting strip */
+    .opt1 {
+      display: grid;
+      gap: 2.5rem;
+    }
+    .opt1__feature {
+      max-width: 48rem;
+    }
+    .opt1__kicker {
+      margin: 0 0 1rem;
+      color: var(--red);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .opt1__quote {
+      margin: 0 0 1.5rem;
+      color: var(--ink);
+      font-size: clamp(1.35rem, 2.6vw, 2.1rem);
+      line-height: 1.35;
+      font-weight: 500;
+    }
+    .opt1__quote b { color: var(--red); font-weight: 600; }
+    .opt1__who {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      color: var(--ink);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .opt1__who em {
+      color: var(--muted);
+      font-style: normal;
+      font-weight: 400;
+      font-size: 0.78rem;
+    }
+    .opt1__strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+    }
+    .opt1__mini {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .opt1__mini strong {
+      display: block;
+      margin-top: 0.75rem;
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .opt1__mini strong span {
+      display: block;
+      color: var(--dim);
+      font-weight: 400;
+      font-size: 0.74rem;
+      margin-top: 0.15rem;
+    }
+    @media (max-width: 780px) {
+      .opt1__strip { grid-template-columns: 1fr; }
+    }
+
+    /* Option 2: Filmstrip */
+    .opt2__head {
+      margin-bottom: 1.75rem;
+      max-width: 36rem;
+    }
+    .opt2__head .section-meta { margin-bottom: 1rem; }
+    .opt2__head h3 {
+      margin: 0 0 0.85rem;
+      font-family: var(--font-tech);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+    .opt2__head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .opt2__rail {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding: 0.25rem 0 1rem;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .opt2__rail::-webkit-scrollbar { height: 4px; }
+    .opt2__rail::-webkit-scrollbar-thumb { background: rgba(240, 74, 42, 0.45); }
+    .opt2__card {
+      flex: 0 0 min(78vw, 22rem);
+      scroll-snap-align: start;
+      min-height: 11.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1.4rem 1.5rem;
+      border: 1px solid var(--line);
+      background: rgba(12, 11, 10, 0.72);
+    }
+    .opt2__card p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 1.02rem;
+      line-height: 1.45;
+    }
+    .opt2__card p b { color: var(--red); }
+    .opt2__card footer {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Option 3: Rotating spotlight */
+    .opt3 {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: center;
+      min-height: 22rem;
+    }
+    .opt3__copy .section-meta { margin-bottom: 1rem; }
+    .opt3__copy h3 {
+      margin: 0 0 0.9rem;
+      font-family: var(--font-tech);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+    .opt3__copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 34ch;
+    }
+    .opt3__stage {
+      position: relative;
+      min-height: 16rem;
+    }
+    .opt3__slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      pointer-events: none;
+    }
+    .opt3__slide.is-active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      position: relative;
+    }
+    .opt3__quote {
+      margin: 0 0 1.4rem;
+      color: var(--ink);
+      font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+      line-height: 1.4;
+    }
+    .opt3__quote b { color: var(--red); }
+    .opt3__who {
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+    .opt3__who span {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 0.76rem;
+    }
+    .opt3__dots {
+      display: flex;
+      gap: 0.45rem;
+      margin-top: 1.75rem;
+    }
+    .opt3__dots button {
+      width: 1.65rem;
+      height: 3px;
+      border: 0;
+      padding: 0;
+      background: rgba(230, 222, 210, 0.22);
+      cursor: pointer;
+    }
+    .opt3__dots button.is-active { background: var(--red); }
+    @media (max-width: 820px) {
+      .opt3 { grid-template-columns: 1fr; min-height: 0; }
+    }
+
+    /* Option 4: Editorial pull-quotes, no cards */
+    .opt4__head {
+      margin-bottom: 2.5rem;
+      max-width: 34rem;
+    }
+    .opt4__head .section-meta { margin-bottom: 1rem; }
+    .opt4__head h3 {
+      margin: 0 0 0.9rem;
+      font-family: var(--font-tech);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+    .opt4__head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .opt4__list {
+      display: grid;
+      gap: 0;
+    }
+    .opt4__item {
+      display: grid;
+      grid-template-columns: 3.5rem minmax(0, 1fr);
+      gap: 1.25rem;
+      padding: 1.75rem 0;
+      border-top: 1px solid var(--line);
+    }
+    .opt4__item:last-child { border-bottom: 1px solid var(--line); }
+    .opt4__mark {
+      color: var(--red);
+      font-family: var(--font-tech);
+      font-size: 2.4rem;
+      line-height: 1;
+      opacity: 0.85;
+    }
+    .opt4__quote {
+      margin: 0 0 0.85rem;
+      color: var(--ink);
+      font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+      line-height: 1.45;
+    }
+    .opt4__quote b { color: var(--red); font-weight: 600; }
+    .opt4__meta {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    @media (max-width: 620px) {
+      .opt4__item { grid-template-columns: 2rem 1fr; gap: 0.85rem; }
+    }
+
+    .samples-pick {
+      padding: 3rem clamp(1.2rem, 3vw, 2rem) 5rem;
+      text-align: center;
+    }
+    .samples-pick p {
+      margin: 0 0 1rem;
+      color: var(--muted);
+    }
+    .samples-pick strong { color: var(--ink); }
+  </style>
+</head>
+<body class="legal-body">
+  <header class="samples-top">
+    <a class="samples-top__brand" href="/">← Back to site</a>
+    <nav class="samples-top__nav" aria-label="Layout options">
+      <a href="#opt1">1 Spotlight</a>
+      <a href="#opt2">2 Filmstrip</a>
+      <a href="#opt3">3 Rotating</a>
+      <a href="#opt4">4 Editorial</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- OPTION 1 -->
+    <section class="sample-block" id="opt1">
+      <div class="sample-label">
+        <h2>Option 1 · Spotlight + strip</h2>
+        <p>One dominant quote. Three short supporting outcomes. No card wall. Apply stays out of this section.</p>
+      </div>
+      <div class="sample-frame">
+        <div class="opt1">
+          <div class="opt1__feature">
+            <p class="opt1__kicker">004 / Client Logs</p>
+            <p class="opt1__quote">&ldquo;Prospects arrive knowing what we do and why it matters. <b>That alone changed the quality of every call.</b>&rdquo;</p>
+            <div class="opt1__who">Jackson Wayne<em>Chicago</em></div>
+          </div>
+          <div class="opt1__strip">
+            <p class="opt1__mini">&ldquo;I finally send traffic somewhere I&rsquo;m proud of.&rdquo;<strong>Cindy Fox<span>Australia</span></strong></p>
+            <p class="opt1__mini">&ldquo;It finally matches the standard we sell in person.&rdquo;<strong>Steve Johnson<span>Las Vegas</span></strong></p>
+            <p class="opt1__mini">&ldquo;Just a page that makes the offer feel inevitable.&rdquo;<strong>Wyn Tan<span>Singapore</span></strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPTION 2 -->
+    <section class="sample-block" id="opt2">
+      <div class="sample-label">
+        <h2>Option 2 · Cinematic filmstrip</h2>
+        <p>Horizontal snap-scroll of short outcome lines. Feels like a reel. Less reading, more presence.</p>
+      </div>
+      <div class="sample-frame">
+        <div class="opt2__head">
+          <div class="section-meta">004 / Client Logs</div>
+          <h3>Proof that books the call.</h3>
+          <p>Swipe the reel. Short outcomes only.</p>
+        </div>
+        <div class="opt2__rail" aria-label="Testimonial filmstrip">
+          <article class="opt2__card">
+            <p>&ldquo;<b>I finally send traffic somewhere I&rsquo;m proud of.</b>&rdquo;</p>
+            <footer>Cindy Fox · Australia</footer>
+          </article>
+          <article class="opt2__card">
+            <p>&ldquo;<b>Prospects arrive knowing what we do.</b>&rdquo;</p>
+            <footer>Jackson Wayne · Chicago</footer>
+          </article>
+          <article class="opt2__card">
+            <p>&ldquo;<b>A page I don&rsquo;t hesitate to put in front of anyone.</b>&rdquo;</p>
+            <footer>Craig George · Ireland</footer>
+          </article>
+          <article class="opt2__card">
+            <p>&ldquo;<b>Makes the offer feel inevitable.</b>&rdquo;</p>
+            <footer>Wyn Tan · Singapore</footer>
+          </article>
+          <article class="opt2__card">
+            <p>&ldquo;<b>Matches the standard we sell in person.</b>&rdquo;</p>
+            <footer>Steve Johnson · Las Vegas</footer>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPTION 3 -->
+    <section class="sample-block" id="opt3">
+      <div class="sample-label">
+        <h2>Option 3 · Single rotating quote</h2>
+        <p>One big quote at a time. Auto-advances. Strongest hierarchy, lowest clutter.</p>
+      </div>
+      <div class="sample-frame">
+        <div class="opt3">
+          <div class="opt3__copy">
+            <div class="section-meta">004 / Client Logs</div>
+            <h3>Proof that books the call.</h3>
+            <p>Landing pages that sell before the conversation starts.</p>
+          </div>
+          <div class="opt3__stage" id="opt3-stage">
+            <article class="opt3__slide is-active">
+              <p class="opt3__quote">&ldquo;The new page walks people through the offer properly. <b>I finally send traffic somewhere I&rsquo;m proud of.</b>&rdquo;</p>
+              <div class="opt3__who">Cindy Fox<span>Australia</span></div>
+            </article>
+            <article class="opt3__slide">
+              <p class="opt3__quote">&ldquo;Structure, story, and a clear path to book. <b>Prospects arrive knowing what we do and why it matters.</b>&rdquo;</p>
+              <div class="opt3__who">Jackson Wayne<span>Chicago</span></div>
+            </article>
+            <article class="opt3__slide">
+              <p class="opt3__quote">&ldquo;Looks premium the second it loads. <b>It finally matches the standard we sell in person.</b>&rdquo;</p>
+              <div class="opt3__who">Steve Johnson<span>Las Vegas</span></div>
+            </article>
+            <article class="opt3__slide">
+              <p class="opt3__quote">&ldquo;Sharp, focused, built for one job. <b>A page that makes the offer feel inevitable.</b>&rdquo;</p>
+              <div class="opt3__who">Wyn Tan<span>Singapore</span></div>
+            </article>
+            <div class="opt3__dots" id="opt3-dots" aria-label="Quote selector">
+              <button type="button" class="is-active" aria-label="Quote 1"></button>
+              <button type="button" aria-label="Quote 2"></button>
+              <button type="button" aria-label="Quote 3"></button>
+              <button type="button" aria-label="Quote 4"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPTION 4 -->
+    <section class="sample-block" id="opt4">
+      <div class="sample-label">
+        <h2>Option 4 · Editorial pull-quotes</h2>
+        <p>No cards. Typography only. Outcome line in red. Closest to the cinematic house style.</p>
+      </div>
+      <div class="sample-frame">
+        <div class="opt4__head">
+          <div class="section-meta">004 / Client Logs</div>
+          <h3>Proof that books the call.</h3>
+          <p>Landing pages that sell before the conversation starts.</p>
+        </div>
+        <div class="opt4__list">
+          <article class="opt4__item">
+            <span class="opt4__mark" aria-hidden="true">&ldquo;</span>
+            <div>
+              <p class="opt4__quote"><b>I finally send traffic somewhere I&rsquo;m proud of,</b> and the conversations that come in are already warmer.</p>
+              <div class="opt4__meta">Cindy Fox · Australia</div>
+            </div>
+          </article>
+          <article class="opt4__item">
+            <span class="opt4__mark" aria-hidden="true">&ldquo;</span>
+            <div>
+              <p class="opt4__quote"><b>Prospects arrive knowing what we do and why it matters.</b> That alone changed the quality of every call.</p>
+              <div class="opt4__meta">Jackson Wayne · Chicago</div>
+            </div>
+          </article>
+          <article class="opt4__item">
+            <span class="opt4__mark" aria-hidden="true">&ldquo;</span>
+            <div>
+              <p class="opt4__quote"><b>It finally matches the standard we sell in person.</b></p>
+              <div class="opt4__meta">Steve Johnson · Las Vegas</div>
+            </div>
+          </article>
+          <article class="opt4__item">
+            <span class="opt4__mark" aria-hidden="true">&ldquo;</span>
+            <div>
+              <p class="opt4__quote"><b>No clutter, no fluff. Just a page that makes the offer feel inevitable.</b></p>
+              <div class="opt4__meta">Wyn Tan · Singapore</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="samples-pick">
+      <p>Tell me which one to ship: <strong>1</strong>, <strong>2</strong>, <strong>3</strong>, or <strong>4</strong>.</p>
+      <a class="btn btn--primary" href="/">Back to live site</a>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll("#opt3-stage .opt3__slide"));
+      var dots = Array.prototype.slice.call(document.querySelectorAll("#opt3-dots button"));
+      if (!slides.length) return;
+      var i = 0;
+      var timer;
+      function show(n) {
+        i = (n + slides.length) % slides.length;
+        slides.forEach(function (el, idx) { el.classList.toggle("is-active", idx === i); });
+        dots.forEach(function (el, idx) { el.classList.toggle("is-active", idx === i); });
+      }
+      function arm() {
+        clearInterval(timer);
+        timer = setInterval(function () { show(i + 1); }, 6000);
+      }
+      dots.forEach(function (btn, idx) {
+        btn.addEventListener("click", function () { show(idx); arm(); });
+      });
+      arm();
+
+      var links = document.querySelectorAll(".samples-top__nav a");
+      var sections = ["opt1", "opt2", "opt3", "opt4"].map(function (id) { return document.getElementById(id); });
+      function syncNav() {
+        var y = window.scrollY + 120;
+        var active = sections[0];
+        sections.forEach(function (sec) {
+          if (sec && sec.offsetTop <= y) active = sec;
+        });
+        links.forEach(function (a) {
+          a.classList.toggle("is-active", active && a.getAttribute("href") === "#" + active.id);
+        });
+      }
+      window.addEventListener("scroll", syncNav, { passive: true });
+      syncNav();
+    })();
+  </script>
+</body>
+</html>
