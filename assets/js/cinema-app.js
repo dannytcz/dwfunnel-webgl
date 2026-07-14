@@ -4,7 +4,7 @@ import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
 import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
-import { initWorkRoller } from "./work-roller.js?v=8";
+import { initWorkRoller } from "./work-roller.js?v=9";
 
 const SECTION_DECODE_W = 900;
 const KEEP_DECODED_DISTANCE = 1;
@@ -478,13 +478,16 @@ function initScrub(section, { loader, eager = false, mobile = false, onProgress 
       scrubber.renderNow();
       if (isHero) hideHeroPoster();
       loader?.setProgress(0.92);
-      load().catch(() => {});
+      // Finish the sequence after boot so hero bandwidth does not fight first paint.
+      const kick = () => load().catch(() => {});
+      if ("requestIdleCallback" in window) requestIdleCallback(kick, { timeout: 900 });
+      else setTimeout(kick, 180);
     });
   }
 
   const loadST = window.ScrollTrigger.create({
     trigger: section,
-    start: "top bottom+=160%",
+    start: "top bottom+=70%",
     end: "bottom top",
     onEnter: () => load(),
     onEnterBack: () => load(),

@@ -64,7 +64,9 @@ export function initWorkRoller(appState) {
     screen.prepend(img);
   }
 
-  cards.forEach(ensurePosterFallback);
+  function ensureLivePosters() {
+    liveIndices().forEach((i) => ensurePosterFallback(cards[i]));
+  }
 
   function warmVideo(src) {
     if (!src) return Promise.resolve("");
@@ -200,6 +202,7 @@ export function initWorkRoller(appState) {
       card.classList.toggle("is-right", i === nextI);
       card.classList.toggle("is-off", wrap > 1);
     });
+    ensureLivePosters();
   }
 
   function snapTo(index, dir, { immediate = false, force = false } = {}) {
