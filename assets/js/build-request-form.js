@@ -344,7 +344,7 @@ export function renderReviewSummary(form) {
       </div>
       <dl class="build-survey__review-list">
         ${reviewRow("What you're selling", payload.offer)}
-        ${reviewRow("Where is your traffic usually come from?", traffic)}
+        ${reviewRow("Where does your traffic usually come from?", traffic)}
       </dl>
     </section>
     <section class="build-survey__review-block">
