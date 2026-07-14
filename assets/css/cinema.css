@@ -3575,7 +3575,7 @@ html.is-demo-open .tech-marquee__group {
 /* Legacy scenic card skin removed when Elowen was replaced by SupaBot. */
 .ws-sub--dark { color: rgba(20, 35, 26, 0.7); }
 
-/* ---- 004 Proof: rotating spotlight + supporting strip ---- */
+/* ---- 004 Proof: rotating spotlight + supporting strip (centered like 005) ---- */
 .plain-section--proof {
   min-height: auto;
   align-content: stretch;
@@ -3587,31 +3587,37 @@ html.is-demo-open .tech-marquee__group {
   margin: 0 auto;
   display: grid;
   gap: clamp(1.75rem, 3vw, 2.5rem);
+  justify-items: center;
+  text-align: center;
 }
 .proof-spotlight__head {
-  max-width: 36rem;
+  width: min(980px, 100%);
+  display: grid;
+  justify-items: center;
 }
 .proof-spotlight__head .section-meta {
   width: auto;
   margin: 0 0 1.1rem;
 }
 .proof-spotlight__head .section-title {
-  width: auto;
+  width: min(980px, 100%);
   margin: 0 0 1rem;
-  font-size: clamp(2.2rem, 3.4vw, 3.55rem);
-  line-height: 1.05;
+  /* Match 005 Studio Bench / global .section-title scale */
+  font-size: 3.2rem;
+  line-height: 1;
 }
 .proof-spotlight__lede {
   margin: 0;
   color: var(--muted);
-  font-size: clamp(1.02rem, 1.2vw, 1.16rem);
-  line-height: 1.7;
-  max-width: 38ch;
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.6;
+  max-width: 42ch;
 }
 .proof-spotlight__feature {
   position: relative;
-  max-width: 48rem;
+  width: min(52rem, 100%);
   min-height: 11.5rem;
+  margin: 0 auto;
 }
 .proof-feature-slide {
   position: absolute;
@@ -3620,6 +3626,7 @@ html.is-demo-open .tech-marquee__group {
   transform: translateY(12px);
   transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
   pointer-events: none;
+  text-align: center;
 }
 .proof-feature-slide.is-active {
   position: relative;
@@ -3631,11 +3638,13 @@ html.is-demo-open .tech-marquee__group {
   display: block !important;
 }
 .proof-feature-slide__quote {
-  margin: 0 0 1.35rem;
+  margin: 0 auto 1.35rem;
+  max-width: 40rem;
   color: var(--ink);
   font-size: clamp(1.35rem, 2.5vw, 2.05rem);
   line-height: 1.35;
   font-weight: 500;
+  text-align: center;
 }
 .proof-feature-slide__quote b {
   color: var(--red);
@@ -3644,10 +3653,12 @@ html.is-demo-open .tech-marquee__group {
 .proof-feature-slide__who {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.2rem;
   color: var(--ink);
   font-size: 0.95rem;
   font-weight: 600;
+  text-align: center;
 }
 .proof-feature-slide__who em {
   color: var(--muted);
@@ -3657,6 +3668,7 @@ html.is-demo-open .tech-marquee__group {
 }
 .proof-spotlight__dots {
   display: flex;
+  justify-content: center;
   gap: 0.45rem;
 }
 .proof-spotlight__dots button {
@@ -3673,11 +3685,13 @@ html.is-demo-open .tech-marquee__group {
   background: var(--red);
 }
 .proof-spotlight__strip {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
   padding-top: clamp(1.4rem, 2.5vw, 2rem);
   border-top: 1px solid var(--line);
+  text-align: center;
 }
 .proof-strip-item {
   margin: 0;
@@ -3685,6 +3699,7 @@ html.is-demo-open .tech-marquee__group {
   font-size: 0.92rem;
   line-height: 1.55;
   transition: opacity 0.35s ease, color 0.35s ease;
+  text-align: center;
 }
 .proof-strip-item.is-active {
   opacity: 0.28;
@@ -3705,6 +3720,11 @@ html.is-demo-open .tech-marquee__group {
 }
 .proof-strip-item[hidden] {
   display: none !important;
+}
+@media (max-width: 980px) {
+  .proof-spotlight__head .section-title {
+    font-size: clamp(2.8rem, 4vw, 4.1rem);
+  }
 }
 @media (max-width: 780px) {
   .proof-spotlight__strip {
