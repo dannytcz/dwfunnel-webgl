@@ -4,6 +4,12 @@
   ],
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.dwfunnel.com" }],
+      "destination": "https://dwfunnel.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/cinema.html",
       "destination": "/",
       "permanent": true
