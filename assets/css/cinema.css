@@ -3619,9 +3619,9 @@ html.is-demo-open .tech-marquee__group {
 }
 .proof-spotlight__feature {
   position: relative;
-  width: min(52rem, 100%);
+  width: 100%;
   min-height: 13.5rem;
-  margin: clamp(1.75rem, 3.5vh, 2.75rem) auto 0;
+  margin: clamp(1.75rem, 3.5vh, 2.75rem) 0 0;
 }
 .proof-feature-slide {
   position: absolute;
@@ -3642,8 +3642,8 @@ html.is-demo-open .tech-marquee__group {
   display: block !important;
 }
 .proof-feature-slide__quote {
-  margin: 0 auto 1.35rem;
-  max-width: 40rem;
+  margin: 0 0 1.35rem;
+  max-width: none;
   color: var(--ink);
   font-size: clamp(1.35rem, 2.5vw, 2.05rem);
   line-height: 1.35;
