@@ -151,7 +151,7 @@ function initGlobalProgress() {
 
 function initMagneticCards() {
   document
-    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature, .proof-cell")
+    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature")
     .forEach((card) => {
       card.addEventListener("pointermove", (event) => {
         const rect = card.getBoundingClientRect();
@@ -164,7 +164,7 @@ function initMagneticCards() {
 function initReveals() {
   window.gsap.utils
     .toArray(".section-meta, .section-title, .final-title, .final-sub, .apply-heading, .apply-intro, .reveal-panel")
-    .filter((el) => !el.closest(".proof-stage"))
+    .filter((el) => !el.closest(".proof-spotlight"))
     .forEach((el) => {
       window.gsap.fromTo(
         el,
@@ -588,54 +588,81 @@ function initFaq() {
   });
 }
 
-/* Proof gallery: staggered blur-in on scroll (self-hosted GSAP, no React motion). */
+/* Proof: rotating spotlight + supporting strip. */
 function initProofGallery() {
-  const stage = document.querySelector(".proof-stage");
-  if (!stage) return;
+  const root = document.querySelector("[data-proof-spotlight]");
+  if (!root) return;
 
-  const copyBits = stage.querySelectorAll(".proof-copy > *");
-  const cells = stage.querySelectorAll(".proof-cell");
+  const slides = [...root.querySelectorAll("[data-proof-slide]")];
+  const dots = [...root.querySelectorAll("[data-proof-dots] button")];
+  const stripItems = [...root.querySelectorAll("[data-proof-strip-item]")];
+  const headBits = root.querySelectorAll(".proof-spotlight__head > *");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let index = 0;
+  let timer = 0;
 
-  if (!window.gsap || !window.ScrollTrigger || reduced) {
-    copyBits.forEach((el) => {
-      el.style.opacity = "1";
-      el.style.filter = "none";
+  const syncStrip = (active) => {
+    const others = stripItems.filter((el) => Number(el.dataset.for) !== active);
+    stripItems.forEach((el) => {
+      const isActive = Number(el.dataset.for) === active;
+      el.hidden = isActive;
+      el.classList.toggle("is-active", isActive);
     });
-    cells.forEach((el) => {
-      el.style.opacity = "1";
-      el.style.filter = "none";
+    // Keep three visible supporting lines in stable order.
+    others.forEach((el, i) => {
+      el.style.order = String(i);
     });
-    return;
-  }
+  };
 
-  window.gsap.set([...copyBits, ...cells], { opacity: 0, filter: "blur(10px)" });
+  const show = (next) => {
+    if (!slides.length) return;
+    index = ((next % slides.length) + slides.length) % slides.length;
+    slides.forEach((slide, i) => {
+      const on = i === index;
+      slide.classList.toggle("is-active", on);
+      slide.hidden = !on;
+    });
+    dots.forEach((dot, i) => {
+      const on = i === index;
+      dot.classList.toggle("is-active", on);
+      dot.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    syncStrip(index);
+  };
 
-  const tl = window.gsap.timeline({
+  const arm = () => {
+    window.clearInterval(timer);
+    if (reduced || slides.length < 2) return;
+    timer = window.setInterval(() => show(index + 1), 6500);
+  };
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => {
+      show(i);
+      arm();
+    });
+  });
+
+  show(0);
+  arm();
+
+  if (!window.gsap || !window.ScrollTrigger || reduced) return;
+
+  const reveal = [...headBits, root.querySelector(".proof-spotlight__feature"), root.querySelector(".proof-spotlight__dots"), root.querySelector(".proof-spotlight__strip")].filter(Boolean);
+  window.gsap.set(reveal, { opacity: 0, filter: "blur(10px)" });
+  window.gsap.timeline({
     scrollTrigger: {
-      trigger: stage,
+      trigger: root,
       start: "top 72%",
       once: true,
     },
-  });
-
-  tl.to(copyBits, {
+  }).to(reveal, {
     opacity: 1,
     filter: "blur(0px)",
     duration: 0.55,
-    stagger: 0.14,
+    stagger: 0.12,
     ease: "power2.out",
-  }).to(
-    cells,
-    {
-      opacity: 1,
-      filter: "blur(0px)",
-      duration: 0.5,
-      stagger: 0.16,
-      ease: "power2.out",
-    },
-    "-=0.28"
-  );
+  });
 }
 
 function initDemoLightbox() {

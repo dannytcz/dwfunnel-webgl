@@ -34,11 +34,11 @@
   <meta name="twitter:image:alt" content="DW Funnel: cinematic pages that convert traffic" />
 
   <!-- Favicons -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" href="/assets/images/brand/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" href="/assets/images/brand/favicon-32.png" type="image/png" sizes="32x32" />
-  <link rel="icon" href="/assets/images/brand/favicon-16.png" type="image/png" sizes="16x16" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+  <link rel="icon" href="/assets/images/brand/favicon.svg?v=2" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+  <link rel="icon" href="/assets/images/brand/favicon-32.png?v=2" type="image/png" sizes="32x32" />
+  <link rel="icon" href="/assets/images/brand/favicon-16.png?v=2" type="image/png" sizes="16x16" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" sizes="180x180" />
   <link rel="manifest" href="/site.webmanifest" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,7 +48,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/frames/cinema/act0/frame_00001.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=152" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=153" />
 
   <script type="application/ld+json">
   {
@@ -280,42 +280,44 @@
     </section>
 
     <section class="plain-section plain-section--proof" aria-label="Client proof">
-      <div class="proof-stage">
-        <div class="proof-copy">
+      <div class="proof-spotlight" data-proof-spotlight>
+        <div class="proof-spotlight__head">
           <div class="section-meta">004 / Client Logs</div>
           <h2 class="section-title glitch" data-glitch="PROOF THAT BOOKS">Proof that books the call.</h2>
-          <p class="proof-copy__lede">Landing pages that sell before the conversation starts. Here is what clients said once their build went live.</p>
-          <a href="#apply" class="btn btn--primary" data-scramble>Apply For A Build Window</a>
+          <p class="proof-spotlight__lede">Landing pages that sell before the conversation starts.</p>
         </div>
-        <div class="proof-gallery" aria-label="Client testimonials">
-          <div class="proof-gallery__col proof-gallery__col--left">
-            <article class="proof-cell" data-proof-index="0">
-              <p class="proof-cell__quote">&ldquo;Before DW Funnel, my landing page looked fine but never quite did the selling for me. Visitors would browse, nod along, and leave without booking. The new page walks people through the offer properly: clear, confident, and built to convert from the first scroll. <b>I finally send traffic somewhere I&rsquo;m proud of,</b> and the conversations that come in are already warmer.&rdquo;</p>
-              <div class="proof-cell__who"><span class="proof-cell__avatar">CF</span><span class="proof-cell__name">Cindy Fox<em>Australia</em></span></div>
-            </article>
-            <article class="proof-cell" data-proof-index="1">
-              <p class="proof-cell__quote">&ldquo;We&rsquo;d outgrown the DIY page we were running. It looked busy and explained everything, yet somehow still left people unsure what to do next. DW Funnel rebuilt it into a proper landing page with structure, story, and a clear path to book. <b>Prospects arrive knowing what we do and why it matters.</b> That alone changed the quality of every call.&rdquo;</p>
-              <div class="proof-cell__who"><span class="proof-cell__avatar">JW</span><span class="proof-cell__name">Jackson Wayne<em>Chicago</em></span></div>
-            </article>
-            <article class="proof-cell" data-proof-index="2">
-              <p class="proof-cell__quote">&ldquo;I wanted something that felt credible, not a template with my logo stuck on. The old site never matched how serious the work is, and I could feel that hesitation on sales calls. The landing page they built tells our story properly and makes it easy to enquire. <b>Clean design, strong copy, and a page I don&rsquo;t hesitate to put in front of anyone.</b>&rdquo;</p>
-              <div class="proof-cell__who"><span class="proof-cell__avatar">CG</span><span class="proof-cell__name">Craig George<em>Ireland</em></span></div>
-            </article>
-          </div>
-          <div class="proof-gallery__col proof-gallery__col--right">
-            <article class="proof-cell" data-proof-index="3">
-              <p class="proof-cell__quote">&ldquo;I needed a landing page that could keep up with how fast we move. Too many options on the old page slowed people down, and good leads slipped away before they ever reached us. What they delivered is sharp, focused, and built for one job: get the right people to take the next step. <b>No clutter, no fluff. Just a page that makes the offer feel inevitable.</b>&rdquo;</p>
-              <div class="proof-cell__who"><span class="proof-cell__avatar">WT</span><span class="proof-cell__name">Wyn Tan<em>Singapore</em></span></div>
-            </article>
-            <article class="proof-cell" data-proof-index="4">
-              <p class="proof-cell__quote">&ldquo;In a market where everything competes for attention, the page had to stop the scroll. Ours used to look average next to the offer we actually deliver in person. They built a landing page that looks premium the second it loads and guides visitors straight to the ask. <b>It finally matches the standard we sell in person.</b>&rdquo;</p>
-              <div class="proof-cell__who"><span class="proof-cell__avatar">SJ</span><span class="proof-cell__name">Steve Johnson<em>Las Vegas</em></span></div>
-            </article>
-            <article class="proof-cell" data-proof-index="5">
-              <p class="proof-cell__quote">&ldquo;Working with DW Funnel was straightforward from brief to launch. We knew what we wanted to say, but we needed a page that said it with more force and far less friction. The landing page they built for us is polished, persuasive, and easy to follow. Exactly what we needed to turn interest into real enquiries. <b>It looks like us, only clearer and more commercial.</b>&rdquo;</p>
-              <div class="proof-cell__who"><span class="proof-cell__avatar">SC</span><span class="proof-cell__name">Sharon Comrie<em>UK</em></span></div>
-            </article>
-          </div>
+
+        <div class="proof-spotlight__feature" aria-live="polite">
+          <article class="proof-feature-slide is-active" data-proof-slide>
+            <p class="proof-feature-slide__quote">&ldquo;The new page walks people through the offer properly: clear, confident, and built to convert from the first scroll. <b>I finally send traffic somewhere I&rsquo;m proud of.</b>&rdquo;</p>
+            <div class="proof-feature-slide__who">Cindy Fox<em>Australia</em></div>
+          </article>
+          <article class="proof-feature-slide" data-proof-slide hidden>
+            <p class="proof-feature-slide__quote">&ldquo;Structure, story, and a clear path to book. <b>Prospects arrive knowing what we do and why it matters.</b> That alone changed the quality of every call.&rdquo;</p>
+            <div class="proof-feature-slide__who">Jackson Wayne<em>Chicago</em></div>
+          </article>
+          <article class="proof-feature-slide" data-proof-slide hidden>
+            <p class="proof-feature-slide__quote">&ldquo;Looks premium the second it loads and guides visitors straight to the ask. <b>It finally matches the standard we sell in person.</b>&rdquo;</p>
+            <div class="proof-feature-slide__who">Steve Johnson<em>Las Vegas</em></div>
+          </article>
+          <article class="proof-feature-slide" data-proof-slide hidden>
+            <p class="proof-feature-slide__quote">&ldquo;Sharp, focused, and built for one job: get the right people to take the next step. <b>No clutter, no fluff. Just a page that makes the offer feel inevitable.</b>&rdquo;</p>
+            <div class="proof-feature-slide__who">Wyn Tan<em>Singapore</em></div>
+          </article>
+        </div>
+
+        <div class="proof-spotlight__dots" data-proof-dots aria-label="Choose testimonial">
+          <button type="button" class="is-active" aria-label="Cindy Fox" aria-pressed="true"></button>
+          <button type="button" aria-label="Jackson Wayne" aria-pressed="false"></button>
+          <button type="button" aria-label="Steve Johnson" aria-pressed="false"></button>
+          <button type="button" aria-label="Wyn Tan" aria-pressed="false"></button>
+        </div>
+
+        <div class="proof-spotlight__strip" data-proof-strip aria-label="More client outcomes">
+          <p class="proof-strip-item" data-proof-strip-item data-for="0">&ldquo;I finally send traffic somewhere I&rsquo;m proud of.&rdquo;<strong>Cindy Fox<span>Australia</span></strong></p>
+          <p class="proof-strip-item" data-proof-strip-item data-for="1">&ldquo;Prospects arrive knowing what we do.&rdquo;<strong>Jackson Wayne<span>Chicago</span></strong></p>
+          <p class="proof-strip-item" data-proof-strip-item data-for="2">&ldquo;Matches the standard we sell in person.&rdquo;<strong>Steve Johnson<span>Las Vegas</span></strong></p>
+          <p class="proof-strip-item" data-proof-strip-item data-for="3">&ldquo;Makes the offer feel inevitable.&rdquo;<strong>Wyn Tan<span>Singapore</span></strong></p>
         </div>
       </div>
     </section>
@@ -877,7 +879,7 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js" defer></script>
-  <script type="module" src="assets/js/cinema-app.js?v=134"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=135"></script>
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
