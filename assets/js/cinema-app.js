@@ -705,10 +705,43 @@ function initDemoLightbox() {
   let scrollBlockers = null;
   let revealed = false;
   let onVideoReady = null;
+  let onVideoMeta = null;
+  let onVideoTap = null;
 
   const isMobileLightbox = () =>
     document.documentElement.classList.contains("is-mobile") ||
     window.matchMedia("(max-width: 899px)").matches;
+
+  function bindVideoChrome() {
+    if (!video) return;
+    video.controls = false;
+    video.removeAttribute("controls");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.disablePictureInPicture = true;
+    video.setAttribute("controlslist", "nodownload nofullscreen noremoteplayback");
+  }
+
+  function setVideoRatio() {
+    if (!video || !video.videoWidth || !video.videoHeight) return;
+    root.style.setProperty("--video-ratio", `${video.videoWidth} / ${video.videoHeight}`);
+  }
+
+  function unbindVideoHandlers() {
+    if (onVideoReady && video) {
+      video.removeEventListener("loadeddata", onVideoReady);
+      video.removeEventListener("canplay", onVideoReady);
+      onVideoReady = null;
+    }
+    if (onVideoMeta && video) {
+      video.removeEventListener("loadedmetadata", onVideoMeta);
+      onVideoMeta = null;
+    }
+    if (onVideoTap && video) {
+      video.removeEventListener("click", onVideoTap);
+      onVideoTap = null;
+    }
+  }
 
   function stopWaitingRotate() {
     if (!loaderRotateTimer) return;
@@ -849,6 +882,8 @@ function initDemoLightbox() {
     loader?.classList.add("is-done");
     if (mode === "video" && video) {
       video.classList.remove("is-loading");
+      bindVideoChrome();
+      setVideoRatio();
       video.play()?.catch?.(() => {});
     } else {
       iframe.classList.remove("is-loading");
@@ -867,6 +902,7 @@ function initDemoLightbox() {
   }
 
   function clearMedia() {
+    unbindVideoHandlers();
     iframe.removeAttribute("src");
     iframe.classList.add("is-loading");
     iframe.title = "Demo preview";
@@ -880,17 +916,14 @@ function initDemoLightbox() {
     }
     iframe.removeAttribute("hidden");
     root.classList.remove("is-video-mode");
+    root.style.removeProperty("--video-ratio");
   }
 
   function closeLightbox() {
     if (!open) return;
     open = false;
     cleanupOpen();
-    if (onVideoReady && video) {
-      video.removeEventListener("loadeddata", onVideoReady);
-      video.removeEventListener("canplay", onVideoReady);
-      onVideoReady = null;
-    }
+    unbindVideoHandlers();
     resetLoaderUi();
     clearMedia();
     mode = "iframe";
@@ -947,6 +980,7 @@ function initDemoLightbox() {
     video.removeAttribute("hidden");
     titleEl.textContent = title || "Studio preview";
     video.classList.add("is-loading");
+    bindVideoChrome();
     if (poster) video.poster = poster;
     startLoaderAnim();
 
@@ -956,13 +990,25 @@ function initDemoLightbox() {
       revealMedia();
     };
 
+    onVideoMeta = () => setVideoRatio();
+    video.addEventListener("loadedmetadata", onVideoMeta);
+
     onVideoReady = () => {
       if (!open || revealed) return;
+      setVideoRatio();
       setLoaderProgress(0.99);
       window.setTimeout(finish, 80);
     };
     video.addEventListener("loadeddata", onVideoReady, { once: true });
     video.addEventListener("canplay", onVideoReady, { once: true });
+
+    onVideoTap = () => {
+      if (!open || mode !== "video") return;
+      if (video.paused) video.play()?.catch?.(() => {});
+      else video.pause();
+    };
+    video.addEventListener("click", onVideoTap);
+
     readyTimer = window.setTimeout(finish, 2200);
 
     const resolved =

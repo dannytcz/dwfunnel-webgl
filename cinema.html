@@ -48,7 +48,7 @@
   <link rel="preload" href="assets/fonts/space-mono-latin-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/space-mono-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/frames/cinema/act0/frame_00001.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="assets/css/cinema.css?v=162" />
+  <link rel="stylesheet" href="assets/css/cinema.css?v=163" />
 
   <script type="application/ld+json">
   {
@@ -887,7 +887,7 @@
           </div>
         </div>
         <iframe class="demo-lightbox__iframe is-loading" title="Demo preview" loading="lazy" tabindex="0"></iframe>
-        <video class="demo-lightbox__video is-loading" muted loop playsinline controls preload="metadata" tabindex="0" aria-label="Demo preview video"></video>
+        <video class="demo-lightbox__video is-loading" muted loop playsinline preload="metadata" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback" tabindex="0" aria-label="Demo preview video"></video>
       </div>
     </div>
   </div>
@@ -900,7 +900,7 @@
   <!-- r160 is the last three.js release that ships a UMD build (window.THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js" defer></script>
-  <script type="module" src="assets/js/cinema-app.js?v=142"></script>
+  <script type="module" src="assets/js/cinema-app.js?v=143"></script>
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
