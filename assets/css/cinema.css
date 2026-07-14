@@ -1848,7 +1848,6 @@ html.is-survey-open body {
 /* ---- Award pass: full-viewport plain sections, mega type, drawn SVG ---- */
 .plain-section--stats,
 .plain-section--split,
-.plain-section--proof,
 .plain-section--method {
   min-height: 100dvh;
   display: grid;
@@ -2809,10 +2808,7 @@ html.is-survey-open body {
    Orbitron word ever exceeds the line mask. */
 .method-sticky .section-title { font-size: clamp(2.3rem, 2.9vw, 3.3rem); }
 
-/* ---- 004 Client Logs + 005 Studio Bench: centered header stacks ---- */
-.plain-section--proof .section-meta,
-.plain-section--proof .section-title,
-.plain-section--proof .gallery-note,
+/* ---- 005 Studio Bench: centered header stack ---- */
 .plain-section--gallery .section-meta,
 .plain-section--gallery .section-title,
 .plain-section--gallery .gallery-note {
@@ -3579,63 +3575,90 @@ html.is-demo-open .tech-marquee__group {
 /* Legacy scenic card skin removed when Elowen was replaced by SupaBot. */
 .ws-sub--dark { color: rgba(20, 35, 26, 0.7); }
 
-/* ---- 004 Testimonial wall: two rows drifting opposite ways ---- */
-.wall {
-  width: 100vw;
-  margin: clamp(2.5rem, 5vh, 4rem) 0 0 calc(50% - 50vw);
+/* ---- 004 Proof stage: split copy + staggered testimonial gallery ---- */
+.plain-section--proof {
+  min-height: auto;
+  align-content: stretch;
+  padding-top: clamp(4.5rem, 8vh, 7rem);
+  padding-bottom: clamp(4.5rem, 8vh, 7rem);
+}
+.proof-stage {
+  width: min(var(--max), 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(2rem, 4vw, 4.5rem);
+  align-items: center;
+}
+.proof-copy {
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 1.6vw, 1.6rem);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  align-items: flex-start;
+  gap: 0;
+  max-width: 34rem;
 }
-.wall__row { overflow: hidden; }
-.wall__track {
-  display: flex;
-  width: max-content;
-  will-change: transform;
+.proof-copy .section-meta {
+  width: auto;
+  margin: 0 0 1.1rem;
 }
-.wall__row--a .wall__track { animation: wall-left 72s linear infinite; }
-.wall__row--b .wall__track { animation: wall-right 58s linear infinite; }
-.wall:hover .wall__track { animation-play-state: paused; }
-.wall__group {
-  display: flex;
-  gap: clamp(1rem, 1.6vw, 1.6rem);
-  padding-right: clamp(1rem, 1.6vw, 1.6rem);
+.proof-copy .section-title {
+  width: auto;
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.2rem, 3.4vw, 3.55rem);
+  line-height: 1.05;
 }
-@keyframes wall-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes wall-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-.tcard {
-  flex: none;
-  width: clamp(320px, 30vw, 440px);
+.proof-copy__lede {
+  margin: 0 0 1.75rem;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.15vw, 1.12rem);
+  line-height: 1.65;
+  max-width: 36ch;
+}
+.proof-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 48px 140px 48px 140px 48px 140px 48px 100px;
+  gap: clamp(0.75rem, 1.2vw, 1.1rem);
+  min-width: 0;
+}
+.proof-cell {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1.6rem;
-  padding: clamp(1.4rem, 1.8vw, 1.9rem);
+  gap: 1.1rem;
+  padding: clamp(1rem, 1.4vw, 1.35rem);
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
 }
-.tcard__quote {
+.proof-cell:nth-child(1) { grid-column: 2; grid-row: 1 / 3; }
+.proof-cell:nth-child(2) { grid-column: 1; grid-row: 2 / 4; }
+.proof-cell:nth-child(3) { grid-column: 2; grid-row: 3 / 5; }
+.proof-cell:nth-child(4) { grid-column: 1; grid-row: 4 / 6; }
+.proof-cell:nth-child(5) { grid-column: 2; grid-row: 5 / 7; }
+.proof-cell:nth-child(6) { grid-column: 1; grid-row: 6 / 8; }
+.proof-cell__quote {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(0.92rem, 1vw, 1.02rem);
-  line-height: 1.55;
+  font-size: clamp(0.78rem, 0.92vw, 0.9rem);
+  line-height: 1.5;
 }
-.tcard__quote b {
+.proof-cell__quote b {
   color: var(--red);
   font-weight: 600;
 }
-.tcard__who {
+.proof-cell__who {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.7rem;
 }
-.tcard__avatar {
+.proof-cell__avatar {
   flex: none;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -3643,26 +3666,45 @@ html.is-demo-open .tech-marquee__group {
   background: rgba(240, 74, 42, 0.08);
   color: var(--gold);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
 }
-.tcard__name {
+.proof-cell__name {
   display: flex;
   flex-direction: column;
   color: var(--ink);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 600;
 }
-.tcard__name em {
+.proof-cell__name em {
   color: var(--muted);
   font-style: normal;
   font-weight: 400;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
+}
+@media (max-width: 980px) {
+  .proof-stage {
+    grid-template-columns: 1fr;
+    gap: 2.4rem;
+  }
+  .proof-copy {
+    max-width: 40rem;
+  }
+  .proof-gallery {
+    grid-template-rows: 36px 150px 36px 150px 36px 150px 36px 110px;
+  }
 }
 @media (max-width: 620px) {
-  .tcard { width: 78vw; }
+  .proof-gallery {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 0.85rem;
+  }
+  .proof-cell:nth-child(n) {
+    grid-column: auto;
+    grid-row: auto;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wall__track { animation: none !important; }
   .work-rail__track, .ws-scene * { animation: none !important; }
 }

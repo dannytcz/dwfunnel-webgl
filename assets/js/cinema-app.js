@@ -162,19 +162,22 @@ function initMagneticCards() {
 }
 
 function initReveals() {
-  window.gsap.utils.toArray(".section-meta, .section-title, .final-title, .final-sub, .apply-heading, .apply-intro, .reveal-panel").forEach((el) => {
-    window.gsap.fromTo(
-      el,
-      { autoAlpha: 0, y: 28 },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.75,
-        ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 86%", once: true },
-      }
-    );
-  });
+  window.gsap.utils
+    .toArray(".section-meta, .section-title, .final-title, .final-sub, .apply-heading, .apply-intro, .reveal-panel")
+    .filter((el) => !el.closest(".proof-stage"))
+    .forEach((el) => {
+      window.gsap.fromTo(
+        el,
+        { autoAlpha: 0, y: 28 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.75,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 86%", once: true },
+        }
+      );
+    });
 
   window.gsap.utils.toArray(".reveal-group").forEach((group) => {
     window.gsap.fromTo(
@@ -585,16 +588,54 @@ function initFaq() {
   });
 }
 
-/* Testimonial wall: duplicate each row's card group once so the CSS marquee
-   wraps at -50% without a seam. Runs in both static and motion paths. */
-function initTestimonialWall() {
-  document.querySelectorAll(".wall__track").forEach((track) => {
-    const group = track.querySelector(".wall__group");
-    if (!group || track.querySelector(".wall__group[aria-hidden='true']")) return;
-    const clone = group.cloneNode(true);
-    clone.setAttribute("aria-hidden", "true");
-    track.appendChild(clone);
+/* Proof gallery: staggered blur-in on scroll (self-hosted GSAP, no React motion). */
+function initProofGallery() {
+  const stage = document.querySelector(".proof-stage");
+  if (!stage) return;
+
+  const copyBits = stage.querySelectorAll(".proof-copy > *");
+  const cells = stage.querySelectorAll(".proof-cell");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!window.gsap || !window.ScrollTrigger || reduced) {
+    copyBits.forEach((el) => {
+      el.style.opacity = "1";
+      el.style.filter = "none";
+    });
+    cells.forEach((el) => {
+      el.style.opacity = "1";
+      el.style.filter = "none";
+    });
+    return;
+  }
+
+  window.gsap.set([...copyBits, ...cells], { opacity: 0, filter: "blur(10px)" });
+
+  const tl = window.gsap.timeline({
+    scrollTrigger: {
+      trigger: stage,
+      start: "top 72%",
+      once: true,
+    },
   });
+
+  tl.to(copyBits, {
+    opacity: 1,
+    filter: "blur(0px)",
+    duration: 0.55,
+    stagger: 0.14,
+    ease: "power2.out",
+  }).to(
+    cells,
+    {
+      opacity: 1,
+      filter: "blur(0px)",
+      duration: 0.5,
+      stagger: 0.16,
+      ease: "power2.out",
+    },
+    "-=0.28"
+  );
 }
 
 function initDemoLightbox() {
@@ -975,7 +1016,7 @@ async function init() {
     initGlobalProgress();
     initReveals();
     initFaq();
-    initTestimonialWall();
+    initProofGallery();
     initWorkRoller(appState);
     initDemoLightbox();
     initBuildRequestForm();
@@ -1006,7 +1047,7 @@ async function init() {
   initHeroMotion();
   initReveals();
   initFaq();
-  initTestimonialWall();
+  initProofGallery();
   initWorkRoller(appState);
   initDemoLightbox();
   initBuildRequestForm();
