@@ -324,7 +324,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
     transparent 100%
   );
   transform: translateX(-160%) skewX(-18deg);
-  animation: btn-primary-shimmer 5s ease-in-out infinite;
+  animation: btn-primary-shimmer 6.5s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
 }
