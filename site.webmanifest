@@ -9,19 +9,19 @@
   "lang": "en-US",
   "icons": [
     {
-      "src": "/assets/images/brand/favicon.svg",
+      "src": "/assets/images/brand/favicon.svg?v=2",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "/apple-touch-icon.png?v=2",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/images/brand/favicon-32.png",
+      "src": "/assets/images/brand/favicon-32.png?v=2",
       "sizes": "32x32",
       "type": "image/png",
       "purpose": "any"
