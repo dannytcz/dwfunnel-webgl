@@ -381,7 +381,7 @@ html[data-dwf-demo="geneevo"].is-lightbox .hero-content {
   padding-top: 0.5rem !important;
 }
 
-/* —— Elyra: lightbox scrolls the full page —— */
+/* —— Elyra: lightbox scrolls the full page; hero copy matches bench preview —— */
 html[data-dwf-demo="elyra"].is-embed.is-lightbox {
   font-size: clamp(11px, 0.95vw, 16px) !important;
 }
@@ -405,19 +405,33 @@ html[data-dwf-demo="elyra"].is-lightbox #home {
   min-height: 100vh !important;
 }
 
+html[data-dwf-demo="elyra"].is-lightbox #home > div.relative.z-\[2\] {
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
 html[data-dwf-demo="elyra"].is-lightbox #home main {
-  padding-bottom: clamp(7.5rem, 17vh, 10.5rem) !important;
+  justify-content: flex-start !important;
+  gap: clamp(2.25rem, 5.5vh, 4rem) !important;
+  padding-top: clamp(1.25rem, 3vh, 2.5rem) !important;
+  padding-bottom: clamp(6.5rem, 14vh, 9rem) !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox #home main > div.flex.flex-col.gap-7 {
-  margin-top: auto !important;
-  margin-bottom: clamp(1.5rem, 4vh, 3rem) !important;
-  width: 100% !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  width: min(100%, 54rem) !important;
+  max-width: 100% !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: clamp(1.5rem, 3vw, 2.75rem) !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .hero-description-group {
   margin-right: 0 !important;
-  max-width: min(100%, 15rem) !important;
+  max-width: min(100%, 16.5rem) !important;
+  flex: 0 1 auto !important;
 }
 
 html[data-dwf-demo="elyra"].is-lightbox .hero-description-group p {
