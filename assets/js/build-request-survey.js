@@ -309,15 +309,10 @@ function handleSubmit(form, wrap) {
     .catch((err) => {
       if (formError) {
         formError.hidden = false;
-        if (err.message === "Build request endpoint is not configured.") {
-          formError.textContent =
-            "Submission is not live yet. For urgent projects, use the WhatsApp link below.";
-        } else if (err.status === 429 || err.code === "RATE_LIMITED") {
-          formError.textContent =
-            "You have reached the daily limit of 3 build requests from this email or network. Try again tomorrow, or message us on WhatsApp.";
-        } else {
-          formError.textContent = "Something went wrong. Try again or message us on WhatsApp.";
-        }
+        formError.textContent =
+          err.message === "Build request endpoint is not configured."
+            ? "Submission is not live yet. For urgent projects, use the WhatsApp link below."
+            : "Something went wrong. Try again or message us on WhatsApp.";
       }
     })
     .finally(() => {

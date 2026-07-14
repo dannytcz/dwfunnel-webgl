@@ -1,5 +1,5 @@
 import { buildEmailHtml, buildEmailText } from "./lib/email-template.js";
-import { enforceBuildRequestRateLimit } from "./lib/rate-limit.js";
+import { saveBuildRequestSubmission, trackEmailSubmission } from "./lib/rate-limit.js";
 import {
   extractServerMeta,
   mergeSubmissionMeta,
@@ -15,9 +15,6 @@ const RATE_LIMIT_PER_DAY = 3;
 function json(res, status, body) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
-  if (status === 429 && body?.retryAfterSec) {
-    res.setHeader("Retry-After", String(Math.ceil(body.retryAfterSec)));
-  }
   res.end(JSON.stringify(body));
 }
 
@@ -161,36 +158,45 @@ export default async function handler(req, res) {
     }
 
     const serverMeta = extractServerMeta(req);
-    const rate = await enforceBuildRequestRateLimit({
-      ip: serverMeta.ip,
-      email: validated.payload.email,
-      limit: RATE_LIMIT_PER_DAY,
-    });
-
-    if (!rate.ok) {
-      json(res, rate.status || 429, {
-        error: rate.error,
-        code: rate.code,
-        limit: rate.limit ?? RATE_LIMIT_PER_DAY,
-        retryAfterSec: rate.retryAfterSec,
-      });
-      return;
-    }
-
     const payload = {
       ...validated.payload,
       meta: mergeSubmissionMeta(validated.payload.meta.client, serverMeta),
     };
 
-    const emailResult = await sendEmail(payload);
+    const rate = await trackEmailSubmission({
+      email: payload.email,
+      limit: RATE_LIMIT_PER_DAY,
+    });
+
+    if (!rate.ok) {
+      json(res, rate.status || 503, {
+        error: rate.error,
+        code: rate.code,
+      });
+      return;
+    }
+
+    const stored = await saveBuildRequestSubmission(payload, {
+      notified: rate.shouldNotify,
+      emailCount: rate.count,
+    });
+
+    let emailResult = null;
+    if (rate.shouldNotify) {
+      emailResult = await sendEmail(payload);
+    }
+
     json(res, 200, {
       ok: true,
       id: emailResult?.id || null,
+      captured: true,
+      notified: Boolean(rate.shouldNotify),
       remainingToday: rate.remaining,
+      storagePath: stored.pathname,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected server error.";
-    const status = message.includes("RESEND_API_KEY") ? 503 : 500;
+    const status = message.includes("RESEND_API_KEY") || message.includes("Blob storage") ? 503 : 500;
     json(res, status, { error: message });
   }
 }

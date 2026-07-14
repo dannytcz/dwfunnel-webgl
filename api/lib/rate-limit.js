@@ -1,7 +1,6 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { get, put } from "@vercel/blob";
 
-const DAY_MS = 86_400_000;
 export const DEFAULT_LIMIT = 3;
 
 function utcDayKey(date = new Date()) {
@@ -15,30 +14,21 @@ export function normalizeEmail(email) {
     .slice(0, 254);
 }
 
-export function normalizeIp(ip) {
-  const raw = String(ip || "")
-    .trim()
-    .toLowerCase();
-  if (!raw || raw === "unknown") return "";
-  return raw.split(",")[0].trim().slice(0, 64);
-}
-
 function fingerprint(value) {
   return createHash("sha256").update(value).digest("hex").slice(0, 32);
 }
 
-function counterPath(kind, value, day) {
-  return `rate-limit/${day}/${kind}/${fingerprint(value)}.json`;
-}
-
-function secondsUntilUtcMidnight(date = new Date()) {
-  const next = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + 1);
-  return Math.max(1, (next - date.getTime()) / 1000);
+function counterPath(email, day) {
+  return `rate-limit/${day}/email/${fingerprint(email)}.json`;
 }
 
 function blobAuth() {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   return token ? { token } : {};
+}
+
+function hasBlobAuth() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_OIDC_TOKEN);
 }
 
 async function readCount(pathname) {
@@ -74,69 +64,85 @@ async function writeCount(pathname, count) {
   );
 }
 
-async function bumpCounter(pathname) {
+async function bumpEmailCounter(email, limit = DEFAULT_LIMIT) {
+  const day = utcDayKey();
+  const pathname = counterPath(email, day);
   const current = await readCount(pathname);
   const next = current + 1;
   await writeCount(pathname, next);
-  return next;
+  return {
+    day,
+    count: next,
+    limit,
+    remaining: Math.max(0, limit - next),
+    shouldNotify: next <= limit,
+  };
 }
 
 /**
- * Enforce max submissions per UTC day for both IP and email.
- * Either key hitting the limit blocks the request.
+ * Persist the full submission so overflow entries are still reviewable in Vercel Blob.
  */
-export async function enforceBuildRequestRateLimit({ ip, email, limit = DEFAULT_LIMIT } = {}) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.VERCEL_OIDC_TOKEN) {
+export async function saveBuildRequestSubmission(payload, { notified, emailCount } = {}) {
+  if (!hasBlobAuth()) {
+    throw new Error("Blob storage is not configured.");
+  }
+
+  const day = utcDayKey();
+  const email = normalizeEmail(payload.email);
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const pathname = `submissions/${day}/${stamp}-${fingerprint(email || randomUUID())}.json`;
+
+  const body = {
+    capturedAt: new Date().toISOString(),
+    notified: Boolean(notified),
+    emailCount: emailCount ?? null,
+    payload,
+  };
+
+  const blob = await put(pathname, JSON.stringify(body, null, 2), {
+    access: "private",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: false,
+    ...blobAuth(),
+  });
+
+  return {
+    pathname,
+    url: blob.url,
+  };
+}
+
+/**
+ * Email-only daily limit. Always returns ok so we can still capture the payload.
+ * `shouldNotify` is false once this email has already triggered 3 notify emails today.
+ */
+export async function trackEmailSubmission({ email, limit = DEFAULT_LIMIT } = {}) {
+  if (!hasBlobAuth()) {
     return {
       ok: false,
       status: 503,
-      error: "Rate limiting is not configured yet.",
+      error: "Rate limiting storage is not configured yet.",
       code: "RATE_LIMIT_UNAVAILABLE",
     };
   }
 
-  const day = utcDayKey();
   const cleanEmail = normalizeEmail(email);
-  const cleanIp = normalizeIp(ip);
-  const paths = [];
-
-  if (cleanIp) paths.push(counterPath("ip", cleanIp, day));
-  if (cleanEmail) paths.push(counterPath("email", cleanEmail, day));
-
-  if (!paths.length) {
+  if (!cleanEmail) {
     return {
-      ok: false,
-      status: 429,
-      error: "Too many build requests. Try again tomorrow.",
-      code: "RATE_LIMITED",
-      retryAfterSec: Math.ceil(secondsUntilUtcMidnight()),
-    };
-  }
-
-  const counts = [];
-  for (const pathname of paths) {
-    counts.push(await bumpCounter(pathname));
-  }
-
-  const highest = Math.max(...counts);
-  if (highest > limit) {
-    return {
-      ok: false,
-      status: 429,
-      error: "Too many build requests from this email or network today. Try again tomorrow.",
-      code: "RATE_LIMITED",
+      ok: true,
+      shouldNotify: false,
+      count: 0,
+      remaining: 0,
       limit,
-      count: highest,
-      retryAfterSec: Math.ceil(secondsUntilUtcMidnight()),
     };
   }
 
+  const tracked = await bumpEmailCounter(cleanEmail, limit);
   return {
     ok: true,
-    limit,
-    count: highest,
-    remaining: Math.max(0, limit - highest),
+    ...tracked,
   };
 }
 
-export { utcDayKey, DAY_MS };
+export { utcDayKey };
