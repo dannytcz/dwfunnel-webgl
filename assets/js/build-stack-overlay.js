@@ -171,3 +171,34 @@ export function initBuildStackStatic(section) {
     el.style.transform = "none";
   });
 }
+
+/** Phone path: no scatter labels / routes. Keep a always-on 2x2 conversion grid. */
+export function initBuildStackMobile(section) {
+  const root = section?.querySelector(".stack-system");
+  if (!root) return;
+  root.classList.add("is-mobile-lite");
+  root.style.opacity = "1";
+  root.querySelectorAll(".stack-env, .stack-routes, .stack-core, .stack-scan").forEach((el) => {
+    el.setAttribute("hidden", "");
+    el.style.display = "none";
+  });
+  const conversion = root.querySelector(".stack-conversion");
+  if (conversion) conversion.style.opacity = "1";
+  root.querySelectorAll(".stack-stage").forEach((el) => {
+    el.style.opacity = "1";
+    el.style.transform = "none";
+  });
+  root.querySelectorAll(".stack-conversion__sep").forEach((el) => {
+    el.setAttribute("hidden", "");
+    el.style.display = "none";
+  });
+  section.querySelectorAll(".stack-copy [data-beat]").forEach((el) => {
+    el.style.opacity = "1";
+    el.style.transform = "none";
+  });
+  const deploy = section.querySelector(".stack-deploy");
+  if (deploy) {
+    deploy.setAttribute("hidden", "");
+    deploy.style.display = "none";
+  }
+}

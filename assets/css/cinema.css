@@ -4005,3 +4005,85 @@ html.is-demo-open .tech-marquee__group {
   }
   .work-rail__track, .ws-scene * { animation: none !important; }
 }
+
+/* ---- Mobile hard overrides (last in file so nothing can re-clip) ---- */
+@media (max-width: 899px) {
+  html.is-mobile .stat-strip,
+  .stat-strip {
+    grid-template-columns: 1fr !important;
+    gap: 1.75rem !important;
+  }
+  html.is-mobile .stat-strip article:nth-child(even),
+  .stat-strip article:nth-child(even) {
+    margin-top: 0 !important;
+  }
+  html.is-mobile .stat-strip article,
+  .stat-strip article {
+    border-left: 0 !important;
+    border-top: 1px solid var(--line-hot) !important;
+    padding: 1rem 0 0.2rem !important;
+  }
+  html.is-mobile .scrub-act--method .stack-routes,
+  html.is-mobile .scrub-act--method .stack-env,
+  html.is-mobile .scrub-act--method .stack-core,
+  html.is-mobile .scrub-act--method .stack-scan,
+  .scrub-act--method .stack-routes,
+  .scrub-act--method .stack-env,
+  .scrub-act--method .stack-core,
+  .scrub-act--method .stack-scan,
+  .stack-system.is-mobile-lite .stack-routes,
+  .stack-system.is-mobile-lite .stack-env,
+  .stack-system.is-mobile-lite .stack-core,
+  .stack-system.is-mobile-lite .stack-scan {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  html.is-mobile .stack-deploy,
+  .stack-deploy,
+  .stack-system.is-mobile-lite ~ .stack-copy .stack-deploy,
+  .scrub-act--method .stack-deploy {
+    display: none !important;
+  }
+  html.is-mobile .stack-conversion,
+  .stack-conversion,
+  .stack-system.is-mobile-lite .stack-conversion {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.4rem 0.5rem !important;
+    width: min(21rem, calc(100vw - 2.4rem)) !important;
+    bottom: max(2.6rem, calc(1.4rem + env(safe-area-inset-bottom))) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    opacity: 1 !important;
+  }
+  html.is-mobile .stack-conversion__sep,
+  .stack-conversion__sep,
+  .stack-system.is-mobile-lite .stack-conversion__sep {
+    display: none !important;
+  }
+  html.is-mobile .stack-stage,
+  .stack-system.is-mobile-lite .stack-stage {
+    opacity: 1 !important;
+    transform: none !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  html.is-mobile .scrub-act--method .stack-copy,
+  .scrub-act--method .stack-copy {
+    align-self: start !important;
+    margin-top: clamp(5.5rem, 16vh, 8rem) !important;
+  }
+  html.is-mobile .scrub-act--method .stack-copy [data-beat],
+  .scrub-act--method .stack-copy [data-beat],
+  .stack-system.is-mobile-lite ~ .stack-copy [data-beat] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html.is-mobile .scrub-stat-row,
+  .scrub-stat-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}

@@ -2,7 +2,7 @@ import { FrameScrubber, decodeTierWidth, mobileScrubOpts } from "./frame-scrub.j
 import { initBuildRequestForm } from "./build-request-form.js";
 import { initBuildRequestSurvey } from "./build-request-survey.js";
 import { initVisitAnalytics } from "./visit-analytics.js";
-import { initBuildStackOverlay, initBuildStackStatic } from "./build-stack-overlay.js?v=1";
+import { initBuildStackOverlay, initBuildStackStatic, initBuildStackMobile } from "./build-stack-overlay.js?v=2";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
 import { initWorkRoller } from "./work-roller.js?v=10";
 
@@ -1147,6 +1147,8 @@ async function init() {
   if (staticMode) {
     loader.setProgress(0.5);
     sections.forEach(setStaticAct);
+    const methodStatic = document.getElementById("method");
+    if (mobile && methodStatic) initBuildStackMobile(methodStatic);
     await loader.finish();
     bindAnchors(null);
     initStats();
@@ -1166,7 +1168,12 @@ async function init() {
   initThreeAtmosphere({ reduced, mobile, saveData });
   const hero = document.getElementById("hero-pin");
   const methodSection = document.getElementById("method");
-  const stackOverlay = methodSection ? initBuildStackOverlay(methodSection, { reducedMotion: reduced }) : null;
+  // Phones skip the desktop scatter overlay (clipped env tags). Keep a static 2x2 path.
+  let stackOverlay = null;
+  if (methodSection) {
+    if (mobile) initBuildStackMobile(methodSection);
+    else stackOverlay = initBuildStackOverlay(methodSection, { reducedMotion: reduced });
+  }
   sections.forEach((section) =>
     initScrub(section, {
       loader,
