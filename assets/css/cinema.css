@@ -2883,6 +2883,21 @@ html.is-survey-open body {
   margin: 2.2rem 0 0.7rem;
 }
 .legal-section p { color: var(--muted); line-height: 1.75; margin: 0 0 1rem; }
+.legal-section ul {
+  margin: 0 0 1.15rem;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.legal-section li { margin: 0 0 0.35rem; }
+.legal-section a {
+  color: var(--gold);
+  text-underline-offset: 0.18em;
+}
+.legal-section a:hover,
+.legal-section a:focus-visible {
+  color: var(--ink);
+}
 .legal-back { padding-bottom: 3rem; }
 .legal-back a {
   color: var(--gold);
