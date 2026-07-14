@@ -3737,21 +3737,16 @@ html.is-work-focus .tech-marquee__group {
   overflow: hidden;
 }
 .demo-lightbox.is-video-mode .demo-lightbox__chrome {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   z-index: 4;
-  border-bottom: 0;
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.72), transparent);
-  padding: 0.7rem 0.85rem 1.4rem;
-  pointer-events: none;
-}
-.demo-lightbox.is-video-mode .demo-lightbox__close {
+  flex: 0 0 auto;
+  border-bottom: 1px solid rgba(232, 223, 210, 0.1);
+  background: #0c0b0a;
+  padding: 0.7rem 0.85rem;
   pointer-events: auto;
 }
 .demo-lightbox.is-video-mode .demo-lightbox__dots {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 .demo-lightbox.is-video-mode .demo-lightbox__viewport {
   position: relative;
