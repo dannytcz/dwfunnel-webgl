@@ -4,6 +4,12 @@ assets/frames/cinema/upload.log
 .vercel
 node_modules/
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Never ship browser source maps (keeps production JS harder to reverse)
 *.map
 **/*.js.map
