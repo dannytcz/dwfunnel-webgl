@@ -1,7 +1,7 @@
-import { FrameScrubber, decodeTierWidth, mobileScrubOpts } from "./frame-scrub.js?v=70";
-import { initBuildRequestForm } from "./build-request-form.js";
-import { initBuildRequestSurvey } from "./build-request-survey.js";
-import { initVisitAnalytics } from "./visit-analytics.js";
+import { FrameScrubber, decodeTierWidth, mobileScrubOpts } from "./frame-scrub.js?v=71";
+import { initBuildRequestForm } from "./build-request-form.js?v=12";
+import { initBuildRequestSurvey } from "./build-request-survey.js?v=12";
+import { initVisitAnalytics } from "./visit-analytics.js?v=5";
 import { initBuildStackOverlay, initBuildStackStatic, initBuildStackMobile } from "./build-stack-overlay.js?v=2";
 import { initConversionLeakSchematic } from "./conversion-leak-schematic.js?v=8";
 import { initWorkRoller } from "./work-roller.js?v=10";
@@ -33,10 +33,6 @@ function connectionSaveData() {
   if (c.saveData) return true;
   const et = String(c.effectiveType || "");
   return et === "slow-2g" || et === "2g" || et === "3g";
-}
-
-function heroUrls() {
-  return window.DWF_CDN?.acts?.act0 || [];
 }
 
 function scrubDecodeWidth(section, urls, { mobile = false } = {}) {
@@ -162,7 +158,7 @@ function initGlobalProgress() {
 
 function initMagneticCards() {
   document
-    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature")
+    .querySelectorAll(".diagnostic-grid article, .proof-grid article, .method-grid article, .apply-card, .proof-feature-slide")
     .forEach((card) => {
       card.addEventListener("pointermove", (event) => {
         const rect = card.getBoundingClientRect();
@@ -174,7 +170,7 @@ function initMagneticCards() {
 
 function initReveals() {
   window.gsap.utils
-    .toArray(".section-meta, .section-title, .final-title, .final-sub, .apply-heading, .apply-intro, .reveal-panel")
+    .toArray(".section-meta, .section-title, .final-sub, .apply-heading, .apply-intro, .reveal-panel")
     .filter((el) => !el.closest(".proof-spotlight"))
     .forEach((el) => {
       window.gsap.fromTo(
@@ -389,8 +385,9 @@ function setStaticAct(section) {
 
 function buildUrls(section, { mobile = false } = {}) {
   let urls;
-  if (section.dataset.cdnKey) urls = heroUrls();
-  else {
+  if (section.dataset.cdnKey) {
+    urls = window.DWF_CDN?.acts?.[section.dataset.cdnKey] || [];
+  } else {
     const key = section.dataset.filmFrames;
     const count = parseInt(section.dataset.filmCount || "0", 10);
     if (!key || !count) return [];
@@ -567,13 +564,23 @@ function manageScrubMemory(activeIndex) {
 function initFaq() {
   const items = Array.from(document.querySelectorAll(".faq-item"));
   if (!items.length || !window.gsap) return;
+
   items.forEach((item) => {
     const summary = item.querySelector("summary");
     const body = item.querySelector(".faq-item__a");
     if (!summary || !body) return;
+
+    if (item.hasAttribute("open")) {
+      window.gsap.set(body, { height: "auto" });
+    } else {
+      window.gsap.set(body, { height: 0 });
+    }
+
     summary.addEventListener("click", (e) => {
       e.preventDefault();
       const isOpen = item.hasAttribute("open");
+      window.gsap.killTweensOf(body);
+
       if (isOpen) {
         window.gsap.to(body, {
           height: 0,
@@ -583,17 +590,20 @@ function initFaq() {
         });
         return;
       }
+
       items.forEach((other) => {
-        if (other !== item && other.hasAttribute("open")) {
-          const ob = other.querySelector(".faq-item__a");
-          window.gsap.to(ob, {
-            height: 0,
-            duration: 0.45,
-            ease: "power2.inOut",
-            onComplete: () => other.removeAttribute("open"),
-          });
-        }
+        if (other === item || !other.hasAttribute("open")) return;
+        const ob = other.querySelector(".faq-item__a");
+        if (!ob) return;
+        window.gsap.killTweensOf(ob);
+        window.gsap.to(ob, {
+          height: 0,
+          duration: 0.45,
+          ease: "power2.inOut",
+          onComplete: () => other.removeAttribute("open"),
+        });
       });
+
       item.setAttribute("open", "");
       window.gsap.fromTo(
         body,
@@ -780,9 +790,6 @@ function initDemoLightbox() {
     const u = new URL(url, window.location.origin);
     u.searchParams.set("embed", "1");
     u.searchParams.set("lightbox", "1");
-    if (u.pathname.endsWith(".html")) {
-      u.pathname = u.pathname.replace(/\.html$/, ".html/");
-    }
     return u.pathname + u.search;
   }
 
@@ -1088,38 +1095,10 @@ function initMethodStack() {
   });
 }
 
-/* Award pass: masked line reveals on the big titles, a scrubbed timeline
-   progress line, and gentle parallax on the stat numerals. Desktop only
+/* Award pass: gentle parallax on the stat numerals. Desktop only
    (conversion leak schematic is initialised separately). */
 function initAwardMotion() {
   const gsap = window.gsap;
-
-  if (window.SplitText) {
-    gsap.registerPlugin(window.SplitText);
-    document
-      .querySelectorAll(".split-copy h2, .section-title, .final-title, .proof-feature strong")
-      .forEach((el) => {
-        const split = new window.SplitText(el, { type: "lines", mask: "lines", linesClass: "st-line" });
-        gsap.from(split.lines, {
-          yPercent: 115,
-          duration: 0.9,
-          stagger: 0.09,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 80%", once: true },
-        });
-      });
-  }
-
-  const timeline = document.querySelector(".timeline");
-  if (timeline) {
-    window.ScrollTrigger.create({
-      trigger: timeline,
-      start: "top 85%",
-      end: "top 40%",
-      scrub: 0.4,
-      onUpdate: (self) => timeline.style.setProperty("--tl-progress", String(self.progress)),
-    });
-  }
 
   document.querySelectorAll(".stat-strip strong").forEach((el, i) => {
     gsap.fromTo(
@@ -1174,7 +1153,7 @@ async function init() {
     return;
   }
 
-  window.gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
+  window.gsap.registerPlugin(window.ScrollTrigger);
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobile = window.matchMedia("(max-width: 899px)").matches;

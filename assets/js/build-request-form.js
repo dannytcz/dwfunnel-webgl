@@ -1,5 +1,5 @@
-import { CONTACT_CONFIG } from "./contact-config.js";
-import { getVisitSnapshot } from "./visit-analytics.js";
+import { CONTACT_CONFIG } from "./contact-config.js?v=3";
+import { getVisitSnapshot } from "./visit-analytics.js?v=5";
 
 const TRAFFIC_OPTIONS = ["ADS", "CONTENT", "DMS", "REFERRALS", "OTHER"];
 const BUDGET_OPTIONS = ["$1K–3K", "$3K–5K", "$5K–10K", "$10K+"];
@@ -270,7 +270,7 @@ function validateCurrentPage(form) {
   const currentPage = getTrimmed(form, "currentPage");
   const pageField = form.querySelector('.form-field[data-field="currentPage"]');
   if (currentPage && pageField && !isValidUrl(currentPage)) {
-    setFieldError(pageField, "Enter a valid URL starting with https://");
+    setFieldError(pageField, "Enter a valid URL starting with http:// or https://");
     return false;
   }
   return true;
@@ -306,6 +306,35 @@ export function validateForm(form) {
   valid = validateBudget(form) && valid;
   valid = validateCurrentPage(form) && valid;
   return valid;
+}
+
+/** After validateForm fails: "page" for contact fields, or modal step 1–3. */
+export function firstInvalidSurveyTarget(form) {
+  const pageNames = ["name", "email", "businessBrand"];
+  for (const name of pageNames) {
+    const field = document.querySelector(`.form-field[data-field="${name}"]`);
+    if (field?.classList.contains("is-invalid")) return "page";
+  }
+
+  if (
+    form.querySelector('.form-field[data-field="offer"].is-invalid') ||
+    form.querySelector('.form-fieldset[data-field="trafficSources"].is-invalid')
+  ) {
+    return 1;
+  }
+
+  if (
+    form.querySelector('.form-field[data-field="conversionProblem"].is-invalid') ||
+    form.querySelector('.form-field[data-field="currentPage"].is-invalid')
+  ) {
+    return 2;
+  }
+
+  if (form.querySelector('.form-fieldset[data-field="estimatedBudget"].is-invalid')) {
+    return 3;
+  }
+
+  return null;
 }
 
 function escapeHtml(value) {

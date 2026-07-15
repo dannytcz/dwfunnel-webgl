@@ -64,6 +64,19 @@ async function writeCount(pathname, count) {
   );
 }
 
+async function peekEmailCounter(email, limit = DEFAULT_LIMIT) {
+  const day = utcDayKey();
+  const pathname = counterPath(email, day);
+  const current = await readCount(pathname);
+  return {
+    day,
+    count: current,
+    limit,
+    remaining: Math.max(0, limit - current),
+    shouldNotify: current < limit,
+  };
+}
+
 async function bumpEmailCounter(email, limit = DEFAULT_LIMIT) {
   const day = utcDayKey();
   const pathname = counterPath(email, day);
@@ -82,7 +95,10 @@ async function bumpEmailCounter(email, limit = DEFAULT_LIMIT) {
 /**
  * Persist the full submission so overflow entries are still reviewable in Vercel Blob.
  */
-export async function saveBuildRequestSubmission(payload, { notified, emailCount } = {}) {
+export async function saveBuildRequestSubmission(
+  payload,
+  { notified, emailCount, pathname, overwrite = false } = {}
+) {
   if (!hasBlobAuth()) {
     throw new Error("Blob storage is not configured.");
   }
@@ -90,7 +106,8 @@ export async function saveBuildRequestSubmission(payload, { notified, emailCount
   const day = utcDayKey();
   const email = normalizeEmail(payload.email);
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const pathname = `submissions/${day}/${stamp}-${fingerprint(email || randomUUID())}.json`;
+  const targetPath =
+    pathname || `submissions/${day}/${stamp}-${fingerprint(email || randomUUID())}.json`;
 
   const body = {
     capturedAt: new Date().toISOString(),
@@ -99,31 +116,37 @@ export async function saveBuildRequestSubmission(payload, { notified, emailCount
     payload,
   };
 
-  const blob = await put(pathname, JSON.stringify(body, null, 2), {
+  const blob = await put(targetPath, JSON.stringify(body, null, 2), {
     access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
-    allowOverwrite: false,
+    allowOverwrite: Boolean(overwrite || pathname),
     ...blobAuth(),
   });
 
   return {
-    pathname,
+    pathname: targetPath,
     url: blob.url,
   };
 }
 
 /**
- * Email-only daily limit. Always returns ok so we can still capture the payload.
- * `shouldNotify` is false once this email has already triggered 3 notify emails today.
+ * Email-only daily limit. Peeks the counter without burning a slot so failed
+ * Resend deliveries do not consume the day's quota. Call commitEmailNotification
+ * only after a successful send.
+ *
+ * When Blob is unavailable, soft-fails with shouldNotify: true so the funnel
+ * can still email (and optionally skip durable capture).
  */
 export async function trackEmailSubmission({ email, limit = DEFAULT_LIMIT } = {}) {
   if (!hasBlobAuth()) {
     return {
-      ok: false,
-      status: 503,
-      error: "Rate limiting storage is not configured yet.",
-      code: "RATE_LIMIT_UNAVAILABLE",
+      ok: true,
+      softOnly: true,
+      shouldNotify: true,
+      count: 0,
+      remaining: limit,
+      limit,
     };
   }
 
@@ -131,6 +154,7 @@ export async function trackEmailSubmission({ email, limit = DEFAULT_LIMIT } = {}
   if (!cleanEmail) {
     return {
       ok: true,
+      softOnly: false,
       shouldNotify: false,
       count: 0,
       remaining: 0,
@@ -138,11 +162,20 @@ export async function trackEmailSubmission({ email, limit = DEFAULT_LIMIT } = {}
     };
   }
 
-  const tracked = await bumpEmailCounter(cleanEmail, limit);
+  const peeked = await peekEmailCounter(cleanEmail, limit);
   return {
     ok: true,
-    ...tracked,
+    softOnly: false,
+    ...peeked,
   };
 }
 
-export { utcDayKey };
+/** Bump the daily notify counter after a successful Resend delivery. */
+export async function commitEmailNotification({ email, limit = DEFAULT_LIMIT } = {}) {
+  if (!hasBlobAuth()) return null;
+  const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) return null;
+  return bumpEmailCounter(cleanEmail, limit);
+}
+
+export { utcDayKey, hasBlobAuth };

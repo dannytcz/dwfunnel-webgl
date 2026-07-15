@@ -5,14 +5,15 @@ import {
   bindFormInputClearing,
   clearAllErrors,
   collectPayload,
+  firstInvalidSurveyTarget,
   renderReviewSummary,
   showPageSuccess,
   submitBuildRequest,
   validateForm,
   validatePageStep,
   validateStep,
-} from "./build-request-form.js";
-import { markReachedApply } from "./visit-analytics.js";
+} from "./build-request-form.js?v=12";
+import { markReachedApply } from "./visit-analytics.js?v=5";
 
 const MODAL_STEPS = 4;
 const DRAFT_KEY = "dwf_build_survey_draft";
@@ -282,11 +283,31 @@ function showSurveySuccess(root) {
   }
 }
 
+function focusInvalidInStep(form, step) {
+  const panel = form.querySelector(`[data-survey-step="${step}"]`);
+  const invalid =
+    panel?.querySelector(".is-invalid input, .is-invalid textarea") ||
+    panel?.querySelector(".form-field.is-invalid input, .form-fieldset.is-invalid input");
+  invalid?.focus();
+}
+
 function handleSubmit(form, wrap) {
   if (form.dataset.processing === "true") return;
-  if (!validateForm(form)) return;
 
   const root = getSurveyRoot();
+  if (!validateForm(form)) {
+    const target = firstInvalidSurveyTarget(form);
+    if (target === "page") {
+      closeSurvey({ force: true, focusPage: true });
+      return;
+    }
+    if (typeof target === "number") {
+      goToStep(root, form, target);
+      focusInvalidInStep(form, target);
+    }
+    return;
+  }
+
   const nextBtn = root.querySelector("[data-survey-next]");
   const formError = form.querySelector(".form-form__error");
   const payload = collectPayload(form, formInitTime);

@@ -1,5 +1,10 @@
 import { buildEmailHtml, buildEmailText } from "./lib/email-template.js";
-import { saveBuildRequestSubmission, trackEmailSubmission } from "./lib/rate-limit.js";
+import {
+  commitEmailNotification,
+  hasBlobAuth,
+  saveBuildRequestSubmission,
+  trackEmailSubmission,
+} from "./lib/rate-limit.js";
 import {
   extractServerMeta,
   mergeSubmissionMeta,
@@ -73,7 +78,9 @@ function validatePayload(body) {
   if (!conversionProblem) errors.conversionProblem = "Tell us what is not working.";
   if (!trafficSources.length) errors.trafficSources = "Select at least one traffic source.";
   if (!BUDGET_OPTIONS.has(estimatedBudget)) errors.estimatedBudget = "Select a budget range.";
-  if (currentPage && !isValidUrl(currentPage)) errors.currentPage = "Enter a valid URL starting with https://";
+  if (currentPage && !isValidUrl(currentPage)) {
+    errors.currentPage = "Enter a valid URL starting with http:// or https://";
+  }
 
   if (Object.keys(errors).length) {
     return { ok: false, errors };
@@ -168,31 +175,58 @@ export default async function handler(req, res) {
       limit: RATE_LIMIT_PER_DAY,
     });
 
-    if (!rate.ok) {
-      json(res, rate.status || 503, {
-        error: rate.error,
-        code: rate.code,
-      });
-      return;
+    // Capture first with notified:false so a Resend failure still leaves a durable record.
+    let stored = null;
+    if (hasBlobAuth()) {
+      try {
+        stored = await saveBuildRequestSubmission(payload, {
+          notified: false,
+          emailCount: rate.shouldNotify ? rate.count + 1 : rate.count,
+        });
+      } catch (storageError) {
+        // Prefer emailing the lead over failing the whole funnel when Blob is flaky.
+        console.error("build-request: blob save failed", storageError);
+      }
     }
 
-    const stored = await saveBuildRequestSubmission(payload, {
-      notified: rate.shouldNotify,
-      emailCount: rate.count,
-    });
-
     let emailResult = null;
+    let notified = false;
     if (rate.shouldNotify) {
       emailResult = await sendEmail(payload);
+      notified = true;
+
+      if (!rate.softOnly) {
+        try {
+          await commitEmailNotification({
+            email: payload.email,
+            limit: RATE_LIMIT_PER_DAY,
+          });
+        } catch (counterError) {
+          console.error("build-request: rate counter bump failed", counterError);
+        }
+      }
+
+      if (stored?.pathname) {
+        try {
+          stored = await saveBuildRequestSubmission(payload, {
+            notified: true,
+            emailCount: rate.count + 1,
+            pathname: stored.pathname,
+            overwrite: true,
+          });
+        } catch (updateError) {
+          console.error("build-request: notified flag update failed", updateError);
+        }
+      }
     }
 
     json(res, 200, {
       ok: true,
       id: emailResult?.id || null,
-      captured: true,
-      notified: Boolean(rate.shouldNotify),
-      remainingToday: rate.remaining,
-      storagePath: stored.pathname,
+      captured: Boolean(stored),
+      notified,
+      remainingToday: notified && !rate.softOnly ? Math.max(0, rate.limit - (rate.count + 1)) : rate.remaining,
+      storagePath: stored?.pathname || null,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected server error.";

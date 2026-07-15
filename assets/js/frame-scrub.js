@@ -47,6 +47,7 @@ export class FrameScrubber {
     this._released = false;
     this._loaded = false;
     this._pending = new Map();
+    this._fetchGen = 0;
     this.debugLabel = opts.debugLabel ?? "";
   }
 
@@ -90,19 +91,22 @@ export class FrameScrubber {
     if (this.bitmaps[i]) return Promise.resolve(this.bitmaps[i]);
     if (this._pending.has(i)) return this._pending.get(i);
 
+    const gen = this._fetchGen;
     const promise = this._fetchBitmap(this.urls[i])
       .then((bitmap) => {
-        this._pending.delete(i);
-        if (this._released) {
+        if (this._pending.get(i) === promise) this._pending.delete(i);
+        if (this._released || gen !== this._fetchGen) {
           if (bitmap && typeof bitmap.close === "function") bitmap.close();
           return null;
         }
+        const prev = this.bitmaps[i];
+        if (prev && prev !== bitmap && typeof prev.close === "function") prev.close();
         this.bitmaps[i] = bitmap;
         if (i === this.targetFrame) this.renderNow();
         return bitmap;
       })
       .catch(() => {
-        this._pending.delete(i);
+        if (this._pending.get(i) === promise) this._pending.delete(i);
         return null;
       });
     this._pending.set(i, promise);
@@ -301,6 +305,7 @@ export class FrameScrubber {
     this.canvas.height = Math.max(1, Math.round(h * renderScale));
     // Draw in identity space; _paint computes everything in backing pixels.
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this._fetchGen += 1;
     this._pending.clear();
     this.lastDrawnFrame = -1;
     this._lastPaintKey = null;
